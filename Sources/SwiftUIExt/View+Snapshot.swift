@@ -2,13 +2,17 @@ import GraphicsExt
 import SwiftUI
 
 extension View {
+  @MainActor
   public func snapshot(
     afterScreenUpdates afterUpdates: Bool = true,
     scale: CGFloat = 1
   ) -> UIImage {
     let controller = UIHostingController(
-      rootView: self.scaleEffect(scale, anchor: .bottom)
+      rootView: self
+        .scaleEffect(scale, anchor: .bottom)
+        .edgesIgnoringSafeArea(.all)
     )
+
     let view = controller.view
 
     let targetRect = CGRect(
@@ -17,7 +21,7 @@ extension View {
     )
     .integral
 
-    view?.bounds = targetRect
+    view?.frame = targetRect
     view?.backgroundColor = .clear
 
     let format = UIGraphicsImageRendererFormat()
