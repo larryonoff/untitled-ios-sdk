@@ -9,8 +9,9 @@ extension View {
   ) -> UIImage {
     let controller = UIHostingController(
       rootView: self
-        .scaleEffect(scale, anchor: .bottom)
-        .edgesIgnoringSafeArea(.all)
+        .ignoresSafeArea()
+        .fixedSize(horizontal: true, vertical: true)
+        .scaleEffect(scale)
     )
 
     let view = controller.view
