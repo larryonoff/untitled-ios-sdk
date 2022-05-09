@@ -21,6 +21,7 @@ let package = Package(
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: "FoundationExt", targets: ["FoundationExt"]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
+    .library(name: "LoggerExt", targets: ["LoggerExt"]),
     .library(name: "SFSymbol", targets: ["SFSymbol"]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"])
@@ -49,6 +50,12 @@ let package = Package(
       name: "GraphicsExt",
       linkerSettings: [
         .linkedFramework("UIKit")
+      ]
+    ),
+    .target(
+      name: "LoggerExt",
+      linkerSettings: [
+        .linkedFramework("OSLog")
       ]
     ),
     .target(
