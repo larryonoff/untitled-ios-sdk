@@ -35,60 +35,30 @@ let package = Package(
     )
   ],
   targets: [
-    .target(
-      name: "AppVersion"
-    ),
+    .target(name: "AppVersion"),
     .target(
       name: "ComposableArchitectureExt",
       dependencies: [
         .composableArchitecture
       ]
     ),
-    .target(
-      name: "FeedbackGenerator",
-      linkerSettings: [
-        .linkedFramework("UIKit")
-      ]
-    ),
+    .target(name: "FeedbackGenerator"),
     .target(name: "FoundationExt"),
-    .target(
-      name: "GraphicsExt",
-      linkerSettings: [
-        .linkedFramework("UIKit")
-      ]
-    ),
+    .target(name: "GraphicsExt"),
     .target(
       name: "LoggerExt",
       linkerSettings: [
         .linkedFramework("OSLog")
       ]
     ),
-    .target(
-      name: "OpenURL",
-      linkerSettings: [
-        .linkedFramework("OpenURL")
-      ]
-    ),
-    .target(
-      name: "SFSymbol",
-      linkerSettings: [
-        .linkedFramework("UIKit")
-      ]
-    ),
+    .target(name: "OpenURL"),
+    .target(name: "SFSymbol"),
     .target(
       name: "SwiftUIExt",
       dependencies: [
         "GraphicsExt"
-      ],
-      linkerSettings: [
-        .linkedFramework("SwiftUI")
       ]
     ),
-    .target(
-      name: "UIKitExt",
-      linkerSettings: [
-        .linkedFramework("UIKit")
-      ]
-    )
+    .target(name: "UIKitExt")
   ]
 )
