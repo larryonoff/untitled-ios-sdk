@@ -17,11 +17,13 @@ let package = Package(
     .macOS(.v11)
   ],
   products: [
+    .library(name: "AppVersion", targets: ["AppVersion"]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: "FoundationExt", targets: ["FoundationExt"]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
     .library(name: "LoggerExt", targets: ["LoggerExt"]),
+    .library(name: "OpenURL", targets: ["OpenURL"]),
     .library(name: "SFSymbol", targets: ["SFSymbol"]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"])
@@ -33,6 +35,9 @@ let package = Package(
     )
   ],
   targets: [
+    .target(
+      name: "AppVersion"
+    ),
     .target(
       name: "ComposableArchitectureExt",
       dependencies: [
@@ -56,6 +61,12 @@ let package = Package(
       name: "LoggerExt",
       linkerSettings: [
         .linkedFramework("OSLog")
+      ]
+    ),
+    .target(
+      name: "OpenURL",
+      linkerSettings: [
+        .linkedFramework("OpenURL")
       ]
     ),
     .target(
