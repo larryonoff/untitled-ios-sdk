@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.6
 
 import PackageDescription
 
@@ -6,6 +6,11 @@ extension Target.Dependency {
   static let composableArchitecture: Target.Dependency = .product(
     name: "ComposableArchitecture",
     package: "swift-composable-architecture"
+  )
+
+  static let tagged: Target.Dependency = .product(
+    name: "Tagged",
+    package: "swift-tagged"
   )
 }
 
@@ -17,7 +22,8 @@ let package = Package(
     .macOS(.v11)
   ],
   products: [
-    .library(name: "SugarAnalytics", targets: ["SugarAnalytics"]),
+    .library(name: "Analytics", targets: ["Analytics"]),
+    .library(name: "AppStoreClient", targets: ["AppStoreClient"]),
     .library(name: "AppVersion", targets: ["AppVersion"]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
@@ -31,6 +37,26 @@ let package = Package(
   ],
   dependencies: [
     .package(
+      url: "https://github.com/adaptyteam/AdaptySDK-iOS",
+      from: "1.17.1"
+    ),
+    .package(
+      url: "https://github.com/amplitude/Amplitude-iOS",
+      from: "8.10.0"
+    ),
+    .package(
+        url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
+        from: "0.1.2"
+    ),
+    .package(
+      url: "https://github.com/facebook/facebook-ios-sdk",
+      from: "13.2.0"
+    ),
+    .package(
+      url: "https://github.com/firebase/firebase-ios-sdk",
+      from: "9.1.0"
+    ),
+    .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
       from: "0.35.0"
     ),
@@ -41,11 +67,30 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "SugarAnalytics",
+      name: "Analytics",
       dependencies: [
-        .product(name: "Tagged", package: "swift-tagged")
+        .product(name: "Amplitude", package: "Amplitude-iOS"),
+        .composableArchitecture,
+        .product(name: "FacebookCore", package: "facebook-ios-sdk"),
+        .product(name: "FirebaseAnalytics", package: "firebase-ios-sdk"),
+        "FoundationExt",
+        .tagged
+      ]
+    ),
+    .target(
+      name: "AppStoreClient",
+      dependencies: [
+        .product(name: "Adapty", package: "AdaptySDK-iOS"),
+        "AsyncCompatibilityKit",
+        .composableArchitecture,
+        "FoundationExt",
+        "Analytics",
+        .tagged
       ],
-      path: "Sources/Analytics"
+      linkerSettings: [
+        .linkedFramework("Combine"),
+        .linkedFramework("StoreKit")
+      ]
     ),
     .target(name: "AppVersion"),
     .target(
