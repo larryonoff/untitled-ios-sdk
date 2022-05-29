@@ -17,6 +17,7 @@ let package = Package(
     .macOS(.v11)
   ],
   products: [
+    .library(name: "SugarAnalytics", targets: ["SugarAnalytics"]),
     .library(name: "AppVersion", targets: ["AppVersion"]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
@@ -31,10 +32,21 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.33.1"
+      from: "0.35.0"
+    ),
+    .package(
+      url: "https://github.com/pointfreeco/swift-tagged.git",
+      from: "0.7.0"
     )
   ],
   targets: [
+    .target(
+      name: "SugarAnalytics",
+      dependencies: [
+        .product(name: "Tagged", package: "swift-tagged")
+      ],
+      path: "Sources/Analytics"
+    ),
     .target(name: "AppVersion"),
     .target(
       name: "ComposableArchitectureExt",
