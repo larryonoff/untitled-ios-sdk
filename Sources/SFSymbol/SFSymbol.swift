@@ -22,6 +22,14 @@ public enum SFSymbol: String {
 
   case questionmarkCircle = "questionmark.circle"
 
+  case sliderHorizontal3 = "slider.horizontal.3"
+  case sliderHorizontalBelowRectangle = "slider.horizontal.below.rectangle"
+  case sliderHorizontalBelowSquareFilledAndSquare =
+    "slider.horizontal.below.square.filled.and.square"
+  case sliderHorizontal2RectangleAndArrowTriangle2Circlepath =
+    "slider.horizontal.2.rectangle.and.arrow.triangle.2.circlepath"
+  case sliderVertical3 = "slider.vertical.3"
+
   case squareAndArrowUp = "square.and.arrow.up"
 
   case trash
