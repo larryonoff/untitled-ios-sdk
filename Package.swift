@@ -38,27 +38,27 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "1.17.1"
+      from: "1.17.7"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
-      from: "8.10.0"
+      from: "8.10.2"
     ),
     .package(
-        url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
-        from: "0.1.2"
+      url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
+      from: "0.1.2"
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "13.2.0"
+      from: "14.0.0"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "9.1.0"
+      from: "9.2.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.35.0"
+      from: "0.38.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged.git",
