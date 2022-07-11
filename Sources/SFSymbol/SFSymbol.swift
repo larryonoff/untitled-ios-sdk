@@ -17,7 +17,12 @@ public enum SFSymbol: String {
   case line3Horizontal = "line.3.horizontal"
 
   case pauseCircle = "pause.circle"
+  case play = "play"
+  case playFill = "play.fill"
   case playCircle = "play.circle"
+  case playSquare = "play.square"
+  case playRectangle = "play.rectangle"
+  case playSlash = "play.slash"
   case plus
 
   case questionmarkCircle = "questionmark.circle"
