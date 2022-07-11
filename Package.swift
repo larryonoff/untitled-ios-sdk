@@ -2,18 +2,6 @@
 
 import PackageDescription
 
-extension Target.Dependency {
-  static let composableArchitecture: Target.Dependency = .product(
-    name: "ComposableArchitecture",
-    package: "swift-composable-architecture"
-  )
-
-  static let tagged: Target.Dependency = .product(
-    name: "Tagged",
-    package: "swift-tagged"
-  )
-}
-
 let package = Package(
   name: "sugar",
   defaultLocalization: "en",
@@ -22,8 +10,8 @@ let package = Package(
     .macOS(.v11)
   ],
   products: [
-    .library(name: "Analytics", targets: ["Analytics"]),
-    .library(name: "AppStoreClient", targets: ["AppStoreClient"]),
+    .library(name: .Client.analytics, targets: [.Client.analytics]),
+    .library(name: .Client.appStore, targets: [.Client.appStore]),
     .library(name: "AppVersion", targets: ["AppVersion"]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
@@ -33,7 +21,8 @@ let package = Package(
     .library(name: "OpenURL", targets: ["OpenURL"]),
     .library(name: "SFSymbol", targets: ["SFSymbol"]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
-    .library(name: "UIKitExt", targets: ["UIKitExt"])
+    .library(name: "UIKitExt", targets: ["UIKitExt"]),
+    .library(name: .Client.userSettings, targets: [.Client.userSettings])
   ],
   dependencies: [
     .package(
@@ -50,7 +39,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "14.0.0"
+      from: "14.1.0"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
@@ -61,31 +50,31 @@ let package = Package(
       from: "0.38.1"
     ),
     .package(
-      url: "https://github.com/pointfreeco/swift-tagged.git",
+      url: "https://github.com/pointfreeco/swift-tagged",
       from: "0.7.0"
     )
   ],
   targets: [
     .target(
-      name: "Analytics",
+      name: .Client.analytics,
       dependencies: [
-        .product(name: "Amplitude", package: "Amplitude-iOS"),
-        .composableArchitecture,
-        .product(name: "FacebookCore", package: "facebook-ios-sdk"),
-        .product(name: "FirebaseAnalytics", package: "firebase-ios-sdk"),
         "FoundationExt",
-        .tagged
+        .External.amplitude,
+        .External.composableArchitecture,
+        .External.Facebook.core,
+        .External.Firebase.analytics,
+        .External.tagged
       ]
     ),
     .target(
-      name: "AppStoreClient",
+      name: .Client.appStore,
       dependencies: [
-        .product(name: "Adapty", package: "AdaptySDK-iOS"),
         "AsyncCompatibilityKit",
-        .composableArchitecture,
         "FoundationExt",
-        "Analytics",
-        .tagged
+        .Client.analytics,
+        .External.adapty,
+        .External.composableArchitecture,
+        .External.tagged
       ],
       linkerSettings: [
         .linkedFramework("Combine"),
@@ -96,7 +85,7 @@ let package = Package(
     .target(
       name: "ComposableArchitectureExt",
       dependencies: [
-        .composableArchitecture
+        .External.composableArchitecture
       ]
     ),
     .target(name: "FeedbackGenerator"),
@@ -116,6 +105,69 @@ let package = Package(
         "GraphicsExt"
       ]
     ),
-    .target(name: "UIKitExt")
+    .target(name: "UIKitExt"),
+    .target(
+      name: .Client.userSettings,
+      dependencies: [
+        .External.composableArchitecture
+      ]
+    )
   ]
 )
+
+extension Target.Dependency {
+  enum Client {
+    static let analytics = byName(name: .Client.analytics)
+    static let appStore = byName(name: .Client.appStore)
+    static let userSettings = byName(name: .Client.userSettings)
+  }
+
+  enum External {
+    static let adapty = product(
+      name: "Adapty",
+      package: "AdaptySDK-iOS"
+    )
+
+    static let amplitude = product(
+      name: "Amplitude",
+      package: "Amplitude-iOS"
+    )
+
+    static let composableArchitecture = product(
+      name: "ComposableArchitecture",
+      package: "swift-composable-architecture"
+    )
+
+    enum Facebook {
+      static let core = product(
+        name: "FacebookCore",
+        package: "facebook-ios-sdk"
+      )
+    }
+
+    enum Firebase {
+      static let analytics = product(
+        name: "FirebaseAnalytics",
+        package: "firebase-ios-sdk"
+      )
+
+      static let crashlytics = product(
+        name: "FirebaseCrashlytics",
+        package: "firebase-ios-sdk"
+      )
+    }
+
+    static let tagged = product(
+      name: "Tagged",
+      package: "swift-tagged"
+    )
+  }
+}
+
+extension String {
+  enum Client {
+    static let analytics = "Analytics"
+    static let appStore = "AppStoreClient"
+    static let userSettings = "UserSettings"
+  }
+}
