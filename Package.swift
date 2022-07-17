@@ -22,7 +22,8 @@ let package = Package(
     .library(name: "SFSymbol", targets: ["SFSymbol"]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"]),
-    .library(name: .Client.userSettings, targets: [.Client.userSettings])
+    .library(name: .Client.userSettings, targets: [.Client.userSettings]),
+    .library(name: .videoPlayer, targets: [.videoPlayer])
   ],
   dependencies: [
     .package(
@@ -111,11 +112,19 @@ let package = Package(
       dependencies: [
         .External.composableArchitecture
       ]
+    ),
+    .target(
+      name: .videoPlayer,
+      linkerSettings: [
+        .linkedFramework("AVKit")
+      ]
     )
   ]
 )
 
 extension Target.Dependency {
+  static let videoPlayer = byName(name: .videoPlayer)
+
   enum Client {
     static let analytics = byName(name: .Client.analytics)
     static let appStore = byName(name: .Client.appStore)
@@ -165,6 +174,8 @@ extension Target.Dependency {
 }
 
 extension String {
+  static let videoPlayer = "VideoPlayer"
+
   enum Client {
     static let analytics = "Analytics"
     static let appStore = "AppStoreClient"
