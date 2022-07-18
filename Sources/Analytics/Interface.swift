@@ -21,12 +21,12 @@ public struct Analytics {
     }
   }
 
-  public var log: (EventData) -> Effect<Never, Never>
-  public var setUserProperty: (Any?, UserPropertyName) -> Effect<Never, Never>
+  public var log: (EventData) -> Void
+  public var setUserProperty: (Any?, UserPropertyName) -> Void
 
   public init(
-    log: @escaping (EventData) -> Effect<Never, Never>,
-    setUserProperty: @escaping (Any?, UserPropertyName) -> Effect<Never, Never>
+    log: @escaping (EventData) -> Void,
+    setUserProperty: @escaping (Any?, UserPropertyName) -> Void
   ) {
     self.log = log
     self.setUserProperty = setUserProperty
@@ -36,14 +36,14 @@ public struct Analytics {
 extension Analytics {
   public func log(
     _ eventName: EventName
-  ) -> Effect<Never, Never> {
+  ) {
     self.log(.event(eventName: eventName))
   }
 
   public func set(
     _ value: Any?,
     for name: UserPropertyName
-  ) -> Effect<Never, Never> {
+  ) {
     self.setUserProperty(value, name)
   }
 }
