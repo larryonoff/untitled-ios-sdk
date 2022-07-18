@@ -7,11 +7,11 @@ import Foundation
 import FoundationExt
 import StoreKit
 
-extension AppStoreClient {
+extension StoreClient {
   public static func live(
     analytics: Analytics
   ) -> Self {
-    AppStoreClient(
+    StoreClient(
       initialize: {
         guard _adaptyDelegate == nil else { return }
 
@@ -99,7 +99,7 @@ extension AppStoreClient {
         else {
           return
         }
-        Adapty.logShowPaywall(adaptyPaywall)
+        try await Adapty.logShowPaywall(adaptyPaywall)
       }
     )
   }
