@@ -8,26 +8,30 @@ extension Analytics {
   public static let live: Self = {
     Analytics(
       log: { data in
-        Amplitude.instance().log(data)
+        .fireAndForget {
+          Amplitude.instance().log(data)
 
-        AppEvents.shared.log(data)
+          AppEvents.shared.log(data)
 
-        FirebaseAnalytics.Analytics.log(data)
+          FirebaseAnalytics.Analytics.log(data)
+        }
       },
       setUserProperty: { value, name in
-        let identity = AMPIdentify()
+        .fireAndForget {
+          let identity = AMPIdentify()
 
-        if let value = value {
-          identity.set(
-            name.rawValue,
-            value: String(describing: value) as NSString
-          )
-        } else {
-          identity.unset(name.rawValue)
+          if let value = value {
+            identity.set(
+              name.rawValue,
+              value: String(describing: value) as NSString
+            )
+          } else {
+            identity.unset(name.rawValue)
+          }
+
+          let amplitude = Amplitude.instance()
+          amplitude.identify(identity)
         }
-
-        let amplitude = Amplitude.instance()
-        amplitude.identify(identity)
       }
     )
   }()
