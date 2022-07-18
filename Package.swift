@@ -11,7 +11,6 @@ let package = Package(
   ],
   products: [
     .library(name: .Client.analytics, targets: [.Client.analytics]),
-    .library(name: .Client.appStore, targets: [.Client.appStore]),
     .library(name: .appVersion, targets: [.appVersion]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
@@ -20,7 +19,8 @@ let package = Package(
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
     .library(name: "LoggerExt", targets: ["LoggerExt"]),
     .library(name: "OpenURL", targets: ["OpenURL"]),
-    .library(name: "SFSymbol", targets: ["SFSymbol"]),
+    .library(name: .sfSymbol, targets: [.sfSymbol]),
+    .library(name: .Client.store, targets: [.Client.store]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"]),
     .library(name: .videoPlayer, targets: [.videoPlayer]),
@@ -69,21 +69,6 @@ let package = Package(
         .External.tagged
       ]
     ),
-    .target(
-      name: .Client.appStore,
-      dependencies: [
-        "AsyncCompatibilityKit",
-        "FoundationExt",
-        .Client.analytics,
-        .External.adapty,
-        .External.composableArchitecture,
-        .External.tagged
-      ],
-      linkerSettings: [
-        .linkedFramework("Combine"),
-        .linkedFramework("StoreKit")
-      ]
-    ),
     .target(name: .appVersion),
     .target(
       name: "ComposableArchitectureExt",
@@ -107,7 +92,22 @@ let package = Package(
       ]
     ),
     .target(name: "OpenURL"),
-    .target(name: "SFSymbol"),
+    .target(name: .sfSymbol),
+    .target(
+      name: .Client.store,
+      dependencies: [
+        "AsyncCompatibilityKit",
+        "FoundationExt",
+        .Client.analytics,
+        .External.adapty,
+        .External.composableArchitecture,
+        .External.tagged
+      ],
+      linkerSettings: [
+        .linkedFramework("Combine"),
+        .linkedFramework("StoreKit")
+      ]
+    ),
     .target(
       name: "SwiftUIExt",
       dependencies: [
@@ -144,11 +144,12 @@ let package = Package(
 extension Target.Dependency {
   static let appVersion = byName(name: .appVersion)
   static let concurrencyExt = byName(name: .concurrencyExt)
+  static let sfSymbol = byName(name: .sfSymbol)
   static let videoPlayer = byName(name: .videoPlayer)
 
   enum Client {
     static let analytics = byName(name: .Client.analytics)
-    static let appStore = byName(name: .Client.appStore)
+    static let appStore = byName(name: .Client.store)
     static let userSettings = byName(name: .Client.userSettings)
     static let userTracking = byName(name: .Client.userTracking)
   }
@@ -198,11 +199,12 @@ extension Target.Dependency {
 extension String {
   static let appVersion = "AppVersion"
   static let concurrencyExt = "ConcurrencyExt"
+  static let sfSymbol = "SFSymbol"
   static let videoPlayer = "VideoPlayer"
 
   enum Client {
     static let analytics = "Analytics"
-    static let appStore = "AppStoreClient"
+    static let store = "StoreClient"
     static let userSettings = "UserSettings"
     static let userTracking = "UserTracking"
   }

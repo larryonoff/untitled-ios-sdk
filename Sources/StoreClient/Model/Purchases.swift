@@ -1,9 +1,15 @@
 import Adapty
 
-public struct Purchases: Codable, Equatable, Hashable {
+public struct Purchases {
   public var isPremium: Bool = false
   public var isTrialAvailable: Bool = true
 }
+
+extension Purchases: Codable {}
+
+extension Purchases: Equatable {}
+
+extension Purchases: Hashable {}
 
 extension Purchases: Sendable {}
 

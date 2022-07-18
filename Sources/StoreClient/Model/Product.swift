@@ -1,23 +1,23 @@
 import Adapty
-import Foundation
+@preconcurrency import Foundation
 import StoreKit
 import Tagged
 
-public struct Product: Equatable, Hashable, Identifiable {
+public struct Product {
   public typealias ID = Tagged<Self, String>
 
-  public struct SubscriptionInfo: Codable, Equatable, Hashable {
+  public struct SubscriptionInfo {
     public var introductoryOffer: Product.SubscriptionOffer?
     public var subscriptionGroupID: String
     public var subscriptionPeriod: Product.SubscriptionPeriod
   }
 
-  public struct SubscriptionOffer: Codable, Equatable, Hashable {
-    public enum OfferType: String, Codable, Equatable, Hashable, Sendable {
+  public struct SubscriptionOffer {
+    public enum OfferType: String {
       case introductory
     }
 
-    public enum PaymentMode: String, Codable, Equatable, Hashable, Sendable {
+    public enum PaymentMode: String {
       case payAsYouGo = "pay_as_you_go"
       case payUpFront = "pay_up_front"
       case freeTrial = "free_trial"
@@ -38,8 +38,8 @@ public struct Product: Equatable, Hashable, Identifiable {
     public let paymentMode: Product.SubscriptionOffer.PaymentMode
   }
 
-  public struct SubscriptionPeriod: Codable, Equatable, Hashable, Sendable {
-    public enum Unit: Codable, Equatable, Hashable, Sendable {
+  public struct SubscriptionPeriod {
+    public enum Unit {
       case day
       case week
       case month
@@ -90,8 +90,6 @@ public struct Product: Equatable, Hashable, Identifiable {
   }
 }
 
-// MARK: - CustomStringConvertible
-
 extension Product.SubscriptionPeriod.Unit: CustomStringConvertible {
   public var description: String {
     switch self {
@@ -106,6 +104,60 @@ extension Product.SubscriptionPeriod.Unit: CustomStringConvertible {
     }
   }
 }
+
+extension Product: Equatable {}
+
+extension Product: Hashable {}
+
+extension Product: Identifiable {}
+
+extension Product.SubscriptionInfo: Codable {}
+
+extension Product.SubscriptionInfo: Equatable {}
+
+extension Product.SubscriptionInfo: Hashable {}
+
+extension Product.SubscriptionInfo: Sendable {}
+
+extension Product.SubscriptionOffer: Codable {}
+
+extension Product.SubscriptionOffer: Equatable {}
+
+extension Product.SubscriptionOffer: Hashable {}
+
+extension Product.SubscriptionOffer: Sendable {}
+
+extension Product.SubscriptionOffer.OfferType: Codable {}
+
+extension Product.SubscriptionOffer.OfferType: Equatable {}
+
+extension Product.SubscriptionOffer.OfferType: Hashable {}
+
+extension Product.SubscriptionOffer.OfferType: Sendable {}
+
+extension Product.SubscriptionOffer.PaymentMode: Codable {}
+
+extension Product.SubscriptionOffer.PaymentMode: Equatable {}
+
+extension Product.SubscriptionOffer.PaymentMode: Hashable {}
+
+extension Product.SubscriptionOffer.PaymentMode: Sendable {}
+
+extension Product.SubscriptionPeriod: Codable {}
+
+extension Product.SubscriptionPeriod: Equatable {}
+
+extension Product.SubscriptionPeriod: Hashable {}
+
+extension Product.SubscriptionPeriod: Sendable {}
+
+extension Product.SubscriptionPeriod.Unit: Codable {}
+
+extension Product.SubscriptionPeriod.Unit: Equatable {}
+
+extension Product.SubscriptionPeriod.Unit: Hashable {}
+
+extension Product.SubscriptionPeriod.Unit: Sendable {}
 
 // MARK: - Discount
 
