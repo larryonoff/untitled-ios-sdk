@@ -27,7 +27,8 @@ extension UserTrackingClient {
       requestAuthorization: { dueTime in
         if #available(iOS 14.5, *) {
           guard _isAuthorizationRequestNeeded() else {
-            return ATTrackingManager.trackingAuthorizationStatus
+            let _authStatus = ATTrackingManager.trackingAuthorizationStatus
+            return AuthorizationStatus(_authStatus)
           }
 
           analytics.log(.idfaRequested)
@@ -45,12 +46,12 @@ extension UserTrackingClient {
             .event(
               eventName: .idfaResult,
               parameters: [
-                .status: _authStatus.description
+                .status: AuthorizationStatus(_authStatus).description
               ]
             )
           )
 
-          return _authStatus
+          return AuthorizationStatus(_authStatus)
         }
 
         return .authorized
@@ -59,14 +60,14 @@ extension UserTrackingClient {
   }
 }
 
-private let _authorizationStatus = CurrentValueSubject<ATTrackingManager.AuthorizationStatus, Never>(
+private let _authorizationStatus = CurrentValueSubject<AuthorizationStatus, Never>(
   .authorized
 )
 
 private func _authStatusDidChange(
   _ status: ATTrackingManager.AuthorizationStatus
 ) {
-  _authorizationStatus.value = status
+  _authorizationStatus.value = .init(status)
 
   let isAuthorized = status == .authorized
   let fbSettings = FacebookCore.Settings.shared
