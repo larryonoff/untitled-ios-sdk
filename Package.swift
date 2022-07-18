@@ -23,8 +23,9 @@ let package = Package(
     .library(name: "SFSymbol", targets: ["SFSymbol"]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"]),
+    .library(name: .videoPlayer, targets: [.videoPlayer]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
-    .library(name: .videoPlayer, targets: [.videoPlayer])
+    .library(name: .Client.userTracking, targets: [.Client.userTracking])
   ],
   dependencies: [
     .package(
@@ -91,7 +92,10 @@ let package = Package(
       ]
     ),
     .target(
-      name: .concurrencyExt
+      name: .concurrencyExt,
+      linkerSettings: [
+        .linkedFramework("Combine")
+      ]
     ),
     .target(name: "FeedbackGenerator"),
     .target(name: "FoundationExt"),
@@ -122,6 +126,17 @@ let package = Package(
       linkerSettings: [
         .linkedFramework("AVKit")
       ]
+    ),
+    .target(
+      name: .Client.userTracking,
+      dependencies: [
+        .Client.analytics,
+        .External.composableArchitecture,
+        .External.Facebook.core
+      ],
+      linkerSettings: [
+        .linkedFramework("AppTrackingTransparency")
+      ]
     )
   ]
 )
@@ -135,6 +150,7 @@ extension Target.Dependency {
     static let analytics = byName(name: .Client.analytics)
     static let appStore = byName(name: .Client.appStore)
     static let userSettings = byName(name: .Client.userSettings)
+    static let userTracking = byName(name: .Client.userTracking)
   }
 
   enum External {
@@ -188,5 +204,6 @@ extension String {
     static let analytics = "Analytics"
     static let appStore = "AppStoreClient"
     static let userSettings = "UserSettings"
+    static let userTracking = "UserTracking"
   }
 }
