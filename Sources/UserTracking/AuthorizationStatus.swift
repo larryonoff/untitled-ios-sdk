@@ -17,6 +17,8 @@ extension ATTrackingManager.AuthorizationStatus: CustomStringConvertible {
       return "denied"
     case .authorized:
       return "authorized"
+    @unknown default:
+      return "(@unknown default, rawValue: \(self.rawValue))"
     }
   }
 }
@@ -25,4 +27,4 @@ extension ATTrackingManager.AuthorizationStatus: Equatable {}
 
 extension ATTrackingManager.AuthorizationStatus: Hashable {}
 
-extension ATTrackingManager.AuthorizationStatus: Sendable {}
+extension ATTrackingManager.AuthorizationStatus: @unchecked Sendable {}
