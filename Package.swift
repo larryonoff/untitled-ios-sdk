@@ -12,8 +12,9 @@ let package = Package(
   products: [
     .library(name: .Client.analytics, targets: [.Client.analytics]),
     .library(name: .Client.appStore, targets: [.Client.appStore]),
-    .library(name: "AppVersion", targets: ["AppVersion"]),
+    .library(name: .appVersion, targets: [.appVersion]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
+    .library(name: .concurrencyExt, targets: [.concurrencyExt]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: "FoundationExt", targets: ["FoundationExt"]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
@@ -82,12 +83,15 @@ let package = Package(
         .linkedFramework("StoreKit")
       ]
     ),
-    .target(name: "AppVersion"),
+    .target(name: .appVersion),
     .target(
       name: "ComposableArchitectureExt",
       dependencies: [
         .External.composableArchitecture
       ]
+    ),
+    .target(
+      name: .concurrencyExt
     ),
     .target(name: "FeedbackGenerator"),
     .target(name: "FoundationExt"),
@@ -123,6 +127,8 @@ let package = Package(
 )
 
 extension Target.Dependency {
+  static let appVersion = byName(name: .appVersion)
+  static let concurrencyExt = byName(name: .concurrencyExt)
   static let videoPlayer = byName(name: .videoPlayer)
 
   enum Client {
@@ -174,6 +180,8 @@ extension Target.Dependency {
 }
 
 extension String {
+  static let appVersion = "AppVersion"
+  static let concurrencyExt = "ConcurrencyExt"
   static let videoPlayer = "VideoPlayer"
 
   enum Client {
