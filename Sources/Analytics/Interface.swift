@@ -1,3 +1,4 @@
+import ComposableArchitecture
 import Tagged
 
 public struct Analytics {
@@ -20,12 +21,12 @@ public struct Analytics {
     }
   }
 
-  public let log: (EventData) -> Void
-  public let setUserProperty: (Any?, UserPropertyName) -> Void
+  public var log: (EventData) -> Effect<Never, Never>
+  public var setUserProperty: (Any?, UserPropertyName) -> Effect<Never, Never>
 
   public init(
-    log: @escaping (EventData) -> Void,
-    setUserProperty: @escaping (Any?, UserPropertyName) -> Void
+    log: @escaping (EventData) -> Effect<Never, Never>,
+    setUserProperty: @escaping (Any?, UserPropertyName) -> Effect<Never, Never>
   ) {
     self.log = log
     self.setUserProperty = setUserProperty
@@ -33,14 +34,16 @@ public struct Analytics {
 }
 
 extension Analytics {
-  public func log(_ eventName: EventName) {
+  public func log(
+    _ eventName: EventName
+  ) -> Effect<Never, Never> {
     self.log(.event(eventName: eventName))
   }
 
   public func set(
     _ value: Any?,
     for name: UserPropertyName
-  ) {
+  ) -> Effect<Never, Never> {
     self.setUserProperty(value, name)
   }
 }

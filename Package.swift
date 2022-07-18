@@ -48,7 +48,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.38.1"
+      branch: "concurrency-beta"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
