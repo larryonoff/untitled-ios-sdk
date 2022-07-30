@@ -28,6 +28,23 @@ extension PHImageManager {
               if let error = info?[PHImageErrorKey] as? Swift.Error {
                 return continuation.resume(throwing: error)
               }
+
+              if
+                let isCancelled = info?[PHImageCancelledKey] as? Bool,
+                isCancelled
+              {
+                return continuation.resume(throwing: CancellationError())
+              }
+
+              // when degraded image is provided,
+              // the completion handler will be called again.
+              if
+                let isDegraded = info?[PHImageResultIsDegradedKey] as? Bool,
+                isDegraded
+              {
+                return
+              }
+
               continuation.resume(returning: (image, info))
             }
           )
