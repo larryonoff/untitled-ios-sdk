@@ -19,6 +19,7 @@ let package = Package(
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
     .library(name: "LoggerExt", targets: ["LoggerExt"]),
     .library(name: "OpenURL", targets: ["OpenURL"]),
+    .library(name: .photosExt, targets: [.photosExt]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .Client.store, targets: [.Client.store]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
@@ -49,12 +50,24 @@ let package = Package(
       from: "9.2.0"
     ),
     .package(
+      url: "https://github.com/apple/swift-collections",
+      from: "1.0.2"
+    ),
+    .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
       branch: "concurrency-beta"
     ),
     .package(
+      url: "https://github.com/pointfreeco/swift-custom-dump",
+      from: "0.5.0"
+    ),
+    .package(
       url: "https://github.com/pointfreeco/swift-tagged",
       from: "0.7.0"
+    ),
+    .package(
+      url: "https://github.com/MarcoEidinger/URLCompatibilityKit",
+      from: "1.0.0"
     )
   ],
   targets: [
@@ -83,7 +96,12 @@ let package = Package(
       ]
     ),
     .target(name: "FeedbackGenerator"),
-    .target(name: "FoundationExt"),
+    .target(
+      name: "FoundationExt",
+      dependencies: [
+        .External.urlCompatibilityKit
+      ]
+    ),
     .target(name: "GraphicsExt"),
     .target(
       name: "LoggerExt",
@@ -94,12 +112,24 @@ let package = Package(
     .target(name: "OpenURL"),
     .target(name: .sfSymbol),
     .target(
+      name: .photosExt,
+      dependencies: [
+        .External.asyncCompatibilityKit,
+        .External.composableArchitecture,
+        .External.customDump
+      ],
+      linkerSettings: [
+        .linkedFramework("Photos"),
+        .linkedFramework("PhotosUI")
+      ]
+    ),
+    .target(
       name: .Client.store,
       dependencies: [
-        "AsyncCompatibilityKit",
         "FoundationExt",
         .Client.analytics,
         .External.adapty,
+        .External.asyncCompatibilityKit,
         .External.composableArchitecture,
         .External.tagged
       ],
@@ -144,12 +174,13 @@ let package = Package(
 extension Target.Dependency {
   static let appVersion = byName(name: .appVersion)
   static let concurrencyExt = byName(name: .concurrencyExt)
+  static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
   static let videoPlayer = byName(name: .videoPlayer)
 
   enum Client {
     static let analytics = byName(name: .Client.analytics)
-    static let appStore = byName(name: .Client.store)
+    static let store = byName(name: .Client.store)
     static let userSettings = byName(name: .Client.userSettings)
     static let userTracking = byName(name: .Client.userTracking)
   }
@@ -165,9 +196,24 @@ extension Target.Dependency {
       package: "Amplitude-iOS"
     )
 
+    static let asyncCompatibilityKit =
+      byName(name: "AsyncCompatibilityKit")
+
+    enum Collections {
+      static let orderedCollections = product(
+        name: "OrderedCollections",
+        package: "swift-collections"
+      )
+    }
+
     static let composableArchitecture = product(
       name: "ComposableArchitecture",
       package: "swift-composable-architecture"
+    )
+
+    static let customDump = product(
+      name: "CustomDump",
+      package: "swift-custom-dump"
     )
 
     enum Facebook {
@@ -193,12 +239,15 @@ extension Target.Dependency {
       name: "Tagged",
       package: "swift-tagged"
     )
+
+    static let urlCompatibilityKit = byName(name: "URLCompatibilityKit")
   }
 }
 
 extension String {
   static let appVersion = "AppVersion"
   static let concurrencyExt = "ConcurrencyExt"
+  static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
   static let videoPlayer = "VideoPlayer"
 
