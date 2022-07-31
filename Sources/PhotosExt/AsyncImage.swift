@@ -1,5 +1,6 @@
 import AsyncCompatibilityKit
 import SwiftUI
+import SwiftUIBackports
 import Photos
 
 public struct AsyncImage<Content>: View where Content: View {
@@ -79,11 +80,10 @@ public struct AsyncImage<Content>: View where Content: View {
 
   public var body: some View {
     content(phase)
-      .task {
+      .backport.task(id: asset) {
         do {
-          guard let asset = asset else {
-            return
-          }
+          guard !Task.isCancelled else { return }
+          guard let asset = asset else { return }
 
           let (image, _) = try await imageManager.requestImage(
             for: asset,
@@ -91,6 +91,8 @@ public struct AsyncImage<Content>: View where Content: View {
             contentMode: .default,
             options: imageRequestOptions
           )
+
+          guard !Task.isCancelled else { return }
 
           withTransaction(transaction) {
             phase = image
