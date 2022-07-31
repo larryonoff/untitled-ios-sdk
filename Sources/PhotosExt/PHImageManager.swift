@@ -25,12 +25,14 @@ extension PHImageManager {
             contentMode: contentMode,
             options: options,
             resultHandler: { image, info in
-              if let error = info?[PHImageErrorKey] as? Swift.Error {
+              let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
+
+              if let error = resultInfo?.error {
                 return continuation.resume(throwing: error)
               }
 
               if
-                let isCancelled = info?[PHImageCancelledKey] as? Bool,
+                let isCancelled = resultInfo?.isCancelled,
                 isCancelled
               {
                 return continuation.resume(throwing: CancellationError())
@@ -39,7 +41,7 @@ extension PHImageManager {
               // when degraded image is provided,
               // the completion handler will be called again.
               if
-                let isDegraded = info?[PHImageResultIsDegradedKey] as? Bool,
+                let isDegraded = resultInfo?.isDegraded,
                 isDegraded
               {
                 return
@@ -72,9 +74,28 @@ extension PHImageManager {
             forVideo: asset,
             options: options,
             resultHandler: { avAsset, audioMix, info in
-              if let error = info?[PHImageErrorKey] as? Swift.Error {
+              let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
+
+              if let error = resultInfo?.error {
                 return continuation.resume(throwing: error)
               }
+
+              if
+                let isCancelled = resultInfo?.isCancelled,
+                isCancelled
+              {
+                return continuation.resume(throwing: CancellationError())
+              }
+
+              // when degraded image is provided,
+              // the completion handler will be called again.
+              if
+                let isDegraded = resultInfo?.isDegraded,
+                isDegraded
+              {
+                return
+              }
+
               continuation.resume(returning: (avAsset, audioMix, info))
             }
           )
@@ -83,3 +104,51 @@ extension PHImageManager {
     )
   }
 }
+
+public struct PHImageRequestResultInfo {
+  /// An error that occurred when Photos attempted to load the image.
+  public let error: Error?
+
+  /// Whether the image request was canceled.
+  public let isCancelled: Bool?
+
+  /// Whether the result image is a low-quality substitute for the requested image.
+  public let isDegraded: Bool?
+
+  /// Whether photo asset data is stored on the local device or must be downloaded from iCloud.
+  public let isInCloud: Bool?
+
+  /// A unique identifier for the image request.
+  public let requestID: PHImageRequestID?
+
+  public init(_ info: [AnyHashable: Any]) {
+    self.error = info[PHImageErrorKey] as? Swift.Error
+    self.isCancelled = info[PHImageCancelledKey] as? Bool
+    self.isDegraded = info[PHImageResultIsDegradedKey] as? Bool
+    self.isInCloud = info[PHImageResultIsInCloudKey] as? Bool
+    self.requestID = info[PHImageResultRequestIDKey] as? PHImageRequestID
+  }
+}
+
+extension PHImageRequestResultInfo: Equatable {
+  public static func == (lhs: Self, rhs: Self) -> Bool {
+    (lhs.error as? NSError) == (rhs.error as? NSError) &&
+    lhs.isCancelled == rhs.isCancelled &&
+    lhs.isDegraded == rhs.isDegraded &&
+    lhs.isInCloud == rhs.isInCloud &&
+    lhs.requestID == rhs.requestID
+  }
+}
+
+extension PHImageRequestResultInfo: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(self.error as? NSError)
+    hasher.combine(self.isCancelled)
+    hasher.combine(self.isDegraded)
+    hasher.combine(self.isInCloud)
+    hasher.combine(self.requestID)
+  }
+}
+
+
+extension PHImageRequestResultInfo: Sendable {}
