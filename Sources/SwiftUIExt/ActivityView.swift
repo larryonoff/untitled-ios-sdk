@@ -21,7 +21,9 @@ public struct AppActivityView: UIViewControllerRepresentable {
     self.applicationActivities = applicationActivities
   }
 
-  public func makeUIViewController(context: Context) -> UIViewControllerType {
+  public func makeUIViewController(
+    context: Context
+  ) -> UIViewControllerType {
     let viewController = UIViewControllerType(
       activityItems: activityItems,
       applicationActivities: applicationActivities
@@ -32,7 +34,10 @@ public struct AppActivityView: UIViewControllerRepresentable {
     return viewController
   }
 
-  public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+  public func updateUIViewController(
+    _ uiViewController: UIViewControllerType,
+    context: Context
+  ) {
     uiViewController.excludedActivityTypes = excludedActivityTypes
 
     uiViewController.completionWithItemsHandler = { activity, success, items, error in
@@ -48,13 +53,18 @@ public struct AppActivityView: UIViewControllerRepresentable {
     }
   }
 
-  public static func dismantleUIViewController(_ uiViewController: UIViewControllerType, coordinator: Coordinator) {
+  public static func dismantleUIViewController(
+    _ uiViewController: UIViewControllerType,
+    coordinator: Coordinator
+  ) {
     uiViewController.completionWithItemsHandler = nil
   }
 }
 
 extension AppActivityView {
-  public func excludeActivityTypes(_ activityTypes: [UIActivity.ActivityType]) -> Self {
+  public func excludeActivityTypes(
+    _ activityTypes: [UIActivity.ActivityType]
+  ) -> Self {
     var newView = self
     newView.excludedActivityTypes = activityTypes
     return newView
