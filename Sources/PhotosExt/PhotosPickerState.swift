@@ -66,41 +66,6 @@ private struct PhotosPickerModifier<Action>: ViewModifier {
   }
 }
 
-//extension PhotosPicker {
-//  public init()
-//}
-//
-//extension View {
-//  /// Displays an alert when then store's state becomes non-`nil`, and dismisses it when it becomes
-//  /// `nil`.
-//  ///
-//  /// - Parameters:
-//  ///   - store: A store that describes if the alert is shown or dismissed.
-//  ///   - dismissal: An action to send when the alert is dismissed through non-user actions, such
-//  ///     as when an alert is automatically dismissed by the system. Use this action to `nil` out
-//  ///     the associated alert state.
-//  @ViewBuilder public func photosPicker(
-//    _ store: Store<PhotosPickerState?, Action>,
-//    dismiss: Action
-//  ) -> some View {
-//    if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
-//      self.modifier(
-//        NewAlertModifier(
-//          viewStore: ViewStore(store, removeDuplicates: { $0?.id == $1?.id }),
-//          dismiss: dismiss
-//        )
-//      )
-//    } else {
-//      self.modifier(
-//        OldAlertModifier(
-//          viewStore: ViewStore(store, removeDuplicates: { $0?.id == $1?.id }),
-//          dismiss: dismiss
-//        )
-//      )
-//    }
-//  }
-//}
-
 extension PhotosPickerState: CustomDumpReflectable {
   public var customDumpMirror: Mirror {
     Mirror(
