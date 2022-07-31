@@ -33,7 +33,10 @@ extension View {
   ) -> some View {
     self.modifier(
       PhotosPickerModifier(
-        viewStore: ViewStore(store, removeDuplicates: { $0?.id == $1?.id }),
+        viewStore: ViewStore(
+            store,
+            removeDuplicates: { $0?.id == $1?.id }
+        ),
         selection: selection,
         dismiss: dismiss
       )
@@ -60,6 +63,7 @@ private struct PhotosPickerModifier<Action>: ViewModifier {
             preferredItemEncoding: state.preferredItemEncoding,
             label: { EmptyView() }
           )
+          .ignoresSafeArea(.all)
         }
       }
     )
