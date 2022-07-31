@@ -12,6 +12,7 @@ let package = Package(
   products: [
     .library(name: .Client.analytics, targets: [.Client.analytics]),
     .library(name: .appVersion, targets: [.appVersion]),
+    .library(name: .avFoundationExt, targets: [.avFoundationExt]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
@@ -66,6 +67,10 @@ let package = Package(
       from: "0.7.0"
     ),
     .package(
+      url:"https://github.com/shaps80/SwiftUIBackports",
+      from: "1.6.2"
+    ),
+    .package(
       url: "https://github.com/MarcoEidinger/URLCompatibilityKit",
       from: "1.0.0"
     )
@@ -87,6 +92,12 @@ let package = Package(
       name: "ComposableArchitectureExt",
       dependencies: [
         .External.composableArchitecture
+      ]
+    ),
+    .target(
+      name: .avFoundationExt,
+      linkerSettings: [
+        .linkedFramework("AVFoundation")
       ]
     ),
     .target(
@@ -141,7 +152,8 @@ let package = Package(
     .target(
       name: "SwiftUIExt",
       dependencies: [
-        "GraphicsExt"
+        "GraphicsExt",
+        .External.swiftUIBackports
       ]
     ),
     .target(name: "UIKitExt"),
@@ -173,6 +185,7 @@ let package = Package(
 
 extension Target.Dependency {
   static let appVersion = byName(name: .appVersion)
+  static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
@@ -240,12 +253,15 @@ extension Target.Dependency {
       package: "swift-tagged"
     )
 
+    static let swiftUIBackports = byName(name: "SwiftUIBackports")
+
     static let urlCompatibilityKit = byName(name: "URLCompatibilityKit")
   }
 }
 
 extension String {
   static let appVersion = "AppVersion"
+  static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
   static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
