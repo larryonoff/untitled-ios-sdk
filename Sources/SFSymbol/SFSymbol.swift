@@ -23,7 +23,12 @@ public enum SFSymbol: String {
   case playSquare = "play.square"
   case playRectangle = "play.rectangle"
   case playSlash = "play.slash"
-  case plus
+
+  case plus = "plus"
+  case plusBubble = "plus.bubble"
+  case plusCircle = "plus.circle"
+  case plusSquare = "plus.square"
+  case plusRectangle = "plus.rectangle"
 
   case questionmarkCircle = "questionmark.circle"
 
