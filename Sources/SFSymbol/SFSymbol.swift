@@ -8,8 +8,12 @@ public enum SFSymbol: String {
   case checkmarkShield = "checkmark.shield"
   case checkmarkSquareFill = "checkmark.square.fill"
 
-  case chevronDown = "chevron.down"
+  case chevronLeft = "chevron.left"
+  case chevronBackward = "chevron.backward"
   case chevronRight = "chevron.right"
+  case chevronForward = "chevron.forward"
+  case chevronUp = "chevron.up"
+  case chevronDown = "chevron.down"
 
   case docOnDoc = "doc.on.doc"
   case docOnDocFill = "doc.on.doc.fill"
