@@ -18,6 +18,7 @@ let package = Package(
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: "FoundationExt", targets: ["FoundationExt"]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
+    .library(name: .instagram, targets: [.instagram]),
     .library(name: "LoggerExt", targets: ["LoggerExt"]),
     .library(name: "OpenURL", targets: ["OpenURL"]),
     .library(name: .photosExt, targets: [.photosExt]),
@@ -120,6 +121,13 @@ let package = Package(
         .linkedFramework("OSLog")
       ]
     ),
+    .target(
+      name: .instagram,
+      dependencies: [
+        .External.composableArchitecture,
+        .External.customDump
+      ]
+    ),
     .target(name: "OpenURL"),
     .target(name: .sfSymbol),
     .target(
@@ -187,6 +195,7 @@ extension Target.Dependency {
   static let appVersion = byName(name: .appVersion)
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
+  static let instagram = byName(name: .instagram)
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
   static let videoPlayer = byName(name: .videoPlayer)
@@ -263,6 +272,7 @@ extension String {
   static let appVersion = "AppVersion"
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
+  static let instagram = "Instagram"
   static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
   static let videoPlayer = "VideoPlayer"
