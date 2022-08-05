@@ -20,6 +20,10 @@ public enum SFSymbol: String {
 
   case line3Horizontal = "line.3.horizontal"
 
+  case multiply = "multiply"
+  case multiplyCircle = "multiply.circle"
+  case multiplyCircleFill = "multiply.circle.fill"
+
   case pauseCircle = "pause.circle"
   case play = "play"
   case playFill = "play.fill"
