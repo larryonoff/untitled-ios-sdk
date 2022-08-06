@@ -18,6 +18,14 @@ public enum SFSymbol: String {
   case docOnDoc = "doc.on.doc"
   case docOnDocFill = "doc.on.doc.fill"
 
+  case gear = "gear"
+
+  case heart = "heart"
+  case heartFill = "heart.fill"
+
+  case house = "house"
+  case houseFill = "house.fill"
+
   case line3Horizontal = "line.3.horizontal"
 
   case multiply = "multiply"
