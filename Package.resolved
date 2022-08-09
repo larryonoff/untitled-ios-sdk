@@ -185,8 +185,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-custom-dump",
       "state" : {
-        "revision" : "51698ece74ecf31959d3fa81733f0a5363ef1b4e",
-        "version" : "0.3.0"
+        "revision" : "21ec1d717c07cea5a026979cb0471dd95c7087e7",
+        "version" : "0.5.0"
       }
     },
     {
@@ -214,6 +214,24 @@
       "state" : {
         "revision" : "f3f773a5e13f3c8f0ab1ce2ae6378058acefa87d",
         "version" : "0.7.0"
+      }
+    },
+    {
+      "identity" : "swiftuibackports",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shaps80/SwiftUIBackports",
+      "state" : {
+        "revision" : "d2ca1d4ebed00627120ea64ca648a9fff2a808a9",
+        "version" : "1.6.2"
+      }
+    },
+    {
+      "identity" : "urlcompatibilitykit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MarcoEidinger/URLCompatibilityKit",
+      "state" : {
+        "revision" : "851ee3ad12f206e9cc75d4bbde2c88e69089a476",
+        "version" : "1.0.0"
       }
     },
     {
