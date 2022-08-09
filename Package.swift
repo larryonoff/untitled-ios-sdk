@@ -15,6 +15,7 @@ let package = Package(
     .library(name: .avFoundationExt, targets: [.avFoundationExt]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
+    .library(name: .Client.facebook, targets: [.Client.facebook]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: "FoundationExt", targets: ["FoundationExt"]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
@@ -57,7 +58,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      branch: "concurrency-beta"
+      from: "0.39.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -105,6 +106,12 @@ let package = Package(
       name: .concurrencyExt,
       linkerSettings: [
         .linkedFramework("Combine")
+      ]
+    ),
+    .target(
+      name: .Client.facebook,
+      dependencies: [
+        .External.Facebook.core
       ]
     ),
     .target(name: "FeedbackGenerator"),
@@ -202,6 +209,7 @@ extension Target.Dependency {
 
   enum Client {
     static let analytics = byName(name: .Client.analytics)
+    static let facebook = byName(name: .Client.facebook)
     static let store = byName(name: .Client.store)
     static let userSettings = byName(name: .Client.userSettings)
     static let userTracking = byName(name: .Client.userTracking)
@@ -279,6 +287,7 @@ extension String {
 
   enum Client {
     static let analytics = "Analytics"
+    static let facebook = "Facebook"
     static let store = "StoreClient"
     static let userSettings = "UserSettings"
     static let userTracking = "UserTracking"
