@@ -9,24 +9,18 @@ public struct AsyncImage<Content>: View where Content: View {
   @ViewBuilder
   private let content: (AsyncImagePhase) -> Content
 
-  private let imageManager: PHImageManager
+  @Environment(\.phImageManager)
+  private var imageManager: PHImageManager
 
   private let targetSize: CGSize = PHImageManagerMaximumSize
 
   private let transaction: Transaction
 
-  private let imageRequestOptions: PHImageRequestOptions = {
-    let options = PHImageRequestOptions()
-    options.isNetworkAccessAllowed = true
-    return options
-  }()
-
   @State
   private var phase: AsyncImagePhase = .empty
 
   public init(
-    asset: PHAsset?,
-    imageManager: PHImageManager
+    asset: PHAsset?
   ) where Content == Image {
     func _content(_ phase: AsyncImagePhase) -> Content {
       switch phase {
@@ -41,13 +35,11 @@ public struct AsyncImage<Content>: View where Content: View {
 
     self.asset = asset
     self.content = _content
-    self.imageManager = imageManager
     self.transaction = Transaction()
   }
 
   public init<I, P>(
     asset: PHAsset?,
-    imageManager: PHImageManager,
     @ViewBuilder content: @escaping (Image) -> I,
     @ViewBuilder placeholder: @escaping () -> P
   ) where Content == _ConditionalContent<I, P>, I: View, P: View {
@@ -62,19 +54,16 @@ public struct AsyncImage<Content>: View where Content: View {
 
     self.asset = asset
     self.content = _content
-    self.imageManager = imageManager
     self.transaction = Transaction()
   }
 
   public init(
     asset: PHAsset?,
     transaction: Transaction = Transaction(),
-    imageManager: PHImageManager,
     @ViewBuilder content: @escaping (AsyncImagePhase) -> Content
   ) {
     self.asset = asset
     self.content = content
-    self.imageManager = imageManager
     self.transaction = transaction
   }
 
@@ -152,3 +141,9 @@ extension Image {
     Image(uiImage: UIImage(data: Data())!)
   }
 }
+
+private let imageRequestOptions: PHImageRequestOptions = {
+  let options = PHImageRequestOptions()
+  options.isNetworkAccessAllowed = true
+  return options
+}()
