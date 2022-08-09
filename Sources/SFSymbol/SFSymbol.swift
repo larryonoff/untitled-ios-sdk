@@ -46,6 +46,7 @@ public enum SFSymbol: String {
   case plusSquare = "plus.square"
   case plusRectangle = "plus.rectangle"
 
+  case questionmark = "questionmark"
   case questionmarkCircle = "questionmark.circle"
 
   case sliderHorizontal3 = "slider.horizontal.3"
