@@ -179,6 +179,7 @@ let package = Package(
       name: "SwiftUIExt",
       dependencies: [
         "GraphicsExt",
+        .External.composableArchitecture,
         .External.swiftUIBackports
       ]
     ),
