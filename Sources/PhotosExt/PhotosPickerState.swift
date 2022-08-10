@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import CustomDump
-import Foundation
-import PhotosUI
+@preconcurrency import Foundation
+@preconcurrency import PhotosUI
 import SwiftUI
 
 public struct PhotosPickerState {
@@ -63,7 +63,6 @@ private struct PhotosPickerModifier<Action>: ViewModifier {
             preferredItemEncoding: state.preferredItemEncoding,
             label: { EmptyView() }
           )
-          .ignoresSafeArea(.all)
         }
       }
     )
@@ -104,6 +103,8 @@ extension PhotosPickerState: Hashable {
 }
 
 extension PhotosPickerState: Identifiable {}
+
+extension PhotosPickerState: Sendable {}
 
 extension Binding {
   func isPresent<Wrapped>() -> Binding<Bool> where Value == Wrapped? {
