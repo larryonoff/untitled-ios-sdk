@@ -21,15 +21,15 @@ public struct PhotosPickerItem {
 
 extension PhotosPickerItem: Equatable {}
 
-extension PhotosPickerItem: Sendable {}
-
 extension PhotosPickerItem: Hashable {}
+
+extension PhotosPickerItem: Sendable {}
 
 extension PhotosPickerItem.EncodingDisambiguationPolicy: Equatable {}
 
-extension PhotosPickerItem.EncodingDisambiguationPolicy: Sendable {}
-
 extension PhotosPickerItem.EncodingDisambiguationPolicy: Hashable {}
+
+extension PhotosPickerItem.EncodingDisambiguationPolicy: Sendable {}
 
 extension PhotosPickerItem.EncodingDisambiguationPolicy {
   var phPickerConfigurationAssetRepresentationMode: PHPickerConfiguration.AssetRepresentationMode {

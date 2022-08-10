@@ -6,7 +6,7 @@ import SwiftUI
 @available(tvOS, unavailable)
 @available(macOS, deprecated: 13.0)
 @available(watchOS, deprecated: 9.0)
-public struct PhotosPicker<Label>: UIViewControllerRepresentable where Label: View {
+public struct PhotosPicker<Label>: View where Label: View {
   private let maxSelectionCount: Int?
   private let selection: Binding<[PhotosPickerItem]>
   private let selectionBehavior: PhotosPickerSelectionBehavior
@@ -16,10 +16,10 @@ public struct PhotosPicker<Label>: UIViewControllerRepresentable where Label: Vi
   private let label: Label
 
   public init(
-      selection: Binding<PhotosPickerItem?>,
-      matching filter: PHPickerFilter? = nil,
-      preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
-      @ViewBuilder label: () -> Label
+    selection: Binding<PhotosPickerItem?>,
+    matching filter: PHPickerFilter? = nil,
+    preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
+    @ViewBuilder label: () -> Label
   ) {
     self.maxSelectionCount = 1
     self.selection = Binding(
@@ -38,12 +38,12 @@ public struct PhotosPicker<Label>: UIViewControllerRepresentable where Label: Vi
   }
 
   public init(
-      selection: Binding<[PhotosPickerItem]>,
-      maxSelectionCount: Int? = nil,
-      selectionBehavior: PhotosPickerSelectionBehavior = .default,
-      matching filter: PHPickerFilter? = nil,
-      preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
-      @ViewBuilder label: () -> Label
+    selection: Binding<[PhotosPickerItem]>,
+    maxSelectionCount: Int? = nil,
+    selectionBehavior: PhotosPickerSelectionBehavior = .default,
+    matching filter: PHPickerFilter? = nil,
+    preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
+    @ViewBuilder label: () -> Label
   ) {
     self.maxSelectionCount = maxSelectionCount
     self.selection = selection
@@ -55,11 +55,11 @@ public struct PhotosPicker<Label>: UIViewControllerRepresentable where Label: Vi
   }
 
   public init(
-      selection: Binding<PhotosPickerItem?>,
-      matching filter: PHPickerFilter? = nil,
-      preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
-      photoLibrary: PHPhotoLibrary,
-      @ViewBuilder label: () -> Label
+    selection: Binding<PhotosPickerItem?>,
+    matching filter: PHPickerFilter? = nil,
+    preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
+    photoLibrary: PHPhotoLibrary,
+    @ViewBuilder label: () -> Label
   ) {
     self.maxSelectionCount = 1
     self.selection = Binding(
@@ -76,13 +76,13 @@ public struct PhotosPicker<Label>: UIViewControllerRepresentable where Label: Vi
   }
 
   public init(
-      selection: Binding<[PhotosPickerItem]>,
-      maxSelectionCount: Int? = nil,
-      selectionBehavior: PhotosPickerSelectionBehavior = .default,
-      matching filter: PHPickerFilter? = nil,
-      preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
-      photoLibrary: PHPhotoLibrary,
-      @ViewBuilder label: () -> Label
+    selection: Binding<[PhotosPickerItem]>,
+    maxSelectionCount: Int? = nil,
+    selectionBehavior: PhotosPickerSelectionBehavior = .default,
+    matching filter: PHPickerFilter? = nil,
+    preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
+    photoLibrary: PHPhotoLibrary,
+    @ViewBuilder label: () -> Label
   ) {
     self.maxSelectionCount = maxSelectionCount
     self.selection = selection
@@ -93,13 +93,54 @@ public struct PhotosPicker<Label>: UIViewControllerRepresentable where Label: Vi
     self.label = label()
   }
 
+  public var body: some View {
+    PhotosPickerRepresentable(
+      selection: selection,
+      maxSelectionCount: maxSelectionCount,
+      selectionBehavior: selectionBehavior,
+      matching: filter,
+      preferredItemEncoding: preferredItemEncoding,
+      photoLibrary: photoLibrary,
+      label: label
+    )
+    .edgesIgnoringSafeArea(.all)
+  }
+}
+
+private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable where Label: View {
+  let maxSelectionCount: Int?
+  let selection: Binding<[PhotosPickerItem]>
+  let selectionBehavior: PhotosPickerSelectionBehavior
+  let filter: PHPickerFilter?
+  let preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy
+  let photoLibrary: PHPhotoLibrary
+  let label: Label
+
+  init(
+    selection: Binding<[PhotosPickerItem]>,
+    maxSelectionCount: Int? = nil,
+    selectionBehavior: PhotosPickerSelectionBehavior = .default,
+    matching filter: PHPickerFilter? = nil,
+    preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
+    photoLibrary: PHPhotoLibrary,
+    label: Label
+  ) {
+    self.maxSelectionCount = maxSelectionCount
+    self.selection = selection
+    self.selectionBehavior = selectionBehavior
+    self.filter = filter
+    self.preferredItemEncoding = preferredItemEncoding
+    self.photoLibrary = photoLibrary
+    self.label = label
+  }
+
   // MARK: - UIViewControllerRepresentable
 
-  public func makeCoordinator() -> Coordinator {
+  func makeCoordinator() -> Coordinator {
     Coordinator(selection: selection)
   }
 
-  public func makeUIViewController(
+  func makeUIViewController(
     context: Context
   ) -> PHPickerViewController {
 
@@ -118,14 +159,14 @@ public struct PhotosPicker<Label>: UIViewControllerRepresentable where Label: Vi
     return controller
   }
 
-  public func updateUIViewController(
+  func updateUIViewController(
     _ uiViewController: PHPickerViewController,
     context: Context
   ) {}
 
   // MARK: - Coordinator
 
-  public final class Coordinator: PHPickerViewControllerDelegate {
+  final class Coordinator: PHPickerViewControllerDelegate {
     private var selection: Binding<[PhotosPickerItem]>
 
     init(selection: Binding<[PhotosPickerItem]>) {
@@ -165,3 +206,5 @@ public enum PhotosPickerSelectionBehavior {
 extension PhotosPickerSelectionBehavior: Equatable {}
 
 extension PhotosPickerSelectionBehavior: Hashable {}
+
+extension PhotosPickerSelectionBehavior: Sendable {}
