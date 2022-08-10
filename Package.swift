@@ -24,6 +24,7 @@ let package = Package(
     .library(name: "OpenURL", targets: ["OpenURL"]),
     .library(name: .photosExt, targets: [.photosExt]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
+    .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.store, targets: [.Client.store]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"]),
@@ -150,6 +151,16 @@ let package = Package(
       ]
     ),
     .target(
+      name: .Client.photosAuthorization,
+      dependencies: [
+        .External.composableArchitecture,
+        .External.tagged
+      ],
+      linkerSettings: [
+        .linkedFramework("Photos")
+      ]
+    ),
+    .target(
       name: .Client.store,
       dependencies: [
         "FoundationExt",
@@ -210,6 +221,7 @@ extension Target.Dependency {
   enum Client {
     static let analytics = byName(name: .Client.analytics)
     static let facebook = byName(name: .Client.facebook)
+    static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let store = byName(name: .Client.store)
     static let userSettings = byName(name: .Client.userSettings)
     static let userTracking = byName(name: .Client.userTracking)
@@ -288,6 +300,7 @@ extension String {
   enum Client {
     static let analytics = "Analytics"
     static let facebook = "Facebook"
+    static let photosAuthorization = "PhotosAuthorization"
     static let store = "StoreClient"
     static let userSettings = "UserSettings"
     static let userTracking = "UserTracking"
