@@ -24,11 +24,11 @@ public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
 
   private let player: AVPlayer
 
-  let videoOverlay: () -> VideoOverlay
+  let videoOverlay: VideoOverlay?
 
-  public init(player: AVPlayer, videoOverlay: @escaping () -> VideoOverlay) {
+  public init(player: AVPlayer, videoOverlay: () -> VideoOverlay) {
     self.player = player
-    self.videoOverlay = videoOverlay
+    self.videoOverlay = videoOverlay()
   }
 
   public func gravity(_ gravity: Gravity) -> Self {
@@ -41,7 +41,7 @@ public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
 extension VideoPlayerX where VideoOverlay == EmptyView {
   public init(player: AVPlayer) {
     self.player = player
-    self.videoOverlay = { EmptyView() }
+    self.videoOverlay = nil
   }
 }
 
@@ -64,27 +64,30 @@ extension VideoPlayerX: UIViewRepresentable {
     playerView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     playerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
-    let videoOverlayController = UIHostingController(rootView: videoOverlay())
-    let videoOverlayView = videoOverlayController.view!
-    videoOverlayView.backgroundColor = .clear
-    videoOverlayView.translatesAutoresizingMaskIntoConstraints = false
-    videoOverlayView.clipsToBounds = true
 
-    context.coordinator.videoOverlayHostingController = videoOverlayController
+    videoOverlay.flatMap {
+      let videoOverlayController = UIHostingController(rootView: $0)
+      let videoOverlayView = videoOverlayController.view!
+      videoOverlayView.backgroundColor = .clear
+      videoOverlayView.translatesAutoresizingMaskIntoConstraints = false
+      videoOverlayView.clipsToBounds = true
 
-    playerView.contentOverlayView.addSubview(videoOverlayView)
+      context.coordinator.videoOverlayHostingController = videoOverlayController
 
-    let constraints = [
-      videoOverlayView.leadingAnchor
-        .constraint(equalTo: playerView.videoRectLayoutGuide.leadingAnchor),
-      videoOverlayView.trailingAnchor
-        .constraint(equalTo: playerView.videoRectLayoutGuide.trailingAnchor),
-      videoOverlayView.topAnchor
-        .constraint(equalTo: playerView.videoRectLayoutGuide.topAnchor),
-      videoOverlayView.bottomAnchor
-        .constraint(equalTo: playerView.videoRectLayoutGuide.bottomAnchor)
-    ]
-    NSLayoutConstraint.activate(constraints)
+      playerView.contentOverlayView.addSubview(videoOverlayView)
+
+      let constraints = [
+        videoOverlayView.leadingAnchor
+          .constraint(equalTo: playerView.videoRectLayoutGuide.leadingAnchor),
+        videoOverlayView.trailingAnchor
+          .constraint(equalTo: playerView.videoRectLayoutGuide.trailingAnchor),
+        videoOverlayView.topAnchor
+          .constraint(equalTo: playerView.videoRectLayoutGuide.topAnchor),
+        videoOverlayView.bottomAnchor
+          .constraint(equalTo: playerView.videoRectLayoutGuide.bottomAnchor)
+      ]
+      NSLayoutConstraint.activate(constraints)
+    }
 
     return playerView
   }
@@ -93,7 +96,9 @@ extension VideoPlayerX: UIViewRepresentable {
     _ uiView: VideoPlayerView,
     context: Context
   ) {
-    context.coordinator.videoOverlayHostingController?.rootView = videoOverlay()
+    videoOverlay.flatMap {
+      context.coordinator.videoOverlayHostingController?.rootView = $0
+    }
 
     uiView.videoGravity = gravity.avLayerVideoGravity
     uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
