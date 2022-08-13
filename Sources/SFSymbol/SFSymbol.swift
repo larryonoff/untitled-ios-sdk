@@ -3,10 +3,14 @@ public enum SFSymbol: String {
   case arrowLeft = "arrow.left"
   case arrowRight = "arrow.right"
   case arrowTriangle2Circlepath  = "arrow.triangle.2.circlepath"
+  case arrowUpCircle = "arrow.up.circle"
+  case arrowUpCircleFill = "arrow.up.circle.fill"
 
   case checkmark
   case checkmarkShield = "checkmark.shield"
   case checkmarkSquareFill = "checkmark.square.fill"
+  case checkmarkCircle = "checkmark.circle"
+  case checkmarkCircleFill = "checkmark.circle.fill"
 
   case chevronLeft = "chevron.left"
   case chevronBackward = "chevron.backward"
