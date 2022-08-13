@@ -49,7 +49,12 @@ extension FloatingPointFormatStyle.Timer: Foundation.FormatStyle {
     let minutes = Int(value) / 60 % 60
     let seconds = Int(value) % 60
     let milliseconds = Int(value * 10) % 10
-    return String(format:"%02i:%02i:%02i", minutes, seconds, milliseconds)
+    return String(
+      format:"%02i:%02i,%02i",
+      minutes,
+      seconds,
+      milliseconds
+    )
   }
 }
 
