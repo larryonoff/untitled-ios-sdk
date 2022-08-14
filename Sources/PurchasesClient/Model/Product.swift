@@ -69,8 +69,6 @@ public struct Product {
 
   public var subscriptionInfo: SubscriptionInfo?
 
-  var _adaptyProduct: ProductModel?
-
   public init(
     id: ID,
     displayName: String,
@@ -110,6 +108,8 @@ extension Product: Equatable {}
 extension Product: Hashable {}
 
 extension Product: Identifiable {}
+
+extension Product: Sendable {}
 
 extension Product.SubscriptionInfo: Codable {}
 

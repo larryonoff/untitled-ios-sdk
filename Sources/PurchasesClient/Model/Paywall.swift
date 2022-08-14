@@ -31,6 +31,8 @@ extension Paywall: Hashable {}
 
 extension Paywall: Identifiable {}
 
+extension Paywall: Sendable {}
+
 extension Paywall {
   init(_ paywall: PaywallModel) {
     self.id = .init(rawValue: paywall.developerId)

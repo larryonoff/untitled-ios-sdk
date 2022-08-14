@@ -3,7 +3,7 @@ import Foundation
 import StoreKit
 import Tagged
 
-public enum StoreError: Swift.Error, LocalizedError {
+public enum PurchasesError: Swift.Error, LocalizedError {
   case premiumExpired
   case productUnavailable
 }
