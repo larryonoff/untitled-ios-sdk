@@ -25,7 +25,7 @@ let package = Package(
     .library(name: .photosExt, targets: [.photosExt]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
-    .library(name: .Client.store, targets: [.Client.store]),
+    .library(name: .Client.purchases, targets: [.Client.purchases]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"]),
     .library(name: .videoPlayer, targets: [.videoPlayer]),
@@ -39,7 +39,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
-      from: "8.10.2"
+      from: "8.12.0"
     ),
     .package(
       url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
@@ -51,7 +51,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "9.2.0"
+      from: "9.4.0"
     ),
     .package(
       url: "https://github.com/apple/swift-collections",
@@ -125,6 +125,9 @@ let package = Package(
     .target(name: "GraphicsExt"),
     .target(
       name: "LoggerExt",
+      dependencies: [
+        .External.customDump
+      ],
       linkerSettings: [
         .linkedFramework("OSLog")
       ]
@@ -161,9 +164,10 @@ let package = Package(
       ]
     ),
     .target(
-      name: .Client.store,
+      name: .Client.purchases,
       dependencies: [
         "FoundationExt",
+        "LoggerExt",
         .Client.analytics,
         .External.adapty,
         .External.asyncCompatibilityKit,
@@ -223,7 +227,7 @@ extension Target.Dependency {
     static let analytics = byName(name: .Client.analytics)
     static let facebook = byName(name: .Client.facebook)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
-    static let store = byName(name: .Client.store)
+    static let purchases = byName(name: .Client.purchases)
     static let userSettings = byName(name: .Client.userSettings)
     static let userTracking = byName(name: .Client.userTracking)
   }
@@ -302,7 +306,7 @@ extension String {
     static let analytics = "Analytics"
     static let facebook = "Facebook"
     static let photosAuthorization = "PhotosAuthorization"
-    static let store = "StoreClient"
+    static let purchases = "PurchasesClient"
     static let userSettings = "UserSettings"
     static let userTracking = "UserTracking"
   }

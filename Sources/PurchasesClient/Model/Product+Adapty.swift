@@ -12,7 +12,6 @@ extension Product {
       displayPrice: product.localizedPrice ?? "",
       subscriptionInfo: .init(product)
     )
-    self._adaptyProduct = product
   }
 }
 

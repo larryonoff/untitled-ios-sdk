@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/amplitude/Amplitude-iOS",
       "state" : {
-        "revision" : "06afbb8b9b8da89fa1e7fc58c6342400b77a9ca1",
-        "version" : "8.10.2"
+        "revision" : "f07749967fb8e628f9f2c743fab2ba6600574d85",
+        "version" : "8.12.0"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
       "state" : {
-        "branch" : "concurrency-updates",
-        "revision" : "87e817c960e4824c6bc9ead666ade27ee2f77d0a"
+        "revision" : "f7c8277f05f27a5bfb2f6ecccb0bad126ffcf472",
+        "version" : "0.7.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "e8828e8efc813817b3c2cbfde8e965f7a7a26641",
-        "version" : "9.2.0"
+        "revision" : "cbaa7ce7063d5ab22414962ec63366ccbba26034",
+        "version" : "9.4.1"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "192cce3e0486aecfdb61102a9c694c78dc89dc48",
-        "version" : "9.1.0"
+        "revision" : "f54f60d0164d887e1174fa51ab2efe48a8e9d178",
+        "version" : "9.3.0"
       }
     },
     {
@@ -176,8 +176,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
-        "branch" : "concurrency-beta",
-        "revision" : "1d7b3f5d095c8e7937645ede96f8579c98dacd65"
+        "revision" : "108e3a536fcebb16c4f247ef92c2d7326baf9fe3",
+        "version" : "0.39.0"
       }
     },
     {

@@ -5,24 +5,33 @@ import Combine
 import ComposableArchitecture
 import Foundation
 import FoundationExt
+import LoggerExt
+import os.log
 import StoreKit
 
-extension StoreClient {
+extension PurchasesClient {
   public static func live(
     analytics: Analytics
   ) -> Self {
-    StoreClient(
+    PurchasesClient(
       initialize: {
         guard _adaptyDelegate == nil else { return }
+
+        logger.info("initialize")
 
         let bundle = Bundle.main
         guard let apiKey = bundle.adaptyAPIKey else {
           assertionFailure()
+
+          logger.error(
+            "initialize",
+            dump: ["error": "Adapty API key not set"]
+          )
+
           return
         }
 
         _adaptyDelegate = _AdaptyDelegate(
-            subscriber: _adaptyDelegateSubject,
             analytics: analytics
         )
         Adapty.delegate = _adaptyDelegate
@@ -30,32 +39,73 @@ extension StoreClient {
         Adapty.activate(apiKey)
 
         _ = Task.detached(priority: .high) {
-          try await Paywall.paywalls()
+          do {
+            logger.info("initialize: prefetch paywalls")
+
+            try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+            _ = try await Paywall.paywalls()
+
+            logger.info("initialize: prefetch paywalls response")
+          } catch {
+            logger.error(
+              "initialize: prefetch paywalls failed",
+              dump: ["error": error.localizedDescription]
+            )
+          }
         }
       },
       paywalByID: { id in
-        try await Paywall.paywalls()
-          .first(where: { $0.id == id })
+        try await Paywall
+          .paywalls()
+          .first { $0.id == id }
       },
       purchase: { request in
         do {
-          guard let _product = request.product._adaptyProduct else {
+          logger.info(
+            "purchase",
+            dump: [
+              "request": request
+            ]
+          )
+
+          guard
+            let paywall = _adaptyPaywalls
+              .first(where: { $0.developerId == request.paywallID.rawValue }),
+            let product = paywall.products
+              .first(where: { $0.vendorProductId == request.product.id.rawValue })
+          else {
             assertionFailure()
-            return .userCancelled
+            throw PurchasesError.productUnavailable
           }
 
           let result = try await Adapty.makePurchase(
-            product: _product,
-            offerID: request.offerID
+            product: product,
+            offerID: nil
           )
           let purchases = Purchases(result.purchaserInfo)
 
           _purchases.value = purchases
 
+          logger.info(
+            "purchase response",
+            dump: [
+              "purchases": purchases,
+              "request": request
+            ]
+          )
+
           analytics.logPurchase(request)
 
           return .success(purchases)
         } catch {
+          logger.error(
+            "purchase failed",
+            dump: [
+              "error": error.localizedDescription,
+              "request": request
+            ]
+          )
+
           analytics.logPurchaseFailed(
             with: error,
             request: request
@@ -64,42 +114,82 @@ extension StoreClient {
           if error.isPaymentCancelled {
             return .userCancelled
           }
+
           throw error
         }
       },
       purchases: {
-        _purchases.value
+        _purchases.value ?? .init()
       },
-      purchasesChange: {
-        _purchases.values
+      purchasesUpdates: {
+        AsyncStream(
+          _purchases.values.compactMap { $0 }
+        )
       },
       restorePurhases: {
         do {
+          logger.info("restore purchases")
+
           let result = try await Adapty.restorePurchases()
           let purchases = Purchases(result.purchaserInfo)
 
           _purchases.value = purchases
 
           if !purchases.isPremium {
-            throw StoreError.premiumExpired
+            throw PurchasesError.premiumExpired
           }
+
+          logger.info(
+            "restore purchases",
+            dump: [
+              "purchases": purchases
+            ]
+          )
 
           return .success(purchases)
         } catch {
+          logger.error(
+            "restore purchases failed",
+            dump: [
+              "error": error.localizedDescription
+            ]
+          )
+
           if error.isPaymentCancelled {
             return .userCancelled
           }
+
           throw error
         }
       },
       logPaywall: { paywall in
-        guard
-          let adaptyPaywall = _adaptyPaywalls
-            .first(where: { $0.developerId == paywall.id.rawValue })
-        else {
-          return
+        do {
+          logger.info(
+            "log show paywall",
+            dump: ["paywall": paywall]
+          )
+
+          guard
+            let adaptyPaywall = _adaptyPaywalls
+              .first(where: { $0.developerId == paywall.id.rawValue })
+          else {
+            return
+          }
+
+          try await Adapty.logShowPaywall(adaptyPaywall)
+
+          logger.info("log show paywall response")
+        } catch {
+          logger.error(
+            "log show paywall",
+            dump: [
+              "paywall": paywall,
+              "error": error.localizedDescription
+            ]
+          )
+
+          throw error
         }
-        try await Adapty.logShowPaywall(adaptyPaywall)
       }
     )
   }
@@ -115,15 +205,44 @@ private let userDefaults = UserDefaults.standard
 
 extension Paywall {
   static func paywalls() async throws -> [Paywall] {
+    logger.info("fetch paywalls started")
+
     if !_adaptyPaywalls.isEmpty {
-      return _adaptyPaywalls.map(Paywall.init)
+      let paywalls = _adaptyPaywalls.map(Paywall.init)
+
+      logger.info(
+        "fetch paywalls response",
+        dump: [
+          "isCached": true,
+          "paywalls": paywalls
+        ]
+      )
+
+      return paywalls
     }
 
     do {
       let result = try await Adapty.getPaywalls(forceUpdate: true)
       _adaptyPaywalls = result.paywalls ?? []
-      return _adaptyPaywalls.map(Paywall.init)
+      let paywalls = _adaptyPaywalls.map(Paywall.init)
+
+      logger.info(
+        "fetch paywalls response",
+        dump: [
+          "isCached": false,
+          "paywalls": paywalls
+        ]
+      )
+
+      return paywalls
     } catch {
+      logger.error(
+        "fetch paywalls failed",
+        dump: [
+          "error": error.localizedDescription
+        ]
+      )
+
       _adaptyPaywalls = []
       throw error
     }
@@ -133,32 +252,31 @@ extension Paywall {
 // MARK: - Adapty
 
 private var _adaptyDelegate: _AdaptyDelegate?
-private let _adaptyDelegateSubject = PassthroughSubject<Void, Never>()
 private var _adaptyPaywalls: [PaywallModel] = []
 
 private final class _AdaptyDelegate: AdaptyDelegate {
   private let analytics: Analytics
-  private let subscriber: PassthroughSubject<Void, Never>
 
   init(
-    subscriber: PassthroughSubject<Void, Never>,
     analytics: Analytics
   ) {
     self.analytics = analytics
-    self.subscriber = subscriber
   }
 
   func didReceiveUpdatedPurchaserInfo(
     _ purchaserInfo: PurchaserInfoModel
   ) {
     let purchases = Purchases(purchaserInfo)
-    purchases.save()
-
     _purchases.value = purchases
 
     analytics.set(
       purchases.isPremium,
       for: .isPremium
+    )
+
+    logger.info(
+      "purchases updated",
+      dump: ["purchases": purchases]
     )
   }
 
@@ -167,26 +285,7 @@ private final class _AdaptyDelegate: AdaptyDelegate {
 
 // MARK: - Purchases
 
-private let _purchases = CurrentValueSubject<Purchases, Never>(Purchases.load())
-
-extension Purchases {
-  static let purchasesKey = "axiom.store-client.purchases"
-
-  func save() {
-    userDefaults.set(
-      self,
-      forKey: Self.purchasesKey,
-      using: dataEncoder
-    )
-  }
-
-  static func load() -> Self {
-    userDefaults.object(
-      forKey: Self.purchasesKey,
-      using: dataDecoder
-    ) ?? Purchases()
-  }
-}
+private let _purchases = CurrentValueSubject<Purchases?, Never>(nil)
 
 extension Analytics {
   func logPurchase(
@@ -231,3 +330,8 @@ extension Analytics {
     )
   }
 }
+
+private let logger = Logger(
+  subsystem: ".SDK.purchases-client",
+  category: "Purchases"
+)
