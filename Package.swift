@@ -304,7 +304,7 @@ extension String {
 
   enum Client {
     static let analytics = "Analytics"
-    static let facebook = "Facebook"
+    static let facebook = "FacebookClient"
     static let photosAuthorization = "PhotosAuthorization"
     static let purchases = "PurchasesClient"
     static let userSettings = "UserSettings"
