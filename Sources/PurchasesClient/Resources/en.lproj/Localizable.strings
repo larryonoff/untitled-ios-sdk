@@ -1,0 +1,10 @@
+"product.subscriptionPeriod.unit.day" = "day";
+"product.subscriptionPeriod.unit.days" = "days";
+"product.subscriptionPeriod.unit.week" = "week";
+"product.subscriptionPeriod.unit.weeks" = "weeks";
+"product.subscriptionPeriod.unit.month" = "month";
+"product.subscriptionPeriod.unit.months" = "months";
+"product.subscriptionPeriod.unit.year" = "year";
+"product.subscriptionPeriod.unit.years" = "years";
+
+"product.subscriptionOffer.freeTrial" = "%d-%@ free trial";

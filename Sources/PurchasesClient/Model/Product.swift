@@ -88,6 +88,24 @@ public struct Product {
   }
 }
 
+extension Product.SubscriptionPeriod {
+  public static func year(_ value: Int) -> Self {
+    .init(unit: .year, value: value)
+  }
+
+  public static func month(_ value: Int) -> Self {
+    .init(unit: .month, value: value)
+  }
+
+  public static func week(_ value: Int) -> Self {
+    .init(unit: .week, value: value)
+  }
+
+  public static func day(_ value: Int) -> Self {
+    .init(unit: .day, value: value)
+  }
+}
+
 extension Product.SubscriptionPeriod.Unit: CustomStringConvertible {
   public var description: String {
     switch self {
@@ -158,134 +176,3 @@ extension Product.SubscriptionPeriod.Unit: Equatable {}
 extension Product.SubscriptionPeriod.Unit: Hashable {}
 
 extension Product.SubscriptionPeriod.Unit: Sendable {}
-
-// MARK: - Discount
-
-extension Product {
-  public func discount(
-    comparingTo product: Product
-  ) -> Decimal? {
-    let price: Decimal
-    let priceComparing: Decimal
-
-    if
-      let subscriptionInfo = subscriptionInfo,
-      let subscriptionInfoComparing = product.subscriptionInfo
-    {
-      price = subscriptionInfo.subscriptionPeriod
-        .convertPrice(self.price, to: .init(unit: .year, value: 1))
-      priceComparing = subscriptionInfoComparing.subscriptionPeriod
-        .convertPrice(product.price, to: .init(unit: .year, value: 1))
-    } else {
-      price = self.price
-      priceComparing = product.price
-    }
-
-    let decimalHandler = NSDecimalNumberHandler(
-      roundingMode: .bankers,
-      scale: 2,
-      raiseOnExactness: false,
-      raiseOnOverflow: false,
-      raiseOnUnderflow: false,
-      raiseOnDivideByZero: false
-    )
-
-    let decimalPrice = NSDecimalNumber(decimal: price)
-    let decimalComparingPrice = NSDecimalNumber(decimal: priceComparing)
-
-    let ratio = decimalPrice
-      .dividing(by: decimalComparingPrice)
-      .rounding(accordingToBehavior: decimalHandler)
-
-    return NSDecimalNumber(value: 1)
-      .subtracting(ratio)
-      .decimalValue
-  }
-
-  public func displayDiscount(
-    comparingTo product: Product
-  ) -> String? {
-    guard let discount = discount(comparingTo: product) else {
-      return nil
-    }
-
-    return discountFormatter.string(
-      from: NSDecimalNumber(decimal: discount)
-    )
-  }
-}
-
-// MARK: - Price
-
-extension Product {
-  public static func displayPrice(
-    _ price: Decimal,
-    priceLocale: Locale
-  ) -> String? {
-    priceFormatter.locale = priceLocale
-
-    return priceFormatter.string(
-      from: NSDecimalNumber(decimal: price)
-    )
-  }
-}
-
-extension Product.SubscriptionPeriod {
-  public func convertPrice(
-    _ price: Decimal,
-    to period: Product.SubscriptionPeriod
-  ) -> Decimal {
-    switch (unit, period.unit) {
-    case (.day, .day):
-      return price * Decimal(value) / Decimal(period.value)
-    case (.day, .week):
-      return price * Decimal(value) * 7 / Decimal(period.value)
-    case (.day, .month):
-      return price * Decimal(value) * 30 / Decimal(period.value)
-    case (.day, .year):
-      return price * Decimal(value) * 365 / Decimal(period.value)
-    case (.week, .day):
-      return price / 7
-    case (.week, .week):
-      return price * Decimal(value) / Decimal(period.value)
-    case (.week, .month):
-      return price * Decimal(value) * 4.345 / Decimal(period.value)
-    case (.week, .year):
-      return price * Decimal(value) * 52.143 / Decimal(period.value)
-    case (.month, .day):
-      return price * Decimal(value) / Decimal(period.value) / 30
-    case (.month, .week):
-      return price * Decimal(value) / Decimal(period.value) / 4.345
-    case (.month, .month):
-      return price * Decimal(value) / Decimal(period.value)
-    case (.month, .year):
-      return price * Decimal(value) * 12 / Decimal(period.value)
-    case (.year, .day):
-      return price * Decimal(value) / Decimal(period.value) / 365
-    case (.year, .week):
-      return price * Decimal(value) / Decimal(period.value) / 52.143
-    case (.year, .month):
-      return price * Decimal(value) / Decimal(period.value) / 12
-    case (.year, .year):
-      return price * Decimal(value) / Decimal(period.value)
-    }
-  }
-}
-
-// MARK: - Formatter
-
-private let discountFormatter: NumberFormatter = {
-  let formatter = NumberFormatter()
-  formatter.numberStyle = .percent
-
-  return formatter
-}()
-
-private let priceFormatter: NumberFormatter = {
-  let formatter = NumberFormatter()
-  formatter.numberStyle = .currency
-  formatter.minimumFractionDigits = 0
-  formatter.maximumFractionDigits = 2
-
-  return formatter
-}()
