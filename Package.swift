@@ -6,8 +6,8 @@ let package = Package(
   name: "sugar",
   defaultLocalization: "en",
   platforms: [
-    .iOS(.v14),
-    .macOS(.v11)
+    .iOS(.v15),
+    .macOS(.v12)
   ],
   products: [
     .library(name: .Client.analytics, targets: [.Client.analytics]),
@@ -173,6 +173,10 @@ let package = Package(
         .External.asyncCompatibilityKit,
         .External.composableArchitecture,
         .External.tagged
+      ],
+      exclude: ["swiftgen.yml"],
+      resources: [
+        .process("Resources")
       ],
       linkerSettings: [
         .linkedFramework("Combine"),

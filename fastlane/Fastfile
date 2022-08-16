@@ -1,0 +1,3 @@
+lane :swiftgen do
+  sh "cd ../Sources/PurchasesClient ; swiftgen config run --config swiftgen.yml"
+end
