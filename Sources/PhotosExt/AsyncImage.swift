@@ -30,6 +30,9 @@ public struct AsyncImage<Content>: View where Content: View {
         return image
       case .failure:
         return .empty
+      @unknown default:
+        assertionFailure("AsyncImagePhase.(@unknown default, rawValue: \(phase))")
+        return .empty
       }
     }
 
@@ -69,7 +72,7 @@ public struct AsyncImage<Content>: View where Content: View {
 
   public var body: some View {
     content(phase)
-      .backport.task(id: asset) {
+      .task(id: asset) {
         do {
           guard !Task.isCancelled else { return }
           guard let asset = asset else { return }
@@ -96,44 +99,6 @@ public struct AsyncImage<Content>: View where Content: View {
         }
       }
   }
-}
-
-@available(iOS, deprecated: 15.0)
-@available(tvOS, deprecated: 15.0)
-@available(macOS, deprecated: 12.0)
-@available(watchOS, deprecated: 8.0)
-public enum AsyncImagePhase {
-
-    /// No image is loaded.
-    case empty
-
-    /// An image succesfully loaded.
-    case success(Image)
-
-    /// An image failed to load with an error.
-    case failure(Error)
-
-    /// The loaded image, if any.
-    ///
-    /// If this value isn't `nil`, the image load operation has finished,
-    /// and you can use the image to update the view. You can use the image
-    /// directly, or you can modify it in some way. For example, you can add
-    /// a ``Image/resizable(capInsets:resizingMode:)`` modifier to make the
-    /// image resizable.
-    public var image: Image? {
-      guard case let .success(image) = self else {
-        return nil
-      }
-      return image
-    }
-
-    /// The error that occurred when attempting to load an image, if any.
-    public var error: Error? {
-      guard case let .failure(error) = self else {
-        return nil
-      }
-      return error
-    }
 }
 
 extension Image {
