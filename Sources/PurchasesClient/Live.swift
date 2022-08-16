@@ -1,6 +1,5 @@
 import Adapty
 import Analytics
-import AsyncCompatibilityKit
 import Combine
 import ComposableArchitecture
 import Foundation
