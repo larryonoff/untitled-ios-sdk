@@ -286,50 +286,6 @@ private final class _AdaptyDelegate: AdaptyDelegate {
 
 private let _purchases = CurrentValueSubject<Purchases?, Never>(nil)
 
-extension Analytics {
-  func logPurchase(
-    _ request: PurchaseRequest
-  ) {
-    log(
-      .event(
-        eventName: .subscriptionPurchased,
-        parameters: [
-          .subscriptionPeriod: request
-            .product
-            .subscriptionInfo?
-            .subscriptionPeriod
-            .analyticsValue
-        ].compactMapValues { $0 }
-      )
-    )
-  }
-
-  func logPurchaseFailed(
-    with error: Error,
-    request: PurchaseRequest
-  ) {
-    let nsError = error as NSError
-
-    var parameters: [ParameterName: Any] = [
-      .errorCode: nsError.code,
-      .errorDomain: nsError.domain,
-      .errorDescription: nsError.localizedDescription
-    ]
-    parameters[.subscriptionPeriod] = request
-      .product
-      .subscriptionInfo?
-      .subscriptionPeriod
-      .analyticsValue
-
-    log(
-      .event(
-        eventName: .subscriptionFailed,
-        parameters: parameters
-      )
-    )
-  }
-}
-
 private let logger = Logger(
   subsystem: ".SDK.purchases-client",
   category: "Purchases"

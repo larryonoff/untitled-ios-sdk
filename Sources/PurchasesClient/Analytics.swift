@@ -1,4 +1,5 @@
 import Analytics
+import Foundation
 
 extension Analytics.EventName {
   public static let subscriptionFailed: Self = "sub_failed"
@@ -7,10 +8,30 @@ extension Analytics.EventName {
 
 extension Analytics.ParameterName {
   public static let subscriptionPeriod: Self = "subs_period"
+  public static let subscriptionTrialPeriod: Self = "subs_trial_period"
 }
 
 extension Analytics.UserPropertyName {
   public static let isPremium: Self = "is_premium"
+}
+
+extension Product {
+  var analyticsParameters: [Analytics.ParameterName: Any] {
+    var parameters: [Analytics.ParameterName: Any] = [:]
+    parameters[.subscriptionPeriod] = subscriptionInfo?
+      .subscriptionPeriod
+      .analyticsValue
+
+    if
+      let introductoryOffer = subscriptionInfo?.introductoryOffer,
+      introductoryOffer.paymentMode == .freeTrial
+    {
+      parameters[.subscriptionTrialPeriod] =
+        introductoryOffer.period.analyticsValue
+    }
+
+    return parameters
+  }
 }
 
 extension Product.SubscriptionPeriod.Unit {
@@ -31,5 +52,44 @@ extension Product.SubscriptionPeriod {
     default:
       return "\(value)_\(unit.analyticsValue)"
     }
+  }
+}
+
+extension Analytics {
+  func logPurchase(
+    _ request: PurchaseRequest
+  ) {
+
+    log(
+      .event(
+        eventName: .subscriptionPurchased,
+        parameters: request.product.analyticsParameters
+      )
+    )
+  }
+
+  func logPurchaseFailed(
+    with error: Error,
+    request: PurchaseRequest
+  ) {
+    let nsError = error as NSError
+
+    var parameters: [ParameterName: Any] = [
+      .errorCode: nsError.code,
+      .errorDomain: nsError.domain,
+      .errorDescription: nsError.localizedDescription
+    ]
+
+    parameters.merge(
+      request.product.analyticsParameters,
+      uniquingKeysWith: { (_, new) in new }
+    )
+
+    log(
+      .event(
+        eventName: .subscriptionFailed,
+        parameters: parameters
+      )
+    )
   }
 }
