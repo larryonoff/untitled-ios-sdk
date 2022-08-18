@@ -1,8 +1,8 @@
 import Analytics
 
 extension Analytics.EventName {
-  static let idfaResult: Self = "idfa_permission_result"
-  static let idfaRequested: Self = "idfa_permission_requested"
+  static let idfaResponse: Self = "idfa_permission_response"
+  static let idfaRequest: Self = "idfa_permission_request"
 }
 
 extension Analytics.ParameterName {

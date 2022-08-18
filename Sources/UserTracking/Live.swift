@@ -31,7 +31,7 @@ extension UserTrackingClient {
             return AuthorizationStatus(_authStatus)
           }
 
-          analytics.log(.idfaRequested)
+          analytics.log(.idfaRequest)
 
           if dueTime > 0 {
             try? await Task.sleep(nanoseconds: dueTime * 1_00_000_000)
@@ -44,7 +44,7 @@ extension UserTrackingClient {
 
           analytics.log(
             .event(
-              eventName: .idfaResult,
+              eventName: .idfaResponse,
               parameters: [
                 .status: AuthorizationStatus(_authStatus).description
               ]
