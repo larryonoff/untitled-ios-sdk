@@ -11,20 +11,6 @@ public struct UserTrackingClient {
   public var isAuthorizationRequestNeeded: () -> Bool
 
   public var requestAuthorization: (UInt64) async -> AuthorizationStatus
-
-  public init(
-    authorizationStatus: @escaping () -> AuthorizationStatus,
-    authorizationStatusValues: @escaping () -> Effect<AuthorizationStatus, Never>,
-    initialize: @escaping () -> Void,
-    isAuthorizationRequestNeeded: @escaping () -> Bool,
-    requestAuthorization: @escaping (UInt64) async -> AuthorizationStatus
-  ) {
-    self.authorizationStatus = authorizationStatus
-    self.authorizationStatusValues = authorizationStatusValues
-    self.initialize = initialize
-    self.isAuthorizationRequestNeeded = isAuthorizationRequestNeeded
-    self.requestAuthorization = requestAuthorization
-  }
 }
 
 extension UserTrackingClient {
