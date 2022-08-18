@@ -21,7 +21,6 @@ let package = Package(
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
     .library(name: .instagram, targets: [.instagram]),
     .library(name: "LoggerExt", targets: ["LoggerExt"]),
-    .library(name: "OpenURL", targets: ["OpenURL"]),
     .library(name: .photosExt, targets: [.photosExt]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
@@ -139,7 +138,6 @@ let package = Package(
         .External.customDump
       ]
     ),
-    .target(name: "OpenURL"),
     .target(name: .sfSymbol),
     .target(
       name: .photosExt,
