@@ -4,6 +4,10 @@ extension Bundle {
   public subscript(_ key: String) -> Any? {
     infoDictionary?[key]
   }
+
+  public func url(forResource name: String?) -> URL? {
+    url(forResource: name, withExtension: nil)
+  }
 }
 
 extension Bundle {
