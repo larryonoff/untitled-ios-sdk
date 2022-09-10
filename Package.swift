@@ -27,9 +27,10 @@ let package = Package(
     .library(name: .Client.purchases, targets: [.Client.purchases]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"]),
-    .library(name: .videoPlayer, targets: [.videoPlayer]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
-    .library(name: .Client.userTracking, targets: [.Client.userTracking])
+    .library(name: .Client.userTracking, targets: [.Client.userTracking]),
+    .library(name: .videoPlayer, targets: [.videoPlayer]),
+    .library(name: .webView, targets: [.webView])
   ],
   dependencies: [
     .package(
@@ -212,9 +213,19 @@ let package = Package(
       linkerSettings: [
         .linkedFramework("AppTrackingTransparency")
       ]
-    )
+    ),
+    .webView
   ]
 )
+
+extension Target {
+  static let webView = target(
+    name: .webView,
+    linkerSettings: [
+      .linkedFramework("WebKit")
+    ]
+  )
+}
 
 extension Target.Dependency {
   static let appVersion = byName(name: .appVersion)
@@ -224,6 +235,7 @@ extension Target.Dependency {
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
   static let videoPlayer = byName(name: .videoPlayer)
+  static let webView = byName(name: .webView)
 
   enum Client {
     static let analytics = byName(name: .Client.analytics)
@@ -303,6 +315,7 @@ extension String {
   static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
   static let videoPlayer = "VideoPlayer"
+  static let webView = "WebView"
 
   enum Client {
     static let analytics = "Analytics"
