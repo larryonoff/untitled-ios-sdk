@@ -39,7 +39,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
-      from: "8.12.0"
+      from: "8.13.0"
     ),
     .package(
       url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
@@ -51,15 +51,15 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "9.4.0"
+      from: "9.5.0"
     ),
     .package(
       url: "https://github.com/apple/swift-collections",
-      from: "1.0.2"
+      from: "1.0.3"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.39.0"
+      from: "0.40.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -71,7 +71,7 @@ let package = Package(
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
-      from: "1.6.2"
+      from: "1.8.2"
     ),
     .package(
       url: "https://github.com/MarcoEidinger/URLCompatibilityKit",
