@@ -17,7 +17,7 @@ extension NavigationLink where Label == EmptyView {
 
 extension View {
   @ViewBuilder
-  public func route<Content: View>(
+  public func pushToNavigationStack<Content: View>(
     isPresented: Binding<Bool>,
     @ViewBuilder content: () -> Content
   ) -> some View {
