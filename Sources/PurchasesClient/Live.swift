@@ -49,8 +49,6 @@ final actor PurchasesClientImpl {
 
   private let _purchases = CurrentValueSubject<Purchases?, Never>(nil)
 
-  private var _transactionUpdatesTask: Task<Void, Never>?
-
   private let analytics: Analytics
 
   init(analytics: Analytics) {
@@ -129,37 +127,6 @@ final actor PurchasesClientImpl {
           "initialize: prefetch paywalls failed",
           dump: ["error": error.localizedDescription]
         )
-      }
-    }
-
-    self._transactionUpdatesTask = Task.detached {
-      for await status in StoreKit.Product.SubscriptionInfo.Status.updates {
-        guard
-          status.state == .subscribed,
-          case let .verified(renewalInfo) = status.renewalInfo
-        else {
-          continue
-        }
-
-        guard
-            let product = try? await StoreKit.Product
-              .products(for: [renewalInfo.currentProductID])
-              .first,
-            let subscription = product.subscription
-        else {
-          continue
-        }
-
-        let renewalState = status.state
-
-        if
-          subscription.introductoryOffer?.paymentMode == .freeTrial,
-          renewalInfo.offerType == .introductory
-        {
-          // sub_trial
-        } else {
-          // sub_
-        }
       }
     }
   }
