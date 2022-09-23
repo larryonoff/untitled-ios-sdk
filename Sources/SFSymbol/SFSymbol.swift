@@ -19,6 +19,8 @@ public enum SFSymbol: String {
   case chevronUp = "chevron.up"
   case chevronDown = "chevron.down"
 
+  case circle = "circle"
+
   case docOnDoc = "doc.on.doc"
   case docOnDocFill = "doc.on.doc.fill"
 
@@ -31,6 +33,8 @@ public enum SFSymbol: String {
   case houseFill = "house.fill"
 
   case line3Horizontal = "line.3.horizontal"
+
+  case lock = "lock"
 
   case multiply = "multiply"
   case multiplyCircle = "multiply.circle"
@@ -62,6 +66,7 @@ public enum SFSymbol: String {
   case sliderVertical3 = "slider.vertical.3"
 
   case squareAndArrowUp = "square.and.arrow.up"
+  case squareAndPencil = "square.and.pencil"
 
   case trash
 
