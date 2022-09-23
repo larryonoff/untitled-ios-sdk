@@ -1,7 +1,6 @@
 import SwiftUI
 
-#if os(iOS) || os(watchOS) || os(tvOS)
-
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension NavigationLink where Label == EmptyView {
   public init(
     isActive: Binding<Bool>,
@@ -15,6 +14,7 @@ extension NavigationLink where Label == EmptyView {
   }
 }
 
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
   @ViewBuilder
   public func pushToNavigationStack<Content: View>(
@@ -29,5 +29,3 @@ extension View {
     )
   }
 }
-
-#endif
