@@ -1,4 +1,5 @@
 extension Analytics.ParameterName {
+  public static let action: Self = "action"
   public static let changes: Self = "changes"
   public static let contentID: Self = "content_id"
   public static let errorCode: Self = "error_code"
