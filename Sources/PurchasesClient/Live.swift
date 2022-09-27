@@ -115,22 +115,6 @@ final actor PurchasesClientImpl {
         }
       }
     }
-
-    _ = Task.detached(priority: .high) { [weak self] in
-      do {
-        logger.info("initialize: prefetch paywalls")
-
-        try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
-        _ = try await self?.paywalls()
-
-        logger.info("initialize: prefetch paywalls response")
-      } catch {
-        logger.error(
-          "initialize: prefetch paywalls failed",
-          dump: ["error": error.localizedDescription]
-        )
-      }
-    }
   }
 
   func paywalls() async throws -> [Paywall] {
