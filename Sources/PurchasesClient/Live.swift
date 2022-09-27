@@ -45,7 +45,7 @@ extension PurchasesClient {
 final actor PurchasesClientImpl {
   private var adaptyDelegate: _AdaptyDelegate?
   private let adaptyDelegatePipe = AsyncStream<AdaptyDelegateEvent>.streamWithContinuation()
-  private var adaptyPaywalls: [PaywallModel] = []
+  private nonisolated let adaptyPaywalls: ActorIsolated<[PaywallModel]> = .init([])
 
   private let _purchases = CurrentValueSubject<Purchases?, Never>(nil)
 
@@ -110,6 +110,8 @@ final actor PurchasesClientImpl {
           )
         case .didReceivePromo:
           break
+        case let .didReceivePaywallsForConfig(paywalls):
+          await self.adaptyPaywalls.setValue(paywalls)
         }
       }
     }
@@ -134,8 +136,8 @@ final actor PurchasesClientImpl {
   func paywalls() async throws -> [Paywall] {
     logger.info("fetch paywalls started")
 
-    if !adaptyPaywalls.isEmpty {
-      let paywalls = adaptyPaywalls.map(Paywall.init)
+    if await !adaptyPaywalls.isEmpty {
+      let paywalls = await adaptyPaywalls.value.map(Paywall.init)
 
       logger.info(
         "fetch paywalls response",
@@ -149,9 +151,9 @@ final actor PurchasesClientImpl {
     }
 
     do {
-      let result = try await Adapty.getPaywalls(forceUpdate: true)
-      adaptyPaywalls = result.paywalls ?? []
-      let paywalls = adaptyPaywalls.map(Paywall.init)
+      let result = try await Adapty.getPaywalls(forceUpdate: false)
+      await adaptyPaywalls.setValue(result.paywalls ?? [])
+      let paywalls = await adaptyPaywalls.value.map(Paywall.init)
 
       logger.info(
         "fetch paywalls response",
@@ -170,7 +172,7 @@ final actor PurchasesClientImpl {
         ]
       )
 
-      adaptyPaywalls = []
+      await adaptyPaywalls.setValue([])
       throw error
     }
   }
@@ -192,7 +194,7 @@ final actor PurchasesClientImpl {
       )
 
       guard
-        let paywall = adaptyPaywalls
+        let paywall = await adaptyPaywalls.value
           .first(where: { $0.developerId == request.paywallID.rawValue }),
         let product = paywall.products
           .first(where: { $0.vendorProductId == request.product.id.rawValue })
@@ -287,7 +289,7 @@ final actor PurchasesClientImpl {
       )
 
       guard
-        let adaptyPaywall = adaptyPaywalls
+        let adaptyPaywall = await adaptyPaywalls.value
           .first(where: { $0.developerId == paywall.id.rawValue })
       else {
         return
@@ -316,6 +318,7 @@ extension PurchasesClientImpl {
   enum AdaptyDelegateEvent: Equatable {
     case didReceiveUpdatedPurchaserInfo(PurchaserInfoModel)
     case didReceivePromo(PromoModel)
+    case didReceivePaywallsForConfig([PaywallModel])
   }
 
   final class _AdaptyDelegate: AdaptyDelegate {
@@ -338,6 +341,12 @@ extension PurchasesClientImpl {
     func didReceivePromo(_ promo: PromoModel) {
       pipe.continuation.yield(
         .didReceivePromo(promo)
+      )
+    }
+
+    func didReceivePaywallsForConfig(paywalls: [PaywallModel]) {
+      pipe.continuation.yield(
+        .didReceivePaywallsForConfig(paywalls)
       )
     }
   }
