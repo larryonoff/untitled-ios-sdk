@@ -44,10 +44,8 @@ extension PurchasesClient {
 
 final actor PurchasesClientImpl {
   private var adaptyDelegate: _AdaptyDelegate?
-  private let adaptyDelegatePipe = AsyncStream<AdaptyDelegateEvent>.streamWithContinuation()
-  private nonisolated let adaptyPaywalls: ActorIsolated<[PaywallModel]> = .init([])
 
-  private let _purchases = CurrentValueSubject<Purchases?, Never>(nil)
+  private let _purchases = CurrentValueSubject<Purchases, Never>(.load())
 
   private let analytics: Analytics
 
@@ -56,7 +54,7 @@ final actor PurchasesClientImpl {
   }
 
   nonisolated var purchases: Purchases {
-    _purchases.value ?? .init()
+    _purchases.value
   }
 
   nonisolated var purchasesUpdates: AsyncStream<Purchases> {
@@ -64,6 +62,8 @@ final actor PurchasesClientImpl {
   }
 
   func initialize() async {
+    logger.info("initialize")
+
     guard self.adaptyDelegate == nil else {
       return
     }
@@ -72,114 +72,80 @@ final actor PurchasesClientImpl {
     guard let apiKey = bundle.adaptyAPIKey else {
       assertionFailure()
 
-      logger.error(
-        "initialize",
-        dump: ["error": "Adapty API key not set"]
-      )
+      logger.error("initialize failure", dump: [
+        "error": "Adapty API key not set"
+      ])
 
       return
     }
 
-    self.adaptyDelegate = _AdaptyDelegate()
-    Adapty.delegate = self.adaptyDelegate
-
-    Adapty.activate(apiKey)
+    let adaptyDelegate = _AdaptyDelegate()
+    self.adaptyDelegate = adaptyDelegate
+    Adapty.delegate = adaptyDelegate
 
     _ = Task.detached(priority: .high) { [weak self] in
-      guard
-        let self = self,
-        let adaptyDelegate = await self.adaptyDelegate
-      else {
+      guard let self = self else {
         return
       }
 
       for await event in adaptyDelegate.stream {
         switch event {
         case let .didReceiveUpdatedPurchaserInfo(purchaserInfo):
-          let purchases = Purchases(purchaserInfo)
-          self._purchases.value = purchases
+          let purchases = self.updatePurchases(purchaserInfo)
 
-          self.analytics.set(
-            purchases.isPremium,
-            for: .isPremium
-          )
-
-          logger.info(
-            "purchases updated",
-            dump: ["purchases": purchases]
-          )
-        case .didReceivePromo:
+          logger.info("delegate: did receive updated purchases", dump: [
+            "purchases": purchases
+          ])
+        case let .didReceivePromo(promo):
+          logger.info("delegate: did receive promo", dump: [
+            "promo": promo
+          ])
+        case .didReceivePaywallsForConfig:
           break
-        case let .didReceivePaywallsForConfig(paywalls):
-          await self.adaptyPaywalls.setValue(paywalls)
         }
       }
     }
-  }
 
-  func paywalls() async throws -> [Paywall] {
-    logger.info("fetch paywalls started")
+    Adapty.activate(apiKey)
 
-    if await !adaptyPaywalls.isEmpty {
-      let paywalls = await adaptyPaywalls.value.map(Paywall.init)
-
-      logger.info(
-        "fetch paywalls response",
-        dump: [
-          "isCached": true,
-          "paywalls": paywalls
-        ]
-      )
-
-      return paywalls
-    }
-
-    do {
-      let result = try await Adapty.getPaywalls(forceUpdate: false)
-      await adaptyPaywalls.setValue(result.paywalls ?? [])
-      let paywalls = await adaptyPaywalls.value.map(Paywall.init)
-
-      logger.info(
-        "fetch paywalls response",
-        dump: [
-          "isCached": false,
-          "paywalls": paywalls
-        ]
-      )
-
-      return paywalls
-    } catch {
-      logger.error(
-        "fetch paywalls failed",
-        dump: [
-          "error": error.localizedDescription
-        ]
-      )
-
-      await adaptyPaywalls.setValue([])
-      throw error
-    }
+    logger.info("initialize success")
   }
 
   func paywall(by id: Paywall.ID) async throws -> Paywall? {
-    try await paywalls()
-      .first { $0.id == id }
+    do {
+      logger.info("get paywall", dump: [
+        "id": id
+      ])
+
+      let paywall = try await _paywall(by: id)
+        .flatMap(Paywall.init)
+
+      logger.info("get paywall success", dump: [
+        "id": id,
+        "paywall": paywall as Any
+      ])
+
+      return paywall
+    } catch {
+      logger.error("get paywall failed", dump: [
+        "id": id,
+        "failure": error.localizedDescription
+      ])
+
+      throw error
+    }
   }
 
   func purchase(
     _ request: PurchaseRequest
   ) async throws -> PurchaseResult {
     do {
-      logger.info(
-        "purchase",
-        dump: [
-          "request": request
-        ]
-      )
+      logger.info("purchase", dump: [
+        "request": request
+      ])
 
       guard
-        let paywall = await adaptyPaywalls.value
-          .first(where: { $0.developerId == request.paywallID.rawValue }),
+        let paywall = try await _paywall(by: request.paywallID),
         let product = paywall.products
           .first(where: { $0.vendorProductId == request.product.id.rawValue })
       else {
@@ -189,36 +155,22 @@ final actor PurchasesClientImpl {
 
       let result = try await Adapty.makePurchase(
         product: product,
-        offerID: nil
-      )
-      let purchases = Purchases(result.purchaserInfo)
-
-      self._purchases.value = purchases
-
-      logger.info(
-        "purchase response",
-        dump: [
-          "purchases": purchases,
-          "request": request
-        ]
+        offerID: product.promotionalOfferId
       )
 
-      analytics.logPurchase(request)
+      let purchases = updatePurchases(result.purchaserInfo)
+
+      logger.info("purchase success", dump: [
+        "purchases": purchases,
+        "request": request
+      ])
 
       return .success(purchases)
     } catch {
-      logger.error(
-        "purchase failed",
-        dump: [
-          "error": error.localizedDescription,
-          "request": request
-        ]
-      )
-
-      analytics.logPurchaseFailed(
-        with: error,
-        request: request
-      )
+      logger.error("purchase failure", dump: [
+        "error": error.localizedDescription,
+        "request": request
+      ])
 
       if error.isPaymentCancelled {
         return .userCancelled
@@ -233,29 +185,21 @@ final actor PurchasesClientImpl {
       logger.info("restore purchases")
 
       let result = try await Adapty.restorePurchases()
-      let purchases = Purchases(result.purchaserInfo)
-
-      self._purchases.value = purchases
+      let purchases = updatePurchases(result.purchaserInfo)
 
       if !purchases.isPremium {
         throw PurchasesError.premiumExpired
       }
 
-      logger.info(
-        "restore purchases",
-        dump: [
-          "purchases": purchases
-        ]
-      )
+      logger.info("restore purchases success", dump: [
+        "purchases": purchases
+      ])
 
       return .success(purchases)
     } catch {
-      logger.error(
-        "restore purchases failed",
-        dump: [
-          "error": error.localizedDescription
-        ]
-      )
+      logger.error("restore purchases failure", dump: [
+        "error": error.localizedDescription
+      ])
 
       if error.isPaymentCancelled {
         return .userCancelled
@@ -265,76 +209,109 @@ final actor PurchasesClientImpl {
     }
   }
 
+  nonisolated
   func log(_ paywall: Paywall) async throws {
     do {
-      logger.info(
-        "log show paywall",
-        dump: ["paywall": paywall]
-      )
+      logger.info("log show paywall", dump: [
+        "paywall": paywall
+      ])
 
       guard
-        let adaptyPaywall = await adaptyPaywalls.value
-          .first(where: { $0.developerId == paywall.id.rawValue })
+        let adaptyPaywall = try await _paywall(by: paywall.id)
       else {
         return
       }
 
       try await Adapty.logShowPaywall(adaptyPaywall)
 
-      logger.info("log show paywall response")
+      logger.info("log show paywall success")
     } catch {
-      logger.error(
-        "log show paywall",
-        dump: [
-          "paywall": paywall,
-          "error": error.localizedDescription
-        ]
-      )
+      logger.error("log show paywall failure", dump: [
+        "paywall": paywall,
+        "error": error.localizedDescription
+      ])
 
       throw error
     }
+  }
+
+  func reset() async throws {
+    do {
+      logger.info("reset")
+
+      try await Adapty.logout()
+
+      _purchases.value = Purchases()
+
+      logger.info("reset success")
+    } catch {
+      logger.error("reset failure", dump: [
+        "error": error.localizedDescription
+      ])
+
+      throw error
+    }
+  }
+
+  private nonisolated func _paywall(
+    by id: Paywall.ID
+  ) async throws -> PaywallModel? {
+    let result = try await Adapty.getPaywalls(forceUpdate: false)
+    return (result.paywalls ?? [])
+      .first { $0.developerId == id.rawValue }
+  }
+
+  @discardableResult
+  nonisolated private func updatePurchases(
+    _ purchaserInfo: PurchaserInfoModel?
+  ) -> Purchases {
+    let purchases = Purchases(purchaserInfo)
+    _purchases.value = purchases
+
+    return purchases
   }
 }
 
 // MARK: - Adapty
 
-extension PurchasesClientImpl {
-  enum AdaptyDelegateEvent: Equatable {
-    case didReceiveUpdatedPurchaserInfo(PurchaserInfoModel)
-    case didReceivePromo(PromoModel)
-    case didReceivePaywallsForConfig([PaywallModel])
+enum AdaptyDelegateEvent: Equatable {
+  case didReceiveUpdatedPurchaserInfo(PurchaserInfoModel)
+  case didReceivePromo(PromoModel)
+  case didReceivePaywallsForConfig([PaywallModel])
+}
+
+final class _AdaptyDelegate: AdaptyDelegate {
+  private let pipe = AsyncStream<AdaptyDelegateEvent>.streamWithContinuation()
+
+  init() {}
+
+  var stream: AsyncStream<AdaptyDelegateEvent> {
+    AsyncStream(pipe.stream)
   }
 
-  final class _AdaptyDelegate: AdaptyDelegate {
-    private let pipe = AsyncStream<AdaptyDelegateEvent>.streamWithContinuation()
+  // AdaptyDelegate
 
-    init() {}
+  func didReceiveUpdatedPurchaserInfo(
+    _ purchaserInfo: PurchaserInfoModel
+  ) {
+    pipe.continuation.yield(
+      .didReceiveUpdatedPurchaserInfo(purchaserInfo)
+    )
+  }
 
-    var stream: AsyncStream<AdaptyDelegateEvent> {
-      AsyncStream(pipe.stream)
-    }
+  func didReceivePromo(_ promo: PromoModel) {
+    pipe.continuation.yield(
+      .didReceivePromo(promo)
+    )
+  }
 
-    func didReceiveUpdatedPurchaserInfo(
-      _ purchaserInfo: PurchaserInfoModel
-    ) {
-      pipe.continuation.yield(
-        .didReceiveUpdatedPurchaserInfo(purchaserInfo)
-      )
-    }
-
-    func didReceivePromo(_ promo: PromoModel) {
-      pipe.continuation.yield(
-        .didReceivePromo(promo)
-      )
-    }
-
-    func didReceivePaywallsForConfig(paywalls: [PaywallModel]) {
-      pipe.continuation.yield(
-        .didReceivePaywallsForConfig(paywalls)
-      )
-    }
+  func didReceivePaywallsForConfig(paywalls: [PaywallModel]) {
+    pipe.continuation.yield(
+      .didReceivePaywallsForConfig(paywalls)
+    )
   }
 }
+
 
 private let logger = Logger(
   subsystem: ".SDK.purchases-client",
