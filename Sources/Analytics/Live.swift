@@ -15,19 +15,9 @@ extension Analytics {
         FirebaseAnalytics.Analytics.log(data)
       },
       setUserProperty: { value, name in
-        let identity = AMPIdentify()
+        Amplitude.instance().set(value, for: name)
 
-        if let value = value {
-          identity.set(
-            name.rawValue,
-            value: String(describing: value) as NSString
-          )
-        } else {
-          identity.unset(name.rawValue)
-        }
-
-        let amplitude = Amplitude.instance()
-        amplitude.identify(identity)
+        FirebaseAnalytics.Analytics.set(value, for: name)
       }
     )
   }()
@@ -41,6 +31,24 @@ extension Amplitude {
       data.eventName.rawValue,
       withEventProperties: properties
     )
+  }
+
+  func set(
+    _ value: Any?,
+    for name: Analytics.UserPropertyName
+  ) {
+    let identity = AMPIdentify()
+
+    if let value = value {
+      identity.set(
+        name.rawValue,
+        value: String(describing: value) as NSString
+      )
+    } else {
+      identity.unset(name.rawValue)
+    }
+
+    identify(identity)
   }
 }
 
@@ -76,6 +84,16 @@ extension FirebaseAnalytics.Analytics {
     logEvent(
       data.eventName.rawValue,
       parameters: parameters
+    )
+  }
+
+  static func set(
+    _ value: Any?,
+    for name: Analytics.UserPropertyName
+  ) {
+    setUserProperty(
+      value.flatMap { String(describing: $0) },
+      forName: name.rawValue
     )
   }
 }
