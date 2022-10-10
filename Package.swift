@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "sugar",
+  name: "Untitled",
   defaultLocalization: "en",
   platforms: [
     .iOS(.v15),
@@ -17,7 +17,7 @@ let package = Package(
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
     .library(name: .Client.facebook, targets: [.Client.facebook]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
-    .library(name: "FoundationExt", targets: ["FoundationExt"]),
+    .library(name: .foundationExt, targets: [.foundationExt]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
     .library(name: .instagram, targets: [.instagram]),
     .library(name: "LoggerExt", targets: ["LoggerExt"]),
@@ -82,7 +82,7 @@ let package = Package(
     .target(
       name: .Client.analytics,
       dependencies: [
-        "FoundationExt",
+        .foundationExt,
         .External.amplitude,
         .External.composableArchitecture,
         .External.Facebook.core,
@@ -116,12 +116,6 @@ let package = Package(
       ]
     ),
     .target(name: "FeedbackGenerator"),
-    .target(
-      name: "FoundationExt",
-      dependencies: [
-        .External.urlCompatibilityKit
-      ]
-    ),
     .target(name: "GraphicsExt"),
     .target(
       name: "LoggerExt",
@@ -214,11 +208,20 @@ let package = Package(
         .linkedFramework("AppTrackingTransparency")
       ]
     ),
+    .appsFlyer,
+    .foundationExt,
     .webView
   ]
 )
 
 extension Target {
+  static let foundationExt = target(
+    name: .foundationExt,
+    dependencies: [
+      .External.urlCompatibilityKit
+    ]
+  )
+
   static let webView = target(
     name: .webView,
     linkerSettings: [
@@ -231,6 +234,7 @@ extension Target.Dependency {
   static let appVersion = byName(name: .appVersion)
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
+  static let foundationExt = byName(name: .foundationExt)
   static let instagram = byName(name: .instagram)
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
@@ -311,6 +315,7 @@ extension String {
   static let appVersion = "AppVersion"
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
+  static let foundationExt = "FoundationExt"
   static let instagram = "Instagram"
   static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
