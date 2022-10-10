@@ -3,7 +3,7 @@ import Analytics
 import Combine
 import ComposableArchitecture
 import Foundation
-import FoundationExt
+import FoundationSupport
 import LoggingSupport
 import os.log
 import StoreKit
