@@ -7,13 +7,16 @@ import FoundationExt
 import LoggerExt
 import os.log
 import StoreKit
+import UserIdentifier
 
 extension PurchasesClient {
   public static func live(
-    analytics: Analytics
+    analytics: Analytics,
+    userIdentifier: UserIdentifierGenerator
   ) -> Self {
     let impl = PurchasesClientImpl(
-      analytics: analytics
+      analytics: analytics,
+      userIdentifier: userIdentifier
     )
 
     return PurchasesClient(
@@ -48,9 +51,14 @@ final actor PurchasesClientImpl {
   private let _purchases = CurrentValueSubject<Purchases, Never>(.load())
 
   private let analytics: Analytics
+  private let userIdentifier: UserIdentifierGenerator
 
-  init(analytics: Analytics) {
+  init(
+    analytics: Analytics,
+    userIdentifier: UserIdentifierGenerator
+  ) {
     self.analytics = analytics
+    self.userIdentifier = userIdentifier
   }
 
   nonisolated var purchases: Purchases {
@@ -106,7 +114,10 @@ final actor PurchasesClientImpl {
       }
     }
 
-    Adapty.activate(apiKey)
+    Adapty.activate(
+      apiKey,
+      customerUserId: userIdentifier().uuidString
+    )
 
     logger.info("initialize success")
   }
@@ -240,6 +251,9 @@ final actor PurchasesClientImpl {
       logger.info("reset")
 
       try await Adapty.logout()
+      try await Adapty.identify(
+        userIdentifier().uuidString
+      )
 
       _purchases.value = Purchases()
 

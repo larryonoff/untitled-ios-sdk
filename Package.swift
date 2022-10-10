@@ -20,13 +20,14 @@ let package = Package(
     .library(name: .foundationExt, targets: [.foundationExt]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
     .library(name: .instagram, targets: [.instagram]),
-    .library(name: "LoggerExt", targets: ["LoggerExt"]),
+    .library(name: .loggingSupport, targets: [.loggingSupport]),
     .library(name: .photosExt, targets: [.photosExt]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
     .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
     .library(name: "UIKitExt", targets: ["UIKitExt"]),
+    .library(name: .userIdentifier, targets: [.userIdentifier]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
     .library(name: .videoPlayer, targets: [.videoPlayer]),
@@ -52,6 +53,10 @@ let package = Package(
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
       from: "9.5.0"
+    ),
+    .package(
+      url: "https://github.com/kishikawakatsumi/KeychainAccess",
+      from: "4.2.2"
     ),
     .package(
       url: "https://github.com/apple/swift-collections",
@@ -118,15 +123,6 @@ let package = Package(
     .target(name: "FeedbackGenerator"),
     .target(name: "GraphicsExt"),
     .target(
-      name: "LoggerExt",
-      dependencies: [
-        .External.customDump
-      ],
-      linkerSettings: [
-        .linkedFramework("OSLog")
-      ]
-    ),
-    .target(
       name: .instagram,
       dependencies: [
         .External.composableArchitecture,
@@ -159,9 +155,10 @@ let package = Package(
     .target(
       name: .Client.purchases,
       dependencies: [
-        "FoundationExt",
-        "LoggerExt",
         .Client.analytics,
+        .foundationExt,
+        .loggingSupport,
+        .userIdentifier,
         .External.adapty,
         .External.asyncCompatibilityKit,
         .External.composableArchitecture,
@@ -208,8 +205,9 @@ let package = Package(
         .linkedFramework("AppTrackingTransparency")
       ]
     ),
-    .appsFlyer,
     .foundationExt,
+    .loggingSupport,
+    .userIdentifier,
     .webView
   ]
 )
@@ -219,6 +217,24 @@ extension Target {
     name: .foundationExt,
     dependencies: [
       .External.urlCompatibilityKit
+    ]
+  )
+
+  static let loggingSupport = target(
+    name: .loggingSupport,
+    dependencies: [
+      .External.customDump
+    ],
+    linkerSettings: [
+      .linkedFramework("OSLog")
+    ]
+  )
+
+  static let userIdentifier = target(
+    name: .userIdentifier,
+    dependencies: [
+      .External.composableArchitecture,
+      .External.keychainAccess
     ]
   )
 
@@ -236,8 +252,10 @@ extension Target.Dependency {
   static let concurrencyExt = byName(name: .concurrencyExt)
   static let foundationExt = byName(name: .foundationExt)
   static let instagram = byName(name: .instagram)
+  static let loggingSupport = byName(name: .loggingSupport)
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
+  static let userIdentifier = byName(name: .userIdentifier)
   static let videoPlayer = byName(name: .videoPlayer)
   static let webView = byName(name: .webView)
 
@@ -300,6 +318,8 @@ extension Target.Dependency {
       )
     }
 
+    static let keychainAccess = byName(name: "KeychainAccess")
+
     static let tagged = product(
       name: "Tagged",
       package: "swift-tagged"
@@ -317,8 +337,10 @@ extension String {
   static let concurrencyExt = "ConcurrencyExt"
   static let foundationExt = "FoundationExt"
   static let instagram = "Instagram"
+  static let loggingSupport = "LoggingSupport"
   static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
+  static let userIdentifier = "UserIdentifier"
   static let videoPlayer = "VideoPlayer"
   static let webView = "WebView"
 
