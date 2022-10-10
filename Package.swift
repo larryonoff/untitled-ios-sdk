@@ -12,7 +12,6 @@ let package = Package(
   products: [
     .library(name: .Client.analytics, targets: [.Client.analytics]),
     .library(name: .appsFlyer, targets: [.appsFlyer]),
-    .library(name: .appVersion, targets: [.appVersion]),
     .library(name: .avFoundationExt, targets: [.avFoundationExt]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
@@ -31,6 +30,7 @@ let package = Package(
     .library(name: .userIdentifier, targets: [.userIdentifier]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
+    .library(name: .version, targets: [.version]),
     .library(name: .videoPlayer, targets: [.videoPlayer]),
     .library(name: .webView, targets: [.webView])
   ],
@@ -69,11 +69,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.40.1"
+      from: "0.40.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "0.5.0"
+      from: "0.6.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -100,7 +100,6 @@ let package = Package(
         .External.tagged
       ]
     ),
-    .target(name: .appVersion),
     .target(
       name: "ComposableArchitectureExt",
       dependencies: [
@@ -214,6 +213,7 @@ let package = Package(
     .foundationSupport,
     .loggingSupport,
     .userIdentifier,
+    .version,
     .webView
   ]
 )
@@ -260,6 +260,8 @@ extension Target {
     ]
   )
 
+  static let version = target(name: .version)
+
   static let webView = target(
     name: .webView,
     linkerSettings: [
@@ -270,7 +272,6 @@ extension Target {
 
 extension Target.Dependency {
   static let appsFlyer = byName(name: .appsFlyer)
-  static let appVersion = byName(name: .appVersion)
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
   static let foundationSupport = byName(name: .foundationSupport)
@@ -279,6 +280,7 @@ extension Target.Dependency {
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
   static let userIdentifier = byName(name: .userIdentifier)
+  static let version = byName(name: .version)
   static let videoPlayer = byName(name: .videoPlayer)
   static let webView = byName(name: .webView)
 
@@ -361,7 +363,7 @@ extension Target.Dependency {
 
 extension String {
   static let appsFlyer = "AppsFlyer"
-  static let appVersion = "AppVersion"
+  static let version = "Version"
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
   static let foundationSupport = "FoundationSupport"
