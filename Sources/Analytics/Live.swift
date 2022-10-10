@@ -2,7 +2,7 @@ import Amplitude
 import ComposableArchitecture
 import FacebookCore
 import FirebaseAnalytics
-import FoundationExt
+import FoundationSupport
 
 extension Analytics {
   public static let live: Self = {

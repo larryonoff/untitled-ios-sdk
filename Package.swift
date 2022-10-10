@@ -11,13 +11,14 @@ let package = Package(
   ],
   products: [
     .library(name: .Client.analytics, targets: [.Client.analytics]),
+    .library(name: .appsFlyer, targets: [.appsFlyer]),
     .library(name: .appVersion, targets: [.appVersion]),
     .library(name: .avFoundationExt, targets: [.avFoundationExt]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
     .library(name: .Client.facebook, targets: [.Client.facebook]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
-    .library(name: .foundationExt, targets: [.foundationExt]),
+    .library(name: .foundationSupport, targets: [.foundationSupport]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
     .library(name: .instagram, targets: [.instagram]),
     .library(name: .loggingSupport, targets: [.loggingSupport]),
@@ -40,7 +41,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
-      from: "8.13.0"
+      from: "8.14.0"
+    ),
+    .package(
+      url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
+      from: "6.8.1"
     ),
     .package(
       url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
@@ -87,7 +92,7 @@ let package = Package(
     .target(
       name: .Client.analytics,
       dependencies: [
-        .foundationExt,
+        .foundationSupport,
         .External.amplitude,
         .External.composableArchitecture,
         .External.Facebook.core,
@@ -156,7 +161,7 @@ let package = Package(
       name: .Client.purchases,
       dependencies: [
         .Client.analytics,
-        .foundationExt,
+        .foundationSupport,
         .loggingSupport,
         .userIdentifier,
         .External.adapty,
@@ -205,7 +210,8 @@ let package = Package(
         .linkedFramework("AppTrackingTransparency")
       ]
     ),
-    .foundationExt,
+    .appsFlyer,
+    .foundationSupport,
     .loggingSupport,
     .userIdentifier,
     .webView
@@ -213,8 +219,24 @@ let package = Package(
 )
 
 extension Target {
-  static let foundationExt = target(
-    name: .foundationExt,
+  static let appsFlyer = target(
+    name: .appsFlyer,
+    dependencies: [
+      .loggingSupport,
+      .Client.purchases,
+      .userIdentifier,
+      .External.adapty,
+      .External.appsFlyer,
+      .External.composableArchitecture
+    ],
+    path: "Sources/AppsFlyer",
+    linkerSettings: [
+      .linkedFramework("AppTrackingTransparency")
+    ]
+  )
+
+  static let foundationSupport = target(
+    name: .foundationSupport,
     dependencies: [
       .External.urlCompatibilityKit
     ]
@@ -247,10 +269,11 @@ extension Target {
 }
 
 extension Target.Dependency {
+  static let appsFlyer = byName(name: .appsFlyer)
   static let appVersion = byName(name: .appVersion)
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
-  static let foundationExt = byName(name: .foundationExt)
+  static let foundationSupport = byName(name: .foundationSupport)
   static let instagram = byName(name: .instagram)
   static let loggingSupport = byName(name: .loggingSupport)
   static let photosExt = byName(name: .photosExt)
@@ -277,6 +300,11 @@ extension Target.Dependency {
     static let amplitude = product(
       name: "Amplitude",
       package: "Amplitude-iOS"
+    )
+
+    static let appsFlyer = product(
+      name: "AppsFlyerLib",
+      package: "AppsFlyerFramework"
     )
 
     static let asyncCompatibilityKit =
@@ -332,10 +360,11 @@ extension Target.Dependency {
 }
 
 extension String {
+  static let appsFlyer = "AppsFlyer"
   static let appVersion = "AppVersion"
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
-  static let foundationExt = "FoundationExt"
+  static let foundationSupport = "FoundationSupport"
   static let instagram = "Instagram"
   static let loggingSupport = "LoggingSupport"
   static let photosExt = "PhotosExt"
