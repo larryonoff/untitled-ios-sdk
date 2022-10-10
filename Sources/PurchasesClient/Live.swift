@@ -4,7 +4,7 @@ import Combine
 import ComposableArchitecture
 import Foundation
 import FoundationExt
-import LoggerExt
+import LoggingSupport
 import os.log
 import StoreKit
 import UserIdentifier
