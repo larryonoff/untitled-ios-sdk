@@ -1,4 +1,21 @@
+import Dependencies
 import Foundation
+import XCTestDynamicOverlay
+
+extension DependencyValues {
+  public var version: VersionGenerator {
+    get { self[VersionGeneratorKey.self] }
+    set { self[VersionGeneratorKey.self] = newValue }
+  }
+
+  private enum VersionGeneratorKey: DependencyKey {
+    static let liveValue = VersionGenerator.liveValue
+    static let testValue = VersionGenerator {
+      XCTFail(#"Unimplemented: @Dependency(\.version)"#)
+      return .zero
+    }
+  }
+}
 
 public struct VersionGenerator {
   private let generate: @Sendable () -> Version
@@ -13,21 +30,6 @@ public struct VersionGenerator {
     self.generate()
   }
 }
-
-extension VersionGenerator {
-  public static let live = VersionGenerator {
-    let versionString = [
-      Bundle.main.version,
-      Bundle.main.buildVersion
-    ]
-    .compactMap { $0 }
-    .joined(separator: "-")
-
-    return Version(versionString) ?? Version(0, 0, 0)
-  }
-}
-
-// MARK: - Bundle
 
 extension Bundle {
   var buildVersion: String? {

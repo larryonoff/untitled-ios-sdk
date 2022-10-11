@@ -1,3 +1,12 @@
+import Dependencies
+
+extension DependencyValues {
+  public var purchases: PurchasesClient {
+    get { self[PurchasesClient.self] }
+    set { self[PurchasesClient.self] = newValue }
+  }
+}
+
 public struct PurchasesClient {
   public var initialize: @Sendable () async -> Void
   public var paywalByID: @Sendable (Paywall.ID) async throws -> Paywall?

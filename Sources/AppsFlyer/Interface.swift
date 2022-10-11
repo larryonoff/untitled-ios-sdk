@@ -1,5 +1,13 @@
+import Dependencies
 import Foundation
 import PurchasesClient
+
+extension DependencyValues {
+  public var appsFlyer: AppsFlyerClient {
+    get { self[AppsFlyerClient.self] }
+    set { self[AppsFlyerClient.self] = newValue }
+  }
+}
 
 public struct AppsFlyerClient {
   public var initialize: @Sendable (Configuration) async -> Void

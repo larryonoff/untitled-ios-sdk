@@ -100,6 +100,10 @@ extension Version: Comparable {
   }
 }
 
+extension Version {
+  public static let zero = Version(0, 0, 0)
+}
+
 extension Version: CustomStringConvertible {
   /// A textual description of the version object.
   public var description: String {

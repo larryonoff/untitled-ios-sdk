@@ -1,4 +1,19 @@
+import Dependencies
 import Foundation
+import XCTestDynamicOverlay
+
+extension DependencyValues {
+  public var userIdentifier: UserIdentifierGenerator {
+    get { self[UserIdentifierGeneratorKey.self] }
+    set { self[UserIdentifierGeneratorKey.self] = newValue }
+  }
+
+  private enum UserIdentifierGeneratorKey: DependencyKey {
+    static let liveValue = UserIdentifierGenerator.liveValue
+    static let previewValue = UserIdentifierGenerator.noop
+    static let testValue = UserIdentifierGenerator.testValue
+  }
+}
 
 public struct UserIdentifierGenerator {
   private let generate: @Sendable () -> UUID

@@ -1,3 +1,12 @@
+import Dependencies
+
+extension DependencyValues {
+  public var photosAuthorization: PhotosAuthorizationClient {
+    get { self[PhotosAuthorizationClient.self] }
+    set { self[PhotosAuthorizationClient.self] = newValue }
+  }
+}
+
 public struct PhotosAuthorizationClient {
   public var authorizationStatus: @Sendable (AccessLevel) -> AuthorizationStatus
   public var authorizationStatusUpdates: @Sendable (AccessLevel) -> AsyncStream<AuthorizationStatus>

@@ -1,4 +1,12 @@
+import Dependencies
 import Foundation
+
+extension DependencyValues {
+  public var userSettings: UserSettingsClient {
+    get { self[UserSettingsClient.self] }
+    set { self[UserSettingsClient.self] = newValue }
+  }
+}
 
 public struct UserSettingsClient {
   public var boolForKey: (String) -> Bool
