@@ -95,6 +95,7 @@ let package = Package(
         .foundationSupport,
         .External.amplitude,
         .External.composableArchitecture,
+        .External.ComposableArchitecture.dependencies,
         .External.Facebook.core,
         .External.Firebase.analytics,
         .External.tagged
@@ -121,10 +122,17 @@ let package = Package(
     .target(
       name: .Client.facebook,
       dependencies: [
+        .External.ComposableArchitecture.dependencies,
         .External.Facebook.core
       ]
     ),
-    .target(name: "FeedbackGenerator"),
+    .target(
+      name: "FeedbackGenerator",
+      dependencies: [
+        .External.composableArchitecture,
+        .External.ComposableArchitecture.dependencies
+      ]
+    ),
     .target(name: "GraphicsExt"),
     .target(
       name: .instagram,
@@ -150,6 +158,7 @@ let package = Package(
       name: .Client.photosAuthorization,
       dependencies: [
         .External.composableArchitecture,
+        .External.ComposableArchitecture.dependencies,
         .External.tagged
       ],
       linkerSettings: [
@@ -166,6 +175,7 @@ let package = Package(
         .External.adapty,
         .External.asyncCompatibilityKit,
         .External.composableArchitecture,
+        .External.ComposableArchitecture.dependencies,
         .External.tagged
       ],
       exclude: ["swiftgen.yml"],
@@ -189,7 +199,8 @@ let package = Package(
     .target(
       name: .Client.userSettings,
       dependencies: [
-        .External.composableArchitecture
+        .External.composableArchitecture,
+        .External.ComposableArchitecture.dependencies,
       ]
     ),
     .target(
@@ -203,6 +214,7 @@ let package = Package(
       dependencies: [
         .Client.analytics,
         .External.composableArchitecture,
+        .External.ComposableArchitecture.dependencies,
         .External.Facebook.core
       ],
       linkerSettings: [
@@ -227,7 +239,8 @@ extension Target {
       .userIdentifier,
       .External.adapty,
       .External.appsFlyer,
-      .External.composableArchitecture
+      .External.composableArchitecture,
+      .External.ComposableArchitecture.dependencies
     ],
     path: "Sources/AppsFlyer",
     linkerSettings: [
@@ -256,11 +269,18 @@ extension Target {
     name: .userIdentifier,
     dependencies: [
       .External.composableArchitecture,
+      .External.ComposableArchitecture.dependencies,
       .External.keychainAccess
     ]
   )
 
-  static let version = target(name: .version)
+  static let version = target(
+    name: .version,
+    dependencies: [
+      .External.composableArchitecture,
+      .External.ComposableArchitecture.dependencies
+    ]
+  )
 
   static let webView = target(
     name: .webView,
@@ -323,6 +343,13 @@ extension Target.Dependency {
       name: "ComposableArchitecture",
       package: "swift-composable-architecture"
     )
+
+    enum ComposableArchitecture {
+      static let dependencies = product(
+        name: "Dependencies",
+        package: "swift-composable-architecture"
+      )
+    }
 
     static let customDump = product(
       name: "CustomDump",
