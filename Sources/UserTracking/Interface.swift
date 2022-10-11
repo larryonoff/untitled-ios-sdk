@@ -1,16 +1,23 @@
-import Combine
 import ComposableArchitecture
+import Dependencies
 import Foundation
 
+extension DependencyValues {
+  public var userTracking: UserTrackingClient {
+    get { self[UserTrackingClient.self] }
+    set { self[UserTrackingClient.self] = newValue }
+  }
+}
+
 public struct UserTrackingClient {
-  public var authorizationStatus: () -> AuthorizationStatus
-  public var authorizationStatusValues: () -> Effect<AuthorizationStatus, Never>
+  public var authorizationStatus: @Sendable () -> AuthorizationStatus
+  public var authorizationStatusUpdates: @Sendable () -> AsyncStream<AuthorizationStatus>
 
-  public var initialize: () -> Void
+  public var initialize: @Sendable () async -> Void
 
-  public var isAuthorizationRequestNeeded: () -> Bool
+  public var isAuthorizationRequestNeeded: @Sendable () -> Bool
 
-  public var requestAuthorization: (UInt64) async -> AuthorizationStatus
+  public var requestAuthorization: @Sendable (UInt64) async -> AuthorizationStatus
 }
 
 extension UserTrackingClient {

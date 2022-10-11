@@ -1,5 +1,11 @@
-import ComposableArchitecture
-import Tagged
+import Dependencies
+
+extension DependencyValues {
+  public var analytics: Analytics {
+    get { self[Analytics.self] }
+    set { self[Analytics.self] = newValue }
+  }
+}
 
 public struct Analytics {
   public var log: (EventData) -> Void
