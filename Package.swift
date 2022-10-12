@@ -69,7 +69,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.41.2"
+      from: "0.42.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
