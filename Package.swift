@@ -122,6 +122,7 @@ let package = Package(
     .target(
       name: .Client.facebook,
       dependencies: [
+        .External.composableArchitecture,
         .External.ComposableArchitecture.dependencies,
         .External.Facebook.core
       ]
