@@ -23,6 +23,7 @@ let package = Package(
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
     .library(name: .instagram, targets: [.instagram]),
     .library(name: .loggingSupport, targets: [.loggingSupport]),
+    .library(name: .paywallReducer, targets: [.paywallReducer]),
     .library(name: .photosExt, targets: [.photosExt]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
@@ -229,6 +230,7 @@ let package = Package(
     .foundationSupport,
     .firebaseClient,
     .loggingSupport,
+    .paywallReducer,
     .userIdentifier,
     .version,
     .webView
@@ -290,6 +292,15 @@ extension Target {
     ]
   )
 
+  static let paywallReducer = target(
+    name: .paywallReducer,
+    dependencies: [
+      .Client.analytics,
+      .Client.purchases,
+      .External.composableArchitecture,
+    ]
+  )
+
   static let userIdentifier = target(
     name: .userIdentifier,
     dependencies: [
@@ -324,6 +335,7 @@ extension Target.Dependency {
   static let firebaseClient = byName(name: .firebaseClient)
   static let instagram = byName(name: .instagram)
   static let loggingSupport = byName(name: .loggingSupport)
+  static let paywallReducer = byName(name: .paywallReducer)
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
   static let userIdentifier = byName(name: .userIdentifier)
@@ -423,6 +435,7 @@ extension String {
   static let firebaseClient = "FirebaseClient"
   static let instagram = "Instagram"
   static let loggingSupport = "LoggingSupport"
+  static let paywallReducer = "PaywallReducer"
   static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
   static let userIdentifier = "UserIdentifier"
