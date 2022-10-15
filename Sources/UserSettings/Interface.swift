@@ -19,3 +19,19 @@ public struct UserSettingsClient {
   public var setDouble: (Double, String) async -> Void
   public var setInteger: (Int, String) async -> Void
 }
+
+extension UserSettingsClient {
+  public func setOnboardingCompleted(
+    _ newValue: Bool
+  ) async {
+    await setBool(newValue, .isOnboardingCompleted)
+  }
+
+  public var isOnboardingCompleted: Bool {
+    boolForKey(.isOnboardingCompleted)
+  }
+}
+
+extension String {
+  static let isOnboardingCompleted = "onboarding-completed"
+}
