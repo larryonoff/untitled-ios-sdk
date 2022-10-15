@@ -10,12 +10,14 @@ let package = Package(
     .macOS(.v12)
   ],
   products: [
+    .library(name: .amplitudeClient, targets: [.amplitudeClient]),
     .library(name: .Client.analytics, targets: [.Client.analytics]),
     .library(name: .appsFlyer, targets: [.appsFlyer]),
     .library(name: .avFoundationExt, targets: [.avFoundationExt]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
     .library(name: .Client.facebook, targets: [.Client.facebook]),
+    .library(name: .firebaseClient, targets: [.firebaseClient]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: .foundationSupport, targets: [.foundationSupport]),
     .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
@@ -53,11 +55,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "14.1.0"
+      from: "15.0.0"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "9.5.0"
+      from: "10.0.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -95,7 +97,7 @@ let package = Package(
         .foundationSupport,
         .External.amplitude,
         .External.composableArchitecture,
-        .External.ComposableArchitecture.dependencies,
+        .External.dependencies,
         .External.Facebook.core,
         .External.Firebase.analytics,
         .External.tagged
@@ -123,7 +125,7 @@ let package = Package(
       name: .Client.facebook,
       dependencies: [
         .External.composableArchitecture,
-        .External.ComposableArchitecture.dependencies,
+        .External.dependencies,
         .External.Facebook.core
       ]
     ),
@@ -131,7 +133,7 @@ let package = Package(
       name: "FeedbackGenerator",
       dependencies: [
         .External.composableArchitecture,
-        .External.ComposableArchitecture.dependencies
+        .External.dependencies
       ]
     ),
     .target(name: "GraphicsExt"),
@@ -159,7 +161,7 @@ let package = Package(
       name: .Client.photosAuthorization,
       dependencies: [
         .External.composableArchitecture,
-        .External.ComposableArchitecture.dependencies,
+        .External.dependencies,
         .External.tagged
       ],
       linkerSettings: [
@@ -176,7 +178,7 @@ let package = Package(
         .External.adapty,
         .External.asyncCompatibilityKit,
         .External.composableArchitecture,
-        .External.ComposableArchitecture.dependencies,
+        .External.dependencies,
         .External.tagged
       ],
       exclude: ["swiftgen.yml"],
@@ -201,7 +203,7 @@ let package = Package(
       name: .Client.userSettings,
       dependencies: [
         .External.composableArchitecture,
-        .External.ComposableArchitecture.dependencies,
+        .External.dependencies,
       ]
     ),
     .target(
@@ -215,15 +217,17 @@ let package = Package(
       dependencies: [
         .Client.analytics,
         .External.composableArchitecture,
-        .External.ComposableArchitecture.dependencies,
+        .External.dependencies,
         .External.Facebook.core
       ],
       linkerSettings: [
         .linkedFramework("AppTrackingTransparency")
       ]
     ),
+    .amplitudeClient,
     .appsFlyer,
     .foundationSupport,
+    .firebaseClient,
     .loggingSupport,
     .userIdentifier,
     .version,
@@ -232,6 +236,16 @@ let package = Package(
 )
 
 extension Target {
+  static let amplitudeClient = target(
+    name: .amplitudeClient,
+    dependencies: [
+      .External.amplitude,
+      .External.composableArchitecture,
+      .External.dependencies
+    ],
+    path: "Sources/AmplitudeClient"
+  )
+
   static let appsFlyer = target(
     name: .appsFlyer,
     dependencies: [
@@ -241,7 +255,7 @@ extension Target {
       .External.adapty,
       .External.appsFlyer,
       .External.composableArchitecture,
-      .External.ComposableArchitecture.dependencies
+      .External.dependencies
     ],
     path: "Sources/AppsFlyer",
     linkerSettings: [
@@ -253,6 +267,16 @@ extension Target {
     name: .foundationSupport,
     dependencies: [
       .External.urlCompatibilityKit
+    ]
+  )
+
+  static let firebaseClient = target(
+    name: .firebaseClient,
+    dependencies: [
+      .External.Firebase.analytics,
+      .External.Firebase.crashlytics,
+      .External.composableArchitecture,
+      .External.dependencies
     ]
   )
 
@@ -270,7 +294,7 @@ extension Target {
     name: .userIdentifier,
     dependencies: [
       .External.composableArchitecture,
-      .External.ComposableArchitecture.dependencies,
+      .External.dependencies,
       .External.keychainAccess
     ]
   )
@@ -279,7 +303,7 @@ extension Target {
     name: .version,
     dependencies: [
       .External.composableArchitecture,
-      .External.ComposableArchitecture.dependencies
+      .External.dependencies
     ]
   )
 
@@ -292,10 +316,12 @@ extension Target {
 }
 
 extension Target.Dependency {
+  static let amplitudeClient = byName(name: .amplitudeClient)
   static let appsFlyer = byName(name: .appsFlyer)
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
   static let foundationSupport = byName(name: .foundationSupport)
+  static let firebaseClient = byName(name: .firebaseClient)
   static let instagram = byName(name: .instagram)
   static let loggingSupport = byName(name: .loggingSupport)
   static let photosExt = byName(name: .photosExt)
@@ -345,16 +371,14 @@ extension Target.Dependency {
       package: "swift-composable-architecture"
     )
 
-    enum ComposableArchitecture {
-      static let dependencies = product(
-        name: "Dependencies",
-        package: "swift-composable-architecture"
-      )
-    }
-
     static let customDump = product(
       name: "CustomDump",
       package: "swift-custom-dump"
+    )
+
+    static let dependencies = product(
+      name: "Dependencies",
+      package: "swift-composable-architecture"
     )
 
     enum Facebook {
@@ -390,11 +414,13 @@ extension Target.Dependency {
 }
 
 extension String {
+  static let amplitudeClient = "AmplitudeClient"
   static let appsFlyer = "AppsFlyer"
   static let version = "Version"
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
   static let foundationSupport = "FoundationSupport"
+  static let firebaseClient = "FirebaseClient"
   static let instagram = "Instagram"
   static let loggingSupport = "LoggingSupport"
   static let photosExt = "PhotosExt"
