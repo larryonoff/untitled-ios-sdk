@@ -172,6 +172,7 @@ let package = Package(
     .target(
       name: .Client.purchases,
       dependencies: [
+        "ComposableArchitectureExt",
         .Client.analytics,
         .foundationSupport,
         .loggingSupport,
@@ -241,6 +242,8 @@ extension Target {
   static let amplitudeClient = target(
     name: .amplitudeClient,
     dependencies: [
+      .loggingSupport,
+      .userIdentifier,
       .External.amplitude,
       .External.composableArchitecture,
       .External.dependencies
@@ -275,6 +278,8 @@ extension Target {
   static let firebaseClient = target(
     name: .firebaseClient,
     dependencies: [
+      .loggingSupport,
+      .userIdentifier,
       .External.Firebase.analytics,
       .External.Firebase.crashlytics,
       .External.composableArchitecture,
