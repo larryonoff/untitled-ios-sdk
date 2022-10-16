@@ -2,22 +2,61 @@ import Amplitude
 import Foundation
 import FoundationSupport
 import ComposableArchitecture
+import UserIdentifier
+import LoggingSupport
+import os.log
 
 extension AmplitudeClient {
-  public static let live = AmplitudeClient(
-    initialize: {
-      await MainActor.run {
-        let bundle = Bundle.main
+  public static func live(
+    userIdentifier: UserIdentifierGenerator
+  ) -> Self {
+    let impl = AmplitudeClientImpl(
+      userIdentifier: userIdentifier
+    )
 
-        guard let apiKey = bundle.amplitudeAPIKey else {
-          assertionFailure()
-          return
-        }
-
-        let amplitude = Amplitude.instance()
-        amplitude.trackingSessionEvents = true
-        amplitude.initializeApiKey(apiKey)
+    return Self(
+      initialize: {
+        await impl.initialize()
       }
-    }
-  )
+    )
+  }
 }
+
+
+@MainActor
+private final class AmplitudeClientImpl {
+  private let userIdentifier: UserIdentifierGenerator
+
+  nonisolated
+  init(
+    userIdentifier: UserIdentifierGenerator
+  ) {
+    self.userIdentifier = userIdentifier
+  }
+
+  func initialize(
+  ) async {
+    logger.info("initialize")
+
+    let bundle = Bundle.main
+
+    guard let apiKey = bundle.amplitudeAPIKey else {
+      assertionFailure()
+      return
+    }
+
+    let amplitude = Amplitude.instance()
+    amplitude.trackingSessionEvents = true
+    amplitude.initializeApiKey(
+      apiKey,
+      userId: userIdentifier().uuidString
+    )
+
+    logger.info("initialize success")
+  }
+}
+
+private let logger = Logger(
+  subsystem: ".SDK.amplitude",
+  category: "Amplitude"
+)
