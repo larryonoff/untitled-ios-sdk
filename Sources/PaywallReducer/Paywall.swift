@@ -184,7 +184,7 @@ public struct PaywallReducer: ReducerProtocol {
 
   private func logPaywallOpened(
     state: State
-  ) -> Effect<Action, Never> {
+  ) -> EffectTask<Action> {
     var params: [Analytics.ParameterName: Any] = [:]
     params[.contentID] = state.paywallID
     params[.placement] = state.placement
@@ -201,7 +201,7 @@ public struct PaywallReducer: ReducerProtocol {
 
   private func logPaywallDismissed(
     state: State
-  ) -> Effect<Action, Never> {
+  ) -> EffectTask<Action> {
     var params: [Analytics.ParameterName: Any] = [:]
     params[.contentID] = state.paywallID
     params[.placement] = state.placement
