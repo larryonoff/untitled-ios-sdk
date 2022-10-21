@@ -1,8 +1,14 @@
 @available(iOS 13.0, macOS 11.0, tvOS 13.0, watchOS 6.0, *)
 public enum SFSymbol: String {
+  case arrowBackward = "arrow.backward"
+  case arrowClockwise = "arrow.clockwise"
+  case arrowCounterclockwise = "arrow.counterclockwise"
+  case arrowForward = "arrow.forward"
   case arrowLeft = "arrow.left"
   case arrowRight = "arrow.right"
-  case arrowTriangle2Circlepath  = "arrow.triangle.2.circlepath"
+  case arrowTriangle2Circlepath = "arrow.triangle.2.circlepath"
+  case arrowDown = "arrow.down"
+  case arrowUp = "arrow.up"
   case arrowUpCircle = "arrow.up.circle"
   case arrowUpCircleFill = "arrow.up.circle.fill"
 
