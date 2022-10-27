@@ -1,6 +1,7 @@
 import Analytics
 import ComposableArchitecture
 import ComposableArchitectureExt
+import IdentifiedCollections
 import PurchasesClient
 
 public struct PaywallReducer: ReducerProtocol {
@@ -31,6 +32,8 @@ public struct PaywallReducer: ReducerProtocol {
 
     public let paywallID: Paywall.ID
     public var paywall: Paywall?
+
+    public var products: IdentifiedArrayOf<Product> = []
     public var productComparing: Product?
     public var productSelected: Product?
 
@@ -79,6 +82,10 @@ public struct PaywallReducer: ReducerProtocol {
         state.isFetchingPaywall = false
 
         state.paywall = paywall
+
+        let products = paywall?.products ?? []
+        state.products = IdentifiedArray(uncheckedUniqueElements: products)
+
         state.productComparing = paywall?.productComparing
         state.productSelected =
           paywall?.productSelected ?? paywall?.products.first
