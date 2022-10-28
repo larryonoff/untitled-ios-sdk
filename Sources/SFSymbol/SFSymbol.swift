@@ -1,80 +1,134 @@
 @available(iOS 13.0, macOS 11.0, tvOS 13.0, watchOS 6.0, *)
-public enum SFSymbol: String {
-  case arrowBackward = "arrow.backward"
-  case arrowClockwise = "arrow.clockwise"
-  case arrowCounterclockwise = "arrow.counterclockwise"
-  case arrowForward = "arrow.forward"
-  case arrowLeft = "arrow.left"
-  case arrowRight = "arrow.right"
-  case arrowTriangle2Circlepath = "arrow.triangle.2.circlepath"
-  case arrowDown = "arrow.down"
-  case arrowUp = "arrow.up"
-  case arrowUpCircle = "arrow.up.circle"
-  case arrowUpCircleFill = "arrow.up.circle.fill"
+public struct SFSymbol {
+  public var rawValue: String
 
-  case checkmark
-  case checkmarkShield = "checkmark.shield"
-  case checkmarkSquareFill = "checkmark.square.fill"
-  case checkmarkCircle = "checkmark.circle"
-  case checkmarkCircleFill = "checkmark.circle.fill"
+  public init(rawValue: String) {
+    self.rawValue = rawValue
+  }
+}
 
-  case chevronLeft = "chevron.left"
-  case chevronBackward = "chevron.backward"
-  case chevronRight = "chevron.right"
-  case chevronForward = "chevron.forward"
-  case chevronUp = "chevron.up"
-  case chevronDown = "chevron.down"
+extension SFSymbol: Codable {}
 
-  case circle = "circle"
+extension SFSymbol: CustomStringConvertible {
+  public var description: String {
+    return String(describing: self.rawValue)
+  }
+}
 
-  case docOnDoc = "doc.on.doc"
-  case docOnDocFill = "doc.on.doc.fill"
+extension SFSymbol: Equatable {}
 
-  case gear = "gear"
+extension SFSymbol: Hashable {}
 
-  case heart = "heart"
-  case heartFill = "heart.fill"
+extension SFSymbol: RawRepresentable {}
 
-  case house = "house"
-  case houseFill = "house.fill"
+extension SFSymbol: Sendable {}
 
-  case line3Horizontal = "line.3.horizontal"
+extension SFSymbol: ExpressibleByStringLiteral {
+  public init(stringLiteral: String) {
+    self.init(rawValue: stringLiteral)
+  }
+}
 
-  case lock = "lock"
+extension SFSymbol {
+  public enum Arrow {
+    public static let backward: SFSymbol = "arrow.backward"
+    public static let clockwise: SFSymbol = "arrow.clockwise"
+    public static let counterclockwise: SFSymbol = "arrow.counterclockwise"
+    public static let forward: SFSymbol = "arrow.forward"
+    public static let left: SFSymbol = "arrow.left"
+    public static let right: SFSymbol = "arrow.right"
+    public static let triangle2Circlepath: SFSymbol = "arrow.triangle.2.circlepath"
+    public static let triangleRightFill: SFSymbol = "arrowtriangle.right.fill"
+    public static let down: SFSymbol = "arrow.down"
+    public static let up: SFSymbol = "arrow.up"
+    public static let upCircle: SFSymbol = "arrow.up.circle"
+    public static let upCircleFill: SFSymbol = "arrow.up.circle.fill"
+  }
 
-  case multiply = "multiply"
-  case multiplyCircle = "multiply.circle"
-  case multiplyCircleFill = "multiply.circle.fill"
+  public static let checkmark: SFSymbol = "checkmark"
 
-  case pauseCircle = "pause.circle"
-  case play = "play"
-  case playFill = "play.fill"
-  case playCircle = "play.circle"
-  case playSquare = "play.square"
-  case playRectangle = "play.rectangle"
-  case playSlash = "play.slash"
+  public enum Checkmark {
+    public static let shield: SFSymbol = "checkmark.shield"
+    public static let squareFill: SFSymbol = "checkmark.square.fill"
+    public static let circle: SFSymbol = "checkmark.circle"
+    public static let circleFill: SFSymbol = "checkmark.circle.fill"
+  }
 
-  case plus = "plus"
-  case plusBubble = "plus.bubble"
-  case plusCircle = "plus.circle"
-  case plusSquare = "plus.square"
-  case plusRectangle = "plus.rectangle"
+  public enum Chevron {
+    public static let left: SFSymbol = "chevron.left"
+    public static let backward: SFSymbol = "chevron.backward"
+    public static let right: SFSymbol = "chevron.right"
+    public static let forward: SFSymbol = "chevron.forward"
+    public static let up: SFSymbol = "chevron.up"
+    public static let down: SFSymbol = "chevron.down"
+  }
 
-  case questionmark = "questionmark"
-  case questionmarkCircle = "questionmark.circle"
+  public static let circle: SFSymbol = "circle"
 
-  case sliderHorizontal3 = "slider.horizontal.3"
-  case sliderHorizontalBelowRectangle = "slider.horizontal.below.rectangle"
-  case sliderHorizontalBelowSquareFilledAndSquare =
-    "slider.horizontal.below.square.filled.and.square"
-  case sliderHorizontal2RectangleAndArrowTriangle2Circlepath =
-    "slider.horizontal.2.rectangle.and.arrow.triangle.2.circlepath"
-  case sliderVertical3 = "slider.vertical.3"
+  public static let docOnDoc: SFSymbol = "doc.on.doc"
+  public static let docOnDocFill: SFSymbol = "doc.on.doc.fill"
 
-  case squareAndArrowUp = "square.and.arrow.up"
-  case squareAndPencil = "square.and.pencil"
+  public static let gear: SFSymbol = "gear"
 
-  case trash
+  public static let heart: SFSymbol = "heart"
+  public static let heartFill: SFSymbol = "heart.fill"
 
-  case xmark
+  public static let house: SFSymbol = "house"
+  public static let houseFill: SFSymbol = "house.fill"
+
+  public static let line3Horizontal: SFSymbol = "line.3.horizontal"
+
+  public static let lock: SFSymbol = "lock"
+
+  public static let multiply: SFSymbol = "multiply"
+  public static let multiplyCircle: SFSymbol = "multiply.circle"
+  public static let multiplyCircleFill: SFSymbol = "multiply.circle.fill"
+
+  public static let pause: SFSymbol = "pause"
+
+  public enum Pause {
+    public static let circle: SFSymbol = "pause.circle"
+    public static let circleFill: SFSymbol = "pause.circle.fill"
+    public static let fill: SFSymbol = "pause.fill"
+    public static let rectangle: SFSymbol = "pause.rectangle"
+  }
+
+  public static let play: SFSymbol = "play"
+
+  public enum Play {
+    public static let fill: SFSymbol = "play.fill"
+    public static let circle: SFSymbol = "play.circle"
+    public static let square: SFSymbol = "play.square"
+    public static let rectangle: SFSymbol = "play.rectangle"
+    public static let slash: SFSymbol = "play.slash"
+  }
+
+  public static let plus: SFSymbol = "plus"
+
+  public enum Plus {
+    public static let bubble: SFSymbol = "plus.bubble"
+    public static let circle: SFSymbol = "plus.circle"
+    public static let square: SFSymbol = "plus.square"
+    public static let rectangle: SFSymbol = "plus.rectangle"
+  }
+
+  public static let questionmark: SFSymbol = "questionmark"
+  public static let questionmarkCircle: SFSymbol = "questionmark.circle"
+
+  public enum Slider {
+    public static let horizontal3: SFSymbol = "slider.horizontal.3"
+    public static let horizontalBelowRectangle: SFSymbol = "slider.horizontal.below.rectangle"
+    public static let horizontalBelowSquareFilledAndSquare: SFSymbol =
+      "slider.horizontal.below.square.filled.and.square"
+    public static let horizontal2RectangleAndArrowTriangle2Circlepath: SFSymbol =
+      "slider.horizontal.2.rectangle.and.arrow.triangle.2.circlepath"
+    public static let vertical3: SFSymbol = "slider.vertical.3"
+  }
+
+  public static let squareAndArrowUp: SFSymbol = "square.and.arrow.up"
+  public static let squareAndPencil: SFSymbol = "square.and.pencil"
+
+  public static let trash: SFSymbol = "trash"
+
+  public static let xmark: SFSymbol = "xmark"
 }
