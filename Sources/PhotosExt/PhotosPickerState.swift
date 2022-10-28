@@ -10,12 +10,12 @@ public struct PhotosPickerState {
   public var selectionBehavior: PhotosPickerSelectionBehavior
   public var filter: PHPickerFilter?
   public var preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy
-
+  
   public init(
-      maxSelectionCount: Int? = nil,
-      selectionBehavior: PhotosPickerSelectionBehavior = .default,
-      matching filter: PHPickerFilter? = nil,
-      preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic
+    maxSelectionCount: Int? = nil,
+    selectionBehavior: PhotosPickerSelectionBehavior = .default,
+    matching filter: PHPickerFilter? = nil,
+    preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic
   ) {
     self.maxSelectionCount = maxSelectionCount
     self.selectionBehavior = selectionBehavior
@@ -34,8 +34,8 @@ extension View {
     self.modifier(
       PhotosPickerModifier(
         viewStore: ViewStore(
-            store,
-            removeDuplicates: { $0?.id == $1?.id }
+          store,
+          removeDuplicates: { $0?.id == $1?.id }
         ),
         selection: selection,
         dismiss: dismiss
@@ -46,10 +46,10 @@ extension View {
 
 private struct PhotosPickerModifier<Action>: ViewModifier {
   @ObservedObject var viewStore: ViewStore<PhotosPickerState?, Action>
-
+  
   let selection: Binding<[PhotosPickerItem]>
   let dismiss: Action
-
+  
   func body(content: Content) -> some View {
     content.sheet(
       isPresented: viewStore.binding(send: dismiss).isPresent(),
