@@ -10,12 +10,17 @@ public struct WebView {
   }
 }
 
+extension WebView: Equatable {}
+
 extension WebView: UIViewRepresentable {
   public func makeUIView(context: Context) -> WKWebView {
     return WKWebView()
   }
 
-  public func updateUIView(_ webView: WKWebView, context: Context) {
+  public func updateUIView(
+    _ webView: WKWebView,
+    context: Context
+  ) {
     let request = URLRequest(url: url)
     webView.load(request)
   }
