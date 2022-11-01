@@ -56,11 +56,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "15.0.0"
+      from: "15.1.0"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.0.0"
+      from: "10.1.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -72,12 +72,16 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.44.1"
+      from: "0.45.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
       from: "0.6.0"
     ),
+    // .package(
+    //   url: "https://github.com/pointfreeco/swift-identified-collections",
+    //   from: "0.4.1"
+    // ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
       from: "0.7.0"
@@ -416,6 +420,11 @@ extension Target.Dependency {
         package: "firebase-ios-sdk"
       )
     }
+
+    // static let identifiedCollections = product(
+    //     name: "IdentifiedCollections",
+    //     package: "swift-identified-collections"
+    //   )
 
     static let keychainAccess = byName(name: "KeychainAccess")
 
