@@ -11,6 +11,14 @@ open class VideoPlayerView: UIView {
     layer as! AVPlayerLayer
   }
 
+  var player: AVPlayer? {
+    get { playerLayer.player }
+    set {
+      guard newValue != playerLayer.player else { return }
+      playerLayer.player = newValue
+    }
+  }
+
   public var videoGravity: AVLayerVideoGravity {
     get { playerLayer.videoGravity }
     set { playerLayer.videoGravity = newValue }
