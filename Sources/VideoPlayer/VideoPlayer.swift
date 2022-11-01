@@ -22,11 +22,11 @@ public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
 
   var gravity: Gravity = .resizeAspect
 
-  private let player: AVPlayer
+  private let player: AVPlayer?
 
   let videoOverlay: VideoOverlay?
 
-  public init(player: AVPlayer, videoOverlay: () -> VideoOverlay) {
+  public init(player: AVPlayer?, videoOverlay: () -> VideoOverlay) {
     self.player = player
     self.videoOverlay = videoOverlay()
   }
@@ -39,7 +39,7 @@ public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
 }
 
 extension VideoPlayerX where VideoOverlay == EmptyView {
-  public init(player: AVPlayer) {
+  public init(player: AVPlayer?) {
     self.player = player
     self.videoOverlay = nil
   }
@@ -63,7 +63,6 @@ extension VideoPlayerX: UIViewRepresentable {
     playerView.videoGravity = gravity.avLayerVideoGravity
     playerView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     playerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-
 
     videoOverlay.flatMap {
       let videoOverlayController = UIHostingController(rootView: $0)
@@ -100,7 +99,9 @@ extension VideoPlayerX: UIViewRepresentable {
       context.coordinator.videoOverlayHostingController?.rootView = $0
     }
 
+    uiView.player = player
     uiView.videoGravity = gravity.avLayerVideoGravity
+
     uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     uiView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
   }
