@@ -1,7 +1,11 @@
 import AVFoundation
+import Foundation
 
 extension AVAsset {
-  public func mixed(withAudio audio: AVAsset) throws -> AVAsset? {
+  public func mixed(
+    withAudioOf audio: AVAsset,
+    timeRange: CMTimeRange? = nil
+  ) throws -> AVMutableComposition? {
     guard
       let audioTrack = audio.tracks(withMediaType: .audio).first,
       let videoTrack = tracks(withMediaType: .video).first
@@ -12,29 +16,48 @@ extension AVAsset {
     let composition = AVMutableComposition()
 
     guard
-      let videoComposition = composition.addMutableTrack(
+      let compositionVideoTrack = composition.addMutableTrack(
         withMediaType: .video,
-        preferredTrackID: CMPersistentTrackID(1)
+        preferredTrackID: 1
       ),
-      let audioComposition = composition.addMutableTrack(
+      let compositionAudioTrack = composition.addMutableTrack(
         withMediaType: .audio,
-        preferredTrackID: CMPersistentTrackID(2)
+        preferredTrackID: 2
       )
     else {
       return nil
     }
 
-    try videoComposition.insertTimeRange(
-      CMTimeRangeMake(start: .zero, duration: duration),
+    try compositionVideoTrack.insertTimeRange(
+      CMTimeRange(start: .zero, duration: duration),
       of: videoTrack,
       at: .zero
     )
 
-    try audioComposition.insertTimeRange(
-      CMTimeRangeMake(start: .zero, duration: duration),
+    try compositionAudioTrack.insertTimeRange(
+      timeRange ?? CMTimeRange(start: .zero, duration: duration),
       of: audioTrack,
       at: .zero
     )
+
+    return composition
+  }
+
+  public func removingAudio() async throws -> AVAsset {
+    let composition = AVMutableComposition()
+
+    try composition.insertTimeRange(
+      CMTimeRange(
+        start: .zero,
+        duration: try await load(.duration)
+      ),
+      of: self,
+      at: .zero
+    )
+
+    for track in try await composition.load(.tracks) where track.mediaType == .audio {
+      composition.removeTrack(track)
+    }
 
     return composition
   }
