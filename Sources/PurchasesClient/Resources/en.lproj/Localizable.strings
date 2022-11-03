@@ -7,4 +7,9 @@
 "product.subscriptionPeriod.unit.year" = "year";
 "product.subscriptionPeriod.unit.years" = "years";
 
+"product.subscriptionPeriod.unit.day.compactName" = "d";
+"product.subscriptionPeriod.unit.week.compactName" = "w";
+"product.subscriptionPeriod.unit.month.compactName" = "mo";
+"product.subscriptionPeriod.unit.year.compactName" = "y";
+
 "product.subscriptionOffer.freeTrial" = "%d-%@ free trial";
