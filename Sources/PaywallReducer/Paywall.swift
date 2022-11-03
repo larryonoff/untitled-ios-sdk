@@ -125,14 +125,17 @@ public struct PaywallReducer: ReducerProtocol {
         }
         return purchase(product, state: &state)
       case .purchaseCancelled:
-        return .cancel(id: PurchaseID.self)
-      case .purchaseResponse(.success):
         state.isPurchasing = false
 
-        return .none
-      case let .purchaseResponse(.failure(error)):
+        return .cancel(id: PurchaseID.self)
+      case let .purchaseResponse(result):
         state.isPurchasing = false
-        state.alert = .failure(error)
+
+        do {
+          _ = try result.value
+        } catch {
+          state.alert = .failure(error)
+        }
 
         return .none
       case .restorePurchases:
@@ -149,13 +152,14 @@ public struct PaywallReducer: ReducerProtocol {
           id: PurchaseID.self,
           cancelInFlight: true
         )
-      case .restorePurchasesResponse(.success):
+      case let .restorePurchasesResponse(result):
         state.isPurchasing = false
 
-        return .none
-      case let .restorePurchasesResponse(.failure(error)):
-        state.isPurchasing = false
-        state.alert = .failure(error)
+        do {
+          _ = try result.value
+        } catch {
+          state.alert = .failure(error)
+        }
 
         return .none
       case .alertDismissed:
