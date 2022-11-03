@@ -29,13 +29,30 @@ extension Product {
 
 extension Product {
   public enum FormatStyle {
+    public enum Notation {
+      case automatic
+      case compactName
+    }
+
     public struct Price {
       var subscriptionPeriod: Product.SubscriptionPeriod?
+      var notation: Notation
 
       public init(
-        subscriptionPeriod: Product.SubscriptionPeriod?
+        subscriptionPeriod: Product.SubscriptionPeriod?,
+        notation: Notation = .automatic
       ) {
         self.subscriptionPeriod = subscriptionPeriod
+        self.notation = notation
+      }
+
+      public func notation(
+        _ notation: Notation
+      ) -> Self {
+        .init(
+          subscriptionPeriod: subscriptionPeriod,
+          notation: notation
+        )
       }
     }
   }
@@ -61,11 +78,20 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
         price,
         priceLocale: value.priceLocale
       )
-      let subscriptionPeriodString = subscriptionPeriod.formatted()
+      let subscriptionPeriodString = subscriptionPeriod
+        .formatted(notation: notation)
+
+      let separator: String
+      switch notation {
+      case .automatic:
+        separator = " / "
+      case .compactName:
+        separator = "/"
+      }
 
       return [priceString, subscriptionPeriodString]
         .compactMap { $0 }
-        .joined(separator: " / ")
+        .joined(separator: separator)
     }
 
     return Product.displayPrice(
@@ -99,46 +125,162 @@ extension Product.FormatStyle.Price: Sendable {}
 
 extension Product.FormatStyle.Price: Hashable {}
 
+extension Product.FormatStyle.Notation: Codable {}
+
+extension Product.FormatStyle.Notation: Equatable {}
+
+extension Product.FormatStyle.Notation: Sendable {}
+
+extension Product.FormatStyle.Notation: Hashable {}
+
 // MARK: - Product.SubscriptionPeriod
 
 extension Product.SubscriptionPeriod {
   public struct FormatStyle {
-    public init() {}
+    var notation: Product.FormatStyle.Notation
+    var unitsCollapsed: [Product.SubscriptionPeriod.Unit]
+    var unitsExpanded: [Product.SubscriptionPeriod.Unit]
+
+    public init(
+      notation: Product.FormatStyle.Notation = .automatic,
+      unitsCollapsed: [Product.SubscriptionPeriod.Unit] = [],
+      unitsExpanded: [Product.SubscriptionPeriod.Unit] = []
+    ) {
+      self.notation = notation
+      self.unitsCollapsed = unitsCollapsed
+      self.unitsExpanded = unitsExpanded
+    }
+
+    public func notation(
+      _ notation: Product.FormatStyle.Notation
+    ) -> Self {
+      .init(
+        notation: notation,
+        unitsCollapsed: unitsCollapsed,
+        unitsExpanded: unitsExpanded
+      )
+    }
+
+    public func units(
+      collapsed units: [Product.SubscriptionPeriod.Unit]
+    ) -> Self {
+      .init(
+        notation: notation,
+        unitsCollapsed: units,
+        unitsExpanded: unitsExpanded
+      )
+    }
+
+    public func units(
+      expanded units: [Product.SubscriptionPeriod.Unit]
+    ) -> Self {
+      .init(
+        notation: notation,
+        unitsCollapsed: unitsCollapsed,
+        unitsExpanded: units
+      )
+    }
   }
 }
 
 extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
   public func format(_ value: Product.SubscriptionPeriod) -> String {
+    let valueString: String?
+    let unitString: String
+
     switch (value.unit, value.value) {
+    case (.year, 1) where unitsExpanded.contains(.year):
+      valueString = "12"
+      unitString = Product.SubscriptionPeriod.Unit.month.formatted(
+        notation: notation,
+        number: .plural
+      )
     case (.year, 1):
-      return value.unit.formatted(number: .singular)
+      valueString = notation == .compactName ? nil : "1"
+      unitString = value.unit.formatted(
+        notation: notation,
+        number: .singular
+      )
     case (.year, _):
-      let unitString = value.unit.formatted(number: .plural)
-      return "\(value.value) \(unitString)"
+      valueString = "\(value.value)"
+      unitString = value.unit.formatted(
+        notation: notation,
+        number: .plural
+      )
     case (.month, 1):
-      return value.unit.formatted(number: .singular)
+      valueString = notation == .compactName ? nil : "1"
+      unitString = value.unit.formatted(
+        notation: notation,
+        number: .singular
+      )
+    case (.month, 12) where unitsCollapsed.contains(.month):
+      valueString = notation == .compactName ? nil : "1"
+      unitString = Product.SubscriptionPeriod.Unit.year.formatted(
+        notation: notation,
+        number: .singular
+      )
     case (.month, _):
-      let unitString = value.unit.formatted(number: .plural)
-      return "\(value.value) \(unitString)"
+      valueString = "\(value.value)"
+      unitString = value.unit.formatted(
+        notation: notation,
+        number: .plural
+      )
+    case (.week, 1) where unitsExpanded.contains(.week):
+      valueString = "7"
+      unitString = Product.SubscriptionPeriod.Unit.day.formatted(
+        notation: notation,
+        number: .plural
+      )
     case (.week, 1):
-      let unit = Product.SubscriptionPeriod.Unit.day
-      let unitString = unit.formatted(number: .plural)
-      return "7 \(unitString)"
+      valueString = notation == .compactName ? nil : "1"
+      unitString = value.unit.formatted(
+        notation: notation,
+        number: .plural
+      )
     case (.week, _):
-      let unitString = value.unit.formatted(number: .plural)
-      return "\(value.value) \(unitString)"
+      valueString = "\(value.value)"
+      unitString = value.unit.formatted(
+        notation: notation,
+        number: .plural
+      )
     case (.day, 1):
-      return value.unit.formatted(number: .singular)
+      valueString = notation == .compactName ? nil : "1"
+      unitString = value.unit.formatted(
+        notation: notation,
+        number: .singular
+      )
+    case (.day, 7) where unitsCollapsed.contains(.day):
+      valueString = notation == .compactName ? nil : "1"
+      unitString = Product.SubscriptionPeriod.Unit.week.formatted(
+        notation: notation,
+        number: .plural
+      )
     case (.day, _):
-      let unitString = value.unit.formatted(number: .plural)
-      return "\(value.value) \(unitString)"
+      valueString = "\(value.value)"
+      unitString = value.unit.formatted(
+        notation: notation,
+        number: .plural
+      )
     }
+
+    return [valueString, unitString]
+      .compactMap { $0 }
+      .joined(separator: " ")
   }
 }
 
 extension Product.SubscriptionPeriod {
-  public func formatted() -> String {
-    Self.FormatStyle().format(self)
+  public func formatted(
+    notation: Product.FormatStyle.Notation = .automatic,
+    unitsCollapsed: [Product.SubscriptionPeriod.Unit] = [],
+    unitsExpanded: [Product.SubscriptionPeriod.Unit] = []
+  ) -> String {
+    Self.FormatStyle(
+      notation: notation,
+      unitsCollapsed: unitsCollapsed,
+      unitsExpanded: unitsExpanded
+    )
+    .format(self)
   }
 
   public func formatted<F: Foundation.FormatStyle>(
@@ -211,44 +353,78 @@ extension Product.SubscriptionOffer.FormatStyle: Hashable {}
 
 extension Product.SubscriptionPeriod.Unit {
   public struct FormatStyle {
+    var notation: Product.FormatStyle.Notation
     var number: Morphology.GrammaticalNumber
 
     public init(
-      number: Morphology.GrammaticalNumber
+      notation: Product.FormatStyle.Notation = .automatic,
+      number: Morphology.GrammaticalNumber = .singular
     ) {
+      self.notation = notation
       self.number = number
+    }
+
+    public func notation(
+      _ notation: Product.FormatStyle.Notation
+    ) -> Self {
+      .init(
+        notation: notation,
+        number: number
+      )
+    }
+
+    public func number(
+      _ number: Morphology.GrammaticalNumber
+    ) -> Self {
+      .init(
+        notation: notation,
+        number: number
+      )
     }
   }
 }
 
 extension Product.SubscriptionPeriod.Unit.FormatStyle: Foundation.FormatStyle {
   public func format(_ value: Product.SubscriptionPeriod.Unit) -> String {
-    switch (number, value) {
-    case (.singular, .day):
+    switch (number, value, notation) {
+    case (.singular, .day, .automatic):
       return L10n.Product.SubscriptionPeriod.Unit.day
-    case (_, .day):
+    case (_, .day, .automatic):
       return L10n.Product.SubscriptionPeriod.Unit.days
-    case (.singular, .week):
+    case (_, .day, .compactName):
+      return L10n.Product.SubscriptionPeriod.Unit.Day.compactName
+    case (.singular, .week, .automatic):
       return L10n.Product.SubscriptionPeriod.Unit.week
-    case (_, .week):
-      return L10n.Product.SubscriptionPeriod.Unit.weeks
-    case (.singular, .month):
+    case (_, .week, .automatic):
+      return L10n.Product.SubscriptionPeriod.Unit.week
+    case (_, .week, .compactName):
+      return L10n.Product.SubscriptionPeriod.Unit.Week.compactName
+    case (.singular, .month, .automatic):
       return L10n.Product.SubscriptionPeriod.Unit.month
-    case (_, .month):
+    case (_, .month, .automatic):
       return L10n.Product.SubscriptionPeriod.Unit.months
-    case (.singular, .year):
+    case (_, .month, .compactName):
+      return L10n.Product.SubscriptionPeriod.Unit.Month.compactName
+    case (.singular, .year, .automatic):
       return L10n.Product.SubscriptionPeriod.Unit.year
-    case (_, .year):
+    case (_, .year, .automatic):
       return L10n.Product.SubscriptionPeriod.Unit.years
+    case (_, .year, .compactName):
+      return L10n.Product.SubscriptionPeriod.Unit.Year.compactName
     }
   }
 }
 
 extension Product.SubscriptionPeriod.Unit {
   public func formatted(
+    notation: Product.FormatStyle.Notation = .automatic,
     number: Morphology.GrammaticalNumber = .singular
   ) -> String {
-    Self.FormatStyle(number: number).format(self)
+    Self.FormatStyle(
+      notation: notation,
+      number: number
+    )
+    .format(self)
   }
 
   public func formatted<F: Foundation.FormatStyle>(
