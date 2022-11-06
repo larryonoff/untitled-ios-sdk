@@ -155,7 +155,8 @@ let package = Package(
       dependencies: [
         .External.asyncCompatibilityKit,
         .External.composableArchitecture,
-        .External.customDump
+        .External.customDump,
+        .External.tagged
       ],
       linkerSettings: [
         .linkedFramework("Photos"),
