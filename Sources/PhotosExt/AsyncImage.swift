@@ -1,6 +1,5 @@
 import AsyncCompatibilityKit
 import SwiftUI
-import SwiftUIBackports
 import Photos
 
 public struct AsyncImage<Content>: View where Content: View {
