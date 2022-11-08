@@ -1,21 +1,21 @@
 import Photos
 import SwiftUI
 
-private struct PHImageManagerKey: EnvironmentKey {
-  static let defaultValue = PHImageManager()
-}
-
 extension EnvironmentValues {
-  public var phImageManager: PHImageManager {
-    get { self[PHImageManagerKey.self] }
-    set { self[PHImageManagerKey.self] = newValue }
+  public var photosImageManager: PHImageManager {
+    get { self[PhotosImageManagerKey.self] }
+    set { self[PhotosImageManagerKey.self] = newValue }
+  }
+
+  private struct PhotosImageManagerKey: EnvironmentKey {
+    static let defaultValue = PHImageManager()
   }
 }
 
 extension View {
-  public func phImageManager(
+  public func photosImageManager(
     _ imageManager: PHImageManager
   ) -> some View {
-    environment(\.phImageManager, imageManager)
+    environment(\.photosImageManager, imageManager)
   }
 }
