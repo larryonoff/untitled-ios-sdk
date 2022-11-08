@@ -8,7 +8,7 @@ public struct AsyncImage<Content>: View where Content: View {
   @ViewBuilder
   private let content: (AsyncImagePhase) -> Content
 
-  @Environment(\.phImageManager)
+  @Environment(\.photosImageManager)
   private var imageManager: PHImageManager
 
   private let targetSize: CGSize = PHImageManagerMaximumSize
