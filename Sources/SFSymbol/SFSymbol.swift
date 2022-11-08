@@ -93,6 +93,20 @@ extension SFSymbol {
     public static let rectangle: SFSymbol = "pause.rectangle"
   }
 
+  public static let photo: SFSymbol = "photo"
+
+  public enum Photo {
+    public static let artframe: SFSymbol = "photo.artframe"
+    public static let circle: SFSymbol = "photo.circle"
+    public static let fill: SFSymbol = "photo.fill"
+    public static let onRectangle: SFSymbol = "photo.on.rectangle"
+    public static let onRectangleAngled: SFSymbol = "photo.on.rectangle.angled"
+    public static let onRectangleFill: SFSymbol = "photo.on.rectangle.fill"
+    public static let stack: SFSymbol = "photo.stack"
+    public static let stackFill: SFSymbol = "photo.stack.fill"
+    public static let tv: SFSymbol = "photo.tv"
+  }
+
   public static let play: SFSymbol = "play"
 
   public enum Play {
