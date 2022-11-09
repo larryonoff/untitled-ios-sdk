@@ -13,4 +13,9 @@ extension FileManager {
       withIntermediateDirectories: true
     )
   }
+
+  public func removeItemIfExist(at url: URL) throws {
+    guard fileExists(atPath: url.path) else { return }
+    try removeItem(at: url)
+  }
 }
