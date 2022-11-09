@@ -10,6 +10,10 @@ extension AVAssetImageGenerator {
   ) -> AsyncThrowingStream<(image: CGImage, actualTime: CMTime), Error> {
     AsyncThrowingStream { continuation in
       do {
+        guard !times.isEmpty else {
+          return continuation.finish()
+        }
+
         for time in times {
           try Task.checkCancellation()
 
