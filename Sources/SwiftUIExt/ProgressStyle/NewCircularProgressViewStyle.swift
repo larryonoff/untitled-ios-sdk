@@ -1,11 +1,7 @@
 import SwiftUI
 
 public struct NewCircularProgressViewStyle: ProgressViewStyle {
-  private let tint: Color
-
-  init(tint: Color) {
-    self.tint = tint
-  }
+  let tint: Color
 
   @State
   private var isRotating: Bool = false
@@ -23,7 +19,7 @@ public struct NewCircularProgressViewStyle: ProgressViewStyle {
           .repeatForever(autoreverses: false),
           value: isRotating
         )
-        .frame(width: 28, height: 28)
+        .frame(width: 22, height: 22)
     }
     .onAppear {
       isRotating = true
@@ -32,7 +28,11 @@ public struct NewCircularProgressViewStyle: ProgressViewStyle {
 }
 
 extension ProgressViewStyle where Self == NewCircularProgressViewStyle {
-  public static func newCicrular(tint: Color) -> Self {
-    NewCircularProgressViewStyle(tint: tint)
+  public static func newCircular(
+    tint: Color
+  ) -> Self {
+    NewCircularProgressViewStyle(
+      tint: tint
+    )
   }
 }
