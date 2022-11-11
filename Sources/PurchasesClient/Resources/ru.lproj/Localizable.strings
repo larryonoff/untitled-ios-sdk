@@ -1,0 +1,15 @@
+"product.subscriptionPeriod.unit.day" = "день";
+"product.subscriptionPeriod.unit.days" = "дня";
+"product.subscriptionPeriod.unit.week" = "неделя";
+"product.subscriptionPeriod.unit.weeks" = "недели";
+"product.subscriptionPeriod.unit.month" = "месяц";
+"product.subscriptionPeriod.unit.months" = "месяца";
+"product.subscriptionPeriod.unit.year" = "год";
+"product.subscriptionPeriod.unit.years" = "года";
+
+"product.subscriptionPeriod.unit.day.compactName" = "д";
+"product.subscriptionPeriod.unit.week.compactName" = "н";
+"product.subscriptionPeriod.unit.month.compactName" = "мес.";
+"product.subscriptionPeriod.unit.year.compactName" = "г";
+
+"product.subscriptionOffer.freeTrial" = "Пробный период %d-%@";

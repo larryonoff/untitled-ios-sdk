@@ -1,0 +1,15 @@
+"product.subscriptionPeriod.unit.day" = "dia";
+"product.subscriptionPeriod.unit.days" = "dias";
+"product.subscriptionPeriod.unit.week" = "semana";
+"product.subscriptionPeriod.unit.weeks" = "semanas";
+"product.subscriptionPeriod.unit.month" = "mês";
+"product.subscriptionPeriod.unit.months" = "meses";
+"product.subscriptionPeriod.unit.year" = "ano";
+"product.subscriptionPeriod.unit.years" = "anos";
+
+"product.subscriptionPeriod.unit.day.compactName" = "d";
+"product.subscriptionPeriod.unit.week.compactName" = "s";
+"product.subscriptionPeriod.unit.month.compactName" = "m";
+"product.subscriptionPeriod.unit.year.compactName" = "a";
+
+"product.subscriptionOffer.freeTrial" = "%d-%@ de avaliação gratuita";
