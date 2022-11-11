@@ -7,19 +7,19 @@ extension PurchasesClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
   public static let testValue = PurchasesClient(
-    initialize: XCTUnimplemented("\(Self.self).initialize"),
-    paywalByID: XCTUnimplemented("\(Self.self).paywalByID", placeholder: nil),
-    purchase: XCTUnimplemented("\(Self.self).purchase", placeholder: .userCancelled),
-    purchases: XCTUnimplemented("\(Self.self).purchases", placeholder: Purchases()),
-    purchasesUpdates: XCTUnimplemented("\(Self.self).purchasesUpdates", placeholder: .finished),
-    restorePurhases: XCTUnimplemented("\(Self.self).restorePurhases", placeholder: .userCancelled),
-    logPaywall: XCTUnimplemented("\(Self.self).logPaywall")
+    initialize: unimplemented("\(Self.self).initialize"),
+    paywalByID: unimplemented("\(Self.self).paywalByID", placeholder: nil),
+    purchase: unimplemented("\(Self.self).purchase", placeholder: .userCancelled),
+    purchases: unimplemented("\(Self.self).purchases", placeholder: Purchases()),
+    purchasesUpdates: unimplemented("\(Self.self).purchasesUpdates", placeholder: .finished),
+    restorePurhases: unimplemented("\(Self.self).restorePurhases", placeholder: .userCancelled),
+    logPaywall: unimplemented("\(Self.self).logPaywall")
   )
 }
 
 extension PurchasesClient {
   public static let noop = PurchasesClient(
-    initialize: {},
+    initialize: { try await Task.never() },
     paywalByID: { _ in try await Task.never() },
     purchase: { _ in try await Task.never() },
     purchases: { Purchases() },

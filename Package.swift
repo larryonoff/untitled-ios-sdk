@@ -40,7 +40,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "1.17.7"
+      from: "2.0.4"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
@@ -48,7 +48,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
-      from: "6.8.1"
+      from: "6.9.0"
     ),
     .package(
       url: "https://github.com/JohnSundell/AsyncCompatibilityKit",

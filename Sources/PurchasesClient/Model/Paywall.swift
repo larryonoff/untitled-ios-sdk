@@ -34,10 +34,13 @@ extension Paywall: Identifiable {}
 extension Paywall: Sendable {}
 
 extension Paywall {
-  init(_ paywall: PaywallModel) {
-    self.id = .init(rawValue: paywall.developerId)
-    self.products = paywall.products
-      .compactMap { .init($0) }
+  init(
+    _ paywall: AdaptyPaywall,
+    products: [AdaptyPaywallProduct]?
+  ) {
+    self.id = .init(rawValue: paywall.id)
+    self.products = products?
+      .compactMap { .init($0) } ?? []
     self.productSelectedID = paywall
       .customPayload?["selected_product_id"]
       .flatMap { $0 as? String }

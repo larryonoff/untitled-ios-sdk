@@ -2,13 +2,13 @@ import Adapty
 import Foundation
 
 extension Product {
-  init?(_ product: ProductModel) {
+  init?(_ product: AdaptyProduct) {
     self.init(
       id: .init(rawValue: product.vendorProductId),
       displayName: product.localizedTitle,
       description: product.localizedDescription,
       price: product.price,
-      priceLocale: product.skProduct?.priceLocale ?? .current,
+      priceLocale: product.skProduct.priceLocale,
       displayPrice: product.localizedPrice ?? "",
       subscriptionInfo: .init(product)
     )
@@ -16,7 +16,7 @@ extension Product {
 }
 
 extension Product.SubscriptionInfo {
-  init?(_ product: ProductModel) {
+  init?(_ product: AdaptyProduct) {
     guard
       let subscriptionGroupID = product.subscriptionGroupIdentifier,
       let subscriptionPeriod = product.subscriptionPeriod
@@ -35,22 +35,22 @@ extension Product.SubscriptionInfo {
 
 extension Product.SubscriptionOffer {
   static func introductoryOffer(
-    _ discountModel: ProductDiscountModel,
-    product: ProductModel
+    _ discount: AdaptyProductDiscount,
+    product: AdaptyProduct
   ) -> Self? {
     guard
-      let paymentMode = Product.SubscriptionOffer.PaymentMode(discountModel.paymentMode),
-      let period = Product.SubscriptionPeriod(discountModel.subscriptionPeriod)
+      let paymentMode = Product.SubscriptionOffer.PaymentMode(discount.paymentMode),
+      let period = Product.SubscriptionPeriod(discount.subscriptionPeriod)
     else {
       return nil
     }
 
     return .init(
-      id: discountModel.identifier,
+      id: discount.identifier,
       type: .introductory,
-      price: discountModel.price,
-      priceLocale: product.skProduct?.priceLocale ?? .current,
-      displayPrice: discountModel.localizedPrice ?? "",
+      price: discount.price,
+      priceLocale: product.skProduct.priceLocale,
+      displayPrice: discount.localizedPrice ?? "",
       period: period,
       paymentMode: paymentMode
     )
@@ -58,7 +58,7 @@ extension Product.SubscriptionOffer {
 }
 
 extension Product.SubscriptionOffer.PaymentMode {
-  init?(_ paymentMode: ProductDiscountModel.PaymentMode) {
+  init?(_ paymentMode: AdaptyProductDiscount.PaymentMode) {
     switch paymentMode {
     case .freeTrial:
       self = .freeTrial
@@ -73,7 +73,7 @@ extension Product.SubscriptionOffer.PaymentMode {
 }
 
 extension Product.SubscriptionPeriod {
-  public init?(_ period: ProductSubscriptionPeriodModel) {
+  public init?(_ period: AdaptyProductSubscriptionPeriod) {
     guard let unit = Product.SubscriptionPeriod.Unit(period.unit) else {
       return nil
     }
@@ -86,7 +86,7 @@ extension Product.SubscriptionPeriod {
 }
 
 extension Product.SubscriptionPeriod.Unit {
-  public init?(_ unit: ProductModel.PeriodUnit) {
+  public init?(_ unit: AdaptyPeriodUnit) {
     switch unit {
     case .day:
       self = .day

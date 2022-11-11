@@ -21,7 +21,7 @@ extension PurchasesClient {
 
     return PurchasesClient(
       initialize: {
-        await impl.initialize()
+        try await impl.initialize()
       },
       paywalByID: { id in
         try await impl.paywall(by: id)
@@ -69,57 +69,57 @@ final actor PurchasesClientImpl {
     AsyncStream(_purchases.values.compactMap { $0 })
   }
 
-  func initialize() async {
-    logger.info("initialize")
+  func initialize() async throws {
+    do {
+      logger.info("initialize")
 
-    guard self.adaptyDelegate == nil else {
-      return
-    }
-
-    let bundle = Bundle.main
-    guard let apiKey = bundle.adaptyAPIKey else {
-      assertionFailure()
-
-      logger.error("initialize failure", dump: [
-        "error": "Adapty API key not set"
-      ])
-
-      return
-    }
-
-    let adaptyDelegate = _AdaptyDelegate()
-    self.adaptyDelegate = adaptyDelegate
-    Adapty.delegate = adaptyDelegate
-
-    _ = Task.detached(priority: .high) { [weak self] in
-      guard let self = self else {
+      guard self.adaptyDelegate == nil else {
         return
       }
 
-      for await event in adaptyDelegate.stream {
-        switch event {
-        case let .didReceiveUpdatedPurchaserInfo(purchaserInfo):
-          let purchases = self.updatePurchases(purchaserInfo)
+      let bundle = Bundle.main
+      guard let apiKey = bundle.adaptyAPIKey else {
+        assertionFailure()
 
-          logger.info("delegate: did receive updated purchases", dump: [
-            "purchases": purchases
-          ])
-        case let .didReceivePromo(promo):
-          logger.info("delegate: did receive promo", dump: [
-            "promo": promo
-          ])
-        case .didReceivePaywallsForConfig:
-          break
+        logger.error("initialize failure", dump: [
+          "error": "Adapty API key not set"
+        ])
+
+        return
+      }
+
+      let adaptyDelegate = _AdaptyDelegate()
+      self.adaptyDelegate = adaptyDelegate
+      Adapty.delegate = adaptyDelegate
+
+      _ = Task.detached(priority: .high) { [weak self] in
+        guard let self = self else {
+          return
+        }
+
+        for await event in adaptyDelegate.stream {
+          switch event {
+          case let .didLoadLatestProfile(profile):
+            let purchases = self.updatePurchases(profile)
+
+            logger.info("delegate: did receive updated purchases", dump: [
+              "purchases": purchases
+            ])
+          }
         }
       }
+
+      try await Adapty.activate(
+        apiKey,
+        customerUserId: userIdentifier().uuidString
+      )
+
+      logger.info("initialize success")
+    } catch {
+      logger.info("initialize failure", dump: [
+        "error": error.localizedDescription
+      ])
     }
-
-    Adapty.activate(
-      apiKey,
-      customerUserId: userIdentifier().uuidString
-    )
-
-    logger.info("initialize success")
   }
 
   func paywall(by id: Paywall.ID) async throws -> Paywall? {
@@ -128,8 +128,16 @@ final actor PurchasesClientImpl {
         "id": id
       ])
 
-      let paywall = try await _paywall(by: id)
-        .flatMap(Paywall.init)
+      let paywall: Paywall? = try await { () async throws -> Paywall? in
+        guard let _paywall = try await _paywall(by: id) else {
+          return nil
+        }
+
+        return Paywall(
+          _paywall,
+          products: try await _paywallProducts(for: _paywall)
+        )
+      }()
 
       logger.info("get paywall success", dump: [
         "id": id,
@@ -157,19 +165,16 @@ final actor PurchasesClientImpl {
 
       guard
         let paywall = try await _paywall(by: request.paywallID),
-        let product = paywall.products
+        let products = try await _paywallProducts(for: paywall),
+        let product = products
           .first(where: { $0.vendorProductId == request.product.id.rawValue })
       else {
         assertionFailure()
         throw PurchasesError.productUnavailable
       }
 
-      let result = try await Adapty.makePurchase(
-        product: product,
-        offerID: product.promotionalOfferId
-      )
-
-      let purchases = updatePurchases(result.purchaserInfo)
+      let profile = try await Adapty.makePurchase(product: product)
+      let purchases = updatePurchases(profile)
 
       logger.info("purchase success", dump: [
         "purchases": purchases,
@@ -195,8 +200,8 @@ final actor PurchasesClientImpl {
     do {
       logger.info("restore purchases")
 
-      let result = try await Adapty.restorePurchases()
-      let purchases = updatePurchases(result.purchaserInfo)
+      let profile = try await Adapty.restorePurchases()
+      let purchases = updatePurchases(profile)
 
       if !purchases.isPremium {
         throw PurchasesError.premiumExpired
@@ -269,17 +274,24 @@ final actor PurchasesClientImpl {
 
   private nonisolated func _paywall(
     by id: Paywall.ID
-  ) async throws -> PaywallModel? {
-    let result = try await Adapty.getPaywalls(forceUpdate: false)
-    return (result.paywalls ?? [])
-      .first { $0.developerId == id.rawValue }
+  ) async throws -> AdaptyPaywall? {
+    try await Adapty.getPaywall(id.rawValue)
+  }
+
+  private nonisolated func _paywallProducts(
+    for paywall: AdaptyPaywall
+  ) async throws -> [AdaptyPaywallProduct]? {
+    try await Adapty.getPaywallProducts(
+      paywall: paywall,
+      fetchPolicy: .default
+    )
   }
 
   @discardableResult
   nonisolated private func updatePurchases(
-    _ purchaserInfo: PurchaserInfoModel?
+    _ profile: AdaptyProfile?
   ) -> Purchases {
-    let purchases = Purchases(purchaserInfo)
+    let purchases = Purchases(profile)
     _purchases.value = purchases
 
     return purchases
@@ -289,9 +301,7 @@ final actor PurchasesClientImpl {
 // MARK: - Adapty
 
 enum AdaptyDelegateEvent: Equatable {
-  case didReceiveUpdatedPurchaserInfo(PurchaserInfoModel)
-  case didReceivePromo(PromoModel)
-  case didReceivePaywallsForConfig([PaywallModel])
+  case didLoadLatestProfile(AdaptyProfile)
 }
 
 final class _AdaptyDelegate: AdaptyDelegate {
@@ -305,25 +315,18 @@ final class _AdaptyDelegate: AdaptyDelegate {
 
   // AdaptyDelegate
 
-  func didReceiveUpdatedPurchaserInfo(
-    _ purchaserInfo: PurchaserInfoModel
+  func didLoadLatestProfile(
+    _ profile: AdaptyProfile
   ) {
     pipe.continuation.yield(
-      .didReceiveUpdatedPurchaserInfo(purchaserInfo)
+      .didLoadLatestProfile(profile)
     )
   }
 
-  func didReceivePromo(_ promo: PromoModel) {
-    pipe.continuation.yield(
-      .didReceivePromo(promo)
-    )
-  }
-
-  func didReceivePaywallsForConfig(paywalls: [PaywallModel]) {
-    pipe.continuation.yield(
-      .didReceivePaywallsForConfig(paywalls)
-    )
-  }
+  func paymentQueue(
+    shouldAddStorePaymentFor product: AdaptyDeferredProduct,
+    defermentCompletion makeDeferredPurchase: @escaping (AdaptyResultCompletion<AdaptyProfile>?) -> Void
+  ) {}
 }
 
 
