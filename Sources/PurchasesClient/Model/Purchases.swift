@@ -15,7 +15,7 @@ extension Purchases: Hashable {}
 extension Purchases: Sendable {}
 
 extension Purchases {
-  init(_ purchaserInfo: PurchaserInfoModel?) {
+  init(_ purchaserInfo: AdaptyProfile?) {
     guard
       let purchaserInfo = purchaserInfo,
       let accessLevel = purchaserInfo.accessLevels["premium"]
@@ -47,7 +47,7 @@ extension Purchases {
     let purchaserInfo = UserDefaults.standard
       .object(forKey: .purchaserInfoKey)
       .flatMap { $0 as? Data }
-      .flatMap { try? JSONDecoder().decode(PurchaserInfoModel.self, from: $0) }
+      .flatMap { try? JSONDecoder().decode(AdaptyProfile.self, from: $0) }
 
     return Purchases(purchaserInfo)
   }
