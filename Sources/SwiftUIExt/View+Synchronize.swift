@@ -6,7 +6,13 @@ extension View {
     _ second: FocusState<Value>.Binding
   ) -> some View {
     self
-      .onChange(of: first.wrappedValue) { second.wrappedValue = $0 }
-      .onChange(of: second.wrappedValue) { first.wrappedValue = $0 }
+      .onChange(of: first.wrappedValue) {
+        guard second.wrappedValue != $0 else { return }
+        second.wrappedValue = $0
+      }
+      .onChange(of: second.wrappedValue) {
+        guard first.wrappedValue != $0 else { return }
+        first.wrappedValue = $0
+      }
   }
 }
