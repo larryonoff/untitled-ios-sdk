@@ -43,7 +43,9 @@ extension AVAsset {
     return composition
   }
 
-  public func removingAudio() async throws -> AVAsset {
+  public func removing(
+    _ mediaType: AVMediaType
+  ) async throws -> AVAsset {
     let composition = AVMutableComposition()
 
     try composition.insertTimeRange(
@@ -55,7 +57,8 @@ extension AVAsset {
       at: .zero
     )
 
-    for track in try await composition.load(.tracks) where track.mediaType == .audio {
+    for track in try await composition.load(.tracks)
+    where track.mediaType == mediaType {
       composition.removeTrack(track)
     }
 
