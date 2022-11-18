@@ -1,10 +1,11 @@
+import Combine
 import ComposableArchitecture
 import Photos
 
 extension PhotosAuthorizationClient {
   public static let live: Self = {
-    let authorizationPipe = AsyncStream<(AccessLevel, AuthorizationStatus)>
-      .streamWithContinuation((AccessLevel, AuthorizationStatus).self)
+    let authorizationSubject =
+      PassthroughSubject<(AccessLevel, AuthorizationStatus), Never>()
 
     return PhotosAuthorizationClient(
       authorizationStatus: { acl in
@@ -12,7 +13,7 @@ extension PhotosAuthorizationClient {
       },
       authorizationStatusUpdates: { acl in
         AsyncStream(
-          authorizationPipe.stream
+          authorizationSubject.values
             .filter { $0.0 == acl }
             .map { $0.1 }
         )
@@ -28,7 +29,7 @@ extension PhotosAuthorizationClient {
         )
 
         if oldStatus != newStatus {
-          authorizationPipe.continuation.yield((acl, newStatus))
+          authorizationSubject.send((acl, newStatus))
         }
 
         return newStatus
