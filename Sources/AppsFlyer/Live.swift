@@ -1,6 +1,7 @@
 import Adapty
 import AppsFlyerLib
 import AppTrackingTransparency
+import Combine
 import ComposableArchitecture
 import Foundation
 import LoggingSupport
@@ -113,10 +114,11 @@ enum AppsFlyerDelegateEvent {
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
 final class _AppsFlyerDelegate: NSObject, AppsFlyerLibDelegate {
-  let pipe = AsyncStream<AppsFlyerDelegateEvent>.streamWithContinuation()
+  private let subject =
+    PassthroughSubject<AppsFlyerDelegateEvent, Never>()
 
   var stream: AsyncStream<AppsFlyerDelegateEvent> {
-    AsyncStream(pipe.stream)
+    AsyncStream(subject.values)
   }
 
   override init() {
@@ -132,7 +134,7 @@ final class _AppsFlyerDelegate: NSObject, AppsFlyerLibDelegate {
       "conversionInfo": conversionInfo
     ])
 
-    pipe.continuation.yield(
+    subject.send(
       .onConversionDataSuccess(conversionInfo)
     )
   }
@@ -144,7 +146,7 @@ final class _AppsFlyerDelegate: NSObject, AppsFlyerLibDelegate {
       "error": error.localizedDescription
     ])
 
-    pipe.continuation.yield(
+    subject.send(
       .onConversionDataFail(error)
     )
   }
@@ -156,7 +158,7 @@ final class _AppsFlyerDelegate: NSObject, AppsFlyerLibDelegate {
       "attributionData": attributionData
     ])
 
-    pipe.continuation.yield(
+    subject.send(
       .onAppOpenAttribution(attributionData)
     )
   }
@@ -168,7 +170,7 @@ final class _AppsFlyerDelegate: NSObject, AppsFlyerLibDelegate {
       "error": error.localizedDescription
     ])
 
-    pipe.continuation.yield(
+    subject.send(
       .onAppOpenAttributionFailure(error)
     )
   }
