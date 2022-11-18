@@ -60,7 +60,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.1.0"
+      from: "10.2.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -72,19 +72,19 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.45.0"
+      from: "0.46.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "0.6.0"
+      from: "0.6.1"
     ),
     // .package(
     //   url: "https://github.com/pointfreeco/swift-identified-collections",
-    //   from: "0.4.1"
+    //   from: "0.5.0"
     // ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
-      from: "0.7.0"
+      from: "0.8.0"
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
