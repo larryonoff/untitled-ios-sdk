@@ -42,11 +42,11 @@ extension Paywall {
     self.products = products?
       .compactMap { .init($0) } ?? []
     self.productSelectedID = paywall
-      .customPayload?["selected_product_id"]
+      .remoteConfig?["selected_product_id"]
       .flatMap { $0 as? String }
       .flatMap { .init(rawValue: $0) }
     self.productComparingID = paywall
-      .customPayload?["comparing_product_id"]
+      .remoteConfig?["comparing_product_id"]
       .flatMap { $0 as? String }
       .flatMap { .init(rawValue: $0) }
   }
