@@ -40,7 +40,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.0.4"
+      from: "2.1.0"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
