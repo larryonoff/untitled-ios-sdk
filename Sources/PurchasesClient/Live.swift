@@ -38,6 +38,9 @@ extension PurchasesClient {
       restorePurhases: {
         try await impl.restorePurchases()
       },
+      setFallbackPaywalls: {
+        try await impl.setFallbackPaywalls($0)
+      },
       logPaywall: { paywall in
         try await impl.log(paywall)
       }
@@ -113,6 +116,13 @@ final actor PurchasesClientImpl {
         apiKey,
         customerUserId: userIdentifier().uuidString
       )
+
+      if
+        let fallbackURL = Bundle.main.url(forResource: "fallback_paywalls", withExtension: "json"),
+        let fallbackData = try? Data(contentsOf: fallbackURL)
+      {
+        try? await setFallbackPaywalls(fallbackData)
+      }
 
       logger.info("initialize success")
     } catch {
@@ -221,6 +231,22 @@ final actor PurchasesClientImpl {
         return .userCancelled
       }
 
+      throw error
+    }
+  }
+
+  nonisolated
+  func setFallbackPaywalls(_ data: Data) async throws {
+    do {
+      logger.info("set fallback paywalls")
+
+      try await Adapty.setFallbackPaywalls(data)
+
+      logger.info("set fallback paywalls success")
+    } catch {
+      logger.error("set fallback paywalls failure", dump: [
+        "error": error.localizedDescription
+      ])
       throw error
     }
   }

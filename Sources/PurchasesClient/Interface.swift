@@ -1,4 +1,5 @@
 import Dependencies
+import Foundation
 
 extension DependencyValues {
   public var purchases: PurchasesClient {
@@ -14,6 +15,7 @@ public struct PurchasesClient {
   public var purchases: @Sendable () -> Purchases
   public var purchasesUpdates: @Sendable () -> AsyncStream<Purchases>
   public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
+  public var setFallbackPaywalls: @Sendable (Data) async throws -> Void
   public var logPaywall: @Sendable (Paywall) async throws -> Void
 }
 
