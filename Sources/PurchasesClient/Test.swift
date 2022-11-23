@@ -13,6 +13,7 @@ extension PurchasesClient: TestDependencyKey {
     purchases: unimplemented("\(Self.self).purchases", placeholder: Purchases()),
     purchasesUpdates: unimplemented("\(Self.self).purchasesUpdates", placeholder: .finished),
     restorePurhases: unimplemented("\(Self.self).restorePurhases", placeholder: .userCancelled),
+    setFallbackPaywalls: unimplemented("\(Self.self).setFallbackPaywalls"),
     logPaywall: unimplemented("\(Self.self).logPaywall")
   )
 }
@@ -25,6 +26,7 @@ extension PurchasesClient {
     purchases: { Purchases() },
     purchasesUpdates: { AsyncStream { _ in } },
     restorePurhases: { try await Task.never() },
+    setFallbackPaywalls: { _ in try await Task.never() },
     logPaywall: { _ in try await Task.never() }
   )
 }
