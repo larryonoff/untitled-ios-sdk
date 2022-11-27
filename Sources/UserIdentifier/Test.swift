@@ -6,8 +6,8 @@ extension UserIdentifierGenerator {
   static var previewValue = Self.noop
 
   static let testValue = Self(
-    generate: XCTUnimplemented("\(Self.self).generate", placeholder: .zero),
-    reset: XCTUnimplemented("\(Self.self).reset")
+    generate: unimplemented("\(Self.self).generate", placeholder: .zero),
+    reset: unimplemented("\(Self.self).reset")
   )
 }
 

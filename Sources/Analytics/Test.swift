@@ -7,8 +7,8 @@ extension Analytics: TestDependencyKey {
   public static var previewValue = Self.noop
 
   public static let testValue = Analytics(
-    log: XCTUnimplemented("\(Self.self).log"),
-    setUserProperty: XCTUnimplemented("\(Self.self).setUserProperty")
+    log: unimplemented("\(Self.self).log"),
+    setUserProperty: unimplemented("\(Self.self).setUserProperty")
   )
 }
 

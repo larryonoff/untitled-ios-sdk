@@ -13,7 +13,7 @@ extension DependencyValues {
     static let previewValue = FeedbackGenerator { _ in }
 
     static let testValue = FeedbackGenerator(
-      XCTUnimplemented("\(Self.self).generate")
+      unimplemented("\(Self.self).generate")
     )
   }
 }

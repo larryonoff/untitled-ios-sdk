@@ -7,8 +7,8 @@ extension FacebookClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
   public static let testValue = FacebookClient(
-    appDidFinishLaunching: XCTUnimplemented("\(Self.self).appDidFinishLaunching"),
-    appOpenURL: XCTUnimplemented("\(Self.self).appOpenURL")
+    appDidFinishLaunching: unimplemented("\(Self.self).appDidFinishLaunching"),
+    appOpenURL: unimplemented("\(Self.self).appOpenURL")
   )
 }
 
