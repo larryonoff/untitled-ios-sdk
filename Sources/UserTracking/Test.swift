@@ -7,11 +7,11 @@ extension UserTrackingClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
   public static let testValue = UserTrackingClient(
-    authorizationStatus: XCTUnimplemented("\(Self.self).authorizationStatus", placeholder: .notDetermined),
-    authorizationStatusUpdates: XCTUnimplemented("\(Self.self).authorizationStatusUpdates", placeholder: .finished),
-    initialize: XCTUnimplemented("\(Self.self).initialize"),
-    isAuthorizationRequestNeeded: XCTUnimplemented("\(Self.self).isAuthorizationRequestNeeded", placeholder: false),
-    requestAuthorization: XCTUnimplemented("\(Self.self).requestAuthorization", placeholder: .notDetermined)
+    authorizationStatus: unimplemented("\(Self.self).authorizationStatus", placeholder: .notDetermined),
+    authorizationStatusUpdates: unimplemented("\(Self.self).authorizationStatusUpdates", placeholder: .finished),
+    initialize: unimplemented("\(Self.self).initialize"),
+    isAuthorizationRequestNeeded: unimplemented("\(Self.self).isAuthorizationRequestNeeded", placeholder: false),
+    requestAuthorization: unimplemented("\(Self.self).requestAuthorization", placeholder: .notDetermined)
   )
 }
 

@@ -7,9 +7,9 @@ extension PhotosAuthorizationClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
   public static let testValue = PhotosAuthorizationClient(
-    authorizationStatus: XCTUnimplemented("\(Self.self).authorizationStatus", placeholder: .notDetermined),
-    authorizationStatusUpdates: XCTUnimplemented("\(Self.self).authorizationStatusUpdates", placeholder: .finished),
-    requestAuthorization: XCTUnimplemented("\(Self.self).requestAuthorization", placeholder: .notDetermined)
+    authorizationStatus: unimplemented("\(Self.self).authorizationStatus", placeholder: .notDetermined),
+    authorizationStatusUpdates: unimplemented("\(Self.self).authorizationStatusUpdates", placeholder: .finished),
+    requestAuthorization: unimplemented("\(Self.self).requestAuthorization", placeholder: .notDetermined)
   )
 }
 

@@ -7,7 +7,7 @@ extension AmplitudeClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
   public static let testValue = Self(
-    initialize: XCTUnimplemented("\(Self.self).initialize")
+    initialize: unimplemented("\(Self.self).initialize")
   )
 }
 

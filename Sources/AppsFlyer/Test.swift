@@ -7,7 +7,7 @@ extension AppsFlyerClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
   public static let testValue = AppsFlyerClient(
-    initialize: XCTUnimplemented("\(Self.self).initialize")
+    initialize: unimplemented("\(Self.self).initialize")
   )
 }
 
