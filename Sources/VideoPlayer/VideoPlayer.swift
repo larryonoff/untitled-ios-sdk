@@ -4,15 +4,15 @@ import SwiftUI
 
 public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
   public enum Gravity: Equatable, Hashable {
-    case resizeAspect
-    case resizeAspectFill
+    case fit
+    case fill
     case resize
 
     var avLayerVideoGravity: AVLayerVideoGravity {
       switch self {
-      case .resizeAspect:
+      case .fit:
         return .resizeAspect
-      case .resizeAspectFill:
+      case .fill:
         return .resizeAspectFill
       case .resize:
         return .resize
@@ -20,7 +20,8 @@ public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
     }
   }
 
-  var gravity: Gravity = .resizeAspect
+  var videoAlignment: Alignment = .center
+  var videoGravity: Gravity = .fit
 
   private let player: AVPlayer?
 
@@ -31,9 +32,15 @@ public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
     self.videoOverlay = videoOverlay()
   }
 
-  public func gravity(_ gravity: Gravity) -> Self {
+  public func videoGravity(_ gravity: Gravity) -> Self {
     var view = self
-    view.gravity = gravity
+    view.videoGravity = gravity
+    return view
+  }
+
+  public func videoAlignment(_ alignment: Alignment) -> Self {
+    var view = self
+    view.videoAlignment = alignment
     return view
   }
 }
@@ -60,7 +67,7 @@ extension VideoPlayerX: UIViewRepresentable {
     context: Context
   ) -> VideoPlayerView {
     let playerView = VideoPlayerView(player: player)
-    playerView.videoGravity = gravity.avLayerVideoGravity
+    playerView.videoGravity = videoGravity.avLayerVideoGravity
     playerView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     playerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
@@ -100,7 +107,8 @@ extension VideoPlayerX: UIViewRepresentable {
     }
 
     uiView.player = player
-    uiView.videoGravity = gravity.avLayerVideoGravity
+    uiView.videoAlignment = videoAlignment
+    uiView.videoGravity = videoGravity.avLayerVideoGravity
 
     uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     uiView.setContentHuggingPriority(.defaultHigh, for: .horizontal)

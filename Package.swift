@@ -28,7 +28,7 @@ let package = Package(
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
-    .library(name: "SwiftUIExt", targets: ["SwiftUIExt"]),
+    .library(name: .swiftUIExt, targets: [.swiftUIExt]),
     .library(name: "UIKitExt", targets: ["UIKitExt"]),
     .library(name: .userIdentifier, targets: [.userIdentifier]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
@@ -198,7 +198,7 @@ let package = Package(
       ]
     ),
     .target(
-      name: "SwiftUIExt",
+      name: .swiftUIExt,
       dependencies: [
         "GraphicsExt",
         .External.composableArchitecture,
@@ -215,6 +215,9 @@ let package = Package(
     ),
     .target(
       name: .videoPlayer,
+      dependencies: [
+        .swiftUIExt
+      ],
       linkerSettings: [
         .linkedFramework("AVKit")
       ]
@@ -348,6 +351,7 @@ extension Target.Dependency {
   static let paywallReducer = byName(name: .paywallReducer)
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
+  static let swiftUIExt = byName(name: .swiftUIExt)
   static let userIdentifier = byName(name: .userIdentifier)
   static let version = byName(name: .version)
   static let videoPlayer = byName(name: .videoPlayer)
@@ -453,6 +457,7 @@ extension String {
   static let paywallReducer = "PaywallReducer"
   static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
+  static let swiftUIExt = "SwiftUIExt"
   static let userIdentifier = "UserIdentifier"
   static let videoPlayer = "VideoPlayer"
   static let webView = "WebView"

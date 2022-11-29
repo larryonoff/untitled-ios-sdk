@@ -1,5 +1,7 @@
 import AVKit
 import Foundation
+import SwiftUI
+import SwiftUIExt
 import UIKit
 
 open class VideoPlayerView: UIView {
@@ -17,6 +19,10 @@ open class VideoPlayerView: UIView {
       guard newValue != playerLayer.player else { return }
       playerLayer.player = newValue
     }
+  }
+
+  public var videoAlignment: Alignment = .center {
+    didSet { setNeedsLayout() }
   }
 
   public var videoGravity: AVLayerVideoGravity {
@@ -75,6 +81,12 @@ open class VideoPlayerView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
 
+  open override func layoutSubviews() {
+    super.layoutSubviews()
+    layoutVideo()
+    layoutContentLayoutGuide()
+  }
+
   // MARK: - setup
 
   private func setup() {
@@ -82,6 +94,8 @@ open class VideoPlayerView: UIView {
 
     setupConstraints()
     setupBindings()
+
+    layoutVideo()
   }
 
   private func setupConstraints() {
@@ -124,6 +138,64 @@ open class VideoPlayerView: UIView {
        }
     )
   }
+
+  // MARK: - layout
+
+  private func layoutVideo() {
+    CATransaction.begin()
+    defer {
+      CATransaction.commit()
+    }
+
+    guard let playerItem = player?.currentItem else {
+      playerLayer.frame = bounds
+      return
+    }
+
+    guard
+      let videoTrack = playerItem
+        .asset
+        .tracks(withMediaType: .video)
+        .first
+    else {
+      playerLayer.frame = bounds
+      return
+    }
+
+    if let animation = layer.animation(forKey: "position") {
+      CATransaction.setAnimationDuration(animation.duration)
+      CATransaction.setAnimationTimingFunction(
+        animation.timingFunction
+      )
+    } else {
+      CATransaction.disableActions()
+    }
+
+    let preferredNaturalSize = videoTrack.naturalSize
+      .applying(videoTrack.preferredTransform)
+      .standardized
+
+    playerLayer.frame = preferredNaturalSize.aligned(
+      in: bounds,
+      videoAlignment: videoAlignment,
+      videoGravity: videoGravity
+    )
+  }
+
+  private func layoutContentLayoutGuide() {
+    let contentRect = playerLayer.frame
+
+    videoRectLeftConstraint.constant =
+      bounds.minX + contentRect.minX
+    videoRectRightConstraint.constant =
+      -(bounds.width - contentRect.maxX)
+    videoRectTopConstraint.constant =
+      bounds.minY + contentRect.minY
+    videoRectBottomConstraint.constant =
+      -(bounds.height - contentRect.maxY)
+  }
+
+  // MARK: - state changes
 
   private func videoRectDidChange(
     _ rect: CGRect
