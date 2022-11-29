@@ -30,3 +30,16 @@ extension PurchasesClient {
     logPaywall: { _ in try await Task.never() }
   )
 }
+
+extension PurchasesClient {
+  public static let mock = PurchasesClient(
+    initialize: { try await Task.never() },
+    paywalByID: { _ in .mock },
+    purchase: { _ in try await Task.never() },
+    purchases: { Purchases() },
+    purchasesUpdates: { AsyncStream { _ in } },
+    restorePurhases: { try await Task.never() },
+    setFallbackPaywalls: { _ in try await Task.never() },
+    logPaywall: { _ in try await Task.never() }
+  )
+}
