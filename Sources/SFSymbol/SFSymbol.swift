@@ -68,6 +68,8 @@ extension SFSymbol {
   public static let docOnDoc: SFSymbol = "doc.on.doc"
   public static let docOnDocFill: SFSymbol = "doc.on.doc.fill"
 
+  public static let ellipsis: SFSymbol = "ellipsis"
+
   public static let gear: SFSymbol = "gear"
 
   public static let heart: SFSymbol = "heart"
