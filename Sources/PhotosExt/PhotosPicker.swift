@@ -143,6 +143,7 @@ private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable w
   func makeUIViewController(
     context: Context
   ) -> PHPickerViewController {
+    var configuration = PHPickerConfiguration(photoLibrary: photoLibrary)
 
     configuration.filter = filter
 
