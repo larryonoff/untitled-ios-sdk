@@ -18,6 +18,8 @@ open class VideoPlayerView: UIView {
     set {
       guard newValue != playerLayer.player else { return }
       playerLayer.player = newValue
+
+      playerDidChange()
     }
   }
 
@@ -128,13 +130,32 @@ open class VideoPlayerView: UIView {
     ])
   }
 
+  private var currentItemObserver: NSKeyValueObservation!
+
   private func setupBindings() {
     videoRectObserver = playerLayer.observe(
       \.videoRect,
        options: [.new, .initial],
        changeHandler: { [weak self] object, _ in
-         guard let self = self else { return }
+         guard let self else { return }
          self.videoRect = object.videoRect
+       }
+    )
+
+    setupCurrentItemObserver()
+  }
+
+  private func setupCurrentItemObserver() {
+    guard let player else {
+      currentItemObserver = nil
+      return
+    }
+
+    currentItemObserver = player.observe(
+      \.currentItem,
+       options: [.new, .initial],
+       changeHandler: { [weak self] _, _ in
+         self?.setNeedsLayout()
        }
     )
   }
@@ -180,6 +201,10 @@ open class VideoPlayerView: UIView {
       videoAlignment: videoAlignment,
       videoGravity: videoGravity
     )
+
+    print("XX: ---------------------------------------------")
+    print("XX: preferredNaturalSize: \(preferredNaturalSize)")
+    print("XX: playerLayer.frame: \(playerLayer.frame)")
   }
 
   private func layoutContentLayoutGuide() {
@@ -196,6 +221,10 @@ open class VideoPlayerView: UIView {
   }
 
   // MARK: - state changes
+
+  private func playerDidChange() {
+    setupCurrentItemObserver()
+  }
 
   private func videoRectDidChange(
     _ rect: CGRect
