@@ -144,14 +144,14 @@ private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable w
     context: Context
   ) -> PHPickerViewController {
 
-    var configuration = PHPickerConfiguration(photoLibrary: .shared())
     configuration.filter = filter
 
-    if #available(iOS 15, *) {
-      configuration.selection = selectionBehavior.phPickerConfigurationSelection
-    }
+    configuration.preferredAssetRepresentationMode =
+      preferredItemEncoding.phPickerConfigurationAssetRepresentationMode
+    configuration.preselectedAssetIdentifiers =
+      selection.wrappedValue.compactMap(\.itemIdentifier)
 
-    configuration.preferredAssetRepresentationMode = preferredItemEncoding.phPickerConfigurationAssetRepresentationMode
+    configuration.selection = selectionBehavior.phPickerConfigurationSelection
     configuration.selectionLimit = maxSelectionCount ?? 0
 
     let controller = PHPickerViewController(configuration: configuration)
