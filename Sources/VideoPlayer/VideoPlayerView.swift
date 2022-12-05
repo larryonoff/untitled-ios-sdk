@@ -201,10 +201,6 @@ open class VideoPlayerView: UIView {
       videoAlignment: videoAlignment,
       videoGravity: videoGravity
     )
-
-    print("XX: ---------------------------------------------")
-    print("XX: preferredNaturalSize: \(preferredNaturalSize)")
-    print("XX: playerLayer.frame: \(playerLayer.frame)")
   }
 
   private func layoutContentLayoutGuide() {
