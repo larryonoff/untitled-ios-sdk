@@ -149,8 +149,11 @@ private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable w
 
     configuration.preferredAssetRepresentationMode =
       preferredItemEncoding.phPickerConfigurationAssetRepresentationMode
-    configuration.preselectedAssetIdentifiers =
-      selection.wrappedValue.compactMap(\.itemIdentifier)
+
+    if let maxSelectionCount, maxSelectionCount > 1 {
+      configuration.preselectedAssetIdentifiers =
+        selection.wrappedValue.compactMap(\.itemIdentifier)
+    }
 
     configuration.selection = selectionBehavior.phPickerConfigurationSelection
     configuration.selectionLimit = maxSelectionCount ?? 0
