@@ -15,17 +15,17 @@ extension Purchases: Hashable {}
 extension Purchases: Sendable {}
 
 extension Purchases {
-  init(_ purchaserInfo: AdaptyProfile?) {
+  init(_ profile: AdaptyProfile?) {
     guard
-      let purchaserInfo = purchaserInfo,
-      let accessLevel = purchaserInfo.accessLevels["premium"]
+      let profile,
+      let accessLevel = profile.accessLevels["premium"]
     else {
       self.isEligibleForIntroductoryOffer = true
       self.isPremium = false
       return
     }
 
-    let subscriptionsProductIDs = purchaserInfo.subscriptions
+    let subscriptionsProductIDs = profile.subscriptions
       .values
       .map(\.vendorProductId)
 
@@ -35,6 +35,21 @@ extension Purchases {
 }
 
 extension Purchases {
+  private struct VH<T: Codable>: Codable {
+    let value: T
+    let hash: String?
+
+    init(_ value: T, hash: String?) {
+      self.value = value
+      self.hash = hash
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case value = "v"
+      case hash = "h"
+    }
+  }
+
   /// This's workaround function
   ///
   /// PurchaserInfo is loaded directly from user defaults,
@@ -44,12 +59,21 @@ extension Purchases {
   /// when internet connection is not available,
   /// so it's important to load previous values
   static func load() -> Purchases {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .iso8601)
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .formatted(formatter)
+    decoder.dataDecodingStrategy = .base64
+
     let profile = UserDefaults.standard
       .object(forKey: .purchaserInfoKey)
       .flatMap { $0 as? Data }
-      .flatMap { try? JSONDecoder().decode(AdaptyProfile.self, from: $0) }
+      .flatMap { try? decoder.decode(VH<AdaptyProfile>.self, from: $0) }
 
-    return Purchases(profile)
+    return Purchases(profile?.value)
   }
 }
 

@@ -69,7 +69,7 @@ final actor PurchasesClientImpl {
   }
 
   nonisolated var purchasesUpdates: AsyncStream<Purchases> {
-    AsyncStream(_purchases.values.compactMap { $0 })
+    AsyncStream(_purchases.removeDuplicates().values)
   }
 
   func initialize() async throws {
