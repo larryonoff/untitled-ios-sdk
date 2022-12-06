@@ -63,6 +63,12 @@ extension SFSymbol {
     public static let down: SFSymbol = "chevron.down"
   }
 
+  public static let crown: SFSymbol = "crown"
+
+  public enum Crown {
+    public static let fill: SFSymbol = "crown.fill"
+  }
+
   public static let circle: SFSymbol = "circle"
 
   public static let docOnDoc: SFSymbol = "doc.on.doc"
