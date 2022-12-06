@@ -1,9 +1,10 @@
 import Combine
 import ComposableArchitecture
+import Dependencies
 import Photos
 
-extension PhotosAuthorizationClient {
-  public static let live: Self = {
+extension PhotosAuthorizationClient: DependencyKey {
+  public static let liveValue: Self = {
     let authorizationSubject =
       PassthroughSubject<(AccessLevel, AuthorizationStatus), Never>()
 
