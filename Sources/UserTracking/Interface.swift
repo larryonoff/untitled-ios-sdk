@@ -18,6 +18,8 @@ public struct UserTrackingClient {
   public var isAuthorizationRequestNeeded: @Sendable () -> Bool
 
   public var requestAuthorization: @Sendable (UInt64) async -> AuthorizationStatus
+
+  public var sendTrackingData: @Sendable () async -> Void
 }
 
 extension UserTrackingClient {

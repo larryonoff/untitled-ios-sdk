@@ -40,7 +40,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.1.0"
+      from: "2.2.0"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
@@ -226,6 +226,8 @@ let package = Package(
       name: .Client.userTracking,
       dependencies: [
         .Client.analytics,
+        .External.adapty,
+        .External.amplitude,
         .External.composableArchitecture,
         .External.dependencies,
         .External.Facebook.core

@@ -11,7 +11,8 @@ extension UserTrackingClient: TestDependencyKey {
     authorizationStatusUpdates: unimplemented("\(Self.self).authorizationStatusUpdates", placeholder: .finished),
     initialize: unimplemented("\(Self.self).initialize"),
     isAuthorizationRequestNeeded: unimplemented("\(Self.self).isAuthorizationRequestNeeded", placeholder: false),
-    requestAuthorization: unimplemented("\(Self.self).requestAuthorization", placeholder: .notDetermined)
+    requestAuthorization: unimplemented("\(Self.self).requestAuthorization", placeholder: .notDetermined),
+    sendTrackingData: unimplemented("\(Self.self).sendTrackingData")
   )
 }
 
@@ -21,6 +22,7 @@ extension UserTrackingClient {
     authorizationStatusUpdates: { AsyncStream { _ in } },
     initialize: {},
     isAuthorizationRequestNeeded: { false },
-    requestAuthorization: { _ in .notDetermined }
+    requestAuthorization: { _ in .notDetermined },
+    sendTrackingData: {}
   )
 }

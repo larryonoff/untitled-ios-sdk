@@ -1,3 +1,5 @@
+import Adapty
+import Amplitude
 import Analytics
 import AppTrackingTransparency
 import Combine
@@ -30,6 +32,9 @@ extension UserTrackingClient {
       },
       requestAuthorization: { dueTime in
         await impl.requestAuthorization(delayFor: dueTime)
+      },
+      sendTrackingData: {
+        await impl.sendTrackingData()
       }
     )
   }
@@ -116,6 +121,27 @@ final actor UserTrackingImpl {
     logger.info("request authorization not needed, iOS < 14.5")
 
     return .authorized
+  }
+
+  func sendTrackingData() async {
+    logger.info("send tracking data")
+
+    do {
+      let amplitude = Amplitude.instance()
+      let params = AdaptyProfileParameters.Builder()
+        .with(appTrackingTransparencyStatus: authStatus.atAuthorizationStatus)
+        .with(amplitudeDeviceId: amplitude.deviceId)
+        .with(amplitudeUserId: amplitude.userId)
+        .build()
+
+      try await Adapty.updateProfile(params: params)
+
+      logger.info("send tracking data success")
+    } catch {
+      logger.error("send tracking data failure", dump: [
+        "error": error.localizedDescription
+      ])
+    }
   }
 
   @available(iOS 14, *)
