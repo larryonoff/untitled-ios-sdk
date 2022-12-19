@@ -24,6 +24,6 @@ extension Bundle {
   }
 
   public var appleID: String? {
-    self["X_APPLE_ID"] as? String
+    self["XAppleID"] as? String
   }
 }
