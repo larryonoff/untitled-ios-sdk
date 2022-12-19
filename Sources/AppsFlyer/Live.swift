@@ -6,6 +6,7 @@ import ComposableArchitecture
 import Foundation
 import LoggingSupport
 import os.log
+import UIKit
 import UserIdentifier
 
 extension AppsFlyerClient {
@@ -26,6 +27,8 @@ extension AppsFlyerClient {
 
 private final actor AppsFlyerClientImpl {
   private var appsFlyerDelegate: _AppsFlyerDelegate?
+  private var appsFlyerDelegateTask: Task<Void, Never>?
+  private var appDidBecomeActiveTask: Task<Void, Never>?
 
   private let userIdentifier: UserIdentifierGenerator
 
@@ -68,10 +71,9 @@ private final actor AppsFlyerClientImpl {
       tracker.waitForATTUserAuthorization(timeoutInterval: timeout)
     }
 
-    _ = Task.detached(priority: .high) { [weak self] in
+    appsFlyerDelegateTask = Task.detached(priority: .high) { [weak self] in
       guard
-        let self = self,
-        let appsFlyerDelegate = await self.appsFlyerDelegate
+        let appsFlyerDelegate = await self?.appsFlyerDelegate
       else {
         return
       }
@@ -97,6 +99,23 @@ private final actor AppsFlyerClientImpl {
         case .onAppOpenAttributionFailure:
           break
         }
+      }
+    }
+
+    appDidBecomeActiveTask = Task.detached {
+      do {
+        let didBecomeActive = await NotificationCenter.default
+          .notifications(named: UIApplication.didBecomeActiveNotification)
+
+        for await _ in didBecomeActive {
+          logger.error("AppsFlyer.start")
+          try await AppsFlyerLib.shared().start()
+          logger.error("AppsFlyer.start success")
+        }
+      } catch {
+        logger.error("AppsFlyer.start failure", dump: [
+          "error": error.localizedDescription
+        ])
       }
     }
   }
