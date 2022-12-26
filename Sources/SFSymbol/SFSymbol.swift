@@ -88,6 +88,10 @@ extension SFSymbol {
 
   public static let lock: SFSymbol = "lock"
 
+  public enum Minus {
+    public static let circleFill: SFSymbol = "minus.circle.fill"
+  }
+
   public static let multiply: SFSymbol = "multiply"
   public static let multiplyCircle: SFSymbol = "multiply.circle"
   public static let multiplyCircleFill: SFSymbol = "multiply.circle.fill"
@@ -130,6 +134,7 @@ extension SFSymbol {
   public enum Plus {
     public static let bubble: SFSymbol = "plus.bubble"
     public static let circle: SFSymbol = "plus.circle"
+    public static let circleFill: SFSymbol = "plus.circle.fill"
     public static let square: SFSymbol = "plus.square"
     public static let rectangle: SFSymbol = "plus.rectangle"
   }
