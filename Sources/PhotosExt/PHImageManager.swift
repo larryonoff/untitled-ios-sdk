@@ -13,46 +13,43 @@ extension PHImageManager {
       imageRequestID.flatMap { self?.cancelImageRequest($0) }
     }
 
-    return try await withTaskCancellationHandler(
-      handler: {
-        onCancel()
-      },
-      operation: {
-        try await withCheckedThrowingContinuation { continuation in
-          imageRequestID = self.requestImage(
-            for: asset,
-            targetSize: targetSize,
-            contentMode: contentMode,
-            options: options,
-            resultHandler: { image, info in
-              let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        imageRequestID = requestImage(
+          for: asset,
+          targetSize: targetSize,
+          contentMode: contentMode,
+          options: options,
+          resultHandler: { image, info in
+            let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
 
-              if let error = resultInfo?.error {
-                return continuation.resume(throwing: error)
-              }
-
-              if
-                let isCancelled = resultInfo?.isCancelled,
-                isCancelled
-              {
-                return continuation.resume(throwing: CancellationError())
-              }
-
-              // when degraded image is provided,
-              // the completion handler will be called again.
-              if
-                let isDegraded = resultInfo?.isDegraded,
-                isDegraded
-              {
-                return
-              }
-
-              continuation.resume(returning: (image, info))
+            if let error = resultInfo?.error {
+              return continuation.resume(throwing: error)
             }
-          )
-        }
+
+            if
+              let isCancelled = resultInfo?.isCancelled,
+              isCancelled
+            {
+              return continuation.resume(throwing: CancellationError())
+            }
+
+            // when degraded image is provided,
+            // the completion handler will be called again.
+            if
+              let isDegraded = resultInfo?.isDegraded,
+              isDegraded
+            {
+              return
+            }
+
+            continuation.resume(returning: (image, info))
+          }
+        )
       }
-    )
+    } onCancel: {
+      onCancel()
+    }
   }
 
   public func requestAVAsset(
@@ -64,44 +61,41 @@ extension PHImageManager {
       imageRequestID.flatMap { self?.cancelImageRequest($0) }
     }
 
-    return try await withTaskCancellationHandler(
-      handler: {
-        onCancel()
-      },
-      operation: {
-        try await withCheckedThrowingContinuation { continuation in
-          imageRequestID = self.requestAVAsset(
-            forVideo: asset,
-            options: options,
-            resultHandler: { avAsset, audioMix, info in
-              let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        imageRequestID = requestAVAsset(
+          forVideo: asset,
+          options: options,
+          resultHandler: { avAsset, audioMix, info in
+            let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
 
-              if let error = resultInfo?.error {
-                return continuation.resume(throwing: error)
-              }
-
-              if
-                let isCancelled = resultInfo?.isCancelled,
-                isCancelled
-              {
-                return continuation.resume(throwing: CancellationError())
-              }
-
-              // when degraded image is provided,
-              // the completion handler will be called again.
-              if
-                let isDegraded = resultInfo?.isDegraded,
-                isDegraded
-              {
-                return
-              }
-
-              continuation.resume(returning: (avAsset, audioMix, info))
+            if let error = resultInfo?.error {
+              return continuation.resume(throwing: error)
             }
-          )
-        }
+
+            if
+              let isCancelled = resultInfo?.isCancelled,
+              isCancelled
+            {
+              return continuation.resume(throwing: CancellationError())
+            }
+
+            // when degraded image is provided,
+            // the completion handler will be called again.
+            if
+              let isDegraded = resultInfo?.isDegraded,
+              isDegraded
+            {
+              return
+            }
+
+            continuation.resume(returning: (avAsset, audioMix, info))
+          }
+        )
       }
-    )
+    } onCancel: {
+      onCancel()
+    }
   }
 }
 
