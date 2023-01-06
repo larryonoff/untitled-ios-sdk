@@ -2,16 +2,23 @@ import AsyncCompatibilityKit
 import SwiftUI
 import Photos
 
-public struct AsyncImage<Content>: View where Content: View {
+@available(*, deprecated, renamed: "PhotosAssetImage")
+public typealias AsyncImage<Content: View> = PhotosAssetImage<Content>
+
+public struct PhotosAssetImage<Content: View>: View {
+  @Environment(\.photosImageManager)
+  private var imageManager
+
+  @Environment(\.assetImageContentMode)
+  private var imageContentMode
+
+  @Environment(\.assetImageTargetSize)
+  private var imageTargetSize
+
   private let asset: PHAsset?
 
   @ViewBuilder
   private let content: (AsyncImageState) -> Content
-
-  @Environment(\.photosImageManager)
-  private var imageManager: PHImageManager
-
-  private let targetSize: CGSize = PHImageManagerMaximumSize
 
   private let transaction: Transaction
 
@@ -63,6 +70,8 @@ public struct AsyncImage<Content>: View where Content: View {
 
   public init(
     asset: PHAsset?,
+    contentMode: ContentMode = .fit,
+    targetSize: CGSize = PHImageManagerMaximumSize,
     transaction: Transaction = Transaction(),
     @ViewBuilder content: @escaping (AsyncImageState) -> Content
   ) {
@@ -83,8 +92,8 @@ public struct AsyncImage<Content>: View where Content: View {
 
           let (image, _) = try await imageManager.requestImage(
             for: asset,
-            targetSize: targetSize,
-            contentMode: .default,
+            targetSize: imageTargetSize,
+            contentMode: imageContentMode.phImageContentMode,
             options: imageRequestOptions
           )
 
@@ -134,6 +143,17 @@ public struct AsyncImageState {
   public var phase: AsyncImagePhase = .empty
 
   public var isLoading: Bool = false
+}
+
+extension ContentMode {
+  var phImageContentMode: PHImageContentMode {
+    switch self {
+    case .fit:
+      return .aspectFit
+    case .fill:
+      return .aspectFill
+    }
+  }
 }
 
 extension Image {
