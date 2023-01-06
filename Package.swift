@@ -40,7 +40,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.2.0"
+      from: "2.2.2"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
@@ -48,7 +48,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
-      from: "6.9.0"
+      from: "6.9.1"
     ),
     .package(
       url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
@@ -68,27 +68,23 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/apple/swift-collections",
-      from: "1.0.3"
+      from: "1.0.4"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.46.0"
+      from: "0.48.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
       from: "0.6.1"
     ),
-    // .package(
-    //   url: "https://github.com/pointfreeco/swift-identified-collections",
-    //   from: "0.5.0"
-    // ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
-      from: "0.8.0"
+      from: "0.9.0"
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
-      from: "1.8.2"
+      from: "1.9.0"
     ),
     .package(
       url: "https://github.com/MarcoEidinger/URLCompatibilityKit",
