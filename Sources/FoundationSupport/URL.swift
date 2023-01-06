@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 extension URL {
   public var creationDate: Date? {
@@ -13,5 +14,9 @@ extension URL {
       return nil
     }
     return values.isDirectory
+  }
+
+  public static var settings: URL {
+    URL(string: UIApplication.openSettingsURLString)!
   }
 }
