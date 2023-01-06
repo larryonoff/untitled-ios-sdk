@@ -29,7 +29,7 @@ let package = Package(
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
     .library(name: .swiftUIExt, targets: [.swiftUIExt]),
-    .library(name: "UIKitExt", targets: ["UIKitExt"]),
+    .library(name: .uiKitExt, targets: [.uiKitExt]),
     .library(name: .userIdentifier, targets: [.userIdentifier]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
@@ -149,6 +149,7 @@ let package = Package(
     .target(
       name: .photosExt,
       dependencies: [
+        "UIKitExt",
         .External.asyncCompatibilityKit,
         .External.composableArchitecture,
         .External.customDump,
@@ -201,7 +202,7 @@ let package = Package(
         .External.swiftUIBackports
       ]
     ),
-    .target(name: "UIKitExt"),
+    .target(name: .uiKitExt),
     .target(
       name: .Client.userSettings,
       dependencies: [
@@ -456,6 +457,7 @@ extension String {
   static let photosExt = "PhotosExt"
   static let sfSymbol = "SFSymbol"
   static let swiftUIExt = "SwiftUIExt"
+  static let uiKitExt = "UIKitExt"
   static let userIdentifier = "UserIdentifier"
   static let videoPlayer = "VideoPlayer"
   static let webView = "WebView"
