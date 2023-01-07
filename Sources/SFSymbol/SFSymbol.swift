@@ -1,4 +1,3 @@
-@available(iOS 13.0, macOS 11.0, tvOS 13.0, watchOS 6.0, *)
 public struct SFSymbol {
   public var rawValue: String
 
