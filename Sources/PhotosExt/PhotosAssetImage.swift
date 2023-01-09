@@ -85,7 +85,11 @@ public struct PhotosAssetImage<Content: View>: View {
       .task(id: asset) {
         do {
           guard !Task.isCancelled else { return }
-          guard let asset = asset else { return }
+          guard let asset = asset else {
+            state.phase = .empty
+            notifyOnChange(state)
+            return
+          }
 
           state.isLoading = true
           notifyOnChange(state)
