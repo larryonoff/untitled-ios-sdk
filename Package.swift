@@ -72,7 +72,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.48.1"
+      from: "0.49.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -98,7 +98,6 @@ let package = Package(
         .foundationSupport,
         .External.amplitude,
         .External.composableArchitecture,
-        .External.dependencies,
         .External.Facebook.core,
         .External.Firebase.analytics,
         .External.tagged
@@ -126,15 +125,13 @@ let package = Package(
       name: .Client.facebook,
       dependencies: [
         .External.composableArchitecture,
-        .External.dependencies,
         .External.Facebook.core
       ]
     ),
     .target(
       name: "FeedbackGenerator",
       dependencies: [
-        .External.composableArchitecture,
-        .External.dependencies
+        .External.composableArchitecture
       ]
     ),
     .target(name: "GraphicsExt"),
@@ -164,7 +161,6 @@ let package = Package(
       name: .Client.photosAuthorization,
       dependencies: [
         .External.composableArchitecture,
-        .External.dependencies,
         .External.tagged
       ],
       linkerSettings: [
@@ -182,7 +178,6 @@ let package = Package(
         .External.adapty,
         .External.asyncCompatibilityKit,
         .External.composableArchitecture,
-        .External.dependencies,
         .External.tagged
       ],
       exclude: ["swiftgen.yml"],
@@ -206,8 +201,7 @@ let package = Package(
     .target(
       name: .Client.userSettings,
       dependencies: [
-        .External.composableArchitecture,
-        .External.dependencies,
+        .External.composableArchitecture
       ]
     ),
     .target(
@@ -226,7 +220,6 @@ let package = Package(
         .External.adapty,
         .External.amplitude,
         .External.composableArchitecture,
-        .External.dependencies,
         .External.Facebook.core
       ],
       linkerSettings: [
@@ -252,8 +245,7 @@ extension Target {
       .loggingSupport,
       .userIdentifier,
       .External.amplitude,
-      .External.composableArchitecture,
-      .External.dependencies
+      .External.composableArchitecture
     ],
     path: "Sources/AmplitudeClient"
   )
@@ -266,8 +258,7 @@ extension Target {
       .userIdentifier,
       .External.adapty,
       .External.appsFlyer,
-      .External.composableArchitecture,
-      .External.dependencies
+      .External.composableArchitecture
     ],
     path: "Sources/AppsFlyer",
     linkerSettings: [
@@ -289,8 +280,7 @@ extension Target {
       .userIdentifier,
       .External.Firebase.analytics,
       .External.Firebase.crashlytics,
-      .External.composableArchitecture,
-      .External.dependencies
+      .External.composableArchitecture
     ]
   )
 
@@ -317,7 +307,6 @@ extension Target {
     name: .userIdentifier,
     dependencies: [
       .External.composableArchitecture,
-      .External.dependencies,
       .External.keychainAccess
     ]
   )
@@ -325,8 +314,7 @@ extension Target {
   static let version = target(
     name: .version,
     dependencies: [
-      .External.composableArchitecture,
-      .External.dependencies
+      .External.composableArchitecture
     ]
   )
 
@@ -399,11 +387,6 @@ extension Target.Dependency {
     static let customDump = product(
       name: "CustomDump",
       package: "swift-custom-dump"
-    )
-
-    static let dependencies = product(
-      name: "Dependencies",
-      package: "swift-composable-architecture"
     )
 
     enum Facebook {
