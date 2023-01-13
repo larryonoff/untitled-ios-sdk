@@ -16,6 +16,7 @@ let package = Package(
     .library(name: .avFoundationExt, targets: [.avFoundationExt]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
+    .library(name: .dependenciesExt, targets: [.dependenciesExt]),
     .library(name: .Client.facebook, targets: [.Client.facebook]),
     .library(name: .firebaseClient, targets: [.firebaseClient]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
@@ -228,6 +229,7 @@ let package = Package(
     ),
     .amplitudeClient,
     .appsFlyer,
+    .dependenciesExt,
     .foundationSupport,
     .firebaseClient,
     .loggingSupport,
@@ -264,6 +266,14 @@ extension Target {
     linkerSettings: [
       .linkedFramework("AppTrackingTransparency")
     ]
+  )
+
+  static let dependenciesExt = target(
+    name: .dependenciesExt,
+    dependencies: [
+      .External.composableArchitecture
+    ],
+    path: "Sources/Dependencies"
   )
 
   static let foundationSupport = target(
@@ -331,6 +341,7 @@ extension Target.Dependency {
   static let appsFlyer = byName(name: .appsFlyer)
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
+  static let dependenciesExt = byName(name: .dependenciesExt)
   static let foundationSupport = byName(name: .foundationSupport)
   static let firebaseClient = byName(name: .firebaseClient)
   static let instagram = byName(name: .instagram)
@@ -408,11 +419,6 @@ extension Target.Dependency {
       )
     }
 
-    // static let identifiedCollections = product(
-    //     name: "IdentifiedCollections",
-    //     package: "swift-identified-collections"
-    //   )
-
     static let keychainAccess = byName(name: "KeychainAccess")
 
     static let tagged = product(
@@ -432,6 +438,7 @@ extension String {
   static let version = "Version"
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
+  static let dependenciesExt = "DependenciesExt"
   static let foundationSupport = "FoundationSupport"
   static let firebaseClient = "FirebaseClient"
   static let instagram = "Instagram"
