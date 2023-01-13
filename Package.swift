@@ -17,6 +17,7 @@ let package = Package(
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
     .library(name: .dependenciesExt, targets: [.dependenciesExt]),
+    .library(name: .device, targets: [.device]),
     .library(name: .Client.facebook, targets: [.Client.facebook]),
     .library(name: .firebaseClient, targets: [.firebaseClient]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
@@ -54,6 +55,10 @@ let package = Package(
     .package(
       url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
       from: "0.1.2"
+    ),
+    .package(
+      url: "https://github.com/devicekit/DeviceKit",
+      from: "5.0.0"
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
@@ -230,6 +235,7 @@ let package = Package(
     .amplitudeClient,
     .appsFlyer,
     .dependenciesExt,
+    .device,
     .foundationSupport,
     .firebaseClient,
     .loggingSupport,
@@ -274,6 +280,15 @@ extension Target {
       .External.composableArchitecture
     ],
     path: "Sources/Dependencies"
+  )
+
+  static let device = target(
+    name: .device,
+    dependencies: [
+      .External.composableArchitecture,
+      .External.deviceKit
+    ],
+    path: "Sources/Device"
   )
 
   static let foundationSupport = target(
@@ -342,6 +357,7 @@ extension Target.Dependency {
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
   static let dependenciesExt = byName(name: .dependenciesExt)
+  static let device = byName(name: .device)
   static let foundationSupport = byName(name: .foundationSupport)
   static let firebaseClient = byName(name: .firebaseClient)
   static let instagram = byName(name: .instagram)
@@ -400,6 +416,8 @@ extension Target.Dependency {
       package: "swift-custom-dump"
     )
 
+    static let deviceKit = byName(name: "DeviceKit")
+
     enum Facebook {
       static let core = product(
         name: "FacebookCore",
@@ -439,6 +457,7 @@ extension String {
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
   static let dependenciesExt = "DependenciesExt"
+  static let device = "Device"
   static let foundationSupport = "FoundationSupport"
   static let firebaseClient = "FirebaseClient"
   static let instagram = "Instagram"
