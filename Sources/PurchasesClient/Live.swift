@@ -1,5 +1,5 @@
 import Adapty
-import Analytics
+import AnalyticsClient
 import Combine
 import ComposableArchitecture
 import Foundation

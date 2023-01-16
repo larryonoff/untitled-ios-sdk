@@ -1,4 +1,4 @@
-import Analytics
+import AnalyticsClient
 import ComposableArchitecture
 import ComposableArchitectureExt
 import IdentifiedCollections
