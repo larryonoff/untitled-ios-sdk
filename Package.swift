@@ -226,7 +226,8 @@ let package = Package(
         .External.adapty,
         .External.amplitude,
         .External.composableArchitecture,
-        .External.Facebook.core
+        .External.Firebase.analytics,
+        .External.Facebook.core,
       ],
       linkerSettings: [
         .linkedFramework("AppTrackingTransparency")
@@ -472,7 +473,7 @@ extension String {
   static let webView = "WebView"
 
   enum Client {
-    static let analytics = "Analytics"
+    static let analytics = "AnalyticsClient"
     static let facebook = "FacebookClient"
     static let photosAuthorization = "PhotosAuthorization"
     static let purchases = "PurchasesClient"

@@ -1,4 +1,4 @@
-import Analytics
+import AnalyticsClient
 
 extension Analytics.EventName {
   static let idfaResponse: Self = "idfa_permission_response"

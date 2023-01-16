@@ -1,4 +1,4 @@
-import Analytics
+import AnalyticsClient
 import Foundation
 
 extension Analytics.EventName {

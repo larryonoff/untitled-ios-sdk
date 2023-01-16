@@ -1,6 +1,6 @@
 import Adapty
 import Amplitude
-import Analytics
+import AnalyticsClient
 import AppTrackingTransparency
 import Combine
 import ComposableArchitecture
