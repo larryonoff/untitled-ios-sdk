@@ -5,9 +5,12 @@ import AppTrackingTransparency
 import Combine
 import ComposableArchitecture
 import FacebookCore
+import FirebaseAnalytics
 import Foundation
 import LoggingSupport
 import os.log
+
+public typealias Analytics = AnalyticsClient.Analytics
 
 extension UserTrackingClient {
   public static func live(
@@ -132,6 +135,7 @@ final actor UserTrackingImpl {
         .with(appTrackingTransparencyStatus: authStatus.atAuthorizationStatus)
         .with(amplitudeDeviceId: amplitude.deviceId)
         .with(amplitudeUserId: amplitude.userId)
+        .with(firebaseAppInstanceId: FirebaseAnalytics.Analytics.appInstanceID())
         .build()
 
       try await Adapty.updateProfile(params: params)
