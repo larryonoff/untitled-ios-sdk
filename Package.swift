@@ -333,7 +333,8 @@ extension Target {
     name: .userIdentifier,
     dependencies: [
       .External.composableArchitecture,
-      .External.keychainAccess
+      .External.keychainAccess,
+      .External.tagged
     ]
   )
 

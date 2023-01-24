@@ -1,5 +1,6 @@
 import Dependencies
 import Foundation
+import Tagged
 import XCTestDynamicOverlay
 
 extension DependencyValues {
@@ -15,20 +16,23 @@ extension DependencyValues {
   }
 }
 
-public struct UserIdentifierGenerator {
-  private let generate: @Sendable () -> UUID
+public enum UserIdentifierTag {}
+public typealias UserIdentifier = Tagged<UserIdentifierTag, UUID>
+
+public struct UserIdentifierGenerator: Sendable {
+  private let generate: @Sendable () -> UserIdentifier
 
   public var reset: @Sendable () -> Void
 
-  public init(
-    generate: @escaping @Sendable () -> UUID,
+  init(
+    generate: @escaping @Sendable () -> UserIdentifier,
     reset: @escaping @Sendable () -> Void
   ) {
     self.generate = generate
     self.reset = reset
   }
 
-  public func callAsFunction() -> UUID {
+  public func callAsFunction() -> UserIdentifier {
     self.generate()
   }
 }

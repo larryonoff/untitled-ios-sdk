@@ -5,20 +5,25 @@ import KeychainAccess
 extension UserIdentifierGenerator {
   public static let liveValue: Self = {
     let keychain = Keychain.userIdentifier
+    let lock = NSRecursiveLock()
 
     return UserIdentifierGenerator(
       generate: {
+        lock.lock(); defer { lock.unlock() }
+
         if let identifier = keychain.userIdentifier {
-          return identifier
+          return .init(identifier)
         }
 
         let identifier = UUID()
 
         keychain.userIdentifier = identifier
 
-        return identifier
+        return .init(identifier)
       },
       reset: {
+        lock.lock(); defer { lock.unlock() }
+
         keychain.userIdentifier = UUID()
       }
     )
@@ -52,6 +57,6 @@ private extension Keychain {
   }
 }
 
-extension UUID {
-  static let zero = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+extension UserIdentifier {
+  static let zero = UserIdentifier(UUID(uuidString: "00000000-0000-0000-0000-000000000000")!)
 }
