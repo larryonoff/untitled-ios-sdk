@@ -22,10 +22,35 @@ struct _WebView: UIViewRepresentable {
   let request: URLRequest
 
   func makeUIView(context: Context) -> WKWebView {
-    let webView = WKWebView()
+    let configuration = WKWebViewConfiguration()
+
+    let webView = WKWebView(
+      frame: .zero,
+      configuration: configuration
+    )
     webView.navigationDelegate = context.coordinator
 
-    webView.load(request)
+    webView.scrollView.showsHorizontalScrollIndicator = false
+    webView.scrollView.showsVerticalScrollIndicator = false
+
+    // WKWebView doesn't work well with HTTPCookieStorage
+    // so it's done manually below
+    Task(priority: .userInitiated) { [request] in
+      if
+        let url = request.url,
+        let cookies = HTTPCookieStorage.shared.cookies(for: url),
+        !cookies.isEmpty
+      {
+        let httpCookieStore =
+          configuration.websiteDataStore.httpCookieStore
+
+        for cookie in cookies {
+          await httpCookieStore.setCookie(cookie)
+        }
+      }
+
+      webView.load(request)
+    }
 
     return webView
   }
