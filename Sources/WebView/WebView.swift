@@ -2,26 +2,44 @@ import SwiftUI
 import UIKit
 import WebKit
 
-public struct WebView {
-  private let url: URL
+public struct WebView: View {
+  private let request: URLRequest
 
   public init(url: URL) {
-    self.url = url
+    self.request = URLRequest(url: url)
+  }
+
+  public init(request: URLRequest) {
+    self.request = request
+  }
+
+  public var body: some View {
+    _WebView(request: request)
   }
 }
 
-extension WebView: Equatable {}
+struct _WebView: UIViewRepresentable {
+  let request: URLRequest
 
-extension WebView: UIViewRepresentable {
-  public func makeUIView(context: Context) -> WKWebView {
-    return WKWebView()
+  func makeUIView(context: Context) -> WKWebView {
+    let webView = WKWebView()
+    webView.navigationDelegate = context.coordinator
+
+    webView.load(request)
+
+    return webView
   }
 
-  public func updateUIView(
+  func updateUIView(
     _ webView: WKWebView,
     context: Context
-  ) {
-    let request = URLRequest(url: url)
-    webView.load(request)
+  ) {}
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator()
   }
+
+  // MARK: - Coordinator
+
+  final class Coordinator: NSObject, WKNavigationDelegate {}
 }
