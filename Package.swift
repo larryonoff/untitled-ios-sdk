@@ -12,6 +12,7 @@ let package = Package(
   products: [
     .library(name: .amplitudeClient, targets: [.amplitudeClient]),
     .library(name: .Client.analytics, targets: [.Client.analytics]),
+    .library(name: .applicationClient, targets: [.applicationClient]),
     .library(name: .appsFlyer, targets: [.appsFlyer]),
     .library(name: .avFoundationExt, targets: [.avFoundationExt]),
     .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
@@ -234,6 +235,7 @@ let package = Package(
       ]
     ),
     .amplitudeClient,
+    .applicationClient,
     .appsFlyer,
     .dependenciesExt,
     .device,
@@ -257,6 +259,15 @@ extension Target {
       .External.composableArchitecture
     ],
     path: "Sources/AmplitudeClient"
+  )
+
+  static let applicationClient = target(
+    name: .applicationClient,
+    dependencies: [
+      .loggingSupport,
+      .External.composableArchitecture
+    ],
+    path: "Sources/ApplicationClient"
   )
 
   static let appsFlyer = target(
@@ -355,6 +366,7 @@ extension Target {
 
 extension Target.Dependency {
   static let amplitudeClient = byName(name: .amplitudeClient)
+  static let applicationClient = byName(name: .applicationClient)
   static let appsFlyer = byName(name: .appsFlyer)
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
@@ -454,6 +466,7 @@ extension Target.Dependency {
 
 extension String {
   static let amplitudeClient = "AmplitudeClient"
+  static let applicationClient = "ApplicationClient"
   static let appsFlyer = "AppsFlyer"
   static let version = "Version"
   static let avFoundationExt = "AVFoundationExt"
