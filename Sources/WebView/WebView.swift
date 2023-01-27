@@ -28,10 +28,14 @@ struct _WebView: UIViewRepresentable {
       frame: .zero,
       configuration: configuration
     )
-    webView.navigationDelegate = context.coordinator
+
+    webView.backgroundColor = .clear
+    webView.isOpaque = false
 
     webView.scrollView.showsHorizontalScrollIndicator = false
     webView.scrollView.showsVerticalScrollIndicator = false
+
+    webView.navigationDelegate = context.coordinator
 
     // WKWebView doesn't work well with HTTPCookieStorage
     // so it's done manually below
