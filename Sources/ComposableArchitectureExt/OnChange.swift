@@ -4,8 +4,8 @@ extension ReducerProtocol {
   @inlinable
   public func onChange<ChildState: Equatable>(
     of toLocalState: @escaping (State) -> ChildState,
-    perform additionalEffects: @escaping (ChildState, inout State, Action) -> Effect<
-      Action, Never
+    perform additionalEffects: @escaping (ChildState, inout State, Action) -> EffectTask<
+      Action
     >
   ) -> some ReducerProtocol<State, Action> {
     self.onChange(of: toLocalState) { additionalEffects($1, &$2, $3) }
@@ -14,8 +14,8 @@ extension ReducerProtocol {
   @inlinable
   public func onChange<ChildState: Equatable>(
     of toLocalState: @escaping (State) -> ChildState,
-    perform additionalEffects: @escaping (ChildState, ChildState, inout State, Action) -> Effect<
-      Action, Never
+    perform additionalEffects: @escaping (ChildState, ChildState, inout State, Action) -> EffectTask<
+      Action
     >
   ) -> some ReducerProtocol<State, Action> {
     ChangeReducer(base: self, toLocalState: toLocalState, perform: additionalEffects)
@@ -32,16 +32,16 @@ struct ChangeReducer<Base: ReducerProtocol, ChildState: Equatable>: ReducerProto
 
   @usableFromInline
   let perform:
-    (ChildState, ChildState, inout Base.State, Base.Action) -> Effect<
-      Base.Action, Never
+    (ChildState, ChildState, inout Base.State, Base.Action) -> EffectTask<
+      Base.Action
     >
 
   @usableFromInline
   init(
     base: Base,
     toLocalState: @escaping (Base.State) -> ChildState,
-    perform: @escaping (ChildState, ChildState, inout Base.State, Base.Action) -> Effect<
-      Base.Action, Never
+    perform: @escaping (ChildState, ChildState, inout Base.State, Base.Action) -> EffectTask<
+      Base.Action
     >
   ) {
     self.base = base
@@ -50,8 +50,8 @@ struct ChangeReducer<Base: ReducerProtocol, ChildState: Equatable>: ReducerProto
   }
 
   @inlinable
-  public func reduce(into state: inout Base.State, action: Base.Action) -> Effect<
-    Base.Action, Never
+  public func reduce(into state: inout Base.State, action: Base.Action) -> EffectTask<
+    Base.Action
   > {
     let previousLocalState = self.toLocalState(state)
     let effects = self.base.reduce(into: &state, action: action)
