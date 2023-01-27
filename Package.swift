@@ -43,7 +43,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.2.2"
+      from: "2.3.0"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
@@ -79,7 +79,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.49.1"
+      from: "0.50.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -91,7 +91,7 @@ let package = Package(
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
-      from: "1.9.0"
+      from: "1.10.0"
     ),
     .package(
       url: "https://github.com/MarcoEidinger/URLCompatibilityKit",
