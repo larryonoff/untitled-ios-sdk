@@ -51,7 +51,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
-      from: "6.9.1"
+      from: "6.9.2"
     ),
     .package(
       url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
@@ -79,11 +79,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.50.0"
+      from: "0.50.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "0.6.1"
+      from: "0.7.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -91,7 +91,7 @@ let package = Package(
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
-      from: "1.10.0"
+      from: "1.11.0"
     ),
     .package(
       url: "https://github.com/MarcoEidinger/URLCompatibilityKit",
