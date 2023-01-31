@@ -4,6 +4,8 @@ import Foundation
 public struct Purchases {
   public var isEligibleForIntroductoryOffer: Bool = true
   public var isPremium: Bool = false
+
+  public init() {}
 }
 
 extension Purchases: Codable {}
