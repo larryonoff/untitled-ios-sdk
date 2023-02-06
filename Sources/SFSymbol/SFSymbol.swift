@@ -29,6 +29,14 @@ extension SFSymbol: ExpressibleByStringLiteral {
 }
 
 extension SFSymbol {
+  public static let ant: SFSymbol = "ant"
+
+  public enum Ant {
+    public static let circle: SFSymbol = "ant.circle"
+    public static let circleFill: SFSymbol = "ant.circle.fill"
+    public static let fill: SFSymbol = "ant.fill"
+  }
+
   public enum Arrow {
     public static let backward: SFSymbol = "arrow.backward"
     public static let clockwise: SFSymbol = "arrow.clockwise"
@@ -86,6 +94,12 @@ extension SFSymbol {
 
   public static let house: SFSymbol = "house"
   public static let houseFill: SFSymbol = "house.fill"
+
+  public static let ladybug: SFSymbol = "ladybug"
+
+  public enum Ladybug {
+    public static let fill: SFSymbol = "ladybug.fill"
+  }
 
   public static let line3Horizontal: SFSymbol = "line.3.horizontal"
 
