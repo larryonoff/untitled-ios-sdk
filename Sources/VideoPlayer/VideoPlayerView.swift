@@ -5,13 +5,7 @@ import SwiftUIExt
 import UIKit
 
 open class VideoPlayerView: UIView {
-  public override class var layerClass: AnyClass {
-    AVPlayerLayer.self
-  }
-
-  private var playerLayer: AVPlayerLayer {
-    layer as! AVPlayerLayer
-  }
+  private lazy var playerLayer = AVPlayerLayer()
 
   var player: AVPlayer? {
     get { playerLayer.player }
@@ -46,7 +40,6 @@ open class VideoPlayerView: UIView {
     return layoutGuide
   }()
 
-  private var videoRectObserver: NSKeyValueObservation!
   private var videoRectLeftConstraint: NSLayoutConstraint!
   private var videoRectRightConstraint: NSLayoutConstraint!
   private var videoRectTopConstraint: NSLayoutConstraint!
@@ -74,7 +67,6 @@ open class VideoPlayerView: UIView {
     super.init(frame: .zero)
 
     playerLayer.player = player
-    playerLayer.masksToBounds = true
 
     setup()
   }
@@ -92,7 +84,12 @@ open class VideoPlayerView: UIView {
   // MARK: - setup
 
   private func setup() {
+    layer.masksToBounds = true
+
     playerLayer.videoGravity = .resizeAspect
+    playerLayer.masksToBounds = true
+
+    layer.addSublayer(playerLayer)
 
     setupConstraints()
     setupBindings()
@@ -130,7 +127,9 @@ open class VideoPlayerView: UIView {
     ])
   }
 
-  private var currentItemObserver: NSKeyValueObservation!
+  private var currentItemObserver: NSKeyValueObservation?
+  private var currentItemPresentationSizeObserver: NSKeyValueObservation?
+  private var videoRectObserver: NSKeyValueObservation?
 
   private func setupBindings() {
     videoRectObserver = playerLayer.observe(
@@ -139,48 +138,55 @@ open class VideoPlayerView: UIView {
        changeHandler: { [weak self] object, _ in
          guard let self else { return }
          self.videoRect = object.videoRect
+         self.setNeedsLayout()
        }
     )
 
-    setupCurrentItemObserver()
+    updateCurrentItemObserver()
   }
 
-  private func setupCurrentItemObserver() {
+  private func updateCurrentItemObserver() {
     guard let player else {
+      currentItemObserver?.invalidate()
       currentItemObserver = nil
+
+      currentItemDidChange(nil)
       return
     }
 
     currentItemObserver = player.observe(
       \.currentItem,
        options: [.new, .initial],
-       changeHandler: { [weak self] _, _ in
-         self?.setNeedsLayout()
+       changeHandler: { [weak self] player, _ in
+         self?.currentItemDidChange(player.currentItem)
        }
     )
+  }
+
+  private func currentItemDidChange(_ item: AVPlayerItem?) {
+    if let item {
+      currentItemPresentationSizeObserver = item.observe(
+        \.presentationSize,
+         options: [.new, .initial],
+         changeHandler: { [weak self] _, _ in
+           self?.setNeedsLayout()
+         }
+      )
+    } else {
+      currentItemPresentationSizeObserver?.invalidate()
+      currentItemPresentationSizeObserver = nil
+    }
+
+    setNeedsLayout()
   }
 
   // MARK: - layout
 
   private func layoutVideo() {
     CATransaction.begin()
+
     defer {
       CATransaction.commit()
-    }
-
-    guard let playerItem = player?.currentItem else {
-      playerLayer.frame = bounds
-      return
-    }
-
-    guard
-      let videoTrack = playerItem
-        .asset
-        .tracks(withMediaType: .video)
-        .first
-    else {
-      playerLayer.frame = bounds
-      return
     }
 
     if let animation = layer.animation(forKey: "position") {
@@ -192,11 +198,15 @@ open class VideoPlayerView: UIView {
       CATransaction.disableActions()
     }
 
-    let preferredNaturalSize = videoTrack.naturalSize
-      .applying(videoTrack.preferredTransform)
-      .standardized
+    guard
+      let playerItem = player?.currentItem,
+      !playerItem.presentationSize.isEmpty
+    else {
+      playerLayer.frame = bounds
+      return
+    }
 
-    playerLayer.frame = preferredNaturalSize.aligned(
+    playerLayer.frame = playerItem.presentationSize.aligned(
       in: bounds,
       videoAlignment: videoAlignment,
       videoGravity: videoGravity
@@ -219,7 +229,7 @@ open class VideoPlayerView: UIView {
   // MARK: - state changes
 
   private func playerDidChange() {
-    setupCurrentItemObserver()
+    updateCurrentItemObserver()
   }
 
   private func videoRectDidChange(
