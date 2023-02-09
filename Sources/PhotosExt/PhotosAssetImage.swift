@@ -94,28 +94,28 @@ public struct PhotosAssetImage<Content: View>: View {
           state.isLoading = true
           notifyOnChange(state)
 
-          let (image, _) = try await imageManager.requestImage(
+          for try await (image, _) in imageManager.requestImage(
             for: asset,
             targetSize: imageTargetSize,
             contentMode: imageContentMode.phImageContentMode,
             options: imageRequestOptions
-          )
+          ) {
+            guard !Task.isCancelled else {
+              state.isLoading = false
+              notifyOnChange(state)
+              return
+            }
 
-          guard !Task.isCancelled else {
-            state.isLoading = false
+            withTransaction(transaction) {
+              state.phase = image
+                .flatMap(Image.init(uiImage:))
+                .flatMap(AsyncImagePhase.success)
+              ?? .empty
+              state.isLoading = false
+            }
+
             notifyOnChange(state)
-            return
           }
-
-          withTransaction(transaction) {
-            state.phase = image
-              .flatMap(Image.init(uiImage:))
-              .flatMap(AsyncImagePhase.success)
-            ?? .empty
-            state.isLoading = false
-          }
-
-          notifyOnChange(state)
         } catch {
           withTransaction(transaction) {
             state.phase = .failure(error)
@@ -168,6 +168,7 @@ extension Image {
 
 private let imageRequestOptions: PHImageRequestOptions = {
   let options = PHImageRequestOptions()
+  options.deliveryMode = .opportunistic
   options.isNetworkAccessAllowed = true
   return options
 }()
