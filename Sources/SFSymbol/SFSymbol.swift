@@ -159,6 +159,8 @@ extension SFSymbol {
   public static let questionmark: SFSymbol = "questionmark"
   public static let questionmarkCircle: SFSymbol = "questionmark.circle"
 
+  public static let shuffle: SFSymbol = "shuffle"
+
   public enum Slider {
     public static let horizontal3: SFSymbol = "slider.horizontal.3"
     public static let horizontalBelowRectangle: SFSymbol = "slider.horizontal.below.rectangle"
