@@ -7,6 +7,47 @@ extension PHImageManager {
     targetSize: CGSize,
     contentMode: PHImageContentMode,
     options: PHImageRequestOptions?
+  ) -> AsyncThrowingStream<(UIImage?, info: [AnyHashable: Any]?), Error> {
+    AsyncThrowingStream { continuation in
+      Task {
+        let requestID = requestImage(
+          for: asset,
+          targetSize: targetSize,
+          contentMode: contentMode,
+          options: options,
+          resultHandler: { image, info in
+            let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
+
+            if let error = resultInfo?.error {
+              return continuation.finish(throwing: error)
+            }
+
+            if resultInfo?.isCancelled == true {
+              return continuation.finish(throwing: CancellationError())
+            }
+
+            continuation.yield((image, info))
+
+            // when degraded image is provided,
+            // the completion handler will be called again.
+            if resultInfo?.isDegraded == nil || resultInfo?.isDegraded == false {
+              continuation.finish()
+            }
+          }
+        )
+
+        continuation.onTermination = { [weak self] _ in
+          self?.cancelImageRequest(requestID)
+        }
+      }
+    }
+  }
+
+  public func requestImage(
+    for asset: PHAsset,
+    targetSize: CGSize,
+    contentMode: PHImageContentMode,
+    options: PHImageRequestOptions?
   ) async throws -> (UIImage?, info: [AnyHashable: Any]?) {
     var imageRequestID: PHImageRequestID?
     let onCancel = { [weak self] in
@@ -27,19 +68,13 @@ extension PHImageManager {
               return continuation.resume(throwing: error)
             }
 
-            if
-              let isCancelled = resultInfo?.isCancelled,
-              isCancelled
-            {
+            if resultInfo?.isCancelled == true {
               return continuation.resume(throwing: CancellationError())
             }
 
             // when degraded image is provided,
             // the completion handler will be called again.
-            if
-              let isDegraded = resultInfo?.isDegraded,
-              isDegraded
-            {
+            if resultInfo?.isDegraded == true {
               return
             }
 
@@ -73,19 +108,13 @@ extension PHImageManager {
               return continuation.resume(throwing: error)
             }
 
-            if
-              let isCancelled = resultInfo?.isCancelled,
-              isCancelled
-            {
+            if resultInfo?.isCancelled == true {
               return continuation.resume(throwing: CancellationError())
             }
 
             // when degraded image is provided,
             // the completion handler will be called again.
-            if
-              let isDegraded = resultInfo?.isDegraded,
-              isDegraded
-            {
+            if resultInfo?.isDegraded == true {
               return
             }
 
