@@ -32,6 +32,7 @@ extension Product {
     public enum Notation {
       case automatic
       case compactName
+      case shortened
     }
 
     public struct Price {
@@ -83,7 +84,7 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
 
       let separator: String
       switch notation {
-      case .automatic:
+      case .automatic, .shortened:
         separator = " / "
       case .compactName:
         separator = "/"
@@ -185,6 +186,12 @@ extension Product.SubscriptionPeriod {
 
 extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
   public func format(_ value: Product.SubscriptionPeriod) -> String {
+    func _oneValueString(
+      notation: Product.FormatStyle.Notation
+    ) -> String? {
+      (notation == .compactName || notation == .shortened) ? nil : "1"
+    }
+
     let valueString: String?
     let unitString: String
 
@@ -196,7 +203,7 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
         number: .plural
       )
     case (.year, 1):
-      valueString = notation == .compactName ? nil : "1"
+      valueString = _oneValueString(notation: notation)
       unitString = value.unit.formatted(
         notation: notation,
         number: .singular
@@ -208,13 +215,13 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
         number: .plural
       )
     case (.month, 1):
-      valueString = notation == .compactName ? nil : "1"
+      valueString = _oneValueString(notation: notation)
       unitString = value.unit.formatted(
         notation: notation,
         number: .singular
       )
     case (.month, 12) where unitsCollapsed.contains(.month):
-      valueString = notation == .compactName ? nil : "1"
+      valueString = _oneValueString(notation: notation)
       unitString = Product.SubscriptionPeriod.Unit.year.formatted(
         notation: notation,
         number: .singular
@@ -232,7 +239,7 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
         number: .plural
       )
     case (.week, 1):
-      valueString = notation == .compactName ? nil : "1"
+      valueString = _oneValueString(notation: notation)
       unitString = value.unit.formatted(
         notation: notation,
         number: .plural
@@ -244,13 +251,13 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
         number: .plural
       )
     case (.day, 1):
-      valueString = notation == .compactName ? nil : "1"
+      valueString = _oneValueString(notation: notation)
       unitString = value.unit.formatted(
         notation: notation,
         number: .singular
       )
     case (.day, 7) where unitsCollapsed.contains(.day):
-      valueString = notation == .compactName ? nil : "1"
+      valueString = _oneValueString(notation: notation)
       unitString = Product.SubscriptionPeriod.Unit.week.formatted(
         notation: notation,
         number: .plural
@@ -387,27 +394,27 @@ extension Product.SubscriptionPeriod.Unit {
 extension Product.SubscriptionPeriod.Unit.FormatStyle: Foundation.FormatStyle {
   public func format(_ value: Product.SubscriptionPeriod.Unit) -> String {
     switch (number, value, notation) {
-    case (.singular, .day, .automatic):
+    case (.singular, .day, .automatic), (.singular, .day, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.day
-    case (_, .day, .automatic):
+    case (_, .day, .automatic), (_, .day, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.days
     case (_, .day, .compactName):
       return L10n.Product.SubscriptionPeriod.Unit.Day.compactName
-    case (.singular, .week, .automatic):
+    case (.singular, .week, .automatic), (.singular, .week, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.week
-    case (_, .week, .automatic):
+    case (_, .week, .automatic), (_, .week, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.week
     case (_, .week, .compactName):
       return L10n.Product.SubscriptionPeriod.Unit.Week.compactName
-    case (.singular, .month, .automatic):
+    case (.singular, .month, .automatic), (.singular, .month, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.month
-    case (_, .month, .automatic):
+    case (_, .month, .automatic), (_, .month, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.months
     case (_, .month, .compactName):
       return L10n.Product.SubscriptionPeriod.Unit.Month.compactName
-    case (.singular, .year, .automatic):
+    case (.singular, .year, .automatic), (.singular, .year, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.year
-    case (_, .year, .automatic):
+    case (_, .year, .automatic), (_, .year, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.years
     case (_, .year, .compactName):
       return L10n.Product.SubscriptionPeriod.Unit.Year.compactName
