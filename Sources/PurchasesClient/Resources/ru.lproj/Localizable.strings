@@ -13,3 +13,8 @@
 "product.subscriptionPeriod.unit.year.compactName" = "г";
 
 "product.subscriptionOffer.freeTrial" = "Пробный период %d-%@";
+
+"product.subscriptionPeriod.unit.day.recurrent" = "ежедневно";
+"product.subscriptionPeriod.unit.week.recurrent" = "еженедельно";
+"product.subscriptionPeriod.unit.month.recurrent" = "ежемесячно";
+"product.subscriptionPeriod.unit.year.recurrent" = "ежегодично";

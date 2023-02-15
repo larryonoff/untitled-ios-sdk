@@ -38,18 +38,26 @@ internal enum L10n {
         internal enum Day {
           /// d
           internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.compactName", fallback: "d")
+          /// daily
+          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.recurrent", fallback: "daily")
         }
         internal enum Month {
           /// mo
           internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.compactName", fallback: "mo")
+          /// monthly
+          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.recurrent", fallback: "monthly")
         }
         internal enum Week {
           /// w
           internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.compactName", fallback: "w")
+          /// weekly
+          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.recurrent", fallback: "weekly")
         }
         internal enum Year {
           /// y
           internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.compactName", fallback: "y")
+          /// yearly
+          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.recurrent", fallback: "yearly")
         }
       }
     }
