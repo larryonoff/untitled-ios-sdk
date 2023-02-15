@@ -4,11 +4,14 @@ import Tagged
 
 public struct Paywall {
   public typealias ID = Tagged<Self, String>
+  public typealias VariantID = Tagged<(Self, variantID: ()), String>
 
   public let id: ID
   public let products: [Product]
   public let productComparingID: Product.ID?
   public let productSelectedID: Product.ID?
+
+  public let variantID: VariantID?
 
   public var productComparing: Product? {
     guard let comparingID = productComparingID else {
@@ -47,6 +50,10 @@ extension Paywall {
       .flatMap { .init(rawValue: $0) }
     self.productComparingID = paywall
       .remoteConfig?["comparing_product_id"]
+      .flatMap { $0 as? String }
+      .flatMap { .init(rawValue: $0) }
+    self.variantID = paywall
+      .remoteConfig?["variant_id"]
       .flatMap { $0 as? String }
       .flatMap { .init(rawValue: $0) }
   }
