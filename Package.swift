@@ -67,7 +67,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.4.0"
+      from: "10.5.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -79,7 +79,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.50.1"
+      from: "0.50.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -87,7 +87,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
-      from: "0.9.0"
+      from: "0.10.0"
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
