@@ -12,7 +12,7 @@
 "product.subscriptionPeriod.unit.month.compactName" = "mo";
 "product.subscriptionPeriod.unit.year.compactName" = "a";
 
-"product.subscriptionOffer.freeTrial" = %d-%@ gratuits";
+"product.subscriptionOffer.freeTrial" = "%d-%@ gratuits";
 
 "product.subscriptionPeriod.unit.day.recurrent" = "daily";
 "product.subscriptionPeriod.unit.week.recurrent" = "weekly";
