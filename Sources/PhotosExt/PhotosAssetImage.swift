@@ -6,14 +6,10 @@ import Photos
 public typealias AsyncImage<Content: View> = PhotosAssetImage<Content>
 
 public struct PhotosAssetImage<Content: View>: View {
-  @Environment(\.photosImageManager)
-  private var imageManager
-
-  @Environment(\.assetImageContentMode)
-  private var imageContentMode
-
-  @Environment(\.assetImageTargetSize)
-  private var imageTargetSize
+  @Environment(\.displayScale) private var displayScale
+  @Environment(\.photosImageManager) private var imageManager
+  @Environment(\.assetImageContentMode) private var imageContentMode
+  @Environment(\.assetImageTargetSize) private var imageTargetSize
 
   private let asset: PHAsset?
 
@@ -96,7 +92,7 @@ public struct PhotosAssetImage<Content: View>: View {
 
           for try await (image, _) in imageManager.requestImage(
             for: asset,
-            targetSize: imageTargetSize,
+            targetSize: imageTargetSize * displayScale,
             contentMode: imageContentMode.phImageContentMode,
             options: imageRequestOptions
           ) {
@@ -147,6 +143,12 @@ public struct AsyncImageState {
   public var phase: AsyncImagePhase = .empty
 
   public var isLoading: Bool = false
+}
+
+private extension CGSize {
+  static func * (lhs: CGSize, scalar: CGFloat) -> CGSize {
+    .init(width: lhs.width * scalar, height: lhs.height * scalar)
+  }
 }
 
 extension ContentMode {
