@@ -43,15 +43,15 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.3.1"
+      from: "2.3.4"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
-      from: "8.14.1"
+      from: "8.15.1"
     ),
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
-      from: "6.9.2"
+      from: "6.10.0"
     ),
     .package(
       url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
@@ -63,7 +63,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "15.1.0"
+      from: "16.0.0"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
@@ -79,7 +79,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.50.2"
+      from: "0.51.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
