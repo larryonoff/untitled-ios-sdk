@@ -83,6 +83,8 @@ extension SFSymbol {
 
   public static let ellipsis: SFSymbol = "ellipsis"
 
+  public static let exclamationMark = "exclamationmark"
+
   public enum ExclamationMark {
     public static let circleFill: SFSymbol = "exclamationmark.circle.fill"
   }
