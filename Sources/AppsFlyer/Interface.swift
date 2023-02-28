@@ -1,6 +1,7 @@
 import Dependencies
 import Foundation
 import PurchasesClient
+import UIKit
 
 extension DependencyValues {
   public var appsFlyer: AppsFlyerClient {
@@ -11,6 +12,9 @@ extension DependencyValues {
 
 public struct AppsFlyerClient {
   public var initialize: @Sendable (Configuration) async -> Void
+
+  public var appContinueUserActivity: @Sendable (NSUserActivity, @escaping ([UIUserActivityRestoring]?) -> Void) -> Void
+  public var appOpenURL: @Sendable (URL, [UIApplication.OpenURLOptionsKey: Any]) -> Void
 }
 
 // MARK: - AppsFlyerClient.Configuration

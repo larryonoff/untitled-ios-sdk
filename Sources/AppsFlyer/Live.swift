@@ -20,6 +20,18 @@ extension AppsFlyerClient {
     return AppsFlyerClient(
       initialize: {
         await impl.initialize($0)
+      },
+      appContinueUserActivity: { userActivity, restorationHandler in
+        impl.app(
+          continue: userActivity,
+          restorationHandler: restorationHandler
+        )
+      },
+      appOpenURL: { url, options in
+        impl.app(
+          open: url,
+          options: options
+        )
       }
     )
   }
@@ -41,14 +53,32 @@ private final actor AppsFlyerClientImpl {
   func initialize(
     _ configuration: AppsFlyerClient.Configuration
   ) async {
+    logger.info("initialize", dump: [
+      "configuration": configuration
+    ])
+
     guard self.appsFlyerDelegate == nil else {
+      logger.error("AppsFlyer already configured")
       return
     }
 
     let bundle = Bundle.main
     guard let apiKey = bundle.appsFlyerAPIKey else {
-      assertionFailure()
+      assertionFailure("Cannot find a valid AppsFlyer settings")
+
+      logger.error("initialize", dump: [
+        "error": "Cannot find a valid AppsFlyer settings"
+      ])
+
       return
+    }
+
+    if configuration.isAdaptyEnabled, Adapty.delegate == nil {
+      assertionFailure("Adapty must be configured first")
+
+      logger.info("initialize", dump: [
+        "error": "Adapty not configured"
+      ])
     }
 
     appsFlyerDelegate = _AppsFlyerDelegate()
@@ -64,11 +94,14 @@ private final actor AppsFlyerClientImpl {
     tracker.customerUserID = userIdentifier().uuidString
 
     if
-      #available(iOS 14.5, *),
       ATTrackingManager.trackingAuthorizationStatus == .notDetermined,
       let timeout = configuration.userTracking?.authorizationWaitTimeoutInterval
     {
       tracker.waitForATTUserAuthorization(timeoutInterval: timeout)
+
+      logger.info("initialize: waitForATTUserAuthorization", dump: [
+        "timeoutInterval": timeout
+      ])
     }
 
     appsFlyerDelegateTask = Task.detached(priority: .high) { [weak self] in
@@ -87,11 +120,19 @@ private final actor AppsFlyerClientImpl {
 
           let tracker = AppsFlyerLib.shared()
 
-          try? await Adapty.updateAttribution(
-            conversionInfo,
-            source: .appsflyer,
-            networkUserId: tracker.getAppsFlyerUID()
-          )
+          do {
+            try await Adapty.updateAttribution(
+              conversionInfo,
+              source: .appsflyer,
+              networkUserId: tracker.getAppsFlyerUID()
+            )
+
+            logger.info("Adapty updateAttribution success")
+          } catch {
+            logger.error("Adapty updateAttribution failure", dump: [
+              "error": error.localizedDescription
+            ])
+          }
         case .onConversionDataFail:
           break
         case .onAppOpenAttribution:
@@ -102,22 +143,66 @@ private final actor AppsFlyerClientImpl {
       }
     }
 
-    appDidBecomeActiveTask = Task.detached {
-      do {
-        let didBecomeActive = await NotificationCenter.default
-          .notifications(named: UIApplication.didBecomeActiveNotification)
-
-        for await _ in didBecomeActive {
-          logger.error("AppsFlyer.start")
-          try await AppsFlyerLib.shared().start()
-          logger.error("AppsFlyer.start success")
-        }
-      } catch {
-        logger.error("AppsFlyer.start failure", dump: [
-          "error": error.localizedDescription
+    appDidBecomeActiveTask = Task.detached { [weak self] in
+      if await UIApplication.shared.applicationState == .active {
+        logger.info("AppsFlyer.start", dump: [
+          "reason": "application already active"
         ])
+        try? await self?.start()
+      }
+
+      // the first run may cause `minTimeBetweenSessions` error
+
+      let didBecomeActive = await NotificationCenter.default
+        .notifications(named: UIApplication.didBecomeActiveNotification)
+
+      for await _ in didBecomeActive {
+        logger.info("AppsFlyer.start", dump: [
+          "reason": "application did become active"
+        ])
+
+        try? await self?.start()
       }
     }
+
+    logger.info("initialize success")
+  }
+
+  func start() async throws {
+    do {
+      try await AppsFlyerLib.shared().start()
+
+      logger.info("AppsFlyer.start success")
+    } catch {
+      logger.error("AppsFlyer.start failure", dump: [
+        "error": error.localizedDescription
+      ])
+      throw error
+    }
+  }
+
+  nonisolated
+  func app(
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) {
+    let tracker = AppsFlyerLib.shared()
+    tracker.continue(
+      userActivity,
+      restorationHandler: { objects in
+        let restorableObjects = objects?.compactMap { $0 as? UIUserActivityRestoring }
+        restorationHandler(restorableObjects)
+      }
+    )
+  }
+
+  nonisolated
+  func app(
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any]
+  ) {
+    let tracker = AppsFlyerLib.shared()
+    tracker.handleOpen(url, options: options)
   }
 }
 
