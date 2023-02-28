@@ -19,7 +19,6 @@ public struct NewCircularProgressViewStyle: ProgressViewStyle {
           .repeatForever(autoreverses: false),
           value: isRotating
         )
-        .frame(width: 22, height: 22)
     }
     .onAppear {
       isRotating = true
