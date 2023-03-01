@@ -77,15 +77,16 @@ final actor PurchasesClientImpl {
       logger.info("initialize")
 
       guard self.adaptyDelegate == nil else {
+        logger.info("Adapty already configured")
         return
       }
 
       let bundle = Bundle.main
       guard let apiKey = bundle.adaptyAPIKey else {
-        assertionFailure()
+        assertionFailure("Cannot find a valid Adapty settings")
 
-        logger.error("initialize failure", dump: [
-          "error": "Adapty API key not set"
+        logger.error("initialize", dump: [
+          "error": "Cannot find a valid Adapty settings"
         ])
 
         return
@@ -96,13 +97,11 @@ final actor PurchasesClientImpl {
       Adapty.delegate = adaptyDelegate
 
       _ = Task.detached(priority: .high) { [weak self] in
-        guard let self = self else {
-          return
-        }
-
         for await event in adaptyDelegate.stream {
           switch event {
           case let .didLoadLatestProfile(profile):
+            guard let self else { break }
+
             let purchases = self.updatePurchases(profile)
 
             logger.info("delegate: did receive updated purchases", dump: [
