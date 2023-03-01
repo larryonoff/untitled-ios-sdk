@@ -104,7 +104,7 @@ final actor PurchasesClientImpl {
 
             let purchases = self.updatePurchases(profile)
 
-            logger.info("delegate: did receive updated purchases", dump: [
+            logger.info("purchases updated", dump: [
               "purchases": purchases
             ])
           }
@@ -117,7 +117,10 @@ final actor PurchasesClientImpl {
       )
 
       if
-        let fallbackURL = Bundle.main.url(forResource: "fallback_paywalls", withExtension: "json"),
+        let fallbackURL = Bundle.main.url(
+          forResource: "fallback_paywalls",
+          withExtension: "json"
+        ),
         let fallbackData = try? Data(contentsOf: fallbackURL)
       {
         try? await setFallbackPaywalls(fallbackData)
@@ -346,12 +349,22 @@ final class _AdaptyDelegate: AdaptyDelegate {
     pipe.continuation.yield(
       .didLoadLatestProfile(profile)
     )
+
+    logger.info("delegate: didLoadLatestProfile", dump: [
+      "profile": profile
+    ])
   }
 
-  func paymentQueue(
-    shouldAddStorePaymentFor product: AdaptyDeferredProduct,
+  func shouldAddStorePayment(
+    for product: AdaptyDeferredProduct,
     defermentCompletion makeDeferredPurchase: @escaping (AdaptyResultCompletion<AdaptyProfile>?) -> Void
-  ) {}
+  ) -> Bool {
+    logger.info("delegate: shouldAddStorePayment", dump: [
+      "product": product
+    ])
+
+    return true
+  }
 }
 
 
