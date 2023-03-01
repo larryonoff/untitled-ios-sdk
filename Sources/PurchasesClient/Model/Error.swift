@@ -10,12 +10,20 @@ public enum PurchasesError: Swift.Error, LocalizedError {
 
 extension Error {
   var isPaymentCancelled: Bool {
-    guard
-      let adaptyError = self as? AdaptyError,
-      let skError = adaptyError.originalError as? SKError
-    else {
-      return false
+    if let adaptyError = self as? AdaptyError {
+      if adaptyError.adaptyErrorCode == .paymentCancelled {
+        return true
+      }
+
+      if let skError = adaptyError.originalError as? SKError {
+        return skError.code == .paymentCancelled
+      }
     }
-    return skError.code == .paymentCancelled
+
+    if let skError = self as? SKError {
+      return skError.code == .paymentCancelled
+    }
+
+    return false
   }
 }
