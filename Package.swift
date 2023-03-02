@@ -20,6 +20,7 @@ let package = Package(
     .library(name: .dependenciesExt, targets: [.dependenciesExt]),
     .library(name: .device, targets: [.device]),
     .library(name: .Client.facebook, targets: [.Client.facebook]),
+    .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
     .library(name: .firebaseClient, targets: [.firebaseClient]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: .foundationSupport, targets: [.foundationSupport]),
@@ -234,6 +235,7 @@ let package = Package(
         .linkedFramework("AppTrackingTransparency")
       ]
     ),
+    .Client.pasteboard,
     .amplitudeClient,
     .applicationClient,
     .appsFlyer,
@@ -250,6 +252,20 @@ let package = Package(
 )
 
 extension Target {
+  enum Client {
+    static let pasteboard = target(
+      name: .Client.pasteboard,
+      dependencies: [
+        .loggingSupport,
+        .External.composableArchitecture
+      ],
+      path: "Sources/PasteboardClient",
+      linkerSettings: [
+        .linkedFramework("UIKit")
+      ]
+    )
+  }
+
   static let amplitudeClient = target(
     name: .amplitudeClient,
     dependencies: [
@@ -388,6 +404,7 @@ extension Target.Dependency {
   enum Client {
     static let analytics = byName(name: .Client.analytics)
     static let facebook = byName(name: .Client.facebook)
+    static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
     static let userSettings = byName(name: .Client.userSettings)
@@ -489,6 +506,7 @@ extension String {
   enum Client {
     static let analytics = "AnalyticsClient"
     static let facebook = "FacebookClient"
+    static let pasteboard = "PasteboardClient"
     static let photosAuthorization = "PhotosAuthorization"
     static let purchases = "PurchasesClient"
     static let userSettings = "UserSettings"
