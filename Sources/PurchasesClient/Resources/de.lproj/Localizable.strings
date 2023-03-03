@@ -14,7 +14,7 @@
 
 "product.subscriptionOffer.freeTrial" = "%d-%@ Testversion";
 
-"product.subscriptionPeriod.unit.day.recurrent" = "daily";
-"product.subscriptionPeriod.unit.week.recurrent" = "weekly";
-"product.subscriptionPeriod.unit.month.recurrent" = "monthly";
-"product.subscriptionPeriod.unit.year.recurrent" = "yearly";
+"product.subscriptionPeriod.unit.day.recurrent" = "täglich";
+"product.subscriptionPeriod.unit.week.recurrent" = "wöchentlich";
+"product.subscriptionPeriod.unit.month.recurrent" = "monatlich";
+"product.subscriptionPeriod.unit.year.recurrent" = "jährlich";
