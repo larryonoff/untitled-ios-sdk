@@ -7,6 +7,7 @@ extension Analytics.ParameterName {
   public static let errorDescription: Self = "error_description"
   public static let placement: Self = "placement"
   public static let result: Self = "result"
+  public static let sessionID: Self = "session_id"
   public static let url: Self = "url"
   public static let value: Self = "value"
 }
