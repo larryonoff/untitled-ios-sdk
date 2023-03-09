@@ -21,6 +21,24 @@ public struct UserSettingsClient {
 }
 
 extension UserSettingsClient {
+  public func setEncodable<Value: Encodable>(
+    _ value: Value?,
+    forKey key: String,
+    using encoder: JSONEncoder
+  ) async throws {
+    let valueData = try value
+      .flatMap { try encoder.encode($0) }
+    await setData(valueData, key)
+  }
+
+  public func decodableForKey<Value: Decodable>(
+    _ key: String,
+    using decoder: JSONDecoder
+  ) throws -> Value? {
+    try dataForKey(key)
+      .flatMap { try decoder.decode(Value.self, from: $0) }
+  }
+
   public func setOnboardingCompleted(
     _ newValue: Bool
   ) async {
