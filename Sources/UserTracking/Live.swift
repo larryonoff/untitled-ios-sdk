@@ -78,7 +78,7 @@ final actor UserTrackingImpl {
   }
 
   func requestAuthorization(
-    delayFor interval: UInt64
+    delayFor interval: Double
   ) async -> AuthorizationStatus {
     logger.info("request authorization")
 

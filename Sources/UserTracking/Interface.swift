@@ -17,15 +17,7 @@ public struct UserTrackingClient {
 
   public var isAuthorizationRequestNeeded: @Sendable () -> Bool
 
-  public var requestAuthorization: @Sendable (UInt64) async -> AuthorizationStatus
+  public var requestAuthorization: @Sendable (Double) async -> AuthorizationStatus
 
   public var sendTrackingData: @Sendable () async -> Void
-}
-
-extension UserTrackingClient {
-  public func requestAuthorization(
-    delayFor interval: UInt64
-  ) async -> AuthorizationStatus {
-    await requestAuthorization(interval)
-  }
 }
