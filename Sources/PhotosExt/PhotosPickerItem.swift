@@ -14,8 +14,23 @@ public struct PhotosPickerItem {
 
   public var itemIdentifier: String?
 
-  public init(itemIdentifier: String) {
-    self.itemIdentifier = itemIdentifier
+  private let itemProvider: NSItemProvider
+
+  init(_ result: PHPickerResult) {
+    self.itemIdentifier = result.assetIdentifier
+    self.itemProvider = result.itemProvider
+  }
+
+  public func loadTransferable(
+    type: NSItemProviderReading.Type
+  ) async throws -> NSItemProviderReading? {
+    try await itemProvider.loadObject(ofClass: type)
+  }
+
+  public func loadTransferable<T>(
+    type: T.Type
+  ) async throws -> T? where T: _ObjectiveCBridgeable, T._ObjectiveCType : NSItemProviderReading {
+    try await itemProvider.loadObject(ofClass: type)
   }
 }
 
@@ -23,7 +38,7 @@ extension PhotosPickerItem: Equatable {}
 
 extension PhotosPickerItem: Hashable {}
 
-extension PhotosPickerItem: Sendable {}
+extension PhotosPickerItem: @unchecked Sendable {}
 
 extension PhotosPickerItem.EncodingDisambiguationPolicy: Equatable {}
 
@@ -40,6 +55,34 @@ extension PhotosPickerItem.EncodingDisambiguationPolicy {
       return .current
     case .compatible:
       return .compatible
+    }
+  }
+}
+
+extension NSItemProvider {
+  func loadObject(
+      ofClass aClass: NSItemProviderReading.Type
+  ) async throws -> NSItemProviderReading? {
+    try await withCheckedThrowingContinuation { continuation in
+      _ = self.loadObject(ofClass: aClass) { object, error in
+        if let error {
+          return continuation.resume(throwing: error)
+        }
+        continuation.resume(returning: object)
+      }
+    }
+  }
+
+  func loadObject<T>(
+      ofClass aClass: T.Type
+  ) async throws -> T? where T: _ObjectiveCBridgeable, T._ObjectiveCType : NSItemProviderReading {
+    try await withCheckedThrowingContinuation { continuation in
+      _ = self.loadObject(ofClass: aClass) { object, error in
+        if let error {
+          return continuation.resume(throwing: error)
+        }
+        continuation.resume(returning: object)
+      }
     }
   }
 }
