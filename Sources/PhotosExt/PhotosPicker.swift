@@ -182,8 +182,7 @@ private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable w
       didFinishPicking results: [PHPickerResult]
     ) {
       selection.wrappedValue = results
-        .compactMap(\.assetIdentifier)
-        .map(PhotosPickerItem.init(itemIdentifier:))
+        .map(PhotosPickerItem.init)
     }
   }
 }
