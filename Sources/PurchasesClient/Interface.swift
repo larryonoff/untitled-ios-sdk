@@ -17,6 +17,7 @@ public struct PurchasesClient {
   public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
   public var setFallbackPaywalls: @Sendable (Data) async throws -> Void
   public var logPaywall: @Sendable (Paywall) async throws -> Void
+  public var requestReview: @Sendable () async -> Void
 }
 
 extension PurchasesClient {

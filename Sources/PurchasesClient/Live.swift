@@ -7,6 +7,7 @@ import FoundationSupport
 import LoggingSupport
 import os.log
 import StoreKit
+import UIKit
 import UserIdentifier
 
 extension PurchasesClient {
@@ -43,6 +44,34 @@ extension PurchasesClient {
       },
       logPaywall: { paywall in
         try await impl.log(paywall)
+      },
+      requestReview: {
+        let application = await UIApplication.shared
+        var activeScene: UIWindowScene?
+
+        for scene in await application.connectedScenes {
+          guard
+            await scene.activationState == .foregroundActive,
+            let scene = scene as? UIWindowScene
+          else {
+            continue
+          }
+
+          activeScene = scene
+          break
+        }
+
+        if let activeScene {
+          await SKStoreReviewController.requestReview(in: activeScene)
+
+          logger.info("requestReview success", dump: [
+            "WARNING": "dialog may not appear, Apple doesn't provide developers any control"
+          ])
+        } else {
+          logger.error("requestReview failure", dump: [
+            "error": "Active `UIWindowScene` not available"
+          ])
+        }
       }
     )
   }
