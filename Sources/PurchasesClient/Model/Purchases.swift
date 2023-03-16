@@ -5,7 +5,11 @@ public struct Purchases {
   public var isEligibleForIntroductoryOffer: Bool = true
   public var isPremium: Bool = false
 
-  public init() {}
+  public init(
+    isPremium: Bool = false
+  ) {
+    self.isPremium = isPremium
+  }
 }
 
 extension Purchases: Codable {}

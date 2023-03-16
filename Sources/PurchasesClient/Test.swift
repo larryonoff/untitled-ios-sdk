@@ -14,7 +14,8 @@ extension PurchasesClient: TestDependencyKey {
     purchasesUpdates: unimplemented("\(Self.self).purchasesUpdates", placeholder: .finished),
     restorePurhases: unimplemented("\(Self.self).restorePurhases", placeholder: .userCancelled),
     setFallbackPaywalls: unimplemented("\(Self.self).setFallbackPaywalls"),
-    logPaywall: unimplemented("\(Self.self).logPaywall")
+    logPaywall: unimplemented("\(Self.self).logPaywall"),
+    requestReview: unimplemented("\(Self.self).requestReview")
   )
 }
 
@@ -27,19 +28,21 @@ extension PurchasesClient {
     purchasesUpdates: { AsyncStream { _ in } },
     restorePurhases: { try await Task.never() },
     setFallbackPaywalls: { _ in try await Task.never() },
-    logPaywall: { _ in try await Task.never() }
+    logPaywall: { _ in try await Task.never() },
+    requestReview: {}
   )
 }
 
 extension PurchasesClient {
   public static let mock = PurchasesClient(
-    initialize: { try await Task.never() },
+    initialize: { },
     paywalByID: { _ in .mock },
-    purchase: { _ in try await Task.never() },
-    purchases: { Purchases() },
+    purchase: { _ in .success(.init(isPremium: true)) },
+    purchases: { Purchases(isPremium: true) },
     purchasesUpdates: { AsyncStream { _ in } },
-    restorePurhases: { try await Task.never() },
-    setFallbackPaywalls: { _ in try await Task.never() },
-    logPaywall: { _ in try await Task.never() }
+    restorePurhases: { .success(.init(isPremium: true)) },
+    setFallbackPaywalls: { _ in },
+    logPaywall: { _ in },
+    requestReview: {}
   )
 }
