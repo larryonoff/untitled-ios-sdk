@@ -6,14 +6,28 @@ import PurchasesClient
 
 public struct PaywallReducer: ReducerProtocol {
   public enum Action: Equatable {
+    public enum AlertAction: Equatable {
+      case dismissed
+    }
+
+    public enum Delegate: Equatable {
+      case dismissed
+    }
+
     public enum ProductAction: Equatable {
       case tapped
     }
 
     case onAppear
-    case dismiss
+    case delegate(Delegate)
+
+    case alert(AlertAction)
+
+    case dismissTapped
 
     case fetchPaywallResponse(TaskResult<Paywall?>)
+
+    case oneTimeOfferDismissed
 
     case product(id: Product.ID, action: ProductAction)
 
@@ -23,26 +37,39 @@ public struct PaywallReducer: ReducerProtocol {
 
     case restorePurchases
     case restorePurchasesResponse(TaskResult<RestorePurchasesResult>)
-
-    case alertDismissed
   }
 
   public struct State: Equatable {
-    public var alert: AlertState<Action>?
+    public struct OneTimeOffer: Equatable {
+      public var isEligibleForIntroductoryOffer: Bool
+      public var product: Product?
+    }
+
+    @Box public var alert: AlertState<Action>?
+
+    @Box public var oneTimeOffer: OneTimeOffer?
 
     public let paywallID: Paywall.ID
-    public var paywall: Paywall?
+    @Box public var paywall: Paywall?
 
-    public var products: IdentifiedArrayOf<Product> = []
-    public var productComparing: Product?
-    public var productSelected: Product?
+    @Box public var products: IdentifiedArrayOf<Product> = []
+    @Box public var productComparing: Product?
+    @Box public var productSelected: Product?
 
-    public var placement: Placement?
+    @Box public var placement: Placement?
 
-    public var dismiss: Bool = false
+    @Box public var isEligibleForIntroductoryOffer: Bool = false
+    @Box public var isFetchingPaywall: Bool = false
+    @Box public var isOneTimeOfferEnabled: Bool = false
+    @Box public var isPurchasing: Bool = false
 
-    public var isPurchasing: Bool = false
-    public var isFetchingPaywall: Bool = false
+    var canPresentOneTimeOffer: Bool {
+      isOneTimeOfferEnabled && paywall?.payUpFrontProductID != nil
+    }
+
+    var isOneTimeOfferPresented: Bool {
+      oneTimeOffer != nil
+    }
 
     public init(
       paywallID: Paywall.ID,
@@ -64,6 +91,8 @@ public struct PaywallReducer: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        state.isEligibleForIntroductoryOffer =
+          purchases.purchases().isEligibleForIntroductoryOffer
         state.isFetchingPaywall = true
 
         return .concatenate(
@@ -76,34 +105,55 @@ public struct PaywallReducer: ReducerProtocol {
           },
           logPaywallOpened(state: state)
         )
-      case .dismiss:
-        return logPaywallDismissed(state: state)
-      case let .fetchPaywallResponse(.success(paywall)):
+      case .delegate:
+        return .none
+      case .dismissTapped:
+        if
+          !state.isOneTimeOfferPresented,
+          state.canPresentOneTimeOffer,
+          let oneTimeProduct = state.paywall?.payUpFrontProduct
+        {
+          let oneTimeOffer = State.OneTimeOffer(
+            isEligibleForIntroductoryOffer: state.isEligibleForIntroductoryOffer,
+            product: oneTimeProduct
+          )
+          state.oneTimeOffer = oneTimeOffer
+
+          return .none
+        }
+
+        return .merge(
+          logPaywallDismissed(state: state),
+          .send(.delegate(.dismissed))
+        )
+      case let .fetchPaywallResponse(result):
         state.isFetchingPaywall = false
 
-        state.paywall = paywall
+        do {
+          let paywall = try result.value
+          state.paywall = paywall
 
-        let products = paywall?.products ?? []
-        state.products = IdentifiedArray(uncheckedUniqueElements: products)
+          let products = paywall?.products ?? []
+          state.products = IdentifiedArray(uncheckedUniqueElements: products)
 
-        state.productComparing = paywall?.productComparing
-        state.productSelected =
-          paywall?.productSelected ?? paywall?.products.first
+          state.productComparing = paywall?.productComparing
+          state.productSelected =
+            paywall?.productSelected ?? paywall?.products.first
 
-        if let paywall = paywall {
-          return .fireAndForget {
-            try await purchases.logPaywall(paywall)
+          if let paywall = paywall {
+            return .fireAndForget {
+              try await purchases.logPaywall(paywall)
+            }
           }
+        } catch {
+          state.paywall = nil
+          state.productSelected = nil
+          state.alert = .failure(error)
         }
 
         return .none
-      case let .fetchPaywallResponse(.failure(error)):
-        state.isFetchingPaywall = false
-        state.paywall = nil
-        state.productSelected = nil
-        state.alert = .failure(error)
-
-        return .none
+      case .oneTimeOfferDismissed:
+        return .send(.delegate(.dismissed))
       case let .product(productID, .tapped):
         let productChanged = productID != state.productSelected?.id
 
@@ -132,7 +182,12 @@ public struct PaywallReducer: ReducerProtocol {
         state.isPurchasing = false
 
         do {
-          _ = try result.value
+          switch try result.value {
+          case .success:
+            return .send(.delegate(.dismissed))
+          case .userCancelled:
+            return .none
+          }
         } catch {
           state.alert = .failure(error)
         }
@@ -156,13 +211,18 @@ public struct PaywallReducer: ReducerProtocol {
         state.isPurchasing = false
 
         do {
-          _ = try result.value
+          switch try result.value {
+          case .success:
+            return .send(.delegate(.dismissed))
+          case .userCancelled:
+            return .none
+          }
         } catch {
           state.alert = .failure(error)
         }
 
         return .none
-      case .alertDismissed:
+      case .alert(.dismissed):
         state.alert = nil
         return .none
       }
@@ -174,7 +234,7 @@ public struct PaywallReducer: ReducerProtocol {
   private func purchase(
     _ product: Product,
     state: inout State
-  ) -> Effect<Action, Never> {
+  ) -> EffectTask<Action> {
     state.isPurchasing = true
 
     return .task { [paywallID = state.paywallID] in
