@@ -16,17 +16,15 @@ extension FirebaseClient {
 
     return Self(
       initialize: {
-        await impl.initialize()
+        impl.initialize()
       }
     )
   }
 }
 
-@MainActor
-private final class FirebaseClientImpl {
+final class FirebaseClientImpl {
   private let userIdentifier: UserIdentifierGenerator
 
-  nonisolated
   init(
     userIdentifier: UserIdentifierGenerator
   ) {
@@ -34,7 +32,7 @@ private final class FirebaseClientImpl {
   }
 
   func initialize(
-  ) async {
+  ) {
     logger.info("initialize")
 
     FirebaseApp.configure()
@@ -50,11 +48,9 @@ private final class FirebaseClientImpl {
   }
 
   func updateUserID() {
-    let crashlytics = Crashlytics.crashlytics()
-
     let userID = userIdentifier()
     FirebaseAnalytics.Analytics.setUserID(userID.uuidString)
-    crashlytics.setUserID(userID.uuidString)
+    Crashlytics.crashlytics().setUserID(userID.uuidString)
   }
 }
 
