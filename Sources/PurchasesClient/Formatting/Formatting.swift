@@ -15,9 +15,11 @@ extension Product {
 
   public static func displayPrice(
     _ price: Decimal,
-    priceLocale: Locale
+    priceLocale: Locale,
+    roundingRule: Product.FormatStyle.RoundingRule = .toNearestOrEven
   ) -> String? {
     priceFormatter.locale = priceLocale
+    priceFormatter.roundingMode = roundingRule.toNumberFormatterRoundingMode
 
     return priceFormatter.string(
       from: NSDecimalNumber(decimal: price)
@@ -29,33 +31,43 @@ extension Product {
 
 extension Product {
   public enum FormatStyle {
-    public enum Notation {
-      case automatic
-      case compactName
-      case shortened
-    }
-
     public struct Price {
+      var roundingRule: RoundingRule
       var subscriptionPeriod: Product.SubscriptionPeriod?
       var subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle
 
       public init(
+        roundingRule: RoundingRule = .toNearestOrEven,
         subscriptionPeriod: Product.SubscriptionPeriod?,
         subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle = .complete
       ) {
+        self.roundingRule = roundingRule
         self.subscriptionPeriod = subscriptionPeriod
         self.subscriptionPeriodUnitStyle = subscriptionPeriodUnitStyle
+      }
+
+      public func roundingRule(
+        _ roundingRule: RoundingRule
+      ) -> Self {
+        .init(
+          roundingRule: roundingRule,
+          subscriptionPeriod: subscriptionPeriod,
+          subscriptionPeriodUnitStyle: subscriptionPeriodUnitStyle
+        )
       }
 
       public func subscriptionPeriodUnitStyle(
         _ subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle
       ) -> Self {
         .init(
+          roundingRule: roundingRule,
           subscriptionPeriod: subscriptionPeriod,
           subscriptionPeriodUnitStyle: subscriptionPeriodUnitStyle
         )
       }
     }
+
+    public typealias RoundingRule = FloatingPointRoundingRule
   }
 }
 
@@ -77,7 +89,8 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
 
       let priceString = Product.displayPrice(
         price,
-        priceLocale: value.priceLocale
+        priceLocale: value.priceLocale,
+        roundingRule: roundingRule
       )
       let subscriptionPeriodString = subscriptionPeriod
         .formatted(unitStyle: subscriptionPeriodUnitStyle)
@@ -97,7 +110,8 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
 
     return Product.displayPrice(
       value.price,
-      priceLocale: value.priceLocale
+      priceLocale: value.priceLocale,
+      roundingRule: roundingRule
     ) ?? ""
   }
 }
@@ -126,13 +140,29 @@ extension Product.FormatStyle.Price: Sendable {}
 
 extension Product.FormatStyle.Price: Hashable {}
 
-extension Product.FormatStyle.Notation: Codable {}
-
-extension Product.FormatStyle.Notation: Equatable {}
-
-extension Product.FormatStyle.Notation: Sendable {}
-
-extension Product.FormatStyle.Notation: Hashable {}
+extension Product.FormatStyle.RoundingRule {
+  var toNumberFormatterRoundingMode: NumberFormatter.RoundingMode {
+    switch self {
+    case .awayFromZero:
+      return .up
+    case .down:
+      return .down
+    case .toNearestOrAwayFromZero:
+      return .halfUp
+    case .toNearestOrEven:
+      return .halfEven
+    case .towardZero:
+      return .halfDown
+    case .up:
+      return .up
+    @unknown default:
+      assertionFailure(
+        "Product.FormatStyle.RoundingRule.(@unknown default, value: \(self))"
+      )
+      return .up
+    }
+  }
+}
 
 // MARK: - Product.SubscriptionPeriod
 
@@ -474,15 +504,11 @@ extension Product.SubscriptionPeriod.Unit.FormatStyle: Hashable {}
 private let discountFormatter: NumberFormatter = {
   let formatter = NumberFormatter()
   formatter.numberStyle = .percent
-
   return formatter
 }()
 
 private let priceFormatter: NumberFormatter = {
-  let formatter = NumberFormatter()
+  let formatter = PriceFormatter()
   formatter.numberStyle = .currency
-  formatter.minimumFractionDigits = 0
-  formatter.maximumFractionDigits = 2
-
   return formatter
 }()
