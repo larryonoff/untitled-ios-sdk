@@ -16,26 +16,22 @@ extension AmplitudeClient {
 
     return Self(
       initialize: {
-        await impl.initialize()
+        impl.initialize()
       }
     )
   }
 }
 
-
-@MainActor
-private final class AmplitudeClientImpl {
+final class AmplitudeClientImpl {
   private let userIdentifier: UserIdentifierGenerator
 
-  nonisolated
   init(
     userIdentifier: UserIdentifierGenerator
   ) {
     self.userIdentifier = userIdentifier
   }
 
-  func initialize(
-  ) async {
+  func initialize() {
     logger.info("initialize")
 
     let bundle = Bundle.main
