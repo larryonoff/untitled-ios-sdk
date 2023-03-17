@@ -32,6 +32,7 @@ let package = Package(
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
+    .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
     .library(name: .swiftUIExt, targets: [.swiftUIExt]),
     .library(name: .uiKitExt, targets: [.uiKitExt]),
     .library(name: .userIdentifier, targets: [.userIdentifier]),
@@ -236,6 +237,7 @@ let package = Package(
       ]
     ),
     .Client.pasteboard,
+    .Client.remoteSettings,
     .amplitudeClient,
     .applicationClient,
     .appsFlyer,
@@ -260,6 +262,19 @@ extension Target {
         .External.composableArchitecture
       ],
       path: "Sources/PasteboardClient",
+      linkerSettings: [
+        .linkedFramework("UIKit")
+      ]
+    )
+
+    static let remoteSettings = target(
+      name: .Client.remoteSettings,
+      dependencies: [
+        .loggingSupport,
+        .External.composableArchitecture,
+        .External.Firebase.remoteConfig
+      ],
+      path: "Sources/RemoteSettingsClient",
       linkerSettings: [
         .linkedFramework("UIKit")
       ]
@@ -407,6 +422,7 @@ extension Target.Dependency {
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
+    static let remoteSettings = byName(name: .Client.remoteSettings)
     static let userSettings = byName(name: .Client.userSettings)
     static let userTracking = byName(name: .Client.userTracking)
   }
@@ -466,6 +482,11 @@ extension Target.Dependency {
         name: "FirebaseCrashlytics",
         package: "firebase-ios-sdk"
       )
+
+      static let remoteConfig = product(
+        name: "FirebaseRemoteConfigSwift",
+        package: "firebase-ios-sdk"
+      )
     }
 
     static let keychainAccess = byName(name: "KeychainAccess")
@@ -509,6 +530,7 @@ extension String {
     static let pasteboard = "PasteboardClient"
     static let photosAuthorization = "PhotosAuthorization"
     static let purchases = "PurchasesClient"
+    static let remoteSettings = "RemoteSettingsClient"
     static let userSettings = "UserSettings"
     static let userTracking = "UserTracking"
   }
