@@ -9,6 +9,7 @@ extension Paywall {
     ],
     productComparingID: .mockMonth,
     productSelectedID: .mockYear,
+    payUpFrontProductID: nil,
     variantID: nil
   )
 }

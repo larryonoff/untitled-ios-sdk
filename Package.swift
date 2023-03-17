@@ -15,7 +15,7 @@ let package = Package(
     .library(name: .applicationClient, targets: [.applicationClient]),
     .library(name: .appsFlyer, targets: [.appsFlyer]),
     .library(name: .avFoundationExt, targets: [.avFoundationExt]),
-    .library(name: "ComposableArchitectureExt", targets: ["ComposableArchitectureExt"]),
+    .library(name: .composableArchitectureExt, targets: [.composableArchitectureExt]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
     .library(name: .dependenciesExt, targets: [.dependenciesExt]),
     .library(name: .device, targets: [.device]),
@@ -113,7 +113,7 @@ let package = Package(
       ]
     ),
     .target(
-      name: "ComposableArchitectureExt",
+      name: .composableArchitectureExt,
       dependencies: [
         .External.composableArchitecture
       ]
@@ -179,7 +179,7 @@ let package = Package(
     .target(
       name: .Client.purchases,
       dependencies: [
-        "ComposableArchitectureExt",
+        .composableArchitectureExt,
         .Client.analytics,
         .foundationSupport,
         .loggingSupport,
@@ -367,6 +367,7 @@ extension Target {
     dependencies: [
       .Client.analytics,
       .Client.purchases,
+      .composableArchitectureExt,
       .External.composableArchitecture,
     ]
   )
@@ -400,6 +401,7 @@ extension Target.Dependency {
   static let applicationClient = byName(name: .applicationClient)
   static let appsFlyer = byName(name: .appsFlyer)
   static let avFoundationExt = byName(name: .avFoundationExt)
+  static let composableArchitectureExt = byName(name: .composableArchitectureExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
   static let dependenciesExt = byName(name: .dependenciesExt)
   static let device = byName(name: .device)
@@ -509,6 +511,7 @@ extension String {
   static let version = "Version"
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
+  static let composableArchitectureExt = "ComposableArchitectureExt"
   static let dependenciesExt = "DependenciesExt"
   static let device = "Device"
   static let foundationSupport = "FoundationSupport"
