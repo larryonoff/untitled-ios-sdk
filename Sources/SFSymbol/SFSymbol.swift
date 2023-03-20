@@ -52,6 +52,8 @@ extension SFSymbol {
     public static let upCircleFill: SFSymbol = "arrow.up.circle.fill"
   }
 
+  public static let bell: SFSymbol = "bell"
+
   public static let checkmark: SFSymbol = "checkmark"
 
   public enum Checkmark {
@@ -69,6 +71,8 @@ extension SFSymbol {
     public static let up: SFSymbol = "chevron.up"
     public static let down: SFSymbol = "chevron.down"
   }
+
+  public static let creditCard: SFSymbol = "creditcard"
 
   public static let crown: SFSymbol = "crown"
 
