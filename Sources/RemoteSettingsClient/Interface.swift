@@ -16,10 +16,10 @@ public struct RemoteSettingsClient {
 
   public var fetch: @Sendable (FetchRequest) async throws -> Void
   public var registerDefaults: @Sendable ([String: AnyObject]) -> Void
-  public var boolForKey: (String) -> Bool
+  public var boolForKey: (String) -> Bool?
   public var dataForKey: (String) -> Data?
-  public var doubleForKey: (String) -> Double
-  public var integerForKey: (String) -> Int
+  public var doubleForKey: (String) -> Double?
+  public var integerForKey: (String) -> Int?
   public var stringForKey: (String) -> String?
   public var dictionaryRepresentation: () -> [String: String]?
 }
