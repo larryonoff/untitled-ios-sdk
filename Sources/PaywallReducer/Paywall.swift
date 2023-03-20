@@ -145,7 +145,14 @@ public struct PaywallReducer: ReducerProtocol {
 
         return .none
       case .oneTimeOfferDismissed:
-        return .send(.delegate(.dismissed))
+        state.oneTimeOffer = nil
+
+        // .delegate(.dismissed) delayed since
+        // SwiftUI doesn't dismiss properly multiple views
+        return .task {
+          try? await Task.sleep(nanoseconds: 5_00_000_000)
+          return .delegate(.dismissed)
+        }
       case let .product(productID, .tapped):
         let productChanged = productID != state.productSelected?.id
 
