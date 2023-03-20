@@ -41,8 +41,9 @@ public struct PaywallReducer: ReducerProtocol {
 
   public struct State: Equatable {
     public struct OneTimeOffer: Equatable {
-      public var isEligibleForIntroductoryOffer: Bool
-      public var product: Product?
+      @Box public var isEligibleForIntroductoryOffer: Bool
+
+      @Box public var product: Product?
     }
 
     @Box public var alert: AlertState<Action>?
