@@ -49,39 +49,51 @@ extension RemoteSettingsClient {
           .setDefaults(newDefaults)
       },
       boolForKey: { key in
-        return RemoteConfig.remoteConfig()
+        let value = RemoteConfig.remoteConfig()
           .configValue(forKey: key)
-          .boolValue
+
+        return value.source == .static
+          ? nil
+          : value.boolValue
       },
       dataForKey: { key in
         let value = RemoteConfig.remoteConfig()
           .configValue(forKey: key)
-          .dataValue
-        return value.isEmpty ? nil : value
+
+        return value.source == .static
+          ? nil
+          : value.dataValue
       },
       doubleForKey: { key in
-        return RemoteConfig.remoteConfig()
+        let value = RemoteConfig.remoteConfig()
           .configValue(forKey: key)
-          .numberValue
-          .doubleValue
+
+        return value.source == .static
+          ? nil
+          : value.numberValue.doubleValue
       },
       integerForKey: { key in
-        return RemoteConfig.remoteConfig()
+        let value = RemoteConfig.remoteConfig()
           .configValue(forKey: key)
-          .numberValue
-          .intValue
+
+        return value.source == .static
+          ? nil
+          : value.numberValue.intValue
       },
       stringForKey: { key in
-        return RemoteConfig.remoteConfig()
+        let value = RemoteConfig.remoteConfig()
           .configValue(forKey: key)
-          .stringValue
+
+        return value.source == .static
+          ? nil
+          : value.stringValue
       },
       dictionaryRepresentation: {
         let remoteConfig = RemoteConfig.remoteConfig()
 
         let keys = remoteConfig
           .keys(withPrefix: nil)
-          .map { ($0, remoteConfig[$0].stringValue ?? "") }
+          .map { ($0, remoteConfig[$0].stringValue ?? "nil") }
         return Dictionary(uniqueKeysWithValues: keys)
       }
     )
