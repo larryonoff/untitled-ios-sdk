@@ -108,17 +108,7 @@ public struct PaywallReducer: ReducerProtocol {
       case .delegate:
         return .none
       case .dismissTapped:
-        if
-          !state.isOneTimeOfferPresented,
-          state.canPresentOneTimeOffer,
-          let oneTimeProduct = state.paywall?.payUpFrontProduct
-        {
-          let oneTimeOffer = State.OneTimeOffer(
-            isEligibleForIntroductoryOffer: state.isEligibleForIntroductoryOffer,
-            product: oneTimeProduct
-          )
-          state.oneTimeOffer = oneTimeOffer
-
+        if state.attemptPresentOneTimeOffer() {
           return .none
         }
 
@@ -133,12 +123,13 @@ public struct PaywallReducer: ReducerProtocol {
           let paywall = try result.value
           state.paywall = paywall
 
-          let products = paywall?.products ?? []
+          let products = (paywall?.products ?? [])
+            .filter { $0.id != paywall?.payUpFrontProductID }
           state.products = IdentifiedArray(uncheckedUniqueElements: products)
 
           state.productComparing = paywall?.productComparing
           state.productSelected =
-            paywall?.productSelected ?? paywall?.products.first
+            paywall?.productSelected ?? products.first
 
           if let paywall = paywall {
             return .fireAndForget {
@@ -285,5 +276,30 @@ public struct PaywallReducer: ReducerProtocol {
         )
       )
     }
+  }
+}
+
+private extension PaywallReducer.State {
+  var isEligibleForOneTimeOffer: Bool {
+    canPresentOneTimeOffer && paywall?.payUpFrontProduct != nil
+  }
+
+  mutating
+  func attemptPresentOneTimeOffer() -> Bool {
+    guard
+      !isOneTimeOfferPresented,
+      canPresentOneTimeOffer,
+      let oneTimeProduct = paywall?.payUpFrontProduct
+    else {
+      return false
+    }
+
+    let oneTimeOffer = OneTimeOffer(
+      isEligibleForIntroductoryOffer: isEligibleForIntroductoryOffer,
+      product: oneTimeProduct
+    )
+    self.oneTimeOffer = oneTimeOffer
+
+    return true
   }
 }
