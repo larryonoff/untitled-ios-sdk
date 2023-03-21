@@ -15,6 +15,8 @@ public struct AppsFlyerClient {
 
   public var appContinueUserActivity: @Sendable (NSUserActivity, @escaping ([UIUserActivityRestoring]?) -> Void) -> Void
   public var appOpenURL: @Sendable (URL, [UIApplication.OpenURLOptionsKey: Any]) -> Void
+
+  public var applicationID: @Sendable () -> String?
 }
 
 // MARK: - AppsFlyerClient.Configuration

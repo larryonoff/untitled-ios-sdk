@@ -32,6 +32,9 @@ extension AppsFlyerClient {
           open: url,
           options: options
         )
+      },
+      applicationID: {
+        AppsFlyerLib.shared().getAppsFlyerUID()
       }
     )
   }
