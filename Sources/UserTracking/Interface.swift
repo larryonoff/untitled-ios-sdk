@@ -21,6 +21,7 @@ public struct UserTrackingClient {
 
   public var sendTrackingData: @Sendable () async -> Void
 
+  public var attributionToken: @Sendable () async throws -> String?
   public var identifierForAdvertising: @Sendable () async -> UUID?
   public var identifierForVendor: @Sendable () async -> UUID?
 }
