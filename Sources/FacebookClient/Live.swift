@@ -3,18 +3,21 @@ import UIKit
 
 extension FacebookClient {
   public static let live = FacebookClient(
-    appDidFinishLaunching: { @MainActor options in
+    appDidFinishLaunching: { options in
       _ = ApplicationDelegate.shared.application(
         UIApplication.shared,
         didFinishLaunchingWithOptions: options
       )
     },
-    appOpenURL: { @MainActor url, options in
+    appOpenURL: { url, options in
       _ = ApplicationDelegate.shared.application(
         UIApplication.shared,
         open: url,
         options: options
       )
+    },
+    userID: {
+      AccessToken.current?.userID
     }
   )
 }

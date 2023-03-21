@@ -1,20 +1,20 @@
-import ComposableArchitecture
 import Dependencies
-import Foundation
 import XCTestDynamicOverlay
 
 extension FacebookClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
-  public static let testValue = FacebookClient(
+  public static let testValue = Self(
     appDidFinishLaunching: unimplemented("\(Self.self).appDidFinishLaunching"),
-    appOpenURL: unimplemented("\(Self.self).appOpenURL")
+    appOpenURL: unimplemented("\(Self.self).appOpenURL"),
+    userID: unimplemented("\(Self.self).userID", placeholder: nil)
   )
 }
 
 extension FacebookClient {
-  public static let noop = FacebookClient(
+  public static let noop = Self(
     appDidFinishLaunching: { _ in },
-    appOpenURL: { _, _ in }
+    appOpenURL: { _, _ in },
+    userID: { nil }
   )
 }
