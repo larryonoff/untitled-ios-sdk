@@ -11,6 +11,20 @@ extension Bundle {
 }
 
 extension Bundle {
+  public var bundleName: String? {
+    self["CFBundleName"] as? String
+  }
+
+  public var bundleShortVersion: String? {
+    self["CFBundleShortVersionString"] as? String
+  }
+
+  public var bundleVersion: String? {
+    self["CFBundleVersion"] as? String
+  }
+}
+
+extension Bundle {
   public var adaptyAPIKey: String? {
     self["XAdaptyAPIKey"] as? String
   }
