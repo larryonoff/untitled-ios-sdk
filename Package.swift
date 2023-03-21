@@ -233,6 +233,7 @@ let package = Package(
         .External.Facebook.core,
       ],
       linkerSettings: [
+        .linkedFramework("AdSupport"),
         .linkedFramework("AppTrackingTransparency")
       ]
     ),

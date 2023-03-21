@@ -20,4 +20,7 @@ public struct UserTrackingClient {
   public var requestAuthorization: @Sendable (Double) async -> AuthorizationStatus
 
   public var sendTrackingData: @Sendable () async -> Void
+
+  public var identifierForAdvertising: @Sendable () async -> UUID?
+  public var identifierForVendor: @Sendable () async -> UUID?
 }

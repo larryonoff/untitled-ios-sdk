@@ -1,4 +1,5 @@
 import Adapty
+import AdSupport
 import Amplitude
 import AnalyticsClient
 import AppTrackingTransparency
@@ -9,6 +10,7 @@ import FirebaseAnalytics
 import Foundation
 import LoggingSupport
 import os.log
+import UIKit
 
 public typealias Analytics = AnalyticsClient.Analytics
 
@@ -38,6 +40,18 @@ extension UserTrackingClient {
       },
       sendTrackingData: {
         await impl.sendTrackingData()
+      },
+      identifierForAdvertising: {
+        let identifierManager = ASIdentifierManager.shared()
+
+        if ATTrackingManager.trackingAuthorizationStatus == .authorized {
+          return identifierManager.advertisingIdentifier
+        }
+
+        return nil
+      },
+      identifierForVendor: {
+        await UIDevice.current.identifierForVendor
       }
     )
   }
