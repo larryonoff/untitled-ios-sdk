@@ -13,6 +13,7 @@ extension UserTrackingClient: TestDependencyKey {
     isAuthorizationRequestNeeded: unimplemented("\(Self.self).isAuthorizationRequestNeeded", placeholder: false),
     requestAuthorization: unimplemented("\(Self.self).requestAuthorization", placeholder: .notDetermined),
     sendTrackingData: unimplemented("\(Self.self).sendTrackingData"),
+    attributionToken: unimplemented("\(Self.self).attributionToken", placeholder: nil),
     identifierForAdvertising: unimplemented("\(Self.self).identifierForAdvertising", placeholder: nil),
     identifierForVendor: unimplemented("\(Self.self).identifierForVendor", placeholder: nil)
   )
@@ -26,6 +27,7 @@ extension UserTrackingClient {
     isAuthorizationRequestNeeded: { false },
     requestAuthorization: { _ in .notDetermined },
     sendTrackingData: {},
+    attributionToken: { nil },
     identifierForAdvertising: { nil },
     identifierForVendor: { nil }
   )

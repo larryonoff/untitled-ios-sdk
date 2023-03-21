@@ -1,4 +1,5 @@
 import Adapty
+import AdServices
 import AdSupport
 import Amplitude
 import AnalyticsClient
@@ -40,6 +41,9 @@ extension UserTrackingClient {
       },
       sendTrackingData: {
         await impl.sendTrackingData()
+      },
+      attributionToken: {
+        try AAAttribution.attributionToken()
       },
       identifierForAdvertising: {
         let identifierManager = ASIdentifierManager.shared()
