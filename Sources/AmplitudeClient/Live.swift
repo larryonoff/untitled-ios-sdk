@@ -17,6 +17,9 @@ extension AmplitudeClient {
     return Self(
       initialize: {
         impl.initialize()
+      },
+      deviceID: {
+        Amplitude.instance().deviceId
       }
     )
   }
