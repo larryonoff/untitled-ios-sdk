@@ -35,6 +35,9 @@ extension AppsFlyerClient {
       },
       applicationID: {
         AppsFlyerLib.shared().getAppsFlyerUID()
+      },
+      logEvent: {
+        AppsFlyerLib.shared().logEvent($0, withValues: nil)
       }
     )
   }
