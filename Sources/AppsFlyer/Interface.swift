@@ -17,6 +17,8 @@ public struct AppsFlyerClient {
   public var appOpenURL: @Sendable (URL, [UIApplication.OpenURLOptionsKey: Any]) -> Void
 
   public var applicationID: @Sendable () -> String?
+
+  public var logEvent: @Sendable (String) -> Void
 }
 
 // MARK: - AppsFlyerClient.Configuration
