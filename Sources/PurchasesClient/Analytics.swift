@@ -18,12 +18,12 @@ extension Analytics.UserPropertyName {
 extension Product {
   var analyticsParameters: [Analytics.ParameterName: Any] {
     var parameters: [Analytics.ParameterName: Any] = [:]
-    parameters[.subscriptionPeriod] = subscriptionInfo?
+    parameters[.subscriptionPeriod] = subscription?
       .subscriptionPeriod
       .analyticsValue
 
     if
-      let introductoryOffer = subscriptionInfo?.introductoryOffer,
+      let introductoryOffer = subscription?.introductoryOffer,
       introductoryOffer.paymentMode == .freeTrial
     {
       parameters[.subscriptionTrialPeriod] =

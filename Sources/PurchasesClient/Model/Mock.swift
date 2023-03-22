@@ -27,7 +27,7 @@ extension Product {
     price: 19.99,
     priceLocale: .en_US,
     displayPrice: "19.99$",
-    subscriptionInfo: .init(
+    subscription: .init(
       introductoryOffer: .init(
         id: "year-intro-offer",
         type: .introductory,
@@ -37,6 +37,7 @@ extension Product {
         period: .day(3),
         paymentMode: .freeTrial
       ),
+      promotionalOffers: [],
       subscriptionGroupID: "subscriptionGroupID",
       subscriptionPeriod: .year(1)
     )
@@ -49,8 +50,9 @@ extension Product {
     price: 1.99,
     priceLocale: .en_US,
     displayPrice: "1.99$",
-    subscriptionInfo: .init(
+    subscription: .init(
       introductoryOffer: nil,
+      promotionalOffers: [],
       subscriptionGroupID: "subscriptionGroupID",
       subscriptionPeriod: .month(1)
     )

@@ -73,12 +73,12 @@ extension Product {
 
 extension Product.FormatStyle.Price: Foundation.FormatStyle {
   public func format(_ value: Product) -> String {
-    if let subscriptionInfo = value.subscriptionInfo {
+    if let subscription = value.subscription {
       var price = value.price
-      var subscriptionPeriod = subscriptionInfo.subscriptionPeriod
+      var subscriptionPeriod = subscription.subscriptionPeriod
 
       if let destinationPeriod = self.subscriptionPeriod {
-        price = subscriptionInfo
+        price = subscription
           .subscriptionPeriod
           .convertPrice(
             value.price,

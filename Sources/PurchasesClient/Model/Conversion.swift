@@ -8,12 +8,12 @@ extension Product {
     let priceComparing: Decimal
 
     if
-      let subscriptionInfo = subscriptionInfo,
-      let subscriptionInfoComparing = product.subscriptionInfo
+      let subscription,
+      let subscriptionComparing = product.subscription
     {
-      price = subscriptionInfo.subscriptionPeriod
+      price = subscription.subscriptionPeriod
         .convertPrice(self.price, to: .init(unit: .year, value: 1))
-      priceComparing = subscriptionInfoComparing.subscriptionPeriod
+      priceComparing = subscriptionComparing.subscriptionPeriod
         .convertPrice(product.price, to: .init(unit: .year, value: 1))
     } else {
       price = self.price

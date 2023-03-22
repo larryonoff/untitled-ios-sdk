@@ -8,6 +8,7 @@ public struct Product {
 
   public struct SubscriptionInfo {
     public var introductoryOffer: Product.SubscriptionOffer?
+    public var promotionalOffers: [Product.SubscriptionOffer]
     public var subscriptionGroupID: String
     public var subscriptionPeriod: Product.SubscriptionPeriod
   }
@@ -15,6 +16,7 @@ public struct Product {
   public struct SubscriptionOffer {
     public enum OfferType: String {
       case introductory
+      case promotional
     }
 
     public enum PaymentMode: String {
@@ -67,7 +69,7 @@ public struct Product {
   public var priceLocale: Locale
   public var displayPrice: String
 
-  public var subscriptionInfo: SubscriptionInfo?
+  public var subscription: SubscriptionInfo?
 
   public init(
     id: ID,
@@ -76,7 +78,7 @@ public struct Product {
     price: Decimal,
     priceLocale: Locale,
     displayPrice: String,
-    subscriptionInfo: SubscriptionInfo?
+    subscription: SubscriptionInfo?
   ) {
     self.id = id
     self.displayName = displayName
@@ -84,7 +86,7 @@ public struct Product {
     self.price = price
     self.priceLocale = priceLocale
     self.displayPrice = displayPrice
-    self.subscriptionInfo = subscriptionInfo
+    self.subscription = subscription
   }
 }
 

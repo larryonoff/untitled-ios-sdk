@@ -4,13 +4,13 @@ import Foundation
 extension Product {
   init?(_ product: AdaptyProduct) {
     self.init(
-      id: .init(rawValue: product.vendorProductId),
+      id: .init(product.vendorProductId),
       displayName: product.localizedTitle,
       description: product.localizedDescription,
       price: product.price,
       priceLocale: product.skProduct.priceLocale,
       displayPrice: product.localizedPrice ?? "",
-      subscriptionInfo: .init(product)
+      subscription: .init(product)
     )
   }
 }
@@ -28,6 +28,8 @@ extension Product.SubscriptionInfo {
     self.introductoryOffer = product.introductoryDiscount.flatMap {
       .introductoryOffer($0, product: product)
     }
+    self.promotionalOffers = product.skProduct.discounts
+      .compactMap { Product.SubscriptionOffer($0) }
     self.subscriptionGroupID = subscriptionGroupID
     self.subscriptionPeriod = subscriptionPeriod
   }
