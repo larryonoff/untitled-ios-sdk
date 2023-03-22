@@ -30,20 +30,25 @@ extension PurchasesClient {
       purchase: { request in
         try await impl.purchase(request)
       },
+      restorePurhases: {
+        try await impl.restorePurchases()
+      },
       purchases: {
         impl.purchases
       },
       purchasesUpdates: {
         impl.purchasesUpdates
       },
-      restorePurhases: {
-        try await impl.restorePurchases()
-      },
-      setFallbackPaywalls: {
-        try await impl.setFallbackPaywalls($0)
-      },
-      logPaywall: { paywall in
-        try await impl.log(paywall)
+      receipt: {
+        let bundle = Bundle.main
+
+        return try bundle.appStoreReceiptURL.flatMap { receiptURL in
+          let fileManager = FileManager.default
+          guard fileManager.fileExists(atPath: receiptURL.path) else {
+            return nil
+          }
+          return try Data(contentsOf: receiptURL)
+        }
       },
       requestReview: {
         let application = await UIApplication.shared
@@ -72,6 +77,12 @@ extension PurchasesClient {
             "error": "Active `UIWindowScene` not available"
           ])
         }
+      },
+      setFallbackPaywalls: {
+        try await impl.setFallbackPaywalls($0)
+      },
+      logPaywall: { paywall in
+        try await impl.log(paywall)
       }
     )
   }

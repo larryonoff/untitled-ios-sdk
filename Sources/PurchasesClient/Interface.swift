@@ -10,14 +10,21 @@ extension DependencyValues {
 
 public struct PurchasesClient {
   public var initialize: @Sendable () async throws -> Void
+
   public var paywalByID: @Sendable (Paywall.ID) async throws -> Paywall?
+
   public var purchase: @Sendable (PurchaseRequest) async throws -> PurchaseResult
+  public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
+
   public var purchases: @Sendable () -> Purchases
   public var purchasesUpdates: @Sendable () -> AsyncStream<Purchases>
-  public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
+
+  public var receipt: @Sendable () async throws -> Data?
+
+  public var requestReview: @Sendable () async -> Void
+
   public var setFallbackPaywalls: @Sendable (Data) async throws -> Void
   public var logPaywall: @Sendable (Paywall) async throws -> Void
-  public var requestReview: @Sendable () async -> Void
 }
 
 extension PurchasesClient {
