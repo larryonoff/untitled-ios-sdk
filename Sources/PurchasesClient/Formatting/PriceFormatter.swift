@@ -20,10 +20,10 @@ final class PriceFormatter: NumberFormatter {
 
   private func localeDidChange() {
     switch locale.regionCode {
-    case "US":
-      minimumFractionDigits = 2
-    default:
+    case "RU", "IN", "JP":
       minimumFractionDigits = 0
+    default:
+      minimumFractionDigits = 2
     }
 
     switch locale.currencyCode {
