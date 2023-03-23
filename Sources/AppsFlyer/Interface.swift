@@ -11,7 +11,7 @@ extension DependencyValues {
 }
 
 public struct AppsFlyerClient {
-  public var initialize: @Sendable (Configuration) async -> Void
+  public var initialize: @Sendable (Configuration) -> Void
 
   public var appContinueUserActivity: @Sendable (NSUserActivity, @escaping ([UIUserActivityRestoring]?) -> Void) -> Void
   public var appOpenURL: @Sendable (URL, [UIApplication.OpenURLOptionsKey: Any]) -> Void
