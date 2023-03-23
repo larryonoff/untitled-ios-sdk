@@ -9,4 +9,5 @@ extension DependencyValues {
 
 public struct FirebaseClient {
   public var initialize: @Sendable () -> Void
+  public var reset: @Sendable () -> Void
 }

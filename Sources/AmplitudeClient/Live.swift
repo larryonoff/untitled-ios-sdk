@@ -20,6 +20,9 @@ extension AmplitudeClient {
       },
       deviceID: {
         Amplitude.instance().deviceId
+      },
+      reset: {
+        impl.reset()
       }
     )
   }
@@ -52,6 +55,11 @@ final class AmplitudeClientImpl {
     )
 
     logger.info("initialize success")
+  }
+
+  func reset() {
+    Amplitude.instance()
+      .setUserId(userIdentifier().uuidString)
   }
 }
 

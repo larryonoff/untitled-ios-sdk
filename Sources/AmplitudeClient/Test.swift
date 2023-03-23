@@ -6,13 +6,15 @@ extension AmplitudeClient: TestDependencyKey {
 
   public static let testValue = Self(
     initialize: unimplemented("\(Self.self).initialize"),
-    deviceID: unimplemented("\(Self.self).deviceID", placeholder: nil)
+    deviceID: unimplemented("\(Self.self).deviceID", placeholder: nil),
+    reset: unimplemented("\(Self.self).reset")
   )
 }
 
 extension AmplitudeClient {
   public static let noop = Self(
     initialize: {},
-    deviceID: { nil }
+    deviceID: { nil },
+    reset: {}
   )
 }

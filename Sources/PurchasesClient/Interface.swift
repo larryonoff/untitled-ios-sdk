@@ -23,6 +23,8 @@ public struct PurchasesClient {
 
   public var requestReview: @Sendable () async -> Void
 
+  public var reset: @Sendable () async throws -> Void
+
   public var setFallbackPaywalls: @Sendable (Data) async throws -> Void
   public var logPaywall: @Sendable (Paywall) async throws -> Void
 }

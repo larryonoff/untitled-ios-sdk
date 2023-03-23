@@ -17,6 +17,9 @@ extension FirebaseClient {
     return Self(
       initialize: {
         impl.initialize()
+      },
+      reset: {
+        impl.reset()
       }
     )
   }
@@ -51,6 +54,10 @@ final class FirebaseClientImpl {
     let userID = userIdentifier()
     FirebaseAnalytics.Analytics.setUserID(userID.uuidString)
     Crashlytics.crashlytics().setUserID(userID.uuidString)
+  }
+
+  func reset() {
+    updateUserID()
   }
 }
 

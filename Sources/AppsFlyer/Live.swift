@@ -38,6 +38,9 @@ extension AppsFlyerClient {
       },
       logEvent: {
         AppsFlyerLib.shared().logEvent($0, withValues: nil)
+      },
+      reset: {
+        impl.reset()
       }
     )
   }
@@ -185,6 +188,12 @@ private final actor AppsFlyerClientImpl {
       ])
       throw error
     }
+  }
+
+  nonisolated
+  func reset() {
+    let tracker = AppsFlyerLib.shared()
+    tracker.customerUserID = userIdentifier().uuidString
   }
 
   nonisolated

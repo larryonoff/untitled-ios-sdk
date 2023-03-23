@@ -78,6 +78,9 @@ extension PurchasesClient {
           ])
         }
       },
+      reset: {
+        try await impl.reset()
+      },
       setFallbackPaywalls: {
         try await impl.setFallbackPaywalls($0)
       },
