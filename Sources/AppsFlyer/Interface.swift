@@ -19,6 +19,8 @@ public struct AppsFlyerClient {
   public var applicationID: @Sendable () -> String?
 
   public var logEvent: @Sendable (String) -> Void
+
+  public var reset: @Sendable () -> Void
 }
 
 // MARK: - AppsFlyerClient.Configuration
