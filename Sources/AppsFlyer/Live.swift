@@ -19,7 +19,7 @@ extension AppsFlyerClient {
 
     return AppsFlyerClient(
       initialize: {
-        await impl.initialize($0)
+        impl.initialize($0)
       },
       appContinueUserActivity: { userActivity, restorationHandler in
         impl.app(
@@ -46,7 +46,8 @@ extension AppsFlyerClient {
   }
 }
 
-private final actor AppsFlyerClientImpl {
+final class AppsFlyerClientImpl {
+  private let lock = NSRecursiveLock()
   private var appsFlyerDelegate: _AppsFlyerDelegate?
   private var appsFlyerDelegateTask: Task<Void, Never>?
   private var appDidBecomeActiveTask: Task<Void, Never>?
@@ -61,7 +62,9 @@ private final actor AppsFlyerClientImpl {
 
   func initialize(
     _ configuration: AppsFlyerClient.Configuration
-  ) async {
+  ) {
+    lock.lock(); lock.unlock()
+
     logger.info("initialize", dump: [
       "configuration": configuration
     ])
@@ -115,7 +118,7 @@ private final actor AppsFlyerClientImpl {
 
     appsFlyerDelegateTask = Task.detached(priority: .high) { [weak self] in
       guard
-        let appsFlyerDelegate = await self?.appsFlyerDelegate
+        let appsFlyerDelegate = self?.appsFlyerDelegate
       else {
         return
       }
@@ -190,13 +193,11 @@ private final actor AppsFlyerClientImpl {
     }
   }
 
-  nonisolated
   func reset() {
     let tracker = AppsFlyerLib.shared()
     tracker.customerUserID = userIdentifier().uuidString
   }
 
-  nonisolated
   func app(
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
@@ -211,7 +212,6 @@ private final actor AppsFlyerClientImpl {
     )
   }
 
-  nonisolated
   func app(
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey: Any]
