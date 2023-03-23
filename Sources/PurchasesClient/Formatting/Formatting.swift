@@ -16,7 +16,7 @@ extension Product {
   public static func displayPrice(
     _ price: Decimal,
     priceLocale: Locale,
-    roundingRule: Product.FormatStyle.RoundingRule = .toNearestOrEven
+    roundingRule: Product.FormatStyle.RoundingRule = .down
   ) -> String? {
     priceFormatter.locale = priceLocale
     priceFormatter.roundingMode = roundingRule.toNumberFormatterRoundingMode

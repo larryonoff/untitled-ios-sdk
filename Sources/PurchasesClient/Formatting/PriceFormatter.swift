@@ -13,6 +13,7 @@ final class PriceFormatter: NumberFormatter {
   required init?(coder: NSCoder) {
     super.init(coder: coder)
     localeDidChange()
+    roundingMode = .down
   }
 
   // MARK: - state changes
