@@ -37,7 +37,7 @@ extension Product {
       var subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle
 
       public init(
-        roundingRule: RoundingRule = .toNearestOrEven,
+        roundingRule: RoundingRule = .down,
         subscriptionPeriod: Product.SubscriptionPeriod?,
         subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle = .complete
       ) {
