@@ -107,7 +107,10 @@ extension SFSymbol {
     public static let fill: SFSymbol = "ladybug.fill"
   }
 
-  public static let line3Horizontal: SFSymbol = "line.3.horizontal"
+  public enum Line3 {
+    public static let horizontal: SFSymbol = "line.3.horizontal"
+    public static let horizontalDecrease: SFSymbol = "line.3.horizontal.decrease"
+  }
 
   public static let lock: SFSymbol = "lock"
 
