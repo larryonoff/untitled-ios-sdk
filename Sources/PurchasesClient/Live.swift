@@ -177,6 +177,7 @@ final actor PurchasesClientImpl {
     }
   }
 
+  nonisolated
   func paywall(by id: Paywall.ID) async throws -> Paywall? {
     do {
       logger.info("get paywall", dump: [
@@ -343,13 +344,15 @@ final actor PurchasesClientImpl {
     }
   }
 
-  private nonisolated func _paywall(
+  nonisolated
+  private func _paywall(
     by id: Paywall.ID
   ) async throws -> AdaptyPaywall? {
     try await Adapty.getPaywall(id.rawValue)
   }
 
-  private nonisolated func _paywallProducts(
+  nonisolated
+  private func _paywallProducts(
     for paywall: AdaptyPaywall
   ) async throws -> [AdaptyPaywallProduct]? {
     try await Adapty.getPaywallProducts(
@@ -359,7 +362,8 @@ final actor PurchasesClientImpl {
   }
 
   @discardableResult
-  nonisolated private func updatePurchases(
+  nonisolated
+  private func updatePurchases(
     _ profile: AdaptyProfile?
   ) -> Purchases {
     let purchases = Purchases(profile)
