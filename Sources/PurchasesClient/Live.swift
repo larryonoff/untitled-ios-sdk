@@ -96,6 +96,8 @@ final actor PurchasesClientImpl {
 
   private let _purchases = CurrentValueSubject<Purchases, Never>(.load())
 
+  private var _paywalls: [Paywall.ID: Paywall] = [:]
+
   private let analytics: Analytics
   private let userIdentifier: UserIdentifierGenerator
 
@@ -184,20 +186,37 @@ final actor PurchasesClientImpl {
         "id": id
       ])
 
-      let paywall: Paywall? = try await { () async throws -> Paywall? in
-        guard let _paywall = try await _paywall(by: id) else {
-          return nil
-        }
+      if let paywall = await _paywalls[id] {
+        logger.info("get paywall success", dump: [
+          "id": id,
+          "paywall": paywall,
+          "isFromCache": true
+        ])
 
-        return Paywall(
-          _paywall,
-          products: try await _paywallProducts(for: _paywall)
-        )
-      }()
+        return paywall
+      }
+
+      guard let _paywall = try await _paywall(by: id) else {
+        logger.info("get paywall success", dump: [
+          "id": id,
+          "paywall": "nil",
+          "isFromCache": false
+        ])
+
+        return nil
+      }
+
+      let paywall = Paywall(
+        _paywall,
+        products: try await _paywallProducts(for: _paywall)
+      )
+
+      await cache(paywall)
 
       logger.info("get paywall success", dump: [
         "id": id,
-        "paywall": paywall as Any
+        "paywall": paywall,
+        "isFromCache": false
       ])
 
       return paywall
@@ -359,6 +378,10 @@ final actor PurchasesClientImpl {
       paywall: paywall,
       fetchPolicy: .default
     )
+  }
+
+  private func cache(_ paywall: Paywall) async {
+    _paywalls[paywall.id] = paywall
   }
 
   @discardableResult
