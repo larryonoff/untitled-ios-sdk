@@ -1,4 +1,5 @@
 import Dependencies
+import Foundation
 
 extension DependencyValues {
   public var pasteboard: PasteboardClient {
@@ -8,5 +9,7 @@ extension DependencyValues {
 }
 
 public struct PasteboardClient {
+  public var changes: @Sendable () -> AsyncStream<Void>
+  public var probableWebURL: @Sendable () async throws -> URL?
   public var setString: @Sendable (String?) -> Void
 }
