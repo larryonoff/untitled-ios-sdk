@@ -73,12 +73,22 @@ public struct PaywallReducer: ReducerProtocol {
       self.paywallID = paywallID
       self.placement = placement
     }
+
+    mutating
+    func setError(_ error: Error) {
+      if oneTimeOffer != nil {
+        oneTimeOffer?.alert = .failure(error)
+      } else {
+        alert = .failure(error)
+      }
+    }
   }
 
   public struct OneTimeOfferState: Equatable {
     @Box public var isEligibleForIntroductoryOffer: Bool
     @Box public var isPurchasing: Bool = false
 
+    @Box public var alert: AlertState<Action>?
     @Box public var product: Product?
   }
 
@@ -193,7 +203,7 @@ public struct PaywallReducer: ReducerProtocol {
             return .none
           }
         } catch {
-          state.alert = .failure(error)
+          state.setError(error)
         }
 
         return .none
@@ -224,7 +234,7 @@ public struct PaywallReducer: ReducerProtocol {
             return .none
           }
         } catch {
-          state.alert = .failure(error)
+          state.setError(error)
         }
 
         return .none
