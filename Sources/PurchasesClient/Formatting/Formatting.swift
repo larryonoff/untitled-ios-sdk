@@ -296,7 +296,7 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
       valueString = "12"
       unitString = Product.SubscriptionPeriod.Unit.month.formatted(
         style: unitStyle,
-        number: .plural
+        number: 12.grammaticalNumber
       )
     case (.year, 1):
       valueString = _oneValueString(
@@ -305,13 +305,13 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
       )
       unitString = value.unit.formatted(
         style: unitStyle,
-        number: .singular
+        number: value.value.grammaticalNumber
       )
     case (.year, _):
       valueString = "\(value.value)"
       unitString = value.unit.formatted(
         style: unitStyle,
-        number: .plural
+        number: value.value.grammaticalNumber
       )
     case (.month, 1):
       valueString = _oneValueString(
@@ -320,7 +320,7 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
       )
       unitString = value.unit.formatted(
         style: unitStyle,
-        number: .singular
+        number: value.value.grammaticalNumber
       )
     case (.month, 12) where unitsCollapsed.contains(.month):
       valueString = _oneValueString(
@@ -329,19 +329,19 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
       )
       unitString = Product.SubscriptionPeriod.Unit.year.formatted(
         style: unitStyle,
-        number: .singular
+        number: 1.grammaticalNumber
       )
     case (.month, _):
       valueString = "\(value.value)"
       unitString = value.unit.formatted(
         style: unitStyle,
-        number: .plural
+        number: value.value.grammaticalNumber
       )
     case (.week, 1) where unitsExpanded.contains(.week):
       valueString = "7"
       unitString = Product.SubscriptionPeriod.Unit.day.formatted(
         style: unitStyle,
-        number: .plural
+        number: 7.grammaticalNumber
       )
     case (.week, 1):
       valueString = _oneValueString(
@@ -350,13 +350,13 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
       )
       unitString = value.unit.formatted(
         style: unitStyle,
-        number: .plural
+        number: value.value.grammaticalNumber
       )
     case (.week, _):
       valueString = "\(value.value)"
       unitString = value.unit.formatted(
         style: unitStyle,
-        number: .plural
+        number: value.value.grammaticalNumber
       )
     case (.day, 1):
       valueString = _oneValueString(
@@ -365,7 +365,7 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
       )
       unitString = value.unit.formatted(
         style: unitStyle,
-        number: .singular
+        number: 1.grammaticalNumber
       )
     case (.day, 7) where unitsCollapsed.contains(.day):
       valueString = _oneValueString(
@@ -374,13 +374,13 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
       )
       unitString = Product.SubscriptionPeriod.Unit.week.formatted(
         style: unitStyle,
-        number: .plural
+        number: 1.grammaticalNumber
       )
     case (.day, _):
       valueString = "\(value.value)"
       unitString = value.unit.formatted(
         style: unitStyle,
-        number: .plural
+        number: value.value.grammaticalNumber
       )
     }
 
@@ -448,15 +448,12 @@ extension Product.SubscriptionOffer {
 extension Product.SubscriptionOffer.FormatStyle: Foundation.FormatStyle {
   public func format(_ value: Product.SubscriptionOffer) -> String {
     switch value.paymentMode {
-    case .freeTrial where value.period.value > 1:
-      return L10n.Product.SubscriptionOffer.freeTrial(
-        value.period.value,
-        value.period.unit.formatted(number: .plural)
-      )
     case .freeTrial:
       return L10n.Product.SubscriptionOffer.freeTrial(
         value.period.value,
-        value.period.unit.formatted(number: .singular)
+        value.period.unit.formatted(
+          number: value.period.value.grammaticalNumber
+        )
       )
     case .payAsYouGo:
       assertionFailure("unsupported PaymentMode.payAsYouGo")
@@ -528,32 +525,40 @@ extension Product.SubscriptionPeriod.Unit.FormatStyle: Foundation.FormatStyle {
     switch (number, value, style) {
     case (.singular, .day, .complete):
       return L10n.Product.SubscriptionPeriod.Unit.day
+    case (.plural, .day, .complete):
+      return L10n.Product.SubscriptionPeriod.Unit.Day.plural
     case (_, .day, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.days
+      return L10n.Product.SubscriptionPeriod.Unit.Day.plural2
     case (_, .day, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.Day.compactName
     case (_, .day, .recurrent):
       return L10n.Product.SubscriptionPeriod.Unit.Day.recurrent
     case (.singular, .week, .complete):
       return L10n.Product.SubscriptionPeriod.Unit.week
+    case (.plural, .week, .complete):
+      return L10n.Product.SubscriptionPeriod.Unit.Week.plural
     case (_, .week, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.weeks
+      return L10n.Product.SubscriptionPeriod.Unit.Week.plural2
     case (_, .week, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.Week.compactName
     case (_, .week, .recurrent):
       return L10n.Product.SubscriptionPeriod.Unit.Week.recurrent
     case (.singular, .month, .complete):
       return L10n.Product.SubscriptionPeriod.Unit.month
+    case (.plural, .month, .complete):
+      return L10n.Product.SubscriptionPeriod.Unit.Month.plural
     case (_, .month, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.months
+      return L10n.Product.SubscriptionPeriod.Unit.Month.plural2
     case (_, .month, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.Month.compactName
     case (_, .month, .recurrent):
       return L10n.Product.SubscriptionPeriod.Unit.Month.recurrent
     case (.singular, .year, .complete):
       return L10n.Product.SubscriptionPeriod.Unit.year
+    case (.plural, .year, .complete):
+      return L10n.Product.SubscriptionPeriod.Unit.Year.plural
     case (_, .year, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.years
+      return L10n.Product.SubscriptionPeriod.Unit.Year.plural2
     case (_, .year, .shortened):
       return L10n.Product.SubscriptionPeriod.Unit.Year.compactName
     case (_, .year, .recurrent):
@@ -588,6 +593,19 @@ extension Product.SubscriptionPeriod.Unit.FormatStyle: Equatable {}
 extension Product.SubscriptionPeriod.Unit.FormatStyle: Sendable {}
 
 extension Product.SubscriptionPeriod.Unit.FormatStyle: Hashable {}
+
+extension Int {
+  var grammaticalNumber: Morphology.GrammaticalNumber {
+    switch abs(self) {
+    case 0...1:
+      return .singular
+    case 1...4:
+      return .plural
+    default:
+      return .pluralTwo
+    }
+  }
+}
 
 private let discountFormatter: NumberFormatter = {
   let formatter = NumberFormatter()
