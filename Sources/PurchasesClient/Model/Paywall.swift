@@ -69,6 +69,5 @@ extension Paywall {
       .remoteConfig?["variant_id"]
       .flatMap { $0 as? String }
       .flatMap { .init($0) }
-
   }
 }
