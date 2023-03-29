@@ -169,7 +169,9 @@ public struct PaywallReducer: ReducerProtocol {
 
         return .none
       case .purchase:
-        guard let product = state.productSelected else {
+        guard
+          let product = state.oneTimeOffer?.product ?? state.productSelected
+        else {
           return .none
         }
         return purchase(product, state: &state)
