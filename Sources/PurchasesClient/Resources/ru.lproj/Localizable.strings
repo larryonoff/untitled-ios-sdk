@@ -1,20 +1,24 @@
 "product.subscriptionPeriod.unit.day" = "день";
-"product.subscriptionPeriod.unit.days" = "дня";
+"product.subscriptionPeriod.unit.day.plural" = "дня";
+"product.subscriptionPeriod.unit.day.plural2" = "дней";
 "product.subscriptionPeriod.unit.week" = "неделя";
-"product.subscriptionPeriod.unit.weeks" = "недели";
+"product.subscriptionPeriod.unit.week.plural" = "недели";
+"product.subscriptionPeriod.unit.week.plural2" = "недель";
 "product.subscriptionPeriod.unit.month" = "месяц";
-"product.subscriptionPeriod.unit.months" = "месяцев";
+"product.subscriptionPeriod.unit.month.plural" = "месяцев";
+"product.subscriptionPeriod.unit.month.plural2" = "месяцев";
 "product.subscriptionPeriod.unit.year" = "год";
-"product.subscriptionPeriod.unit.years" = "года";
+"product.subscriptionPeriod.unit.year.plural" = "года";
+"product.subscriptionPeriod.unit.year.plural2" = "года";
 
-"product.subscriptionPeriod.unit.day.compactName" = "д";
-"product.subscriptionPeriod.unit.week.compactName" = "н";
+"product.subscriptionPeriod.unit.day.compactName" = "д.";
+"product.subscriptionPeriod.unit.week.compactName" = "нед.";
 "product.subscriptionPeriod.unit.month.compactName" = "мес.";
-"product.subscriptionPeriod.unit.year.compactName" = "г";
-
-"product.subscriptionOffer.freeTrial" = "Пробный период %d-%@";
+"product.subscriptionPeriod.unit.year.compactName" = "год";
 
 "product.subscriptionPeriod.unit.day.recurrent" = "ежедневно";
 "product.subscriptionPeriod.unit.week.recurrent" = "еженедельно";
 "product.subscriptionPeriod.unit.month.recurrent" = "ежемесячно";
 "product.subscriptionPeriod.unit.year.recurrent" = "ежегодно";
+
+"product.subscriptionOffer.freeTrial" = "Пробный период %d-%@";

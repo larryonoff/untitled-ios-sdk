@@ -1,20 +1,24 @@
 "product.subscriptionPeriod.unit.day" = "Tag";
-"product.subscriptionPeriod.unit.days" = "Tage";
+"product.subscriptionPeriod.unit.day.plural" = "Tage";
+"product.subscriptionPeriod.unit.day.plural2" = "Tage";
 "product.subscriptionPeriod.unit.week" = "Woche";
-"product.subscriptionPeriod.unit.weeks" = "Wochen";
+"product.subscriptionPeriod.unit.week.plural" = "Wochen";
+"product.subscriptionPeriod.unit.week.plural2" = "Wochen";
 "product.subscriptionPeriod.unit.month" = "Monat";
-"product.subscriptionPeriod.unit.months" = "Monate";
+"product.subscriptionPeriod.unit.month.plural" = "Monate";
+"product.subscriptionPeriod.unit.month.plural2" = "Monate";
 "product.subscriptionPeriod.unit.year" = "Jahr";
-"product.subscriptionPeriod.unit.years" = "Jahre";
+"product.subscriptionPeriod.unit.year.plural" = "Jahre";
+"product.subscriptionPeriod.unit.year.plural2" = "Jahre";
 
-"product.subscriptionPeriod.unit.day.compactName" = "t";
+"product.subscriptionPeriod.unit.day.compactName" = "d";
 "product.subscriptionPeriod.unit.week.compactName" = "w";
-"product.subscriptionPeriod.unit.month.compactName" = "mo";
-"product.subscriptionPeriod.unit.year.compactName" = "j";
-
-"product.subscriptionOffer.freeTrial" = "%d-%@ Testversion";
+"product.subscriptionPeriod.unit.month.compactName" = "Monat";
+"product.subscriptionPeriod.unit.year.compactName" = "y";
 
 "product.subscriptionPeriod.unit.day.recurrent" = "täglich";
-"product.subscriptionPeriod.unit.week.recurrent" = "wöchentlich";
+"product.subscriptionPeriod.unit.week.recurrent" = "pro Woche";
 "product.subscriptionPeriod.unit.month.recurrent" = "monatlich";
-"product.subscriptionPeriod.unit.year.recurrent" = "jährlich";
+"product.subscriptionPeriod.unit.year.recurrent" = "pro Jahr";
+
+"product.subscriptionOffer.freeTrial" = "%d-%@ Testversion";

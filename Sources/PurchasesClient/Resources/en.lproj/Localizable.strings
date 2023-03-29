@@ -1,11 +1,15 @@
 "product.subscriptionPeriod.unit.day" = "day";
-"product.subscriptionPeriod.unit.days" = "days";
+"product.subscriptionPeriod.unit.day.plural" = "days";
+"product.subscriptionPeriod.unit.day.plural2" = "days";
 "product.subscriptionPeriod.unit.week" = "week";
-"product.subscriptionPeriod.unit.weeks" = "weeks";
+"product.subscriptionPeriod.unit.week.plural" = "weeks";
+"product.subscriptionPeriod.unit.week.plural2" = "weeks";
 "product.subscriptionPeriod.unit.month" = "month";
-"product.subscriptionPeriod.unit.months" = "months";
+"product.subscriptionPeriod.unit.month.plural" = "months";
+"product.subscriptionPeriod.unit.month.plural2" = "months";
 "product.subscriptionPeriod.unit.year" = "year";
-"product.subscriptionPeriod.unit.years" = "years";
+"product.subscriptionPeriod.unit.year.plural" = "years";
+"product.subscriptionPeriod.unit.year.plural2" = "years";
 
 "product.subscriptionPeriod.unit.day.compactName" = "d";
 "product.subscriptionPeriod.unit.week.compactName" = "w";

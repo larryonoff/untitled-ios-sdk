@@ -21,43 +21,51 @@ internal enum L10n {
       internal enum Unit {
         /// day
         internal static let day = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day", fallback: "day")
-        /// days
-        internal static let days = L10n.tr("Localizable", "product.subscriptionPeriod.unit.days", fallback: "days")
         /// month
         internal static let month = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month", fallback: "month")
-        /// months
-        internal static let months = L10n.tr("Localizable", "product.subscriptionPeriod.unit.months", fallback: "months")
         /// week
         internal static let week = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week", fallback: "week")
-        /// weeks
-        internal static let weeks = L10n.tr("Localizable", "product.subscriptionPeriod.unit.weeks", fallback: "weeks")
         /// year
         internal static let year = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year", fallback: "year")
-        /// years
-        internal static let years = L10n.tr("Localizable", "product.subscriptionPeriod.unit.years", fallback: "years")
         internal enum Day {
           /// d
           internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.compactName", fallback: "d")
+          /// days
+          internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.plural", fallback: "days")
+          /// days
+          internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.plural2", fallback: "days")
           /// daily
           internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.recurrent", fallback: "daily")
         }
         internal enum Month {
           /// mo
           internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.compactName", fallback: "mo")
+          /// months
+          internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.plural", fallback: "months")
+          /// months
+          internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.plural2", fallback: "months")
           /// monthly
           internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.recurrent", fallback: "monthly")
         }
         internal enum Week {
           /// w
           internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.compactName", fallback: "w")
+          /// weeks
+          internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.plural", fallback: "weeks")
+          /// weeks
+          internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.plural2", fallback: "weeks")
           /// weekly
           internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.recurrent", fallback: "weekly")
         }
         internal enum Year {
           /// y
           internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.compactName", fallback: "y")
-          /// yearly
-          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.recurrent", fallback: "yearly")
+          /// years
+          internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.plural", fallback: "years")
+          /// years
+          internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.plural2", fallback: "years")
+          /// annually
+          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.recurrent", fallback: "annually")
         }
       }
     }
