@@ -11,10 +11,10 @@
 "product.subscriptionPeriod.unit.year.plural" = "años";
 "product.subscriptionPeriod.unit.year.plural2" = "años";
 
-"product.subscriptionPeriod.unit.day.compactName" = "d";
-"product.subscriptionPeriod.unit.week.compactName" = "w";
+"product.subscriptionPeriod.unit.day.compactName" = "d.";
+"product.subscriptionPeriod.unit.week.compactName" = "sem.";
 "product.subscriptionPeriod.unit.month.compactName" = "mes";
-"product.subscriptionPeriod.unit.year.compactName" = "y";
+"product.subscriptionPeriod.unit.year.compactName" = "año";
 
 "product.subscriptionPeriod.unit.day.recurrent" = "diario";
 "product.subscriptionPeriod.unit.week.recurrent" = "semanal";

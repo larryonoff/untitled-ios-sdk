@@ -11,10 +11,10 @@
 "product.subscriptionPeriod.unit.year.plural" = "Jahre";
 "product.subscriptionPeriod.unit.year.plural2" = "Jahre";
 
-"product.subscriptionPeriod.unit.day.compactName" = "d";
-"product.subscriptionPeriod.unit.week.compactName" = "w";
-"product.subscriptionPeriod.unit.month.compactName" = "Monat";
-"product.subscriptionPeriod.unit.year.compactName" = "y";
+"product.subscriptionPeriod.unit.day.compactName" = "T.";
+"product.subscriptionPeriod.unit.week.compactName" = "W";
+"product.subscriptionPeriod.unit.month.compactName" = "Mo";
+"product.subscriptionPeriod.unit.year.compactName" = "J.";
 
 "product.subscriptionPeriod.unit.day.recurrent" = "täglich";
 "product.subscriptionPeriod.unit.week.recurrent" = "pro Woche";
