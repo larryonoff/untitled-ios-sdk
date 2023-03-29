@@ -40,15 +40,9 @@ public struct PaywallReducer: ReducerProtocol {
   }
 
   public struct State: Equatable {
-    public struct OneTimeOffer: Equatable {
-      @Box public var isEligibleForIntroductoryOffer: Bool
-
-      @Box public var product: Product?
-    }
-
     @Box public var alert: AlertState<Action>?
 
-    @Box public var oneTimeOffer: OneTimeOffer?
+    @Box public var oneTimeOffer: OneTimeOfferState?
 
     public let paywallID: Paywall.ID
     @Box public var paywall: Paywall?
@@ -79,6 +73,13 @@ public struct PaywallReducer: ReducerProtocol {
       self.paywallID = paywallID
       self.placement = placement
     }
+  }
+
+  public struct OneTimeOfferState: Equatable {
+    @Box public var isEligibleForIntroductoryOffer: Bool
+    @Box public var isPurchasing: Bool = false
+
+    @Box public var product: Product?
   }
 
   private enum PurchaseID {}
@@ -177,10 +178,12 @@ public struct PaywallReducer: ReducerProtocol {
         return purchase(product, state: &state)
       case .purchaseCancelled:
         state.isPurchasing = false
+        state.oneTimeOffer?.isPurchasing = false
 
         return .cancel(id: PurchaseID.self)
       case let .purchaseResponse(result):
         state.isPurchasing = false
+        state.oneTimeOffer?.isPurchasing = false
 
         do {
           switch try result.value {
@@ -196,6 +199,7 @@ public struct PaywallReducer: ReducerProtocol {
         return .none
       case .restorePurchases:
         state.isPurchasing = true
+        state.oneTimeOffer?.isPurchasing = true
 
         return .task {
           .restorePurchasesResponse(
@@ -210,6 +214,7 @@ public struct PaywallReducer: ReducerProtocol {
         )
       case let .restorePurchasesResponse(result):
         state.isPurchasing = false
+        state.oneTimeOffer?.isPurchasing = false
 
         do {
           switch try result.value {
@@ -237,6 +242,7 @@ public struct PaywallReducer: ReducerProtocol {
     state: inout State
   ) -> EffectTask<Action> {
     state.isPurchasing = true
+    state.oneTimeOffer?.isPurchasing = true
 
     return .task { [paywallID = state.paywallID] in
         .purchaseResponse(
@@ -304,7 +310,7 @@ private extension PaywallReducer.State {
       return false
     }
 
-    let oneTimeOffer = OneTimeOffer(
+    let oneTimeOffer = PaywallReducer.OneTimeOfferState(
       isEligibleForIntroductoryOffer: isEligibleForIntroductoryOffer,
       product: oneTimeProduct
     )
