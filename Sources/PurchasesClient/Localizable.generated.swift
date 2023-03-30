@@ -10,6 +10,12 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
+  internal enum Error {
+    internal enum Unknown {
+      /// Oops, something went wrong 😔
+      internal static let description = L10n.tr("Localizable", "error.unknown.description", fallback: "Oops, something went wrong 😔")
+    }
+  }
   internal enum Product {
     internal enum SubscriptionOffer {
       /// %d-%@ free trial

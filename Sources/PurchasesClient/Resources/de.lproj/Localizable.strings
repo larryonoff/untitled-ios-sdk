@@ -1,3 +1,5 @@
+"error.unknown.description" = "Ups, etwas ist schiefgegangen 😔";
+
 "product.subscriptionPeriod.unit.day" = "Tag";
 "product.subscriptionPeriod.unit.day.plural" = "Tage";
 "product.subscriptionPeriod.unit.day.plural2" = "Tage";
