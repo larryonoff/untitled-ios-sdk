@@ -22,3 +22,5 @@
 "product.subscriptionPeriod.unit.year.recurrent" = "ежегодно";
 
 "product.subscriptionOffer.freeTrial" = "Пробный период %d-%@";
+
+"purchases.error.premiumExpired.description" = "У вас нет активных подписок. Пожалуйста, проверьте данные вашей учетной записи.";

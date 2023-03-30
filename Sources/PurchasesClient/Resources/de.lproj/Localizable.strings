@@ -22,3 +22,5 @@
 "product.subscriptionPeriod.unit.year.recurrent" = "pro Jahr";
 
 "product.subscriptionOffer.freeTrial" = "%d-%@ Testversion";
+
+"purchases.error.premiumExpired.description" = "Du hast kein laufendes Abo. Überprüfe deine Kontodaten.";

@@ -22,3 +22,5 @@
 "product.subscriptionPeriod.unit.year.recurrent" = "anualmente";
 
 "product.subscriptionOffer.freeTrial" = "%d-%@ de avaliação gratuita";
+
+"purchases.error.premiumExpired.description" = "Não tem subscrições ativas. Verifique os detalhes da sua conta.";
