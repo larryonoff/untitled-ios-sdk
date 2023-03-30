@@ -296,6 +296,10 @@ final actor PurchasesClientImpl {
         return .userCancelled
       }
 
+      if error.isPurchasesNotAvailable {
+        throw PurchasesError.premiumExpired
+      }
+
       throw error
     }
   }

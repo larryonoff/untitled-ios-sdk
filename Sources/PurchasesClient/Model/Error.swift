@@ -3,9 +3,20 @@ import Foundation
 import StoreKit
 import Tagged
 
-public enum PurchasesError: Swift.Error, LocalizedError {
+public enum PurchasesError: Swift.Error {
   case premiumExpired
   case productUnavailable
+}
+
+extension PurchasesError: LocalizedError {
+  public var errorDescription: String? {
+    switch self {
+    case .premiumExpired:
+      return L10n.Purchases.Error.PremiumExpired.description
+    case .productUnavailable:
+      return "Product not available"
+    }
+  }
 }
 
 extension Error {
@@ -22,6 +33,14 @@ extension Error {
 
     if let skError = self as? SKError {
       return skError.code == .paymentCancelled
+    }
+
+    return false
+  }
+
+  var isPurchasesNotAvailable: Bool {
+    if let adaptyError = self as? AdaptyError {
+      return adaptyError.adaptyErrorCode == .noPurchasesToRestore
     }
 
     return false
