@@ -4,6 +4,7 @@ import StoreKit
 import Tagged
 
 public enum PurchasesError: Swift.Error {
+  case unknown
   case premiumExpired
   case productUnavailable
 }
@@ -11,6 +12,8 @@ public enum PurchasesError: Swift.Error {
 extension PurchasesError: LocalizedError {
   public var errorDescription: String? {
     switch self {
+    case .unknown:
+      return L10n.Error.Unknown.description
     case .premiumExpired:
       return L10n.Purchases.Error.PremiumExpired.description
     case .productUnavailable:
@@ -38,11 +41,16 @@ extension Error {
     return false
   }
 
-  var isPurchasesNotAvailable: Bool {
+  func _map() -> Error {
     if let adaptyError = self as? AdaptyError {
-      return adaptyError.adaptyErrorCode == .noPurchasesToRestore
+      switch adaptyError.adaptyErrorCode {
+      case .noPurchasesToRestore:
+        return PurchasesError.premiumExpired
+      default:
+        return adaptyError.originalError ?? PurchasesError.unknown
+      }
     }
 
-    return false
+    return PurchasesError.unknown
   }
 }

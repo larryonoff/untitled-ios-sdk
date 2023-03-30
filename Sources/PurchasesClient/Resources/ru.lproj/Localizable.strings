@@ -1,3 +1,5 @@
+"error.unknown.description" = "Упс, что-то пошло не так 😔";
+
 "product.subscriptionPeriod.unit.day" = "день";
 "product.subscriptionPeriod.unit.day.plural" = "дня";
 "product.subscriptionPeriod.unit.day.plural2" = "дней";

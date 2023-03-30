@@ -226,7 +226,7 @@ final actor PurchasesClientImpl {
         "failure": error.localizedDescription
       ])
 
-      throw error
+      throw error._map()
     }
   }
 
@@ -263,11 +263,13 @@ final actor PurchasesClientImpl {
         "request": request
       ])
 
-      if error.isPaymentCancelled {
+      let newError = error._map()
+
+      if newError.isPaymentCancelled {
         return .userCancelled
       }
 
-      throw error
+      throw newError
     }
   }
 
@@ -292,15 +294,13 @@ final actor PurchasesClientImpl {
         "error": error.localizedDescription
       ])
 
-      if error.isPaymentCancelled {
+      let newError = error._map()
+
+      if newError.isPaymentCancelled {
         return .userCancelled
       }
 
-      if error.isPurchasesNotAvailable {
-        throw PurchasesError.premiumExpired
-      }
-
-      throw error
+      throw newError
     }
   }
 
@@ -440,7 +440,6 @@ final class _AdaptyDelegate: AdaptyDelegate {
     return true
   }
 }
-
 
 private let logger = Logger(
   subsystem: ".SDK.purchases-client",
