@@ -44,8 +44,6 @@ extension Error {
   func _map() -> Error {
     if let adaptyError = self as? AdaptyError {
       switch adaptyError.adaptyErrorCode {
-      case .noPurchasesToRestore:
-        return PurchasesError.premiumExpired
       default:
         return adaptyError.originalError ?? PurchasesError.unknown
       }
