@@ -1,4 +1,3 @@
-import AsyncCompatibilityKit
 import SwiftUI
 import Photos
 

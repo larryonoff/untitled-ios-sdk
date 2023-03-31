@@ -45,7 +45,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.3.4"
+      from: "2.4.2"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
@@ -54,10 +54,6 @@ let package = Package(
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       from: "6.10.0"
-    ),
-    .package(
-      url: "https://github.com/JohnSundell/AsyncCompatibilityKit",
-      from: "0.1.2"
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
@@ -156,7 +152,6 @@ let package = Package(
       name: .photosExt,
       dependencies: [
         "UIKitExt",
-        .External.asyncCompatibilityKit,
         .External.composableArchitecture,
         .External.customDump,
         .External.tagged
@@ -185,7 +180,6 @@ let package = Package(
         .loggingSupport,
         .userIdentifier,
         .External.adapty,
-        .External.asyncCompatibilityKit,
         .External.composableArchitecture,
         .External.tagged
       ],
@@ -446,9 +440,6 @@ extension Target.Dependency {
       name: "AppsFlyerLib",
       package: "AppsFlyerFramework"
     )
-
-    static let asyncCompatibilityKit =
-      byName(name: "AsyncCompatibilityKit")
 
     enum Collections {
       static let orderedCollections = product(
