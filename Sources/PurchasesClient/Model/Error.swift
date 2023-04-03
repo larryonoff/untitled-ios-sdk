@@ -42,6 +42,10 @@ extension Error {
   }
 
   func _map() -> Error {
+    if self is PurchasesError {
+      return self
+    }
+
     if let adaptyError = self as? AdaptyError {
       switch adaptyError.adaptyErrorCode {
       default:
