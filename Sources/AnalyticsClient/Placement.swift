@@ -1,4 +1,4 @@
-import Tagged
+@_exported import Tagged
 
 public enum PlacementTag: Sendable {}
 

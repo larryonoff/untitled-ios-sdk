@@ -1,6 +1,6 @@
 import Adapty
 import Foundation
-import Tagged
+@_exported import Tagged
 
 public struct Paywall {
   public typealias ID = Tagged<Self, String>
