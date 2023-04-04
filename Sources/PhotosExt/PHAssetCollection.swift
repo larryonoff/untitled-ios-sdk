@@ -1,5 +1,5 @@
 import Photos
-import Tagged
+@_exported import Tagged
 
 extension PHAssetCollection {
   public var assetCount: Int {
