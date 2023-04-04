@@ -245,6 +245,7 @@ public struct PaywallReducer: ReducerProtocol {
         return .none
       case .alert(.dismissed):
         state.alert = nil
+        state.oneTimeOffer?.alert = nil
         return .none
       }
     }
