@@ -1,5 +1,5 @@
 import Photos
-import Tagged
+@_exported import Tagged
 
 extension PHAsset: Identifiable {
   public typealias ID = Tagged<PHAsset, String>
