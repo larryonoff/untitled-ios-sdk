@@ -37,54 +37,61 @@ extension Product {
         case omitted = ""
       }
 
+      public enum SubscriptionPeriodStyle: String {
+        case automatic
+        case omitted
+      }
+
       var roundingRule: RoundingRule
       var separator: Separator
       var subscriptionPeriod: Product.SubscriptionPeriod?
+      var subscriptionPeriodStyle: SubscriptionPeriodStyle
       var subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle
 
       public init(
         roundingRule: RoundingRule = .down,
         separator: Separator = .slash,
         subscriptionPeriod: Product.SubscriptionPeriod?,
+        subscriptionPeriodStyle: SubscriptionPeriodStyle = .automatic,
         subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle = .complete
       ) {
         self.roundingRule = roundingRule
         self.separator = separator
         self.subscriptionPeriod = subscriptionPeriod
+        self.subscriptionPeriodStyle = subscriptionPeriodStyle
         self.subscriptionPeriodUnitStyle = subscriptionPeriodUnitStyle
       }
 
       public func roundingRule(
         _ roundingRule: RoundingRule
       ) -> Self {
-        .init(
-          roundingRule: roundingRule,
-          separator: separator,
-          subscriptionPeriod: subscriptionPeriod,
-          subscriptionPeriodUnitStyle: subscriptionPeriodUnitStyle
-        )
+        modify { $0.roundingRule = roundingRule }
       }
 
       public func separator(
         _ separator: Separator
       ) -> Self {
-        .init(
-          roundingRule: roundingRule,
-          separator: separator,
-          subscriptionPeriod: subscriptionPeriod,
-          subscriptionPeriodUnitStyle: subscriptionPeriodUnitStyle
-        )
+        modify { $0.separator = separator }
+      }
+
+      public func subscriptionPeriodStyle(
+        _ style: SubscriptionPeriodStyle
+      ) -> Self {
+        modify { $0.subscriptionPeriodStyle = style }
       }
 
       public func subscriptionPeriodUnitStyle(
-        _ unitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle
+        _ style: Product.SubscriptionPeriod.FormatStyle.UnitStyle
       ) -> Self {
-        .init(
-          roundingRule: roundingRule,
-          separator: separator,
-          subscriptionPeriod: subscriptionPeriod,
-          subscriptionPeriodUnitStyle: unitStyle
-        )
+        modify { $0.subscriptionPeriodUnitStyle = style }
+      }
+
+      func modify(
+        _ transform: (inout Self) throws -> Void
+      ) rethrows -> Self {
+        var new = self
+        try transform(&new)
+        return new
       }
     }
 
@@ -113,13 +120,21 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
         priceLocale: value.priceLocale,
         roundingRule: roundingRule
       )
-      let subscriptionPeriodString = subscriptionPeriod
-        .formatted(unitStyle: subscriptionPeriodUnitStyle)
+
+      let subscriptionPeriodString: String?
+
+      switch subscriptionPeriodStyle {
+      case .automatic:
+        subscriptionPeriodString = subscriptionPeriod
+          .formatted(unitStyle: subscriptionPeriodUnitStyle)
+      case .omitted:
+        subscriptionPeriodString = nil
+      }
 
       var _separator: String = " "
 
       if separator != .omitted {
-        switch (subscriptionPeriodUnitStyle) {
+        switch subscriptionPeriodUnitStyle {
         case .complete, .recurrent:
           _separator = " \(separator.rawValue) "
         case .shortened:
@@ -171,6 +186,14 @@ extension Product.FormatStyle.Price.Separator: Equatable {}
 extension Product.FormatStyle.Price.Separator: Sendable {}
 
 extension Product.FormatStyle.Price.Separator: Hashable {}
+
+extension Product.FormatStyle.Price.SubscriptionPeriodStyle: Codable {}
+
+extension Product.FormatStyle.Price.SubscriptionPeriodStyle: Equatable {}
+
+extension Product.FormatStyle.Price.SubscriptionPeriodStyle: Sendable {}
+
+extension Product.FormatStyle.Price.SubscriptionPeriodStyle: Hashable {}
 
 extension Product.FormatStyle.RoundingRule {
   var toNumberFormatterRoundingMode: NumberFormatter.RoundingMode {
