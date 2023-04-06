@@ -21,9 +21,7 @@ extension Product {
     priceFormatter.locale = priceLocale
     priceFormatter.roundingMode = roundingRule.toNumberFormatterRoundingMode
 
-    return priceFormatter.string(
-      from: NSDecimalNumber(decimal: price)
-    )
+    return priceFormatter.string(from: price)
   }
 }
 
@@ -636,8 +634,4 @@ private let discountFormatter: NumberFormatter = {
   return formatter
 }()
 
-private let priceFormatter: NumberFormatter = {
-  let formatter = PriceFormatter()
-  formatter.numberStyle = .currency
-  return formatter
-}()
+private let priceFormatter = PriceFormatter()
