@@ -9,7 +9,10 @@ extension Product {
       description: product.localizedDescription,
       price: product.price,
       priceLocale: product.skProduct.priceLocale,
-      displayPrice: product.localizedPrice ?? "",
+      displayPrice: Product.displayPrice(
+        product.price,
+        priceLocale: product.skProduct.priceLocale
+      ) ?? "",
       subscription: .init(product)
     )
   }
@@ -52,7 +55,10 @@ extension Product.SubscriptionOffer {
       type: .introductory,
       price: discount.price,
       priceLocale: product.skProduct.priceLocale,
-      displayPrice: discount.localizedPrice ?? "",
+      displayPrice: Product.displayPrice(
+        discount.price,
+        priceLocale: product.skProduct.priceLocale
+      ) ?? "",
       period: period,
       paymentMode: paymentMode
     )
