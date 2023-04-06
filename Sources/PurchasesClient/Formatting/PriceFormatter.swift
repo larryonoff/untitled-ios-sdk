@@ -1,42 +1,63 @@
 import Foundation
 
-final class PriceFormatter: NumberFormatter {
-  override var locale: Locale! {
-    didSet { localeDidChange() }
+final class PriceFormatter {
+  private lazy var numberFormatter = buildNumberFormatter()
+
+  private func buildNumberFormatter() -> NumberFormatter {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .currency
+
+    return formatter
   }
 
-  override init() {
-    super.init()
-    localeDidChange()
+  var locale: Locale = .autoupdatingCurrent {
+    didSet {
+      guard locale != oldValue else { return }
+      localeDidChange()
+    }
   }
-
-  required init?(coder: NSCoder) {
-    super.init(coder: coder)
-    localeDidChange()
-    roundingMode = .down
-  }
-
-  // MARK: - state changes
 
   private func localeDidChange() {
+    numberFormatter = buildNumberFormatter()
+    numberFormatter.locale = locale
+    numberFormatter.roundingMode = roundingMode
+
     switch locale.regionCode {
     case "RU", "IN", "JP":
-      minimumFractionDigits = 0
+      numberFormatter.minimumFractionDigits = 0
     default:
-      minimumFractionDigits = 2
+      numberFormatter.minimumFractionDigits = 2
     }
 
     switch locale.currencyCode {
     case "USD":
-      currencySymbol = "$"
-      positiveFormat = "¤0.00"
-      negativeFormat = "-¤0.00"
+      numberFormatter.currencySymbol = "$"
+      numberFormatter.positiveFormat = "¤0.00"
+      numberFormatter.negativeFormat = "-¤0.00"
     case "RUB":
-      currencySymbol = "₽"
-      positiveFormat = "0.##¤"
-      negativeFormat = "-0.##¤"
+      numberFormatter.currencySymbol = "₽"
+      numberFormatter.positiveFormat = "0.##¤"
+      numberFormatter.negativeFormat = "-0.##¤"
     default:
       break
     }
+  }
+
+  var roundingMode: NumberFormatter.RoundingMode = .down {
+    didSet {
+      guard roundingMode != oldValue else { return }
+      roundingModeDidChange()
+    }
+  }
+
+  private func roundingModeDidChange() {
+    numberFormatter.roundingMode = roundingMode
+  }
+
+  init() {}
+
+  func string(from value: Decimal) -> String? {
+    numberFormatter
+      .string(from: NSDecimalNumber(decimal: value))
   }
 }
