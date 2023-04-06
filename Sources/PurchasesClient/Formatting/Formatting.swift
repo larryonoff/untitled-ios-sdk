@@ -252,45 +252,33 @@ extension Product.SubscriptionPeriod {
     public func unitStyle(
       _ unitStyle: UnitStyle
     ) -> Self {
-      .init(
-        unitStyle: unitStyle,
-        unitsCollapsed: unitsCollapsed,
-        unitsExpanded: unitsExpanded,
-        valueDisplayStrategy: valueDisplayStrategy
-      )
+      modify { $0.unitStyle = unitStyle }
     }
 
     public func units(
       collapsed units: [Product.SubscriptionPeriod.Unit]
     ) -> Self {
-      .init(
-        unitStyle: unitStyle,
-        unitsCollapsed: units,
-        unitsExpanded: unitsExpanded,
-        valueDisplayStrategy: valueDisplayStrategy
-      )
+      modify { $0.unitsCollapsed = units }
     }
 
     public func units(
       expanded units: [Product.SubscriptionPeriod.Unit]
     ) -> Self {
-      .init(
-        unitStyle: unitStyle,
-        unitsCollapsed: unitsCollapsed,
-        unitsExpanded: units,
-        valueDisplayStrategy: valueDisplayStrategy
-      )
+      modify { $0.unitsExpanded = units }
     }
 
     public func valueDisplayStrategy(
       _ valueDisplayStrategy: ValueDisplayStrategy
     ) -> Self {
-      .init(
-        unitStyle: unitStyle,
-        unitsCollapsed: unitsCollapsed,
-        unitsExpanded: unitsExpanded,
-        valueDisplayStrategy: valueDisplayStrategy
-      )
+      modify { $0.valueDisplayStrategy = valueDisplayStrategy }
+    }
+
+    func modify(
+      _ transform: (inout Self) throws -> Void
+    ) rethrows -> Self {
+      var new = self
+      try transform(&new)
+      return new
     }
   }
 }
