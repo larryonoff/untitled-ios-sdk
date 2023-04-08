@@ -4,7 +4,7 @@ import CustomDump
 import PhotosUI
 import SwiftUI
 
-public struct ShareSheetState<Data> where Data: RandomAccessCollection {
+public struct ShareSheetState<Data: RandomAccessCollection> {
   public let id = UUID()
   public var data: Data
 
@@ -17,13 +17,11 @@ public struct ShareSheetState<Data> where Data: RandomAccessCollection {
 
 extension View {
   @ViewBuilder
-  public func shareSheet<Data, Action>(
+  public func shareSheet<Data: RandomAccessCollection, Action>(
     _ store: Store<ShareSheetState<Data>?, Action>,
     onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?,
     dismiss: Action
-  ) -> some View
-    where Data: RandomAccessCollection
-  {
+  ) -> some View {
     self.modifier(
       ShareSheetViewModifier(
         viewStore: ViewStore(
@@ -37,9 +35,7 @@ extension View {
   }
 }
 
-private struct ShareSheetViewModifier<Data, Action>: ViewModifier
-  where Data: RandomAccessCollection
-{
+private struct ShareSheetViewModifier<Data: RandomAccessCollection, Action>: ViewModifier {
   @ObservedObject var viewStore: ViewStore<ShareSheetState<Data>?, Action>
 
   let onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?
