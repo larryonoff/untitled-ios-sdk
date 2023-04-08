@@ -3,7 +3,7 @@ import SwiftUI
 import SwiftUIBackports
 
 @available(tvOS, unavailable)
-public struct ShareView<Data>: View where Data: RandomAccessCollection {
+public struct ShareView<Data: RandomAccessCollection>: View {
   private let data: Data
   private let onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?
 
@@ -32,7 +32,7 @@ public struct ShareView<Data>: View where Data: RandomAccessCollection {
   }
 
   public var body: some View {
-    ShareViewRepresentable(
+    _ShareView(
       data: data,
       onComplete: onComplete
     )
@@ -64,9 +64,7 @@ extension ShareResult: Hashable where Success: Hashable {}
 
 extension ShareResult: Sendable where Success: Sendable {}
 
-private struct ShareViewRepresentable<Data>: UIViewControllerRepresentable
-  where Data: RandomAccessCollection
-{
+private struct _ShareView<Data: RandomAccessCollection>: UIViewControllerRepresentable {
   typealias UIViewControllerType = UIActivityViewController
 
   private let data: Data
