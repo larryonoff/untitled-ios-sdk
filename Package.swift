@@ -111,7 +111,8 @@ let package = Package(
     .target(
       name: .composableArchitectureExt,
       dependencies: [
-        .External.composableArchitecture
+        .External.composableArchitecture,
+        .swiftUIExt
       ]
     ),
     .target(
