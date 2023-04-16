@@ -1,50 +1,11 @@
+import Combine
 import UIKit
 
 extension PasteboardClient {
   public static let live: Self = {
     .init(
       changes: {
-        AsyncStream { continuation in
-          Task {
-            await withTaskGroup(of: Int.self) { group in
-              group.addTask {
-                let changed = NotificationCenter.default
-                  .notifications(named: UIPasteboard.changedNotification)
-
-                for await _ in changed {
-                  return UIPasteboard.general.changeCount
-                }
-
-                return -1
-              }
-
-              group.addTask {
-                let didBecomeActive = NotificationCenter.default
-                  .notifications(
-                    named: await UIApplication.didBecomeActiveNotification
-                  )
-
-                for await _ in didBecomeActive {
-                  return UIPasteboard.general.changeCount
-                }
-
-                return -1
-              }
-
-              var changeCount: Int?
-
-              for await newChangeCount in group {
-                if changeCount != newChangeCount {
-                  changeCount = newChangeCount
-
-                  if let changeCount, changeCount > 0 {
-                    continuation.yield(())
-                  }
-                }
-              }
-            }
-          }
-        }
+        UIPasteboard.general.changes
       },
       probableWebURL: { () -> URL? in
         do {
@@ -72,4 +33,22 @@ extension PasteboardClient {
       }
     )
   }()
+}
+
+extension UIPasteboard {
+  var changes: AsyncStream<Void> {
+    AsyncStream(
+      Publishers.Merge(
+        NotificationCenter.default
+          .publisher(for: UIPasteboard.changedNotification)
+          .compactMap { [weak self] _ in self?.changeCount },
+        NotificationCenter.default
+          .publisher(for: UIApplication.didBecomeActiveNotification)
+          .compactMap { [weak self] _ in self?.changeCount }
+      )
+      .removeDuplicates()
+      .map { _ in }
+      .values
+    )
+  }
 }
