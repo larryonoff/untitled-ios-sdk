@@ -11,6 +11,11 @@ public struct RectCorner: OptionSet {
   public static let topRight = RectCorner(rawValue: 1 << 1)
   public static let bottomLeft = RectCorner(rawValue: 1 << 2)
   public static let bottomRight = RectCorner(rawValue: 1 << 3)
+
+  public static let top: Self = [.topLeft, .topRight]
+  public static let bottom: Self = [.bottomLeft, .bottomRight]
+  public static let left: Self = [.topLeft, .bottomLeft]
+  public static let right: Self = [.topRight, .bottomRight]
   
   public static let allCorners: Self = [
     .topLeft,
