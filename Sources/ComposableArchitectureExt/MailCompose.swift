@@ -25,15 +25,11 @@ private struct _MailComposeModifier<Action>: ViewModifier {
   let onSubmit: ((Result<MailComposeResult, Error>) -> Void)?
 
   func body(content: Content) -> some View {
-    if let state = viewStore.state {
-      content.mailCompose(
-        isPresented: viewStore.binding(send: dismiss).isPresent(),
-        emailData: viewStore.state,
-        onDismiss: { viewStore.send(dismiss) },
-        onSubmit: onSubmit
-      )
-    } else {
-      content
-    }
+    content.mailCompose(
+      isPresented: viewStore.binding(send: dismiss).isPresent(),
+      emailData: viewStore.state,
+      onDismiss: { viewStore.send(dismiss) },
+      onSubmit: onSubmit
+    )
   }
 }
