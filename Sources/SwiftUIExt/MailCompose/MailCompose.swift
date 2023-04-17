@@ -80,6 +80,7 @@ private struct _MailComposeViewModifier<CannotSendContent: View>: ViewModifier {
           _MailComposeView(emailData: emailData ?? .init()) { result in
             self.onSubmit?(result)
           }
+          .ignoresSafeArea()
         } else {
           cannotSendEmails
         }
