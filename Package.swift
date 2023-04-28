@@ -45,15 +45,15 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.4.2"
+      from: "2.4.5"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
-      from: "8.15.1"
+      from: "8.16.0"
     ),
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
-      from: "6.10.0"
+      from: "6.10.1"
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
@@ -61,11 +61,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "16.0.0"
+      from: "16.0.1"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.6.0"
+      from: "10.9.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -81,7 +81,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "0.9.1"
+      from: "0.10.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -89,7 +89,7 @@ let package = Package(
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
-      from: "1.12.0"
+      from: "1.15.1"
     ),
     .package(
       url: "https://github.com/MarcoEidinger/URLCompatibilityKit",
