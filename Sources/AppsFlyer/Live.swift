@@ -165,15 +165,19 @@ final class AppsFlyerClientImpl {
 
       // the first run may cause `minTimeBetweenSessions` error
 
-      let didBecomeActive = await NotificationCenter.default
-        .notifications(named: UIApplication.didBecomeActiveNotification)
+      await withTaskGroup(of: Void.self) { group in
+        let didBecomeActive = await NotificationCenter.default
+          .notifications(named: UIApplication.didBecomeActiveNotification)
 
-      for await _ in didBecomeActive {
-        logger.info("AppsFlyer.start", dump: [
-          "reason": "application did become active"
-        ])
+        for await _ in didBecomeActive {
+          group.addTask { [weak self] in
+            logger.info("AppsFlyer.start", dump: [
+              "reason": "application did become active"
+            ])
 
-        try? await self?.start()
+            try? await self?.start()
+          }
+        }
       }
     }
 
