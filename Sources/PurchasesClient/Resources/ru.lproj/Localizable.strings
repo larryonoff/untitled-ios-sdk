@@ -1,5 +1,10 @@
 "error.unknown.description" = "Упс, что-то пошло не так 😔";
 
+"product.subscriptionOffer.freeTrial" = "Пробный период %d-%@";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Пробный период";
+"product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
+"product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
+
 "product.subscriptionPeriod.unit.day" = "день";
 "product.subscriptionPeriod.unit.day.plural" = "дня";
 "product.subscriptionPeriod.unit.day.plural2" = "дней";
@@ -22,7 +27,5 @@
 "product.subscriptionPeriod.unit.week.recurrent" = "еженедельно";
 "product.subscriptionPeriod.unit.month.recurrent" = "ежемесячно";
 "product.subscriptionPeriod.unit.year.recurrent" = "ежегодно";
-
-"product.subscriptionOffer.freeTrial" = "Пробный период %d-%@";
 
 "purchases.error.premiumExpired.description" = "У вас нет активных подписок. Пожалуйста, проверьте данные вашей учетной записи.";

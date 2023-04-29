@@ -22,6 +22,14 @@ internal enum L10n {
       internal static func freeTrial(_ p1: Int, _ p2: Any) -> String {
         return L10n.tr("Localizable", "product.subscriptionOffer.freeTrial", p1, String(describing: p2), fallback: "%d-%@ free trial")
       }
+      internal enum PaymentMode {
+        /// Free Trial
+        internal static let freeTrial = L10n.tr("Localizable", "product.subscriptionOffer.paymentMode.freeTrial", fallback: "Free Trial")
+        /// Pay as You Go
+        internal static let payAsYouGo = L10n.tr("Localizable", "product.subscriptionOffer.paymentMode.payAsYouGo", fallback: "Pay as You Go")
+        /// Pay up Front
+        internal static let payUpFront = L10n.tr("Localizable", "product.subscriptionOffer.paymentMode.payUpFront", fallback: "Pay up Front")
+      }
     }
     internal enum SubscriptionPeriod {
       internal enum Unit {

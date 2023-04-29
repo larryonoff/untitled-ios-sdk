@@ -1,5 +1,10 @@
 "error.unknown.description" = "Oups, une erreur s'est produite 😔";
 
+"product.subscriptionOffer.freeTrial" = "%d-%@ gratuits";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
+"product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
+"product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
+
 "product.subscriptionPeriod.unit.day" = "jour";
 "product.subscriptionPeriod.unit.day.plural" = "jours";
 "product.subscriptionPeriod.unit.day.plural2" = "jours";
@@ -22,7 +27,5 @@
 "product.subscriptionPeriod.unit.week.recurrent" = "hebdomadaire";
 "product.subscriptionPeriod.unit.month.recurrent" = "mensuel";
 "product.subscriptionPeriod.unit.year.recurrent" = "annuel";
-
-"product.subscriptionOffer.freeTrial" = "%d-%@ gratuits";
 
 "purchases.error.premiumExpired.description" = "Vous ne disposez d'aucun abonnement actif. Nous vous prions de vérifier les détails de votre compte.";
