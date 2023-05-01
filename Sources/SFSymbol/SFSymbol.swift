@@ -168,6 +168,12 @@ extension SFSymbol {
   public static let questionmark: SFSymbol = "questionmark"
   public static let questionmarkCircle: SFSymbol = "questionmark.circle"
 
+  public static let speaker: SFSymbol = "speaker"
+
+  public enum Speaker {
+    public static let wave1: SFSymbol = "speaker.wave.1"
+  }
+
   public static let shuffle: SFSymbol = "shuffle"
 
   public enum Slider {
