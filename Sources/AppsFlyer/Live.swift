@@ -160,7 +160,7 @@ final class AppsFlyerClientImpl {
         logger.info("AppsFlyer.start", dump: [
           "reason": "application already active"
         ])
-        try? await self?.start()
+        self?.start()
       }
 
       // the first run may cause `minTimeBetweenSessions` error
@@ -175,7 +175,7 @@ final class AppsFlyerClientImpl {
               "reason": "application did become active"
             ])
 
-            try? await self?.start()
+            self?.start()
           }
         }
       }
@@ -184,16 +184,20 @@ final class AppsFlyerClientImpl {
     logger.info("initialize success")
   }
 
-  func start() async throws {
-    do {
-      try await AppsFlyerLib.shared().start()
+  func start() {
+    logger.info("AppsFlyer.start")
 
-      logger.info("AppsFlyer.start success")
-    } catch {
-      logger.error("AppsFlyer.start failure", dump: [
-        "error": error.localizedDescription
+    AppsFlyerLib.shared().start { result, error in
+      if let error {
+        logger.error("AppsFlyer.start failure", dump: [
+          "error": error
+        ])
+        return
+      }
+
+      logger.info("AppsFlyer.start success", dump: [
+        "result": result ?? [:]
       ])
-      throw error
     }
   }
 
