@@ -1,9 +1,6 @@
 import SwiftUI
 import Photos
 
-@available(*, deprecated, renamed: "PhotosAssetImage")
-public typealias AsyncImage<Content: View> = PhotosAssetImage<Content>
-
 public struct PhotosAssetImage<Content: View>: View {
   @Environment(\.displayScale) private var displayScale
   @Environment(\.photosImageManager) private var imageManager
@@ -78,14 +75,16 @@ public struct PhotosAssetImage<Content: View>: View {
   public var body: some View {
     content(state)
       .task(id: asset) {
-        do {
-          guard !Task.isCancelled else { return }
-          guard let asset = asset else {
-            state.phase = .empty
-            notifyOnChange(state)
-            return
-          }
+        guard !Task.isCancelled else { return }
+        guard let asset else {
+          state.phase = .empty
+          notifyOnChange(state)
+          return
+        }
 
+        var isSucceededOnce = false
+
+        do {
           state.isLoading = true
           notifyOnChange(state)
 
@@ -109,9 +108,13 @@ public struct PhotosAssetImage<Content: View>: View {
               state.isLoading = false
             }
 
+            isSucceededOnce = true
+
             notifyOnChange(state)
           }
         } catch {
+          guard !isSucceededOnce else { return }
+
           withTransaction(transaction) {
             state.phase = .failure(error)
             state.isLoading = false
