@@ -4,19 +4,25 @@ import QuartzCore
 // MARK: - Operators
 
 extension CGSize {
-  public static func * (size: CGSize, scale: CGFloat) -> CGSize {
-    CGSize(
-      width: size.width * scale,
-      height: size.height * scale
+  public static func * <Number: BinaryFloatingPoint> (
+    size: CGSize,
+    scale: Number
+  ) -> CGSize {
+    .init(
+      width: size.width * CGFloat(scale),
+      height: size.height * CGFloat(scale)
     )
   }
 
-  public static func *= (size: inout CGSize, scale: CGFloat) {
-    size = size * scale
+  public static func *= <Number: BinaryFloatingPoint> (
+    size: inout CGSize,
+    scale: Number
+  ) {
+    size = size * CGFloat(scale)
   }
 
   public static func * (lhs: CGSize, rhs: CGSize) -> CGSize {
-    CGSize(
+    .init(
       width: lhs.width * rhs.width,
       height: lhs.height * rhs.height
     )
@@ -37,7 +43,7 @@ extension CGSize {
   }
 
   public static func / (lhs: CGSize, rhs: CGSize) -> CGSize {
-    CGSize(
+    .init(
       width: lhs.width / rhs.width,
       height: lhs.height / rhs.height
     )
@@ -47,15 +53,21 @@ extension CGSize {
     lhs = lhs / rhs
   }
 
-  public static func / (size: CGSize, scale: CGFloat) -> CGSize {
-    CGSize(
-      width: size.width / scale,
-      height: size.height / scale
+  public static func / <Number: BinaryFloatingPoint> (
+    size: CGSize,
+    scale: Number
+  ) -> CGSize {
+    .init(
+      width: size.width / CGFloat(scale),
+      height: size.height / CGFloat(scale)
     )
   }
 
-  public static func /= (size: inout CGSize, scale: CGFloat) {
-    size = size / scale
+  public static func /= <Number: BinaryFloatingPoint> (
+    size: inout CGSize,
+    scale: Number
+  ) {
+    size = size / CGFloat(scale)
   }
 }
 

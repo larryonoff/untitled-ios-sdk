@@ -1,3 +1,4 @@
+import GraphicsExt
 import SwiftUI
 import Photos
 
@@ -145,12 +146,6 @@ public struct AsyncImageState {
   public var phase: AsyncImagePhase = .empty
 
   public var isLoading: Bool = false
-}
-
-private extension CGSize {
-  static func * (lhs: CGSize, scalar: CGFloat) -> CGSize {
-    .init(width: lhs.width * scalar, height: lhs.height * scalar)
-  }
 }
 
 extension ContentMode {
