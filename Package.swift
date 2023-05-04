@@ -24,7 +24,7 @@ let package = Package(
     .library(name: .firebaseClient, targets: [.firebaseClient]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: .foundationSupport, targets: [.foundationSupport]),
-    .library(name: "GraphicsExt", targets: ["GraphicsExt"]),
+    .library(name: .graphicsExt, targets: [.graphicsExt]),
     .library(name: .instagram, targets: [.instagram]),
     .library(name: .loggingSupport, targets: [.loggingSupport]),
     .library(name: .paywallReducer, targets: [.paywallReducer]),
@@ -140,7 +140,7 @@ let package = Package(
         .External.composableArchitecture
       ]
     ),
-    .target(name: "GraphicsExt"),
+    .target(name: .graphicsExt),
     .target(
       name: .instagram,
       dependencies: [
@@ -152,7 +152,8 @@ let package = Package(
     .target(
       name: .photosExt,
       dependencies: [
-        "UIKitExt",
+        .graphicsExt,
+        .uiKitExt,
         .External.composableArchitecture,
         .External.customDump,
         .External.tagged
@@ -196,7 +197,7 @@ let package = Package(
     .target(
       name: .swiftUIExt,
       dependencies: [
-        "GraphicsExt",
+        .graphicsExt,
         .External.composableArchitecture,
         .External.swiftUIBackports
       ]
@@ -404,12 +405,14 @@ extension Target.Dependency {
   static let device = byName(name: .device)
   static let foundationSupport = byName(name: .foundationSupport)
   static let firebaseClient = byName(name: .firebaseClient)
+  static let graphicsExt = byName(name: .graphicsExt)
   static let instagram = byName(name: .instagram)
   static let loggingSupport = byName(name: .loggingSupport)
   static let paywallReducer = byName(name: .paywallReducer)
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
   static let swiftUIExt = byName(name: .swiftUIExt)
+  static let uiKitExt = byName(name: .uiKitExt)
   static let userIdentifier = byName(name: .userIdentifier)
   static let version = byName(name: .version)
   static let videoPlayer = byName(name: .videoPlayer)
@@ -510,6 +513,7 @@ extension String {
   static let device = "Device"
   static let foundationSupport = "FoundationSupport"
   static let firebaseClient = "FirebaseClient"
+  static let graphicsExt = "GraphicsExt"
   static let instagram = "Instagram"
   static let loggingSupport = "LoggingSupport"
   static let paywallReducer = "PaywallReducer"
