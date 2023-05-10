@@ -1,7 +1,7 @@
 "error.unknown.description" = "Ups, etwas ist schiefgegangen 😔";
 
 "product.subscriptionOffer.freeTrial" = "%d-%@ Testversion";
-"product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Kostenlose Testversion";
 "product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
 "product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
 

@@ -1,7 +1,7 @@
 "error.unknown.description" = "Ups, aconteceu algo de errado 😔";
 
 "product.subscriptionOffer.freeTrial" = "%d-%@ de avaliação gratuita";
-"product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Teste grátis";
 "product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
 "product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
 
