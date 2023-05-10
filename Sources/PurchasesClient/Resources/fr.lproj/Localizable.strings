@@ -1,7 +1,7 @@
 "error.unknown.description" = "Oups, une erreur s'est produite 😔";
 
 "product.subscriptionOffer.freeTrial" = "%d-%@ gratuits";
-"product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Essai gratuit";
 "product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
 "product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
 
