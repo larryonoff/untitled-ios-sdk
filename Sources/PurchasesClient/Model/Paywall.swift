@@ -12,6 +12,7 @@ public struct Paywall {
   public let productSelectedID: Product.ID?
 
   public let payUpFrontProductID: Product.ID?
+  public let filterPayUpFrontProduct: Bool
 
   public let variantID: VariantID?
 
@@ -61,6 +62,9 @@ extension Paywall {
       .remoteConfig?["ios_pay_up_front_product_id"]
       .flatMap { $0 as? String }
       .flatMap { .init($0) }
+    self.filterPayUpFrontProduct = paywall
+      .remoteConfig?["ios_filter_pay_up_front_product"]
+      .flatMap { $0 as? Bool } ?? true
     self.productComparingID = paywall
       .remoteConfig?["comparing_product_id"]
       .flatMap { $0 as? String }

@@ -133,10 +133,15 @@ public struct PaywallReducer: ReducerProtocol {
 
         do {
           let paywall = try result.value
-          state.paywall = paywall
 
-          let products = (paywall?.products ?? [])
-            .filter { $0.id != paywall?.payUpFrontProductID }
+          var products = (paywall?.products ?? [])
+
+          if let paywall, paywall.filterPayUpFrontProduct {
+            products = products
+              .filter { $0.id != paywall.payUpFrontProductID }
+          }
+
+          state.paywall = paywall
           state.products = IdentifiedArray(uncheckedUniqueElements: products)
 
           state.productComparing = paywall?.productComparing
