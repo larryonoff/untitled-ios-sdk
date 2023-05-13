@@ -3,6 +3,7 @@ import AppsFlyerLib
 import AppTrackingTransparency
 import Combine
 import ComposableArchitecture
+import ConcurrencyExt
 import Foundation
 import LoggingSupport
 import os.log
@@ -167,7 +168,8 @@ final class AppsFlyerClientImpl {
 
       await withTaskGroup(of: Void.self) { group in
         let didBecomeActive = await NotificationCenter.default
-          .notifications(named: UIApplication.didBecomeActiveNotification)
+          ._notifications(named: UIApplication.didBecomeActiveNotification)
+          .map { _ in }
 
         for await _ in didBecomeActive {
           group.addTask { [weak self] in
