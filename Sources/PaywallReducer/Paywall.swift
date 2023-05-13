@@ -92,7 +92,9 @@ public struct PaywallReducer: ReducerProtocol {
     @Box public var product: Product?
   }
 
-  private enum PurchaseID {}
+  private enum CancelID: Hashable {
+    case purchase
+  }
 
   @Dependency(\.analytics) var analytics
   @Dependency(\.purchases) var purchases
@@ -108,11 +110,13 @@ public struct PaywallReducer: ReducerProtocol {
         state.isFetchingPaywall = true
 
         return .concatenate(
-          .task { [paywallID = state.paywallID] in
-            .fetchPaywallResponse(
-              await TaskResult {
-                try await purchases.paywalByID(paywallID)
-              }
+          .run { [paywallID = state.paywallID] send in
+            await send(
+              .fetchPaywallResponse(
+                await TaskResult {
+                  try await purchases.paywalByID(paywallID)
+                }
+              )
             )
           },
           logPaywallOpened(state: state)
@@ -149,7 +153,7 @@ public struct PaywallReducer: ReducerProtocol {
             paywall?.productSelected ?? products.first
 
           if let paywall = paywall {
-            return .fireAndForget {
+            return .run { _ in
               try await purchases.logPaywall(paywall)
             }
           }
@@ -167,9 +171,9 @@ public struct PaywallReducer: ReducerProtocol {
         if isOneTimeOfferPresented {
           // .delegate(.dismissed) delayed since
           // SwiftUI doesn't dismiss properly multiple views
-          return .task {
+          return .run { send in
             try? await Task.sleep(nanoseconds: 5_00_000_000)
-            return .delegate(.dismissed)
+            await send(.delegate(.dismissed))
           }
         }
 
@@ -200,7 +204,7 @@ public struct PaywallReducer: ReducerProtocol {
         state.isPurchasing = false
         state.oneTimeOffer?.isPurchasing = false
 
-        return .cancel(id: PurchaseID.self)
+        return .cancel(id: CancelID.purchase)
       case let .purchaseResponse(result):
         state.isPurchasing = false
         state.oneTimeOffer?.isPurchasing = false
@@ -221,17 +225,16 @@ public struct PaywallReducer: ReducerProtocol {
         state.isPurchasing = true
         state.oneTimeOffer?.isPurchasing = true
 
-        return .task {
-          .restorePurchasesResponse(
-            await TaskResult {
-              try await purchases.restorePurhases()
-            }
+        return .run { send in
+          await send(
+            .restorePurchasesResponse(
+              await TaskResult {
+                try await purchases.restorePurhases()
+              }
+            )
           )
         }
-        .cancellable(
-          id: PurchaseID.self,
-          cancelInFlight: true
-        )
+        .cancellable(id: CancelID.purchase, cancelInFlight: true)
       case let .restorePurchasesResponse(result):
         state.isPurchasing = false
         state.oneTimeOffer?.isPurchasing = false
@@ -265,18 +268,17 @@ public struct PaywallReducer: ReducerProtocol {
     state.isPurchasing = true
     state.oneTimeOffer?.isPurchasing = true
 
-    return .task { [paywallID = state.paywallID] in
+    return .run { [paywallID = state.paywallID] send in
+      await send(
         .purchaseResponse(
           await TaskResult {
             try await purchases
               .purchase(.request(product: product, paywallID: paywallID))
           }
         )
+      )
     }
-    .cancellable(
-      id: PurchaseID.self,
-      cancelInFlight: true
-    )
+    .cancellable(id: CancelID.purchase, cancelInFlight: true)
   }
 
   // MARK: - Analytics
