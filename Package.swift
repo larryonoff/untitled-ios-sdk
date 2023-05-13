@@ -302,6 +302,7 @@ extension Target {
   static let appsFlyer = target(
     name: .appsFlyer,
     dependencies: [
+      .concurrencyExt,
       .loggingSupport,
       .Client.purchases,
       .userIdentifier,
