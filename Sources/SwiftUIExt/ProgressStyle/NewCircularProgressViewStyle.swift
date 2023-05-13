@@ -20,6 +20,7 @@ public struct NewCircularProgressViewStyle: ProgressViewStyle {
           value: isRotating
         )
     }
+    .frame(idealWidth: 22, idealHeight: 22)
     .onAppear {
       isRotating = true
     }
