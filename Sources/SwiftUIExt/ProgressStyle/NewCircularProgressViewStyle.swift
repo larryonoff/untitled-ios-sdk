@@ -21,7 +21,8 @@ public struct NewCircularProgressViewStyle: ProgressViewStyle {
         )
     }
     .frame(idealWidth: 22, idealHeight: 22)
-    .onAppear {
+    .task {
+      try? await Task.sleep(nanoseconds: 1_00_000_00)
       isRotating = true
     }
   }
