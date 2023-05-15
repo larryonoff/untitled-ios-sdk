@@ -10,18 +10,24 @@ let package = Package(
     .macOS(.v12)
   ],
   products: [
-    .library(name: .amplitudeClient, targets: [.amplitudeClient]),
+    .library(name: .Client.amplitude, targets: [.Client.amplitude]),
     .library(name: .Client.analytics, targets: [.Client.analytics]),
-    .library(name: .applicationClient, targets: [.applicationClient]),
-    .library(name: .appsFlyer, targets: [.appsFlyer]),
+    .library(name: .Client.application, targets: [.Client.application]),
+    .library(name: .Client.appsFlyer, targets: [.Client.appsFlyer]),
+    .library(name: .Client.connectivity, targets: [.Client.connectivity]),
+    .library(name: .Client.facebook, targets: [.Client.facebook]),
+    .library(name: .Client.firebase, targets: [.Client.firebase]),
+    .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
+    .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
+    .library(name: .Client.purchases, targets: [.Client.purchases]),
+    .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
+    .library(name: .Client.userSettings, targets: [.Client.userSettings]),
+    .library(name: .Client.userTracking, targets: [.Client.userTracking]),
     .library(name: .avFoundationExt, targets: [.avFoundationExt]),
     .library(name: .composableArchitectureExt, targets: [.composableArchitectureExt]),
     .library(name: .concurrencyExt, targets: [.concurrencyExt]),
     .library(name: .dependenciesExt, targets: [.dependenciesExt]),
     .library(name: .device, targets: [.device]),
-    .library(name: .Client.facebook, targets: [.Client.facebook]),
-    .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
-    .library(name: .firebaseClient, targets: [.firebaseClient]),
     .library(name: "FeedbackGenerator", targets: ["FeedbackGenerator"]),
     .library(name: .foundationSupport, targets: [.foundationSupport]),
     .library(name: .graphicsExt, targets: [.graphicsExt]),
@@ -30,14 +36,9 @@ let package = Package(
     .library(name: .paywallReducer, targets: [.paywallReducer]),
     .library(name: .photosExt, targets: [.photosExt]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
-    .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
-    .library(name: .Client.purchases, targets: [.Client.purchases]),
-    .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
     .library(name: .swiftUIExt, targets: [.swiftUIExt]),
     .library(name: .uiKitExt, targets: [.uiKitExt]),
     .library(name: .userIdentifier, targets: [.userIdentifier]),
-    .library(name: .Client.userSettings, targets: [.Client.userSettings]),
-    .library(name: .Client.userTracking, targets: [.Client.userTracking]),
     .library(name: .version, targets: [.version]),
     .library(name: .videoPlayer, targets: [.videoPlayer]),
     .library(name: .webView, targets: [.webView])
@@ -54,6 +55,10 @@ let package = Package(
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       from: "6.10.1"
+    ),
+    .package(
+      url: "https://github.com/rwbutler/Connectivity",
+      from: "6.0.0"
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
@@ -179,7 +184,7 @@ let package = Package(
         .composableArchitectureExt,
         .Client.analytics,
         .foundationSupport,
-        .loggingSupport,
+        .loggingExt,
         .userIdentifier,
         .External.adapty,
         .External.composableArchitecture,
@@ -234,15 +239,16 @@ let package = Package(
         .linkedFramework("AppTrackingTransparency")
       ]
     ),
+    .Client.amplitude,
+    .Client.application,
+    .Client.appsFlyer,
+    .Client.connectivity,
+    .Client.firebase,
     .Client.pasteboard,
     .Client.remoteSettings,
-    .amplitudeClient,
-    .applicationClient,
-    .appsFlyer,
     .dependenciesExt,
     .device,
     .foundationSupport,
-    .firebaseClient,
     .loggingSupport,
     .paywallReducer,
     .userIdentifier,
@@ -253,10 +259,68 @@ let package = Package(
 
 extension Target {
   enum Client {
+    static let amplitude = target(
+      name: .Client.amplitude,
+      dependencies: [
+        .loggingExt,
+        .userIdentifier,
+        .External.amplitude,
+        .External.composableArchitecture
+      ],
+      path: "Sources/AmplitudeClient"
+    )
+
+    static let application = target(
+      name: .Client.application,
+      dependencies: [
+        .loggingExt,
+        .External.composableArchitecture
+      ],
+      path: "Sources/ApplicationClient"
+    )
+
+    static let appsFlyer = target(
+      name: .Client.appsFlyer,
+      dependencies: [
+        .concurrencyExt,
+        .loggingExt,
+        .Client.purchases,
+        .userIdentifier,
+        .External.adapty,
+        .External.appsFlyer,
+        .External.composableArchitecture
+      ],
+      path: "Sources/AppsFlyer",
+      linkerSettings: [
+        .linkedFramework("AppTrackingTransparency")
+      ]
+    )
+
+    static let connectivity = target(
+      name: .Client.connectivity,
+      dependencies: [
+        .loggingExt,
+        .External.composableArchitecture,
+        .External.connectivity
+      ],
+      path: "Sources/ConnectivityClient"
+    )
+
+    static let firebase = target(
+      name: .Client.firebase,
+      dependencies: [
+        .loggingExt,
+        .userIdentifier,
+        .External.Firebase.analytics,
+        .External.Firebase.crashlytics,
+        .External.composableArchitecture
+      ]
+    )
+
     static let pasteboard = target(
       name: .Client.pasteboard,
       dependencies: [
-        .loggingSupport,
+        .loggingExt,
         .External.composableArchitecture
       ],
       path: "Sources/PasteboardClient",
@@ -268,7 +332,7 @@ extension Target {
     static let remoteSettings = target(
       name: .Client.remoteSettings,
       dependencies: [
-        .loggingSupport,
+        .loggingExt,
         .External.composableArchitecture,
         .External.Firebase.remoteConfig
       ],
@@ -278,43 +342,6 @@ extension Target {
       ]
     )
   }
-
-  static let amplitudeClient = target(
-    name: .amplitudeClient,
-    dependencies: [
-      .loggingSupport,
-      .userIdentifier,
-      .External.amplitude,
-      .External.composableArchitecture
-    ],
-    path: "Sources/AmplitudeClient"
-  )
-
-  static let applicationClient = target(
-    name: .applicationClient,
-    dependencies: [
-      .loggingSupport,
-      .External.composableArchitecture
-    ],
-    path: "Sources/ApplicationClient"
-  )
-
-  static let appsFlyer = target(
-    name: .appsFlyer,
-    dependencies: [
-      .concurrencyExt,
-      .loggingSupport,
-      .Client.purchases,
-      .userIdentifier,
-      .External.adapty,
-      .External.appsFlyer,
-      .External.composableArchitecture
-    ],
-    path: "Sources/AppsFlyer",
-    linkerSettings: [
-      .linkedFramework("AppTrackingTransparency")
-    ]
-  )
 
   static let dependenciesExt = target(
     name: .dependenciesExt,
@@ -337,17 +364,6 @@ extension Target {
     name: .foundationSupport,
     dependencies: [
       .External.urlCompatibilityKit
-    ]
-  )
-
-  static let firebaseClient = target(
-    name: .firebaseClient,
-    dependencies: [
-      .loggingSupport,
-      .userIdentifier,
-      .External.Firebase.analytics,
-      .External.Firebase.crashlytics,
-      .External.composableArchitecture
     ]
   )
 
@@ -396,19 +412,15 @@ extension Target {
 }
 
 extension Target.Dependency {
-  static let amplitudeClient = byName(name: .amplitudeClient)
-  static let applicationClient = byName(name: .applicationClient)
-  static let appsFlyer = byName(name: .appsFlyer)
   static let avFoundationExt = byName(name: .avFoundationExt)
   static let composableArchitectureExt = byName(name: .composableArchitectureExt)
   static let concurrencyExt = byName(name: .concurrencyExt)
   static let dependenciesExt = byName(name: .dependenciesExt)
   static let device = byName(name: .device)
   static let foundationSupport = byName(name: .foundationSupport)
-  static let firebaseClient = byName(name: .firebaseClient)
   static let graphicsExt = byName(name: .graphicsExt)
   static let instagram = byName(name: .instagram)
-  static let loggingSupport = byName(name: .loggingSupport)
+  static let loggingExt = byName(name: .loggingSupport)
   static let paywallReducer = byName(name: .paywallReducer)
   static let photosExt = byName(name: .photosExt)
   static let sfSymbol = byName(name: .sfSymbol)
@@ -420,8 +432,13 @@ extension Target.Dependency {
   static let webView = byName(name: .webView)
 
   enum Client {
+    static let amplitude = byName(name: .Client.amplitude)
     static let analytics = byName(name: .Client.analytics)
+    static let application = byName(name: .Client.application)
+    static let appsFlyer = byName(name: .Client.appsFlyer)
+    static let connectivity = byName(name: .Client.connectivity)
     static let facebook = byName(name: .Client.facebook)
+    static let firebase = byName(name: .Client.firebase)
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
@@ -457,6 +474,8 @@ extension Target.Dependency {
       name: "ComposableArchitecture",
       package: "swift-composable-architecture"
     )
+
+    static let connectivity = byName(name: "Connectivity")
 
     static let customDump = product(
       name: "CustomDump",
@@ -503,9 +522,6 @@ extension Target.Dependency {
 }
 
 extension String {
-  static let amplitudeClient = "AmplitudeClient"
-  static let applicationClient = "ApplicationClient"
-  static let appsFlyer = "AppsFlyer"
   static let version = "Version"
   static let avFoundationExt = "AVFoundationExt"
   static let concurrencyExt = "ConcurrencyExt"
@@ -513,7 +529,6 @@ extension String {
   static let dependenciesExt = "DependenciesExt"
   static let device = "Device"
   static let foundationSupport = "FoundationSupport"
-  static let firebaseClient = "FirebaseClient"
   static let graphicsExt = "GraphicsExt"
   static let instagram = "Instagram"
   static let loggingSupport = "LoggingSupport"
@@ -527,8 +542,13 @@ extension String {
   static let webView = "WebView"
 
   enum Client {
+    static let amplitude = "AmplitudeClient"
     static let analytics = "AnalyticsClient"
+    static let application = "ApplicationClient"
+    static let appsFlyer = "AppsFlyer"
+    static let connectivity = "ConnectivityClient"
     static let facebook = "FacebookClient"
+    static let firebase = "FirebaseClient"
     static let pasteboard = "PasteboardClient"
     static let photosAuthorization = "PhotosAuthorization"
     static let purchases = "PurchasesClient"
