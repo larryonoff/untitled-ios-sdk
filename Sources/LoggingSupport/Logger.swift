@@ -7,7 +7,7 @@ extension Logger {
     dump args: @autoclosure @escaping () -> [String: Any]
   ) {
     let argsDump = String(customDumping: args())
-    self.info("\(message())\n\(argsDump)")
+    self.info("\(message(), privacy: .public)\n\(argsDump)")
   }
 
   public func debug(
@@ -15,7 +15,7 @@ extension Logger {
     dump args: @autoclosure @escaping () -> [String: Any]
   ) {
     let argsDump = String(customDumping: args())
-    self.debug("\(message())\n\(argsDump)")
+    self.debug("\(message(), privacy: .public)\n\(argsDump, privacy: .public)")
   }
 
   public func warning(
@@ -23,7 +23,7 @@ extension Logger {
     dump args: @autoclosure @escaping () -> [String: Any]
   ) {
     let argsDump = String(customDumping: args())
-    self.warning("\(message())\n\(argsDump)")
+    self.warning("\(message(), privacy: .public)\n\(argsDump)")
   }
 
   public func error(
@@ -31,7 +31,7 @@ extension Logger {
     dump args: @autoclosure @escaping () -> [String: Any]
   ) {
     let argsDump = String(customDumping: args())
-    self.error("\(message())\n\(argsDump)")
+    self.error("\(message(), privacy: .public)\n\(argsDump, privacy: .public)")
   }
 
   public func critical(
@@ -39,7 +39,7 @@ extension Logger {
     dump args: @autoclosure @escaping () -> [String: Any]
   ) {
     let argsDump = String(customDumping: args())
-    self.critical("\(message())\n\(argsDump)")
+    self.critical("\(message(), privacy: .public)\n\(argsDump, privacy: .public)")
   }
 
   public func fault(
@@ -47,6 +47,6 @@ extension Logger {
     dump args: @autoclosure @escaping () -> [String: Any]
   ) {
     let argsDump = String(customDumping: args())
-    self.fault("\(message())\n\(argsDump)")
+    self.fault("\(message(), privacy: .public)\n\(argsDump)")
   }
 }
