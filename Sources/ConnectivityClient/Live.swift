@@ -40,5 +40,31 @@ extension ConnectivityClient {
 extension ConnectivityInfo {
   init(_ connectivity: Connectivity) {
     self.isConnected = connectivity.isConnected
+    self.state = .init(connectivity.status)
+  }
+}
+
+extension ConnectivityState {
+  init(_ status: Connectivity.Status) {
+    switch status {
+    case .connected:
+      self = .loopback
+    case .connectedViaCellular:
+      self = .cellularWithInternet
+    case .connectedViaCellularWithoutInternet:
+      self = .cellularWithoutInternet
+    case .connectedViaEthernet:
+      self = .ethernetWithInternet
+    case .connectedViaEthernetWithoutInternet:
+      self = .ethernetWithoutInternet
+    case .connectedViaWiFi:
+      self = .wifiWithInternet
+    case .connectedViaWiFiWithoutInternet:
+      self = .wifiWithoutInternet
+    case .determining:
+      self = .loopback
+    case .notConnected:
+      self = .disconnected
+    }
   }
 }
