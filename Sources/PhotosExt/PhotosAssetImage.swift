@@ -124,6 +124,9 @@ public struct PhotosAssetImage<Content: View>: View {
           notifyOnChange(state)
         }
       }
+      .onDisappear {
+        state.phase = .empty
+      }
   }
 
   public func onStateChanged(
