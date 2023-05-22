@@ -10,6 +10,7 @@ extension ConnectivityClient {
       updates: {
         AsyncStream { continuation in
           let connectivity = Connectivity()
+
           connectivity.pollingInterval = 30.0
           connectivity.isPollingEnabled = true
 
@@ -17,6 +18,7 @@ extension ConnectivityClient {
 
           connectivity.connectivityURLs
             .append(contentsOf: connectivityURLs)
+          connectivity.framework = .network
 
           connectivity.whenConnected = {
             continuation.yield(.init($0))
