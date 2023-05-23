@@ -8,5 +8,6 @@ extension DependencyValues {
 }
 
 public struct ConnectivityClient {
+  public var connectivityInfo: @Sendable () async -> ConnectivityInfo
   public var updates: @Sendable () -> AsyncStream<ConnectivityInfo>
 }

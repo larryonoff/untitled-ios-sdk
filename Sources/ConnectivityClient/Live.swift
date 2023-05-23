@@ -7,18 +7,26 @@ extension ConnectivityClient {
     connectivityURLs: [URL]
   ) -> Self {
     Self(
+      connectivityInfo: {
+        let connectivity = Connectivity(
+          connectivityURLs: connectivityURLs
+        )
+
+        return await withTaskCancellationHandler {
+          await withCheckedContinuation { continuation in
+            connectivity.checkConnectivity {
+              continuation.resume(returning: .init($0))
+            }
+          }
+        } onCancel: {
+          connectivity.stopNotifier()
+        }
+      },
       updates: {
         AsyncStream { continuation in
-          let connectivity = Connectivity()
-
-          connectivity.pollingInterval = 30.0
-          connectivity.isPollingEnabled = true
-
-          connectivity.successThreshold = Connectivity.Percentage(50.0)
-
-          connectivity.connectivityURLs
-            .append(contentsOf: connectivityURLs)
-          connectivity.framework = .network
+          let connectivity = Connectivity(
+            connectivityURLs: connectivityURLs
+          )
 
           connectivity.whenConnected = {
             continuation.yield(.init($0))
@@ -36,6 +44,22 @@ extension ConnectivityClient {
         }
       }
     )
+  }
+}
+
+private extension Connectivity {
+  convenience init(connectivityURLs: [URL]) {
+    self.init()
+
+    self.framework = .network
+
+    self.pollingInterval = 30.0
+    self.isPollingEnabled = true
+
+    self.successThreshold = Connectivity.Percentage(50.0)
+
+    self.connectivityURLs
+      .append(contentsOf: connectivityURLs)
   }
 }
 
