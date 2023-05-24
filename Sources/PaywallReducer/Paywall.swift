@@ -111,6 +111,10 @@ public struct PaywallReducer: ReducerProtocol {
 
         return .concatenate(
           .run { [paywallID = state.paywallID] send in
+            // HACK
+            // sometimes product cannot be selected or purchased
+            try? await Task.sleep(nanoseconds: 1_000_000_00)
+
             await send(
               .fetchPaywallResponse(
                 await TaskResult {
