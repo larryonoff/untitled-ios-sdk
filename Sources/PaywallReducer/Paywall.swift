@@ -101,7 +101,7 @@ public struct PaywallReducer: ReducerProtocol {
 
   public init() {}
 
-  public var body: some ReducerProtocol<State, Action> {
+  public var body: some ReducerProtocolOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
