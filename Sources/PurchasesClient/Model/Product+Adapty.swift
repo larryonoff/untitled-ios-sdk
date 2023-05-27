@@ -35,6 +35,7 @@ extension Product.SubscriptionInfo {
       .compactMap { Product.SubscriptionOffer($0) }
     self.subscriptionGroupID = subscriptionGroupID
     self.subscriptionPeriod = subscriptionPeriod
+    self.isEligibleForIntroOffer = true
   }
 }
 

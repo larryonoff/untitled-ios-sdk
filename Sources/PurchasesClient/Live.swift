@@ -25,7 +25,7 @@ extension PurchasesClient {
         try await impl.initialize()
       },
       paywalByID: { id in
-        try await impl.paywall(by: id)
+        impl.paywall(by: id)
       },
       purchase: { request in
         try await impl.purchase(request)
@@ -180,53 +180,112 @@ final actor PurchasesClientImpl {
   }
 
   nonisolated
-  func paywall(by id: Paywall.ID) async throws -> Paywall? {
-    do {
-      logger.info("get paywall", dump: [
-        "id": id
-      ])
+  func paywall(
+    by id: Paywall.ID
+  ) -> AsyncThrowingStream<FetchPaywallResponse, Error> {
+    AsyncThrowingStream { [weak self] continuation in
+      Task { [weak self] in
+        do {
+          logger.info("get paywall", dump: [
+            "id": id
+          ])
 
-      if let paywall = await _paywalls[id] {
-        logger.info("get paywall success", dump: [
-          "id": id,
-          "paywall": paywall,
-          "isFromCache": true
-        ])
+          if let paywall = await self?._paywalls[id] {
+            logger.info("get paywall success", dump: [
+              "id": id,
+              "paywall": paywall,
+              "isFromCache": true
+            ])
 
-        return paywall
+            continuation.yield(
+              .init(
+                paywall: paywall
+              )
+            )
+            continuation.finish()
+
+            return
+          }
+
+          guard let _paywall = try await Self._paywall(by: id) else {
+            logger.info("get paywall success", dump: [
+              "id": id,
+              "paywall": "nil",
+              "isFromCache": false
+            ])
+
+            continuation.yield(
+              .init(
+                paywall: nil
+              )
+            )
+            continuation.finish()
+
+            return
+          }
+
+          var paywall = Paywall(_paywall, products: nil)
+
+          continuation.yield(
+            .init(
+              paywall: paywall
+            )
+          )
+
+          if
+            let _products = try await Self._paywallProducts(for: _paywall)
+          {
+            paywall.products = _products.compactMap { .init($0) }
+
+            continuation.yield(
+              .init(
+                paywall: paywall
+              )
+            )
+
+            do {
+              let introductoryOfferEligibility = try await Adapty
+                .getProductsIntroductoryOfferEligibility(products: _products)
+
+              for (id, eligibility) in introductoryOfferEligibility {
+                guard let pIndex = paywall.products.firstIndex(where: { $0.id.rawValue == id }) else {
+                  continue
+                }
+
+                paywall.products[pIndex]
+                  .subscription?
+                  .isEligibleForIntroOffer = eligibility == .eligible
+              }
+
+              continuation.yield(
+                .init(
+                  paywall: paywall
+                )
+              )
+
+            } catch {
+              //
+            }
+          }
+
+          continuation.finish()
+
+          await self?.cache(paywall)
+
+          logger.info("get paywall success", dump: [
+            "id": id,
+            "paywall": paywall,
+            "isFromCache": false
+          ])
+        } catch {
+          logger.error("get paywall failed", dump: [
+            "id": id,
+            "failure": error
+          ])
+
+          continuation.finish(throwing: error)
+        }
       }
-
-      guard let _paywall = try await _paywall(by: id) else {
-        logger.info("get paywall success", dump: [
-          "id": id,
-          "paywall": "nil",
-          "isFromCache": false
-        ])
-
-        return nil
-      }
-
-      let paywall = Paywall(
-        _paywall,
-        products: try await _paywallProducts(for: _paywall)
-      )
-
-      await cache(paywall)
-
-      logger.info("get paywall success", dump: [
-        "id": id,
-        "paywall": paywall,
-        "isFromCache": false
-      ])
-
-      return paywall
-    } catch {
-      logger.error("get paywall failed", dump: [
-        "id": id,
-        "failure": error.localizedDescription
-      ])
-
-      throw error._map()
     }
   }
 
@@ -239,8 +298,8 @@ final actor PurchasesClientImpl {
       ])
 
       guard
-        let paywall = try await _paywall(by: request.paywallID),
-        let products = try await _paywallProducts(for: paywall),
+        let paywall = try await Self._paywall(by: request.paywallID),
+        let products = try await Self._paywallProducts(for: paywall),
         let product = products
           .first(where: { $0.vendorProductId == request.product.id.rawValue })
       else {
@@ -328,7 +387,7 @@ final actor PurchasesClientImpl {
       ])
 
       guard
-        let adaptyPaywall = try await _paywall(by: paywall.id)
+        let adaptyPaywall = try await Self._paywall(by: paywall.id)
       else {
         return
       }
@@ -368,20 +427,18 @@ final actor PurchasesClientImpl {
   }
 
   nonisolated
-  private func _paywall(
+  private static func _paywall(
     by id: Paywall.ID
   ) async throws -> AdaptyPaywall? {
     try await Adapty.getPaywall(id.rawValue)
   }
 
   nonisolated
-  private func _paywallProducts(
+  private static func _paywallProducts(
     for paywall: AdaptyPaywall
   ) async throws -> [AdaptyPaywallProduct]? {
-    try await Adapty.getPaywallProducts(
-      paywall: paywall,
-      fetchPolicy: .default
-    )
+    try await Adapty
+      .getPaywallProducts(paywall: paywall)
   }
 
   private func cache(_ paywall: Paywall) async {
@@ -407,7 +464,7 @@ enum AdaptyDelegateEvent: Equatable {
 }
 
 final class _AdaptyDelegate: AdaptyDelegate {
-  private let pipe = AsyncStream<AdaptyDelegateEvent>.streamWithContinuation()
+  private lazy var pipe = AsyncStream<AdaptyDelegateEvent>.makeStream()
 
   init() {}
 

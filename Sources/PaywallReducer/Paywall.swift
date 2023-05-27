@@ -115,11 +115,17 @@ public struct PaywallReducer: ReducerProtocol {
             // sometimes product cannot be selected or purchased
             try? await Task.sleep(nanoseconds: 1_000_000_00)
 
+            for try await response in purchases.paywalByID(paywallID) {
+              await send(
+                .fetchPaywallResponse(
+                  .success(response.paywall)
+                )
+              )
+            }
+          } catch: { error, send in
             await send(
               .fetchPaywallResponse(
-                await TaskResult {
-                  try await purchases.paywalByID(paywallID)
-                }
+                .failure(error)
               )
             )
           },

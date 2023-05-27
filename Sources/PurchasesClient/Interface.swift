@@ -11,7 +11,7 @@ extension DependencyValues {
 public struct PurchasesClient {
   public var initialize: @Sendable () async throws -> Void
 
-  public var paywalByID: @Sendable (Paywall.ID) async throws -> Paywall?
+  public var paywalByID: @Sendable (Paywall.ID) -> AsyncThrowingStream<FetchPaywallResponse, Error>
 
   public var purchase: @Sendable (PurchaseRequest) async throws -> PurchaseResult
   public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
@@ -29,14 +29,8 @@ public struct PurchasesClient {
   public var logPaywall: @Sendable (Paywall) async throws -> Void
 }
 
-extension PurchasesClient {
-  public func paywal(by id: Paywall.ID) async throws -> Paywall? {
-    try await paywalByID(id)
-  }
-
-  public func log(_ paywall: Paywall) async throws {
-    try await logPaywall(paywall)
-  }
+public struct FetchPaywallResponse {
+  public let paywall: Paywall?
 }
 
 public struct PurchaseRequest {
@@ -60,6 +54,12 @@ public enum PurchaseResult {
   case success(Purchases)
   case userCancelled
 }
+
+extension FetchPaywallResponse: Equatable {}
+
+extension FetchPaywallResponse: Hashable {}
+
+extension FetchPaywallResponse: Sendable {}
 
 extension PurchaseRequest: Equatable {}
 
