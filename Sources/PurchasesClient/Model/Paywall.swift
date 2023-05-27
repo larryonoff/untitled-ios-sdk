@@ -7,7 +7,7 @@ public struct Paywall {
   public typealias VariantID = Tagged<(Self, variantID: ()), String>
 
   public let id: ID
-  public let products: [Product]
+  public var products: [Product]
   public let productComparingID: Product.ID?
   public let productSelectedID: Product.ID?
 

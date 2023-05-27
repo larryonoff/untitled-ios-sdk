@@ -11,6 +11,7 @@ public struct Product {
     public var promotionalOffers: [Product.SubscriptionOffer]
     public var subscriptionGroupID: String
     public var subscriptionPeriod: Product.SubscriptionPeriod
+    public var isEligibleForIntroOffer: Bool
   }
 
   public struct SubscriptionOffer {

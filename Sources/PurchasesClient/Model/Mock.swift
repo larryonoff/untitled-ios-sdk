@@ -40,7 +40,8 @@ extension Product {
       ),
       promotionalOffers: [],
       subscriptionGroupID: "subscriptionGroupID",
-      subscriptionPeriod: .year(1)
+      subscriptionPeriod: .year(1),
+      isEligibleForIntroOffer: true
     )
   )
 
@@ -55,7 +56,8 @@ extension Product {
       introductoryOffer: nil,
       promotionalOffers: [],
       subscriptionGroupID: "subscriptionGroupID",
-      subscriptionPeriod: .month(1)
+      subscriptionPeriod: .month(1),
+      isEligibleForIntroOffer: false
     )
   )
 }
