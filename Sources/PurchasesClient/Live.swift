@@ -235,7 +235,12 @@ final actor PurchasesClientImpl {
           if
             let _products = try await Self._paywallProducts(for: _paywall)
           {
-            paywall.products = _products.compactMap { .init($0) }
+            paywall.products = _paywall.vendorProductIds
+              .compactMap { vendorProductId in
+                _products
+                  .first { $0.vendorProductId == vendorProductId }
+                  .flatMap { .init($0) }
+              }
 
             continuation.yield(
               .init(
