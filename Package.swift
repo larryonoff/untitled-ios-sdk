@@ -181,7 +181,6 @@ let package = Package(
     .target(
       name: .Client.purchases,
       dependencies: [
-        .composableArchitectureExt,
         .Client.analytics,
         .foundationSupport,
         .loggingExt,
