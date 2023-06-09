@@ -1,11 +1,11 @@
 import Adapty
 import AnalyticsClient
 import Combine
-import ComposableArchitecture
+import Dependencies
 import Foundation
 import FoundationSupport
 import LoggingSupport
-import os.log
+import OSLog
 import StoreKit
 import UIKit
 import UserIdentifier

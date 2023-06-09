@@ -1,6 +1,4 @@
-import ComposableArchitecture
 import Dependencies
-import Foundation
 import XCTestDynamicOverlay
 
 extension PhotosAuthorizationClient: TestDependencyKey {

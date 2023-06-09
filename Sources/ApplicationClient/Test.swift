@@ -1,8 +1,6 @@
 #if os(iOS)
 
-import ComposableArchitecture
 import Dependencies
-import Foundation
 import XCTestDynamicOverlay
 
 extension ApplicationClient: TestDependencyKey {

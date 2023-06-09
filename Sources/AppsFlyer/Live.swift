@@ -2,11 +2,10 @@ import Adapty
 import AppsFlyerLib
 import AppTrackingTransparency
 import Combine
-import ComposableArchitecture
 import ConcurrencyExt
 import Foundation
 import LoggingSupport
-import os.log
+import OSLog
 import UIKit
 import UserIdentifier
 
