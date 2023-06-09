@@ -1,10 +1,9 @@
 import Firebase
 import FirebaseAnalytics
 import FirebaseCrashlytics
-import ComposableArchitecture
 import UserIdentifier
 import LoggingSupport
-import os.log
+import OSLog
 
 extension FirebaseClient {
   public static func live(

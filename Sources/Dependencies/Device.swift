@@ -1,4 +1,4 @@
-import DeviceKit
+@_exported import DeviceKit
 import Dependencies
 
 extension DependencyValues {

@@ -9,7 +9,17 @@ extension DependencyValues {
   }
 
   private enum VersionGeneratorKey: DependencyKey {
-    static let liveValue = VersionGenerator.liveValue
+    static let liveValue = VersionGenerator {
+      let versionString = [
+        Bundle.main.version,
+        Bundle.main.buildVersion
+      ]
+      .compactMap { $0 }
+      .joined(separator: "-")
+
+      return Version(versionString) ?? .zero
+    }
+
     static let testValue = VersionGenerator {
       XCTFail(#"Unimplemented: @Dependency(\.version)"#)
       return .zero

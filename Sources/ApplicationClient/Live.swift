@@ -1,6 +1,5 @@
 #if os(iOS)
 
-import ComposableArchitecture
 import UIKit
 
 extension ApplicationClient: DependencyKey {}

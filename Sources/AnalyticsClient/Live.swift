@@ -1,5 +1,4 @@
 import Amplitude
-import ComposableArchitecture
 import FacebookCore
 import FirebaseAnalytics
 import FoundationSupport

@@ -1,10 +1,9 @@
 import Amplitude
 import Foundation
 import FoundationSupport
-import ComposableArchitecture
 import UserIdentifier
 import LoggingSupport
-import os.log
+import OSLog
 
 extension AmplitudeClient {
   public static func live(
