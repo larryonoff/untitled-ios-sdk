@@ -1,5 +1,6 @@
 #if os(iOS)
 
+import Dependencies
 import UIKit
 
 extension ApplicationClient: DependencyKey {}
