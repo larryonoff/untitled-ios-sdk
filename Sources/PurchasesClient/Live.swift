@@ -312,8 +312,8 @@ final actor PurchasesClientImpl {
         throw PurchasesError.productUnavailable
       }
 
-      let profile = try await Adapty.makePurchase(product: product)
-      let purchases = updatePurchases(profile)
+      let purchasedInfo = try await Adapty.makePurchase(product: product)
+      let purchases = updatePurchases(purchasedInfo.profile)
 
       logger.info("purchase success", dump: [
         "purchases": purchases,

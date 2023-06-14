@@ -44,7 +44,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.5.0"
+      from: "2.6.0"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
@@ -52,7 +52,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
-      from: "6.10.1"
+      from: "6.11.2"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -68,7 +68,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.10.0"
+      from: "10.11.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
