@@ -5,12 +5,11 @@ import Amplitude
 import AnalyticsClient
 import AppTrackingTransparency
 import Combine
-import ComposableArchitecture
 import FacebookCore
 import FirebaseAnalytics
 import Foundation
 import LoggingSupport
-import os.log
+import OSLog
 import UIKit
 
 public typealias Analytics = AnalyticsClient.Analytics
