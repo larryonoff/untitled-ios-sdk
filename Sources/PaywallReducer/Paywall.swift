@@ -6,9 +6,7 @@ import PurchasesClient
 
 public struct PaywallReducer: ReducerProtocol {
   public enum Action: Equatable {
-    public enum AlertAction: Equatable {
-      case dismissed
-    }
+    public enum AlertAction: Equatable {}
 
     public enum Delegate: Equatable {
       case dismissed
@@ -21,7 +19,7 @@ public struct PaywallReducer: ReducerProtocol {
     case onAppear
     case delegate(Delegate)
 
-    case alert(AlertAction)
+    case alert(PresentationAction<AlertAction>)
 
     case dismissTapped
 
@@ -40,7 +38,7 @@ public struct PaywallReducer: ReducerProtocol {
   }
 
   public struct State: Equatable {
-    @Box public var alert: AlertState<Action>?
+    @PresentationState public var alert: AlertState<Action>?
 
     @Box public var oneTimeOffer: OneTimeOfferState?
 
@@ -261,12 +259,13 @@ public struct PaywallReducer: ReducerProtocol {
         }
 
         return .none
-      case .alert(.dismissed):
+      case .alert(.dismiss):
         state.alert = nil
         state.oneTimeOffer?.alert = nil
         return .none
       }
     }
+    .ifLet(\.$alert, action: /Action.alert)
   }
 
   // MARK: - Effects
