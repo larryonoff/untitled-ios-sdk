@@ -6,8 +6,6 @@ import PurchasesClient
 
 public struct PaywallReducer: ReducerProtocol {
   public enum Action: Equatable {
-    public enum AlertAction: Equatable {}
-
     public enum Delegate: Equatable {
       case dismissed
     }
@@ -37,8 +35,10 @@ public struct PaywallReducer: ReducerProtocol {
     case restorePurchasesResponse(TaskResult<RestorePurchasesResult>)
   }
 
+  public enum AlertAction: Equatable {}
+
   public struct State: Equatable {
-    @PresentationState public var alert: AlertState<Action>?
+    @PresentationState public var alert: AlertState<AlertAction>?
 
     @Box public var oneTimeOffer: OneTimeOfferState?
 
