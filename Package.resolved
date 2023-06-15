@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adaptyteam/AdaptySDK-iOS",
       "state" : {
-        "revision" : "d3cea9d4d357765d2778c92cf8f67384c2f06863",
-        "version" : "2.5.0"
+        "revision" : "986581a26b185eda7263639ef9d1a98af487e7da",
+        "version" : "2.6.0"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
       "state" : {
-        "revision" : "7cf56a908fb602ffaab7a85e6697c6f383fdcf96",
-        "version" : "6.11.1"
+        "revision" : "ccb55ee7eb8f4537310e4beeed8be16e6bf88d06",
+        "version" : "6.11.2"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "5034479ca0c4f32f299677fb0ba1fe4d3e3e20b4",
-        "version" : "10.10.0"
+        "revision" : "e700a8f40c87c31cab7984875fcc1225d96b25bf",
+        "version" : "10.11.0"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "69f5b8425dd473d2f2475bba7f88f82cd9da0e36",
-        "version" : "10.10.0"
+        "revision" : "62e3a0c09a75e2637f5300d46f05a59313f1c286",
+        "version" : "10.11.0"
       }
     },
     {
@@ -275,8 +275,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/shaps80/SwiftUIBackports",
       "state" : {
-        "revision" : "556d42f391b74059a354b81b8c8e19cc7cb576f4",
-        "version" : "1.15.1"
+        "revision" : "4cf8f63c9bb14edfd882a8f82f520f801fc1c441",
+        "version" : "2.7.0"
       }
     },
     {

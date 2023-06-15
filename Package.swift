@@ -80,7 +80,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      .upToNextMinor(from: "0.53.2")
+      from: "0.54.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
