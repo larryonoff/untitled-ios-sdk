@@ -1,5 +1,8 @@
 import Foundation
+
+#if canImport(UIKit)
 import UIKit
+#endif
 
 extension URL {
   public var creationDate: Date? {
@@ -16,7 +19,9 @@ extension URL {
     return values.isDirectory
   }
 
+  #if canImport(UIKit)
   public static var settings: URL {
     URL(string: UIApplication.openSettingsURLString)!
   }
+  #endif
 }
