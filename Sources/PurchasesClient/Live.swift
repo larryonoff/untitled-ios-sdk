@@ -7,7 +7,9 @@ import FoundationSupport
 import LoggingSupport
 import OSLog
 import StoreKit
+#if canImport(UIKit)
 import UIKit
+#endif
 import UserIdentifier
 
 extension PurchasesClient {
@@ -51,6 +53,7 @@ extension PurchasesClient {
         }
       },
       requestReview: {
+        #if canImport(UIKit)
         let application = await UIApplication.shared
         var activeScene: UIWindowScene?
 
@@ -77,6 +80,7 @@ extension PurchasesClient {
             "error": "Active `UIWindowScene` not available"
           ])
         }
+        #endif
       },
       reset: {
         try await impl.reset()
