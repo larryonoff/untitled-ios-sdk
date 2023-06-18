@@ -12,7 +12,7 @@ extension InstagramClient {
         }
 
         guard
-          !Bundle.main.applicationQueriesSchemes.contains(.QueryScheme.instagramStories)
+          Bundle.main.applicationQueriesSchemes.contains(.QueryScheme.instagramStories)
         else {
           assertionFailure(
             "Main Bundle doesn't contain `\(String.QueryScheme.instagramStories)` query scheme"
