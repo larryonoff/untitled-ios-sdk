@@ -9,7 +9,9 @@ extension Analytics {
       log: { data in
         Amplitude.instance().log(data)
 
+        #if os(iOS)
         AppEvents.shared.log(data)
+        #endif
 
         FirebaseAnalytics.Analytics.log(data)
       },
@@ -51,6 +53,7 @@ extension Amplitude {
   }
 }
 
+#if os(iOS)
 extension AppEvents {
   func log(_ data: Analytics.EventData) {
     let parameters = data.parameters?
@@ -68,6 +71,7 @@ extension AppEvents {
     )
   }
 }
+#endif
 
 extension FirebaseAnalytics.Analytics {
   static func log(_ data: Analytics.EventData) {
