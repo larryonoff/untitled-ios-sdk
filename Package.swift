@@ -132,7 +132,8 @@ let package = Package(
     .target(
       name: .instagram,
       dependencies: [
-        .External.customDump
+        .External.customDump,
+        .External.dependencies
       ]
     ),
     .target(name: .sfSymbol),
