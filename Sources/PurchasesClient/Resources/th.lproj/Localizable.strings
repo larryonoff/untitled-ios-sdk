@@ -1,0 +1,31 @@
+"error.unknown.description" = "ขออภัย เกิดข้อผิดพลาดบางอย่างขึ้น 😔";
+
+"product.subscriptionOffer.freeTrial" = "ทดลองใช้ฟรี %d-%@";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
+"product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
+"product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
+
+"product.subscriptionPeriod.unit.day" = "วัน";
+"product.subscriptionPeriod.unit.day.plural" = "วัน";
+"product.subscriptionPeriod.unit.day.plural2" = "วัน";
+"product.subscriptionPeriod.unit.week" = "สัปดาห์";
+"product.subscriptionPeriod.unit.week.plural" = "สัปดาห์";
+"product.subscriptionPeriod.unit.week.plural2" = "สัปดาห์";
+"product.subscriptionPeriod.unit.month" = "เดือน";
+"product.subscriptionPeriod.unit.month.plural" = "เดือน";
+"product.subscriptionPeriod.unit.month.plural2" = "เดือน";
+"product.subscriptionPeriod.unit.year" = "ปี";
+"product.subscriptionPeriod.unit.year.plural" = "ปี";
+"product.subscriptionPeriod.unit.year.plural2" = "ปี";
+
+"product.subscriptionPeriod.unit.day.compactName" = "วัน";
+"product.subscriptionPeriod.unit.week.compactName" = "สัปดาห์";
+"product.subscriptionPeriod.unit.month.compactName" = "เดือน";
+"product.subscriptionPeriod.unit.year.compactName" = "ปี";
+
+"product.subscriptionPeriod.unit.day.recurrent" = "รายวัน";
+"product.subscriptionPeriod.unit.week.recurrent" = "รายสัปดาห์";
+"product.subscriptionPeriod.unit.month.recurrent" = "รายเดือน";
+"product.subscriptionPeriod.unit.year.recurrent" = "รายปี";
+
+"purchases.error.premiumExpired.description" = "คุณไม่มีการสมัครสมาชิกที่ใช้งานอยู่ โปรดตรวจสอบรายละเอียดบัญชีของคุณ";

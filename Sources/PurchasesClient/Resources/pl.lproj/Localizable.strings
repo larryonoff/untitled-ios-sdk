@@ -1,0 +1,31 @@
+"error.unknown.description" = "Ups, coś poszło źle 😔";
+
+"product.subscriptionOffer.freeTrial" = "%d-%@ bezpłatny okres próbny";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
+"product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
+"product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
+
+"product.subscriptionPeriod.unit.day" = "dzień";
+"product.subscriptionPeriod.unit.day.plural" = "dni";
+"product.subscriptionPeriod.unit.day.plural2" = "dni";
+"product.subscriptionPeriod.unit.week" = "tydzień";
+"product.subscriptionPeriod.unit.week.plural" = "tygodni";
+"product.subscriptionPeriod.unit.week.plural2" = "tygodnie";
+"product.subscriptionPeriod.unit.month" = "miesiąc";
+"product.subscriptionPeriod.unit.month.plural" = "miesięcy";
+"product.subscriptionPeriod.unit.month.plural2" = "miesiące";
+"product.subscriptionPeriod.unit.year" = "rok";
+"product.subscriptionPeriod.unit.year.plural" = "lat";
+"product.subscriptionPeriod.unit.year.plural2" = "lata";
+
+"product.subscriptionPeriod.unit.day.compactName" = "dz.";
+"product.subscriptionPeriod.unit.week.compactName" = "tyd.";
+"product.subscriptionPeriod.unit.month.compactName" = "mies.";
+"product.subscriptionPeriod.unit.year.compactName" = "rok";
+
+"product.subscriptionPeriod.unit.day.recurrent" = "dziennie";
+"product.subscriptionPeriod.unit.week.recurrent" = "tygodniowo";
+"product.subscriptionPeriod.unit.month.recurrent" = "miesięcznie";
+"product.subscriptionPeriod.unit.year.recurrent" = "rocznie";
+
+"purchases.error.premiumExpired.description" = "Nie masz aktywnych subskrypcji. Sprawdź dane swojego konta";

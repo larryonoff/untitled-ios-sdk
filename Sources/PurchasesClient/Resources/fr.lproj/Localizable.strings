@@ -28,4 +28,4 @@
 "product.subscriptionPeriod.unit.month.recurrent" = "mensuel";
 "product.subscriptionPeriod.unit.year.recurrent" = "annuel";
 
-"purchases.error.premiumExpired.description" = "Vous ne disposez d'aucun abonnement actif. Nous vous prions de vérifier les détails de votre compte.";
+"purchases.error.premiumExpired.description" = "Vous ne disposez d'aucun abonnement actif. Nous vous prions de vérifier les détails de votre compte";

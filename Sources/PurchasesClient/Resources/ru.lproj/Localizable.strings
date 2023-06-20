@@ -28,4 +28,4 @@
 "product.subscriptionPeriod.unit.month.recurrent" = "ежемесячно";
 "product.subscriptionPeriod.unit.year.recurrent" = "ежегодно";
 
-"purchases.error.premiumExpired.description" = "У вас нет активных подписок. Пожалуйста, проверьте данные вашей учетной записи.";
+"purchases.error.premiumExpired.description" = "У вас нет активных подписок. Пожалуйста, проверьте данные вашей учетной записи";
