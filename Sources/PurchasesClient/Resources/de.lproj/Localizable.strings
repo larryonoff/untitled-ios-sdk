@@ -28,4 +28,4 @@
 "product.subscriptionPeriod.unit.month.recurrent" = "monatlich";
 "product.subscriptionPeriod.unit.year.recurrent" = "pro Jahr";
 
-"purchases.error.premiumExpired.description" = "Du hast kein laufendes Abo. Überprüfe deine Kontodaten.";
+"purchases.error.premiumExpired.description" = "Du hast kein laufendes Abo. Überprüfe deine Kontodaten";

@@ -1,0 +1,31 @@
+"error.unknown.description" = "Hay aksi, bir şeyler ters gitti 😔";
+
+"product.subscriptionOffer.freeTrial" = "%d-%@ Ücretsiz Deneme";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
+"product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
+"product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
+
+"product.subscriptionPeriod.unit.day" = "gün";
+"product.subscriptionPeriod.unit.day.plural" = "gün";
+"product.subscriptionPeriod.unit.day.plural2" = "gün";
+"product.subscriptionPeriod.unit.week" = "hafta";
+"product.subscriptionPeriod.unit.week.plural" = "hafta";
+"product.subscriptionPeriod.unit.week.plural2" = "hafta";
+"product.subscriptionPeriod.unit.month" = "ay";
+"product.subscriptionPeriod.unit.month.plural" = "ay";
+"product.subscriptionPeriod.unit.month.plural2" = "ay";
+"product.subscriptionPeriod.unit.year" = "yıl";
+"product.subscriptionPeriod.unit.year.plural" = "yıl";
+"product.subscriptionPeriod.unit.year.plural2" = "yıl";
+
+"product.subscriptionPeriod.unit.day.compactName" = "gün";
+"product.subscriptionPeriod.unit.week.compactName" = "hafta";
+"product.subscriptionPeriod.unit.month.compactName" = "ay";
+"product.subscriptionPeriod.unit.year.compactName" = "yıl";
+
+"product.subscriptionPeriod.unit.day.recurrent" = "günlük";
+"product.subscriptionPeriod.unit.week.recurrent" = "haftalık";
+"product.subscriptionPeriod.unit.month.recurrent" = "aylık";
+"product.subscriptionPeriod.unit.year.recurrent" = "yıllık";
+
+"purchases.error.premiumExpired.description" = "Aktif aboneliğiniz yok. Lütfen hesap ayrıntılarınızı kontrol edin";

@@ -1,0 +1,31 @@
+"error.unknown.description" = "Oeps, er ging iets mis 😔";
+
+"product.subscriptionOffer.freeTrial" = "Gratis proefperiode van %d-%@";
+"product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
+"product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
+"product.subscriptionOffer.paymentMode.payUpFront" = "Pay up Front";
+
+"product.subscriptionPeriod.unit.day" = "dag";
+"product.subscriptionPeriod.unit.day.plural" = "dagen";
+"product.subscriptionPeriod.unit.day.plural2" = "dagen";
+"product.subscriptionPeriod.unit.week" = "week";
+"product.subscriptionPeriod.unit.week.plural" = "weken";
+"product.subscriptionPeriod.unit.week.plural2" = "weken";
+"product.subscriptionPeriod.unit.month" = "maand";
+"product.subscriptionPeriod.unit.month.plural" = "maanden";
+"product.subscriptionPeriod.unit.month.plural2" = "maanden";
+"product.subscriptionPeriod.unit.year" = "jaar";
+"product.subscriptionPeriod.unit.year.plural" = "jaar";
+"product.subscriptionPeriod.unit.year.plural2" = "jaar";
+
+"product.subscriptionPeriod.unit.day.compactName" = "d.";
+"product.subscriptionPeriod.unit.week.compactName" = "w";
+"product.subscriptionPeriod.unit.month.compactName" = "mnd";
+"product.subscriptionPeriod.unit.year.compactName" = "j";
+
+"product.subscriptionPeriod.unit.day.recurrent" = "dagelijks";
+"product.subscriptionPeriod.unit.week.recurrent" = "wekelijks";
+"product.subscriptionPeriod.unit.month.recurrent" = "maandelijks";
+"product.subscriptionPeriod.unit.year.recurrent" = "jaarlijks";
+
+"purchases.error.premiumExpired.description" = "Je hebt geen actieve abonnementen. Controleer je accountgegevens";
