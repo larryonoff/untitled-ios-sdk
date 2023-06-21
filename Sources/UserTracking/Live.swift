@@ -152,6 +152,7 @@ final actor UserTrackingImpl {
         .with(appTrackingTransparencyStatus: authStatus.atAuthorizationStatus)
         .with(amplitudeDeviceId: amplitude.deviceId)
         .with(amplitudeUserId: amplitude.userId)
+        .with(facebookAnonymousId: AppEvents.shared.anonymousID)
         .with(firebaseAppInstanceId: FirebaseAnalytics.Analytics.appInstanceID())
         .build()
 
