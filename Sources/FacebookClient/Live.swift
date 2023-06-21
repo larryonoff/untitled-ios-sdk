@@ -16,6 +16,9 @@ extension FacebookClient {
         options: options
       )
     },
+    anonymousID: {
+      AppEvents.shared.anonymousID
+    },
     userID: {
       AccessToken.current?.userID
     }
