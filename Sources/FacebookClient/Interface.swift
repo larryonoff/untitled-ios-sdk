@@ -12,5 +12,6 @@ extension DependencyValues {
 public struct FacebookClient {
   public var appDidFinishLaunching: ([UIApplication.LaunchOptionsKey: Any]?) -> Void
   public var appOpenURL: (URL, [UIApplication.OpenURLOptionsKey: Any]) -> Void
+  public var anonymousID: @Sendable () -> String
   public var userID: @Sendable () -> String?
 }
