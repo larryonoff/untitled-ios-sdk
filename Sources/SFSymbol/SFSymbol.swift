@@ -171,7 +171,10 @@ extension SFSymbol {
   public static let speaker: SFSymbol = "speaker"
 
   public enum Speaker {
+    public static let slash: SFSymbol = "speaker.slash"
     public static let wave1: SFSymbol = "speaker.wave.1"
+    public static let wave2: SFSymbol = "speaker.wave.2"
+    public static let wave3: SFSymbol = "speaker.wave.3"
   }
 
   public static let shuffle: SFSymbol = "shuffle"
