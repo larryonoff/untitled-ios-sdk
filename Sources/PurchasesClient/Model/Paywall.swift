@@ -16,6 +16,8 @@ public struct Paywall {
 
   public let variantID: VariantID?
 
+  let remoteConfigString: String?
+
   public var productComparing: Product? {
     guard let productID = productComparingID else {
       return nil
@@ -36,6 +38,12 @@ public struct Paywall {
     }
     return products.first { $0.id == productID }
   }
+
+  public var remoteConfig: [String: Any]? {
+    remoteConfigString?.data(using: .utf8).flatMap {
+      try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any]
+    }
+  }
 }
 
 extension Paywall: Equatable {}
@@ -51,7 +59,7 @@ extension Paywall {
     _ paywall: AdaptyPaywall,
     products: [AdaptyPaywallProduct]?
   ) {
-    self.id = .init(rawValue: paywall.id)
+    self.id = .init(paywall.id)
     self.products = products?
       .compactMap { .init($0) } ?? []
     self.productSelectedID = paywall
@@ -73,5 +81,6 @@ extension Paywall {
       .remoteConfig?["variant_id"]
       .flatMap { $0 as? String }
       .flatMap { .init($0) }
+    self.remoteConfigString = paywall.remoteConfigString
   }
 }

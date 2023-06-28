@@ -11,7 +11,8 @@ extension Paywall {
     productSelectedID: .mockYear,
     payUpFrontProductID: nil,
     filterPayUpFrontProduct: true,
-    variantID: nil
+    variantID: nil,
+    remoteConfigString: nil
   )
 }
 
@@ -26,14 +27,14 @@ extension Product {
     displayName: "Year Subscription Name",
     description: "Year Subscription Description",
     price: 19.99,
-    priceLocale: .en_US,
+    priceLocale: .enUS,
     displayPrice: "19.99$",
     subscription: .init(
       introductoryOffer: .init(
         id: "year-intro-offer",
         type: .introductory,
         price: 0,
-        priceLocale: .en_US,
+        priceLocale: .enUS,
         displayPrice: "0",
         period: .day(3),
         paymentMode: .freeTrial
@@ -50,7 +51,7 @@ extension Product {
     displayName: "Month Subscription Name",
     description: "Month Subscription Description",
     price: 1.99,
-    priceLocale: .en_US,
+    priceLocale: .enUS,
     displayPrice: "1.99$",
     subscription: .init(
       introductoryOffer: nil,
@@ -63,5 +64,5 @@ extension Product {
 }
 
 extension Locale {
-  static let en_US = Locale(identifier: "en-US")
+  static let enUS = Locale(identifier: "en-US")
 }
