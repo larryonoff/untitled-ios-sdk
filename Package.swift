@@ -44,7 +44,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.6.0"
+      from: "2.6.1"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
@@ -52,7 +52,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
-      from: "6.11.2"
+      from: "6.12.0"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -80,7 +80,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.54.1"
+      from: "0.55.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
