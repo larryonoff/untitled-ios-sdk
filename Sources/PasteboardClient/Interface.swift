@@ -10,6 +10,10 @@ extension DependencyValues {
 
 public struct PasteboardClient {
   public var changes: @Sendable () -> AsyncStream<Void>
+
+  public var items: @Sendable () async throws -> [[String: Any]]?
   public var probableWebURL: @Sendable () async throws -> URL?
+
+  public var setItems: @Sendable ([[String: Any]]) -> Void
   public var setString: @Sendable (String?) -> Void
 }
