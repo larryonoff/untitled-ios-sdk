@@ -4,10 +4,14 @@ import FirebaseAnalytics
 import FoundationSupport
 
 extension Analytics {
-  public static let live: Self = {
+  public static func live(
+    _ configuration: Configuration = .init()
+  ) -> Self {
     Analytics(
       log: { data in
-        Amplitude.instance().log(data)
+        if configuration.isAmplitudeEnabled {
+          Amplitude.instance().log(data)
+        }
 
         #if os(iOS)
         AppEvents.shared.log(data)
@@ -16,12 +20,14 @@ extension Analytics {
         FirebaseAnalytics.Analytics.log(data)
       },
       setUserProperty: { value, name in
-        Amplitude.instance().set(value, for: name)
+        if configuration.isAmplitudeEnabled {
+          Amplitude.instance().set(value, for: name)
+        }
 
         FirebaseAnalytics.Analytics.set(value, for: name)
       }
     )
-  }()
+  }
 }
 
 extension Amplitude {

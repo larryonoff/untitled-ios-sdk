@@ -8,9 +8,25 @@ extension DependencyValues {
 }
 
 public struct Analytics {
+  public struct Configuration {
+    public var isAmplitudeEnabled: Bool
+
+    public init(
+      isAmplitudeEnabled: Bool = true
+    ) {
+      self.isAmplitudeEnabled = isAmplitudeEnabled
+    }
+  }
+
   public var log: (EventData) -> Void
   public var setUserProperty: (Any?, UserPropertyName) -> Void
 }
+
+extension Analytics.Configuration: Equatable {}
+
+extension Analytics.Configuration: Hashable {}
+
+extension Analytics.Configuration: Sendable {}
 
 extension Analytics {
   public func log(
