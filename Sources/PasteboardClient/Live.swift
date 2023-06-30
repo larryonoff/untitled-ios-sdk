@@ -7,6 +7,10 @@ extension PasteboardClient {
       changes: {
         UIPasteboard.general.changes
       },
+      items: {
+        let pasteboard = UIPasteboard.general
+        return pasteboard.items
+      },
       probableWebURL: { () -> URL? in
         do {
           let pasteboard = UIPasteboard.general
@@ -26,6 +30,10 @@ extension PasteboardClient {
         } catch {
           throw error
         }
+      },
+      setItems: { items in
+        let pasteboard = UIPasteboard.general
+        pasteboard.items = items
       },
       setString: { string in
         let pasteboard = UIPasteboard.general
