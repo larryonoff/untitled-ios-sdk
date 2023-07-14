@@ -42,7 +42,7 @@ extension UserTrackingClient {
         await impl.sendTrackingData()
       },
       attributionToken: {
-        try AAAttribution.attributionToken()
+        try await Attribution.attributionToken()
       },
       identifierForAdvertising: {
         let identifierManager = ASIdentifierManager.shared()
@@ -178,6 +178,21 @@ final actor UserTrackingImpl {
     fbSettings.isAdvertiserTrackingEnabled = isAuthorized
   }
 }
+
+enum Attribution {
+  typealias AttributionToken = String
+
+  static func attributionToken(
+  ) async throws -> AttributionToken? {
+#if targetEnvironment(simulator)
+    debugPrint("WARNING: simulator freezes getting attributionToken, so its skipped")
+    return nil
+#else
+    return try AAAttribution.attributionToken()
+#endif
+  }
+}
+
 
 let logger = Logger(
   subsystem: ".SDK.user-tracking",
