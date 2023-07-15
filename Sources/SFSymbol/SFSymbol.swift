@@ -72,6 +72,12 @@ extension SFSymbol {
     public static let down: SFSymbol = "chevron.down"
   }
 
+  public static let circle: SFSymbol = "circle"
+
+  public static let clock: SFSymbol = "clock"
+
+  public static let command: SFSymbol = "command"
+
   public static let creditCard: SFSymbol = "creditcard"
 
   public static let crown: SFSymbol = "crown"
@@ -79,8 +85,6 @@ extension SFSymbol {
   public enum Crown {
     public static let fill: SFSymbol = "crown.fill"
   }
-
-  public static let circle: SFSymbol = "circle"
 
   public static let docOnDoc: SFSymbol = "doc.on.doc"
   public static let docOnDocFill: SFSymbol = "doc.on.doc.fill"
@@ -94,6 +98,8 @@ extension SFSymbol {
   }
 
   public static let gear: SFSymbol = "gear"
+
+  public static let gearshape: SFSymbol = "gearshape"
 
   public static let heart: SFSymbol = "heart"
   public static let heartFill: SFSymbol = "heart.fill"
