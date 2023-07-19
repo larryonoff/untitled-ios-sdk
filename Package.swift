@@ -44,11 +44,11 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.6.1"
+      from: "2.6.2"
     ),
     .package(
       url: "https://github.com/amplitude/Amplitude-iOS",
-      from: "8.16.0"
+      from: "8.17.1"
     ),
     .package(
       url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
@@ -68,7 +68,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.11.0"
+      from: "10.12.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -80,15 +80,15 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.55.0"
+      from: "0.56.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "0.10.3"
+      from: "0.11.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "0.5.0"
+      from: "0.6.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -96,11 +96,7 @@ let package = Package(
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
-      from: "2.7.0"
-    ),
-    .package(
-      url: "https://github.com/MarcoEidinger/URLCompatibilityKit",
-      from: "1.0.0"
+      from: "2.8.0"
     )
   ],
   targets: [
@@ -380,9 +376,7 @@ extension Target {
 
   static let foundation = target(
     name: .foundation,
-    dependencies: [
-      .External.urlCompatibilityKit
-    ],
+    dependencies: [],
     path: "Sources/Foundation"
   )
 
@@ -524,8 +518,6 @@ extension Target.Dependency {
     )
 
     static let swiftUIBackports = byName(name: "SwiftUIBackports")
-
-    static let urlCompatibilityKit = byName(name: "URLCompatibilityKit")
   }
 }
 
