@@ -91,6 +91,10 @@ extension SFSymbol {
 
   public static let ellipsis: SFSymbol = "ellipsis"
 
+  public enum Ellipsis {
+    public static let message: SFSymbol = "ellipsis.message"
+  }
+
   public static let exclamationMark: SFSymbol = "exclamationmark"
 
   public enum ExclamationMark {
