@@ -195,7 +195,7 @@ open class VideoPlayerView: UIView {
         animation.timingFunction
       )
     } else {
-      CATransaction.disableActions()
+      CATransaction.setDisableActions(true)
     }
 
     guard
