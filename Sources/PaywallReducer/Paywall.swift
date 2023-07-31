@@ -4,7 +4,7 @@ import ComposableArchitectureExt
 import IdentifiedCollections
 import PurchasesClient
 
-public struct PaywallReducer: ReducerProtocol {
+public struct PaywallReducer: Reducer {
   public enum Action: Equatable {
     public enum Delegate: Equatable {
       case dismissed
@@ -99,7 +99,7 @@ public struct PaywallReducer: ReducerProtocol {
 
   public init() {}
 
-  public var body: some ReducerProtocolOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -273,7 +273,7 @@ public struct PaywallReducer: ReducerProtocol {
   private func purchase(
     _ product: Product,
     state: inout State
-  ) -> EffectTask<Action> {
+  ) -> Effect<Action> {
     state.isPurchasing = true
     state.oneTimeOffer?.isPurchasing = true
 
@@ -294,12 +294,12 @@ public struct PaywallReducer: ReducerProtocol {
 
   private func logPaywallOpened(
     state: State
-  ) -> EffectTask<Action> {
+  ) -> Effect<Action> {
     var params: [Analytics.ParameterName: Any] = [:]
     params[.contentID] = state.paywallID
     params[.placement] = state.placement
 
-    return .fireAndForget {
+    return .run { [params] _ in
       analytics.log(
         .event(
           eventName: "paywall_opened",
@@ -311,12 +311,12 @@ public struct PaywallReducer: ReducerProtocol {
 
   private func logPaywallDismissed(
     state: State
-  ) -> EffectTask<Action> {
+  ) -> Effect<Action> {
     var params: [Analytics.ParameterName: Any] = [:]
     params[.contentID] = state.paywallID
     params[.placement] = state.placement
 
-    return .fireAndForget {
+    return .run { [params] _ in
       analytics.log(
         .event(
           eventName: "paywall_dismissed",

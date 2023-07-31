@@ -26,6 +26,7 @@ extension View {
       ShareSheetViewModifier(
         viewStore: ViewStore(
           store,
+          observe: { $0 },
           removeDuplicates: { $0?.id == $1?.id }
         ),
         onComplete: onComplete,

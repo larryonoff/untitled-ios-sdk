@@ -11,7 +11,11 @@ extension View {
   ) -> some View {
     self.modifier(
       _MailComposeModifier(
-        viewStore: ViewStore(store, removeDuplicates: { $0 == $1 }),
+        viewStore: ViewStore(
+          store,
+          observe: { $0 },
+          removeDuplicates: { $0 == $1 }
+        ),
         dismiss: dismiss,
         onSubmit: onSubmit
       )
