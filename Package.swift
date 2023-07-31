@@ -80,15 +80,15 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "0.57.0"
+      from: "1.0.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "0.11.0"
+      from: "1.0.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "0.6.0"
+      from: "1.0.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
