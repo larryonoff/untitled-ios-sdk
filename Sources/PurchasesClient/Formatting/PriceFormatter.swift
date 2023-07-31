@@ -1,63 +1,76 @@
 import Foundation
 
 final class PriceFormatter {
-  private lazy var numberFormatter = buildNumberFormatter()
+  private static var cache: [AnyHashable: NumberFormatter] = [:]
+  private static let lock = NSRecursiveLock()
 
-  private func buildNumberFormatter() -> NumberFormatter {
-    let formatter = NumberFormatter()
-    formatter.numberStyle = .currency
-
-    return formatter
-  }
-
-  var locale: Locale = .autoupdatingCurrent {
-    didSet {
-      guard locale != oldValue else { return }
-      localeDidChange()
-    }
-  }
-
-  private func localeDidChange() {
-    numberFormatter = buildNumberFormatter()
-    numberFormatter.locale = locale
-    numberFormatter.roundingMode = roundingMode
-
-    switch locale.regionCode {
-    case "RU", "IN", "JP":
-      numberFormatter.minimumFractionDigits = 0
-    default:
-      numberFormatter.minimumFractionDigits = 2
-    }
-
-    switch locale.currencyCode {
-    case "USD":
-      numberFormatter.currencySymbol = "$"
-      numberFormatter.positiveFormat = "¤0.00"
-      numberFormatter.negativeFormat = "-¤0.00"
-    case "RUB":
-      numberFormatter.currencySymbol = "₽"
-      numberFormatter.positiveFormat = "0.##¤"
-      numberFormatter.negativeFormat = "-0.##¤"
-    default:
-      break
-    }
-  }
-
-  var roundingMode: NumberFormatter.RoundingMode = .down {
-    didSet {
-      guard roundingMode != oldValue else { return }
-      roundingModeDidChange()
-    }
-  }
-
-  private func roundingModeDidChange() {
-    numberFormatter.roundingMode = roundingMode
-  }
+  var locale: Locale = .autoupdatingCurrent
+  var roundingMode: NumberFormatter.RoundingMode = .down
 
   init() {}
 
   func string(from value: Decimal) -> String? {
-    numberFormatter
+    let key = _FormatterKey(locale, roundingMode: roundingMode)
+
+    return formatter(for: formatterKey)
       .string(from: NSDecimalNumber(decimal: value))
   }
+
+  private static func formatter(
+    for key: _FormatterKey
+  ) -> NumberFormatter {
+    lock.sync {
+      if let formatter = PriceFormatter.cache[key] {
+        return formatter
+      }
+
+      let formatter = NumberFormatter()
+      formatter.numberStyle = .currency
+      formatter.locale = key.locale
+      formatter.roundingMode = key.roundingMode
+
+      switch key.locale.regionCode {
+      case "RU", "IN", "JP":
+        formatter.minimumFractionDigits = 0
+      default:
+        formatter.minimumFractionDigits = 2
+      }
+
+      switch key.locale.currencyCode {
+      case "USD":
+        formatter.currencySymbol = "$"
+        formatter.positiveFormat = "¤0.00"
+        formatter.negativeFormat = "-¤0.00"
+      case "RUB":
+        formatter.currencySymbol = "₽"
+        formatter.positiveFormat = "0.##¤"
+        formatter.negativeFormat = "-0.##¤"
+      default:
+        break
+      }
+
+      cache[key] = formatter
+
+      return formatter
+    }
+  }
 }
+
+private struct _FormatterKey {
+  let locale: Locale
+  let roundingMode: NumberFormatter.RoundingMode
+
+  init(
+    _ locale: Locale,
+    roundingMode: NumberFormatter.RoundingMode
+  ) {
+    self.locale = locale
+    self.roundingMode = roundingMode
+  }
+}
+
+extension _FormatterKey: Equatable {}
+
+extension _FormatterKey: Hashable {}
+
+extension _FormatterKey: Sendable {}
