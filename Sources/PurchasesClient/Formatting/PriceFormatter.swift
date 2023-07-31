@@ -12,7 +12,7 @@ final class PriceFormatter {
   func string(from value: Decimal) -> String? {
     let key = _FormatterKey(locale, roundingMode: roundingMode)
 
-    return formatter(for: formatterKey)
+    return Self.formatter(for: key)
       .string(from: NSDecimalNumber(decimal: value))
   }
 
