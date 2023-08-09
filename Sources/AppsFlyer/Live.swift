@@ -63,7 +63,7 @@ final class AppsFlyerClientImpl {
   func initialize(
     _ configuration: AppsFlyerClient.Configuration
   ) {
-    lock.lock(); lock.unlock()
+    lock.lock(); defer { lock.unlock() }
 
     logger.info("initialize", dump: [
       "configuration": configuration
