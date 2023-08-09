@@ -24,7 +24,7 @@ extension PurchasesClient {
 
     return PurchasesClient(
       initialize: {
-        try await impl.initialize()
+        impl.initialize()
       },
       paywalByID: { id in
         impl.paywall(by: id)
@@ -95,7 +95,9 @@ extension PurchasesClient {
   }
 }
 
-final actor PurchasesClientImpl {
+final class PurchasesClientImpl {
+  private let lock = NSRecursiveLock()
+
   private var adaptyDelegate: _AdaptyDelegate?
 
   private let _purchases = CurrentValueSubject<Purchases, Never>(.load())
@@ -113,58 +115,67 @@ final actor PurchasesClientImpl {
     self.userIdentifier = userIdentifier
   }
 
-  nonisolated var purchases: Purchases {
+  var purchases: Purchases {
     _purchases.value
   }
 
-  nonisolated var purchasesUpdates: AsyncStream<Purchases> {
+  var purchasesUpdates: AsyncStream<Purchases> {
     AsyncStream(_purchases.removeDuplicates().values)
   }
 
-  func initialize() async throws {
-    do {
-      logger.info("initialize")
+  func initialize() {
+    lock.lock(); defer { lock.unlock() }
 
-      guard self.adaptyDelegate == nil else {
-        logger.info("Adapty already configured")
-        return
-      }
+    logger.info("initialize")
 
-      let bundle = Bundle.main
-      guard let apiKey = bundle.adaptyAPIKey else {
-        assertionFailure("Cannot find a valid Adapty settings")
+    guard self.adaptyDelegate == nil else {
+      logger.info("Adapty already configured")
+      return
+    }
 
-        logger.error("initialize", dump: [
-          "error": "Cannot find a valid Adapty settings"
-        ])
+    let bundle = Bundle.main
+    guard let apiKey = bundle.adaptyAPIKey else {
+      assertionFailure("Cannot find a valid Adapty settings")
 
-        return
-      }
+      logger.error("initialize", dump: [
+        "error": "Cannot find a valid Adapty settings"
+      ])
 
-      let adaptyDelegate = _AdaptyDelegate()
-      self.adaptyDelegate = adaptyDelegate
-      Adapty.delegate = adaptyDelegate
+      return
+    }
 
-      _ = Task.detached(priority: .high) { [weak self] in
-        for await event in adaptyDelegate.stream {
-          switch event {
-          case let .didLoadLatestProfile(profile):
-            guard let self else { break }
+    let adaptyDelegate = _AdaptyDelegate()
+    self.adaptyDelegate = adaptyDelegate
+    Adapty.delegate = adaptyDelegate
 
-            let purchases = self.updatePurchases(profile)
+    _ = Task.detached(priority: .high) { [weak self] in
+      for await event in adaptyDelegate.stream {
+        switch event {
+        case let .didLoadLatestProfile(profile):
+          guard let self else { break }
 
-            logger.info("purchases updated", dump: [
-              "purchases": purchases
-            ])
-          }
+          let purchases = self.updatePurchases(profile)
+
+          logger.info("purchases updated", dump: [
+            "purchases": purchases
+          ])
         }
       }
+    }
 
-      try await Adapty.activate(
-        apiKey,
-        customerUserId: userIdentifier().uuidString
-      )
+    Adapty.activate(
+      apiKey,
+      customerUserId: userIdentifier().uuidString,
+      { error in
+        if let error {
+          logger.info("initialize failure", dump: [
+            "error": error
+          ])
+        }
+      }
+    )
 
+    Task { [weak self] in
       if
         let fallbackURL = Bundle.main.url(
           forResource: "fallback_paywalls",
@@ -172,18 +183,13 @@ final actor PurchasesClientImpl {
         ),
         let fallbackData = try? Data(contentsOf: fallbackURL)
       {
-        try? await setFallbackPaywalls(fallbackData)
+        try? await self?.setFallbackPaywalls(fallbackData)
       }
-
-      logger.info("initialize success")
-    } catch {
-      logger.info("initialize failure", dump: [
-        "error": error.localizedDescription
-      ])
     }
+
+    logger.info("initialize success")
   }
 
-  nonisolated
   func paywall(
     by id: Paywall.ID
   ) -> AsyncThrowingStream<FetchPaywallResponse, Error> {
@@ -194,7 +200,7 @@ final actor PurchasesClientImpl {
             "id": id
           ])
 
-          if let paywall = await self?._paywalls[id] {
+          if let paywall = self?._paywalls[id] {
             logger.info("get paywall success", dump: [
               "id": id,
               "paywall": paywall,
@@ -372,7 +378,6 @@ final actor PurchasesClientImpl {
     }
   }
 
-  nonisolated
   func setFallbackPaywalls(_ data: Data) async throws {
     do {
       logger.info("set fallback paywalls")
@@ -388,7 +393,6 @@ final actor PurchasesClientImpl {
     }
   }
 
-  nonisolated
   func log(_ paywall: Paywall) async throws {
     do {
       logger.info("log show paywall", dump: [
@@ -435,14 +439,12 @@ final actor PurchasesClientImpl {
     }
   }
 
-  nonisolated
   private static func _paywall(
     by id: Paywall.ID
   ) async throws -> AdaptyPaywall? {
     try await Adapty.getPaywall(id.rawValue)
   }
 
-  nonisolated
   private static func _paywallProducts(
     for paywall: AdaptyPaywall
   ) async throws -> [AdaptyPaywallProduct]? {
@@ -455,7 +457,6 @@ final actor PurchasesClientImpl {
   }
 
   @discardableResult
-  nonisolated
   private func updatePurchases(
     _ profile: AdaptyProfile?
   ) -> Purchases {

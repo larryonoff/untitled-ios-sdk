@@ -21,7 +21,7 @@ extension PurchasesClient: TestDependencyKey {
 
 extension PurchasesClient {
   public static let noop = Self(
-    initialize: { try await Task.never() },
+    initialize: {},
     paywalByID: { _ in .finished() },
     purchase: { _ in try await Task.never() },
     restorePurhases: { try await Task.never() },

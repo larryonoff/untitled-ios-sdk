@@ -9,7 +9,7 @@ extension DependencyValues {
 }
 
 public struct PurchasesClient {
-  public var initialize: @Sendable () async throws -> Void
+  public var initialize: @Sendable () -> Void
 
   public var paywalByID: @Sendable (Paywall.ID) -> AsyncThrowingStream<FetchPaywallResponse, Error>
 
