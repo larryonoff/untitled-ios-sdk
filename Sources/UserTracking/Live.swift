@@ -23,14 +23,14 @@ extension UserTrackingClient {
     )
 
     return UserTrackingClient(
+      initialize: {
+        impl.initialize()
+      },
       authorizationStatus: {
         impl.authStatus
       },
       authorizationStatusUpdates: {
         impl.authStatusUpdates
-      },
-      initialize: {
-        await impl.initialize()
       },
       isAuthorizationRequestNeeded: {
         impl.isAuthRequestNeeded()
@@ -79,7 +79,8 @@ final actor UserTrackingImpl {
     AsyncStream(_authStatus.values)
   }
 
-  func initialize() async {
+  nonisolated
+  func initialize() {
     updateAuthStatus(
       ATTrackingManager.trackingAuthorizationStatus
     )
@@ -166,7 +167,7 @@ final actor UserTrackingImpl {
     }
   }
 
-  @available(iOS 14, *)
+  nonisolated
   private func updateAuthStatus(
     _ status: ATTrackingManager.AuthorizationStatus
   ) {
