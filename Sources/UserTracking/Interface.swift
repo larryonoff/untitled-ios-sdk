@@ -9,10 +9,10 @@ extension DependencyValues {
 }
 
 public struct UserTrackingClient {
+  public var initialize: @Sendable () -> Void
+
   public var authorizationStatus: @Sendable () -> AuthorizationStatus
   public var authorizationStatusUpdates: @Sendable () -> AsyncStream<AuthorizationStatus>
-
-  public var initialize: @Sendable () async -> Void
 
   public var isAuthorizationRequestNeeded: @Sendable () -> Bool
 
