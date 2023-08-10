@@ -1,4 +1,5 @@
 import Combine
+import ConcurrencyExtras
 import UIKit
 
 extension PasteboardClient {
@@ -45,18 +46,17 @@ extension PasteboardClient {
 
 extension UIPasteboard {
   var changes: AsyncStream<Void> {
-    AsyncStream(
-      Publishers.Merge(
-        NotificationCenter.default
-          .publisher(for: UIPasteboard.changedNotification)
-          .compactMap { [weak self] _ in self?.changeCount },
-        NotificationCenter.default
-          .publisher(for: UIApplication.didBecomeActiveNotification)
-          .compactMap { [weak self] _ in self?.changeCount }
-      )
-      .removeDuplicates()
-      .map { _ in }
-      .values
+    Publishers.Merge(
+      NotificationCenter.default
+        .publisher(for: UIPasteboard.changedNotification)
+        .compactMap { [weak self] _ in self?.changeCount },
+      NotificationCenter.default
+        .publisher(for: UIApplication.didBecomeActiveNotification)
+        .compactMap { [weak self] _ in self?.changeCount }
     )
+    .removeDuplicates()
+    .map { _ in }
+    .values
+    .eraseToStream()
   }
 }

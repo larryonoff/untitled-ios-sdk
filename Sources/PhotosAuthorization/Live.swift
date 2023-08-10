@@ -12,11 +12,10 @@ extension PhotosAuthorizationClient: DependencyKey {
         PhotosAuthorizationClient.authorizationStatus(for: acl)
       },
       authorizationStatusUpdates: { acl in
-        AsyncStream(
-          authorizationSubject.values
-            .filter { $0.0 == acl }
-            .map { $0.1 }
-        )
+        authorizationSubject.values
+          .filter { $0.0 == acl }
+          .map { $0.1 }
+          .eraseToStream()
       },
       requestAuthorization: { acl in
         let oldStatus =
