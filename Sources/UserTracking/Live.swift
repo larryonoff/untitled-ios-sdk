@@ -76,7 +76,7 @@ final actor UserTrackingImpl {
   }
 
   nonisolated var authStatusUpdates: AsyncStream<AuthorizationStatus> {
-    AsyncStream(_authStatus.values)
+    _authStatus.removeDuplicates().values.eraseToStream()
   }
 
   nonisolated
