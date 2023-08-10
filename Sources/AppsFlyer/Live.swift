@@ -246,7 +246,7 @@ final class _AppsFlyerDelegate: NSObject, AppsFlyerLibDelegate {
     PassthroughSubject<AppsFlyerDelegateEvent, Never>()
 
   var stream: AsyncStream<AppsFlyerDelegateEvent> {
-    AsyncStream(subject.values)
+    subject.values.eraseToStream()
   }
 
   override init() {

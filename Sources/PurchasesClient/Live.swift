@@ -120,7 +120,7 @@ final class PurchasesClientImpl {
   }
 
   var purchasesUpdates: AsyncStream<Purchases> {
-    AsyncStream(_purchases.removeDuplicates().values)
+    _purchases.removeDuplicates().values.eraseToStream()
   }
 
   func initialize() {
@@ -479,7 +479,7 @@ final class _AdaptyDelegate: AdaptyDelegate {
   init() {}
 
   var stream: AsyncStream<AdaptyDelegateEvent> {
-    AsyncStream(pipe.stream)
+    pipe.stream.eraseToStream()
   }
 
   // AdaptyDelegate
