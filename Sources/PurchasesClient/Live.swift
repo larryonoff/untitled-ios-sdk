@@ -102,7 +102,7 @@ final class PurchasesClientImpl {
 
   private let _purchases = CurrentValueSubject<Purchases, Never>(.load())
 
-  private var _paywalls: [Paywall.ID: Paywall] = [:]
+  private var _paywalls: LockIsolated<[Paywall.ID: Paywall]> = .init([:])
 
   private let analytics: Analytics
   private let userIdentifier: UserIdentifierGenerator
@@ -453,7 +453,9 @@ final class PurchasesClientImpl {
   }
 
   private func cache(_ paywall: Paywall) async {
-    _paywalls[paywall.id] = paywall
+    _paywalls.withValue {
+      $0[paywall.id] = paywall
+    }
   }
 
   @discardableResult
