@@ -17,6 +17,9 @@ extension FirebaseClient {
       initialize: {
         impl.initialize()
       },
+      recordError: { error, userInfo in
+        impl.record(error, userInfo: userInfo)
+      },
       reset: {
         impl.reset()
       }
@@ -47,6 +50,10 @@ final class FirebaseClientImpl {
     updateUserID()
 
     logger.info("initialize success")
+  }
+
+  func record(_ error: Error, userInfo: [String: Any]?) {
+    Crashlytics.crashlytics().record(error: error, userInfo: userInfo)
   }
 
   func updateUserID() {
