@@ -1,19 +1,17 @@
 import Dependencies
 import XCTestDynamicOverlay
 
-extension AmplitudeClient: TestDependencyKey {
+extension AppMetricaClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
   public static let testValue = Self(
-    initialize: unimplemented("\(Self.self).initialize"),
-    deviceID: unimplemented("\(Self.self).deviceID", placeholder: nil),
+    deviceID: unimplemented("\(Self.self).deviceID"),
     reset: unimplemented("\(Self.self).reset")
   )
 }
 
-extension AmplitudeClient {
+extension AppMetricaClient {
   public static let noop = Self(
-    initialize: {},
     deviceID: { nil },
     reset: {}
   )

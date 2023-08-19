@@ -1,10 +1,10 @@
-import AnalyticsClient
+import DuckAnalyticsClient
 
-extension Analytics.EventName {
+extension AnalyticsClient.EventName {
   static let idfaResponse: Self = "idfa_permission_response"
   static let idfaRequest: Self = "idfa_permission_request"
 }
 
-extension Analytics.ParameterName {
+extension AnalyticsClient.EventParameterName {
   static let status: Self = "status"
 }

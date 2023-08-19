@@ -1,20 +1,20 @@
 import Adapty
-import AnalyticsClient
 import Combine
 import Dependencies
+import DuckAnalyticsClient
+import DuckFoundation
+import DuckLogging
+import DuckUserIdentifierClient
 import Foundation
-import FoundationSupport
-import LoggingSupport
 import OSLog
 import StoreKit
 #if canImport(UIKit)
 import UIKit
 #endif
-import UserIdentifier
 
 extension PurchasesClient {
   public static func live(
-    analytics: Analytics,
+    analytics: AnalyticsClient,
     userIdentifier: UserIdentifierGenerator
   ) -> Self {
     let impl = PurchasesClientImpl(
@@ -104,11 +104,11 @@ final class PurchasesClientImpl {
 
   private var _paywalls: LockIsolated<[Paywall.ID: Paywall]> = .init([:])
 
-  private let analytics: Analytics
+  private let analytics: AnalyticsClient
   private let userIdentifier: UserIdentifierGenerator
 
   init(
-    analytics: Analytics,
+    analytics: AnalyticsClient,
     userIdentifier: UserIdentifierGenerator
   ) {
     self.analytics = analytics

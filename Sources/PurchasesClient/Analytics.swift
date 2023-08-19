@@ -1,23 +1,23 @@
-import AnalyticsClient
+import DuckAnalyticsClient
 import Foundation
 
-extension Analytics.EventName {
+extension AnalyticsClient.EventName {
   public static let subscriptionFailed: Self = "sub_failed"
   public static let subscriptionPurchased: Self = "sub_purchased"
 }
 
-extension Analytics.ParameterName {
+extension AnalyticsClient.EventParameterName {
   public static let subscriptionPeriod: Self = "subs_period"
   public static let subscriptionTrialPeriod: Self = "subs_trial_period"
 }
 
-extension Analytics.UserPropertyName {
+extension AnalyticsClient.UserPropertyName {
   public static let isPremium: Self = "is_premium"
 }
 
 extension Product {
-  var analyticsParameters: [Analytics.ParameterName: Any] {
-    var parameters: [Analytics.ParameterName: Any] = [:]
+  var analyticsParameters: [AnalyticsClient.EventParameterName: Any] {
+    var parameters: [AnalyticsClient.EventParameterName: Any] = [:]
     parameters[.subscriptionPeriod] = subscription?
       .subscriptionPeriod
       .analyticsValue
@@ -55,16 +55,14 @@ extension Product.SubscriptionPeriod {
   }
 }
 
-extension Analytics {
+extension AnalyticsClient {
   func logPurchase(
     _ request: PurchaseRequest
   ) {
 
     log(
-      .event(
-        eventName: .subscriptionPurchased,
-        parameters: request.product.analyticsParameters
-      )
+      .subscriptionPurchased,
+      parameters: request.product.analyticsParameters
     )
   }
 
@@ -74,7 +72,7 @@ extension Analytics {
   ) {
     let nsError = error as NSError
 
-    var parameters: [ParameterName: Any] = [
+    var parameters: [EventParameterName: Any] = [
       .errorCode: nsError.code,
       .errorDomain: nsError.domain,
       .errorDescription: nsError.localizedDescription
@@ -86,10 +84,8 @@ extension Analytics {
     )
 
     log(
-      .event(
-        eventName: .subscriptionFailed,
-        parameters: parameters
-      )
+      .subscriptionFailed,
+      parameters: parameters
     )
   }
 }

@@ -1,7 +1,7 @@
+import DuckLogging
 import Foundation
 import FirebaseRemoteConfig
-import LoggingSupport
-import os.log
+import OSLog
 
 extension RemoteSettingsClient {
   public static let live: Self = {
