@@ -1,4 +1,4 @@
-extension Analytics.ParameterName {
+extension AnalyticsClient.EventParameterName {
   public static let action: Self = "action"
   public static let changes: Self = "changes"
   public static let contentID: Self = "content_id"

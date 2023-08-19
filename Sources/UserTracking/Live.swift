@@ -1,22 +1,19 @@
 import Adapty
 import AdServices
 import AdSupport
-import Amplitude
-import AnalyticsClient
 import AppTrackingTransparency
 import Combine
+import DuckAnalyticsClient
+import DuckLogging
 import FacebookCore
 import FirebaseAnalytics
 import Foundation
-import LoggingSupport
 import OSLog
 import UIKit
 
-public typealias Analytics = AnalyticsClient.Analytics
-
 extension UserTrackingClient {
   public static func live(
-    analytics: Analytics
+    analytics: AnalyticsClient
   ) -> Self {
     let impl = UserTrackingImpl(
       analytics: analytics
@@ -61,10 +58,10 @@ extension UserTrackingClient {
 }
 
 final actor UserTrackingImpl {
-  private let analytics: Analytics
+  private let analytics: AnalyticsClient
 
   init(
-    analytics: Analytics
+    analytics: AnalyticsClient
   ) {
     self.analytics = analytics
   }
@@ -124,12 +121,10 @@ final actor UserTrackingImpl {
       updateAuthStatus(attStatus)
 
       analytics.log(
-        .event(
-          eventName: .idfaResponse,
-          parameters: [
-            .status: status.description
-          ]
-        )
+        .idfaResponse,
+        parameters: [
+          .status: status.description
+        ]
       )
 
       logger.info("authorization request success", dump: [
@@ -148,11 +143,8 @@ final actor UserTrackingImpl {
     logger.info("send tracking data")
 
     do {
-      let amplitude = Amplitude.instance()
       let params = AdaptyProfileParameters.Builder()
         .with(appTrackingTransparencyStatus: authStatus.atAuthorizationStatus)
-        .with(amplitudeDeviceId: amplitude.deviceId)
-        .with(amplitudeUserId: amplitude.userId)
         .with(facebookAnonymousId: AppEvents.shared.anonymousID)
         .with(firebaseAppInstanceId: FirebaseAnalytics.Analytics.appInstanceID())
         .build()

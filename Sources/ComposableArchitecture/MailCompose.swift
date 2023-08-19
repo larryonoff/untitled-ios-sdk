@@ -1,6 +1,6 @@
 import ComposableArchitecture
+import DuckSwiftUI
 import SwiftUI
-import SwiftUIExt
 
 extension View {
   @ViewBuilder

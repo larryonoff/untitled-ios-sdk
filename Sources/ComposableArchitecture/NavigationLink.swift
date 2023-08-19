@@ -1,6 +1,6 @@
 @_spi(Presentation) import ComposableArchitecture
+import DuckSwiftUI
 import SwiftUI
-import SwiftUIExt
 
 extension View {
   @available(iOS, introduced: 13, deprecated: 16)

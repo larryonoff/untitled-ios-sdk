@@ -1,8 +1,8 @@
+import DuckLogging
+import DuckUserIdentifierClient
 import Firebase
 import FirebaseAnalytics
 import FirebaseCrashlytics
-import UserIdentifier
-import LoggingSupport
 import OSLog
 
 extension FirebaseClient {

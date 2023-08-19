@@ -1,38 +1,31 @@
 import Dependencies
 
 extension DependencyValues {
-  public var analytics: Analytics {
-    get { self[Analytics.self] }
-    set { self[Analytics.self] = newValue }
+  public var analytics: AnalyticsClient {
+    get { self[AnalyticsClient.self] }
+    set { self[AnalyticsClient.self] = newValue }
   }
 }
 
-public struct Analytics {
-  public struct Configuration {
-    public var isAmplitudeEnabled: Bool
+public struct AnalyticsClient {
+  public var logEvent: @Sendable (EventName, [EventParameterName: Any]?) -> Void
+  public var setUserProperty: @Sendable (Any?, UserPropertyName) -> Void
 
-    public init(
-      isAmplitudeEnabled: Bool = true
-    ) {
-      self.isAmplitudeEnabled = isAmplitudeEnabled
-    }
-  }
-
-  public var log: (EventData) -> Void
-  public var setUserProperty: (Any?, UserPropertyName) -> Void
-}
-
-extension Analytics.Configuration: Equatable {}
-
-extension Analytics.Configuration: Hashable {}
-
-extension Analytics.Configuration: Sendable {}
-
-extension Analytics {
-  public func log(
-    _ eventName: EventName
+  public init(
+    logEvent: @escaping @Sendable (EventName, [EventParameterName: Any]?) -> Void,
+    setUserProperty: @escaping @Sendable (Any?, UserPropertyName) -> Void
   ) {
-    self.log(.event(eventName: eventName))
+    self.logEvent = logEvent
+    self.setUserProperty = setUserProperty
+  }
+}
+
+extension AnalyticsClient {
+  public func log(
+    _ eventName: EventName,
+    parameters: [EventParameterName: Any]? = nil
+  ) {
+    self.logEvent(eventName, parameters)
   }
 
   public func set(

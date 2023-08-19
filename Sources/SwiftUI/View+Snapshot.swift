@@ -1,4 +1,4 @@
-import GraphicsExt
+import DuckGraphics
 import SwiftUI
 
 extension View {

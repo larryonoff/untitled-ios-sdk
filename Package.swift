@@ -10,13 +10,12 @@ let package = Package(
     .macOS(.v12)
   ],
   products: [
-    .library(name: .Client.amplitude, targets: [.Client.amplitude]),
     .library(name: .Client.analytics, targets: [.Client.analytics]),
     .library(name: .Client.application, targets: [.Client.application]),
-    .library(name: .Client.appsFlyer, targets: [.Client.appsFlyer]),
+    .library(name: .Client.appMetrica, targets: [.Client.appMetrica]),
     .library(name: .Client.connectivity, targets: [.Client.connectivity]),
     .library(name: .Client.facebook, targets: [.Client.facebook]),
-    .library(name: .Client.feedbackGenerator, targets: [.Client.feedbackGenerator]),
+    .library(name: .Client.feedback, targets: [.Client.feedback]),
     .library(name: .Client.firebase, targets: [.Client.firebase]),
     .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
@@ -26,7 +25,7 @@ let package = Package(
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
     .library(name: .avFoundation, targets: [.avFoundation]),
-    .library(name: .composableArchitectureExt, targets: [.composableArchitectureExt]),
+    .library(name: .composableArchitecture, targets: [.composableArchitecture]),
     .library(name: .concurrency, targets: [.concurrency]),
     .library(name: .dependencies, targets: [.dependencies]),
     .library(name: .foundation, targets: [.foundation]),
@@ -45,14 +44,6 @@ let package = Package(
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
       from: "2.6.2"
-    ),
-    .package(
-      url: "https://github.com/amplitude/Amplitude-iOS",
-      from: "8.17.1"
-    ),
-    .package(
-      url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
-      from: "6.12.0"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -97,15 +88,20 @@ let package = Package(
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
       from: "2.8.0"
+    ),
+    .package(
+      url: "https://github.com/yandexmobile/metrica-sdk-ios",
+      from: "4.5.2"
     )
   ],
   targets: [
     .target(
-      name: .composableArchitectureExt,
+      name: .composableArchitecture,
       dependencies: [
         .External.composableArchitecture,
         .swiftUI
-      ]
+      ],
+      path: "Sources/ComposableArchitecture"
     ),
     .target(
       name: .avFoundation,
@@ -143,6 +139,7 @@ let package = Package(
         .External.dependencies,
         .External.tagged
       ],
+      path: "Sources/Photos",
       linkerSettings: [
         .linkedFramework("Photos"),
         .linkedFramework("PhotosUI")
@@ -154,6 +151,7 @@ let package = Package(
         .External.dependencies,
         .External.tagged
       ],
+      path: "Sources/PhotosAuthorization",
       linkerSettings: [
         .linkedFramework("Photos")
       ]
@@ -169,6 +167,7 @@ let package = Package(
         .External.dependencies,
         .External.tagged
       ],
+      path: "Sources/PurchasesClient",
       exclude: ["swiftgen.yml"],
       resources: [
         .process("Resources")
@@ -195,24 +194,25 @@ let package = Package(
       name: .Client.userSettings,
       dependencies: [
         .External.dependencies
-      ]
+      ],
+      path: "Sources/UserSettings"
     ),
     .target(
       name: .videoPlayer,
       dependencies: [
         .swiftUI
       ],
+      path: "Sources/VideoPlayer",
       linkerSettings: [
         .linkedFramework("AVKit")
       ]
     ),
-    .Client.amplitude,
     .Client.analytics,
     .Client.application,
-    .Client.appsFlyer,
+    .Client.appMetrica,
     .Client.connectivity,
     .Client.facebook,
-    .Client.feedbackGenerator,
+    .Client.feedback,
     .Client.firebase,
     .Client.pasteboard,
     .Client.remoteSettings,
@@ -228,27 +228,15 @@ let package = Package(
 
 extension Target {
   enum Client {
-    static let amplitude = target(
-      name: .Client.amplitude,
-      dependencies: [
-        .logging,
-        .Client.userIdentifier,
-        .External.amplitude,
-        .External.dependencies
-      ],
-      path: "Sources/AmplitudeClient"
-    )
-
     static let analytics = target(
       name: .Client.analytics,
       dependencies: [
         .foundation,
-        .External.amplitude,
+        .logging,
         .External.dependencies,
-        .External.Facebook.core,
-        .External.Firebase.analytics,
         .External.tagged
-      ]
+      ],
+      path: "Sources/AnalyticsClient"
     )
 
     static let application = target(
@@ -260,21 +248,18 @@ extension Target {
       path: "Sources/ApplicationClient"
     )
 
-    static let appsFlyer = target(
-      name: .Client.appsFlyer,
+    static let appMetrica = target(
+      name: .Client.appMetrica,
       dependencies: [
         .concurrency,
         .logging,
-        .Client.purchases,
+        .Client.analytics,
         .Client.userIdentifier,
-        .External.adapty,
-        .External.appsFlyer,
-        .External.dependencies
+        .External.dependencies,
+        .External.Yandex.appMetrica,
+        .External.Yandex.appMetricaCrashes
       ],
-      path: "Sources/AppsFlyer",
-      linkerSettings: [
-        .linkedFramework("AppTrackingTransparency")
-      ]
+      path: "Sources/AppMetricaClient"
     )
 
     static let connectivity = target(
@@ -292,25 +277,29 @@ extension Target {
       dependencies: [
         .External.dependencies,
         .External.Facebook.core
-      ]
+      ],
+      path: "Sources/FacebookClient"
     )
 
-    static let feedbackGenerator = target(
-      name: "FeedbackGenerator",
+    static let feedback = target(
+      name: .Client.feedback,
       dependencies: [
         .External.dependencies
-      ]
+      ],
+      path: "Sources/FeedbackClient"
     )
 
     static let firebase = target(
       name: .Client.firebase,
       dependencies: [
         .logging,
+        .Client.analytics,
         .Client.userIdentifier,
         .External.Firebase.analytics,
         .External.Firebase.crashlytics,
         .External.dependencies
-      ]
+      ],
+      path: "Sources/FirebaseClient"
     )
 
     static let pasteboard = target(
@@ -344,19 +333,20 @@ extension Target {
         .External.dependencies,
         .External.keychainAccess,
         .External.tagged
-      ]
+      ],
+      path: "Sources/UserIdentifier"
     )
 
-    static let userTracking  = target(
+    static let userTracking = target(
       name: .Client.userTracking,
       dependencies: [
         .Client.analytics,
         .External.adapty,
-        .External.amplitude,
         .External.dependencies,
         .External.Firebase.analytics,
         .External.Facebook.core
       ],
+      path: "Sources/UserTracking",
       linkerSettings: [
         .linkedFramework("AdServices"),
         .linkedFramework("AdSupport"),
@@ -398,11 +388,13 @@ extension Target {
       .Client.purchases,
       .composableArchitectureExt,
       .External.composableArchitecture
-    ]
+    ],
+    path: "Sources/PaywallReducer"
   )
 
   static let webView = target(
     name: .webView,
+    path: "Sources/WebView",
     linkerSettings: [
       .linkedFramework("WebKit")
     ]
@@ -411,9 +403,9 @@ extension Target {
 
 extension Target.Dependency {
   static let avFoundation = byName(name: .avFoundation)
-  static let composableArchitectureExt = byName(name: .composableArchitectureExt)
+  static let composableArchitectureExt = byName(name: .composableArchitecture)
   static let concurrency = byName(name: .concurrency)
-  static let dependenciesExt = byName(name: .dependencies)
+  static let dependencies = byName(name: .dependencies)
   static let foundation = byName(name: .foundation)
   static let graphics = byName(name: .graphics)
   static let instagram = byName(name: .instagram)
@@ -427,13 +419,12 @@ extension Target.Dependency {
   static let webView = byName(name: .webView)
 
   enum Client {
-    static let amplitude = byName(name: .Client.amplitude)
     static let analytics = byName(name: .Client.analytics)
     static let application = byName(name: .Client.application)
-    static let appsFlyer = byName(name: .Client.appsFlyer)
+    static let appMetrica = byName(name: .Client.appMetrica)
     static let connectivity = byName(name: .Client.connectivity)
     static let facebook = byName(name: .Client.facebook)
-    static let feedbackGenerator = byName(name: .Client.feedbackGenerator)
+    static let feedbackGenerator = byName(name: .Client.feedback)
     static let firebase = byName(name: .Client.firebase)
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
@@ -448,16 +439,6 @@ extension Target.Dependency {
     static let adapty = product(
       name: "Adapty",
       package: "AdaptySDK-iOS"
-    )
-
-    static let amplitude = product(
-      name: "Amplitude",
-      package: "Amplitude-iOS"
-    )
-
-    static let appsFlyer = product(
-      name: "AppsFlyerLib",
-      package: "AppsFlyerFramework"
     )
 
     enum Collections {
@@ -518,43 +499,52 @@ extension Target.Dependency {
     )
 
     static let swiftUIBackports = byName(name: "SwiftUIBackports")
+
+    enum Yandex {
+      static let appMetrica = Target.Dependency.product(
+        name: "YandexMobileMetrica",
+        package: "metrica-sdk-ios"
+      )
+
+      static let appMetricaCrashes = Target.Dependency.product(
+        name: "YandexMobileMetricaCrashes",
+        package: "metrica-sdk-ios"
+      )
+    }
   }
 }
 
 extension String {
-  static let version = "Version"
-  static let avFoundation = "AVFoundationExt"
-  static let concurrency = "ConcurrencyExt"
-  static let composableArchitectureExt = "ComposableArchitectureExt"
-  static let dependencies = "DependenciesExt"
-  static let device = "Device"
-  static let foundation = "FoundationSupport"
-  static let graphics = "GraphicsExt"
+  static let avFoundation = "DuckAVFoundation"
+  static let concurrency = "DuckConcurrency"
+  static let composableArchitecture = "DuckComposableArchitecture"
+  static let dependencies = "DuckDependencies"
+  static let foundation = "DuckFoundation"
+  static let graphics = "DuckGraphics"
   static let instagram = "Instagram"
-  static let logging = "LoggingSupport"
-  static let paywallReducer = "PaywallReducer"
-  static let photos = "PhotosExt"
+  static let logging = "DuckLogging"
+  static let paywallReducer = "DuckPaywallReducer"
+  static let photos = "DuckPhotos"
   static let sfSymbol = "SFSymbol"
-  static let swiftUI = "SwiftUIExt"
-  static let uiKit = "UIKitExt"
-  static let videoPlayer = "VideoPlayer"
-  static let webView = "WebView"
+  static let swiftUI = "DuckSwiftUI"
+  static let uiKit = "DuckUIKit"
+  static let videoPlayer = "DuckVideoPlayer"
+  static let webView = "DuckWebView"
 
   enum Client {
-    static let amplitude = "AmplitudeClient"
-    static let analytics = "AnalyticsClient"
-    static let application = "ApplicationClient"
-    static let appsFlyer = "AppsFlyer"
-    static let connectivity = "ConnectivityClient"
-    static let facebook = "FacebookClient"
-    static let feedbackGenerator = "FeedbackGenerator"
-    static let firebase = "FirebaseClient"
-    static let pasteboard = "PasteboardClient"
-    static let photosAuthorization = "PhotosAuthorization"
-    static let purchases = "PurchasesClient"
-    static let remoteSettings = "RemoteSettingsClient"
-    static let userIdentifier = "UserIdentifier"
-    static let userSettings = "UserSettings"
-    static let userTracking = "UserTracking"
+    static let analytics = "DuckAnalyticsClient"
+    static let application = "DuckApplicationClient"
+    static let appMetrica = "DuckAppMetricaClient"
+    static let connectivity = "DuckConnectivityClient"
+    static let facebook = "DuckFacebookClient"
+    static let feedback = "DuckFeedbackClient"
+    static let firebase = "DuckFirebaseClient"
+    static let pasteboard = "DuckPasteboardClient"
+    static let photosAuthorization = "DuckPhotosAuthorization"
+    static let purchases = "DuckPurchasesClient"
+    static let remoteSettings = "DuckRemoteSettingsClient"
+    static let userIdentifier = "DuckUserIdentifierClient"
+    static let userSettings = "DuckUserSettings"
+    static let userTracking = "DuckUserTracking"
   }
 }

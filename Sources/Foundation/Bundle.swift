@@ -29,14 +29,6 @@ extension Bundle {
     self["XAdaptyAPIKey"] as? String
   }
 
-  public var amplitudeAPIKey: String? {
-    self["XAmplitudeAPIKey"] as? String
-  }
-
-  public var appsFlyerAPIKey: String? {
-    self["XAppsFlyerAPIKey"] as? String
-  }
-
   public var appleID: String? {
     self["XAppleID"] as? String
   }

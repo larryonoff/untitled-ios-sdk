@@ -1,8 +1,8 @@
-import AnalyticsClient
 import ComposableArchitecture
-import ComposableArchitectureExt
+import DuckAnalyticsClient
+import DuckComposableArchitecture
+import DuckPurchasesClient
 import IdentifiedCollections
-import PurchasesClient
 
 public struct PaywallReducer: Reducer {
   public enum Action: Equatable {
@@ -295,16 +295,14 @@ public struct PaywallReducer: Reducer {
   private func logPaywallOpened(
     state: State
   ) -> Effect<Action> {
-    var params: [Analytics.ParameterName: Any] = [:]
+    var params: [AnalyticsClient.EventParameterName: Any] = [:]
     params[.contentID] = state.paywallID
     params[.placement] = state.placement
 
     return .run { [params] _ in
       analytics.log(
-        .event(
-          eventName: "paywall_opened",
-          parameters: params
-        )
+        "paywall_opened",
+        parameters: params
       )
     }
   }
@@ -312,16 +310,14 @@ public struct PaywallReducer: Reducer {
   private func logPaywallDismissed(
     state: State
   ) -> Effect<Action> {
-    var params: [Analytics.ParameterName: Any] = [:]
+    var params: [AnalyticsClient.EventParameterName: Any] = [:]
     params[.contentID] = state.paywallID
     params[.placement] = state.placement
 
     return .run { [params] _ in
       analytics.log(
-        .event(
-          eventName: "paywall_dismissed",
-          parameters: params
-        )
+        "paywall_dismissed",
+        parameters: params
       )
     }
   }
