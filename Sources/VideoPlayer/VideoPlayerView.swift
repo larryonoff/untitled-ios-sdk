@@ -1,7 +1,7 @@
 import AVKit
+import DuckSwiftUI
 import Foundation
 import SwiftUI
-import SwiftUIExt
 import UIKit
 
 open class VideoPlayerView: UIView {
