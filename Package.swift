@@ -252,6 +252,7 @@ extension Target {
       name: .Client.appMetrica,
       dependencies: [
         .concurrency,
+        .dependencies,
         .logging,
         .Client.analytics,
         .Client.userIdentifier,
