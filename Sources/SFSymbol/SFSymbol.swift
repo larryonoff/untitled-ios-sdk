@@ -111,6 +111,16 @@ extension SFSymbol {
   public static let house: SFSymbol = "house"
   public static let houseFill: SFSymbol = "house.fill"
 
+  public static let icloud: SFSymbol = "icloud"
+
+  public enum ICloud {
+    public static let fill: SFSymbol = "icloud.fill"
+    public static let exclamationMark: SFSymbol = "exclamationmark.icloud"
+    public static let xmark: SFSymbol = "xmark.icloud"
+
+    public static let arrowDown: SFSymbol = "icloud.and.arrow.down"
+  }
+
   public static let ladybug: SFSymbol = "ladybug"
 
   public enum Ladybug {
