@@ -3,79 +3,67 @@ import SwiftUI
 import SwiftUIBackports
 
 @available(tvOS, unavailable)
-public struct ShareView<Data: RandomAccessCollection>: View {
+struct ShareView<Data: RandomAccessCollection>: View {
   private let data: Data
-  private let onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?
+  private let onCompletion: (Result<Data, Swift.Error>) -> Void
+  private let onCancellation: () -> Void
 
-  public init(
+  init(
     data: Data,
-    onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?
+    onCompletion: @escaping (Result<Data, Swift.Error>) -> Void,
+    onCancellation: @escaping () -> Void = {}
   ) {
     self.data = data
-    self.onComplete = onComplete
+    self.onCompletion = onCompletion
+    self.onCancellation = onCancellation
   }
 
-  public init(
+  init(
     item: String,
-    onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?
+    onCompletion: @escaping (Result<Data, Swift.Error>) -> Void,
+    onCancellation: @escaping () -> Void = {}
   ) where Data == CollectionOfOne<String> {
     self.data = CollectionOfOne(item)
-    self.onComplete = onComplete
+    self.onCompletion = onCompletion
+    self.onCancellation = onCancellation
   }
 
-  public init(
+  init(
     url: URL,
-    onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?
+    onCompletion: @escaping (Result<Data, Swift.Error>) -> Void,
+    onCancellation: @escaping () -> Void = {}
   ) where Data == CollectionOfOne<URL> {
     self.data = CollectionOfOne(url)
-    self.onComplete = onComplete
+    self.onCompletion = onCompletion
+    self.onCancellation = onCancellation
   }
 
-  public var body: some View {
+  var body: some View {
     _ShareView(
       data: data,
-      onComplete: onComplete
+      onCompletion: onCompletion,
+      onCancellation: onCancellation
     )
     .edgesIgnoringSafeArea(.all)
     .backport.presentationDetents([.medium, .large])
   }
 }
 
-public enum ShareResult<Success> {
-  case success(Success)
-  case userCancelled
-
-  @inlinable
-  public func map<NewSuccess>(
-    _ transform: (Success) -> NewSuccess
-  ) -> ShareResult<NewSuccess> {
-    switch self {
-    case let .success(value):
-      return .success(transform(value))
-    case .userCancelled:
-      return .userCancelled
-    }
-  }
-}
-
-extension ShareResult: Equatable where Success: Equatable {}
-
-extension ShareResult: Hashable where Success: Hashable {}
-
-extension ShareResult: Sendable where Success: Sendable {}
-
 private struct _ShareView<Data: RandomAccessCollection>: UIViewControllerRepresentable {
   typealias UIViewControllerType = UIActivityViewController
 
   private let data: Data
-  private let onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?
+  private let onCompletion: (Result<Data, Swift.Error>) -> Void
+  private let onCancellation: () -> Void
 
   init(
     data: Data,
-    onComplete: ((Result<ShareResult<Data>, Swift.Error>) -> Void)?
+    onCompletion: @escaping (Result<Data, Swift.Error>) -> Void,
+    onCancellation: @escaping () -> Void
   ) {
     self.data = data
-    self.onComplete = onComplete
+    self.onCompletion = onCompletion
+    self.onCancellation = onCancellation
   }
 
   // MARK: - UIViewControllerRepresentable
@@ -95,21 +83,17 @@ private struct _ShareView<Data: RandomAccessCollection>: UIViewControllerReprese
     _ uiViewController: UIViewControllerType,
     context: Context
   ) {
-    guard let onComplete = onComplete else {
-      return
-    }
-
     uiViewController.completionWithItemsHandler = { activity, success, items, error in
       if let error = error {
-        onComplete(.failure(error))
+        onCompletion(.failure(error))
       } else if success {
         if let data = items as? Data {
-          onComplete(.success(.success(data)))
+          onCompletion(.success(data))
         } else {
-          onComplete(.success(.success(Array<Data.Element>() as! Data)))
+          onCompletion(.success(Array<Data.Element>() as! Data))
         }
       } else if !success {
-          onComplete(.success(.userCancelled))
+        onCancellation()
       } else {
         assertionFailure()
       }
