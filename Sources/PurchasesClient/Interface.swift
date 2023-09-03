@@ -29,6 +29,14 @@ public struct PurchasesClient {
   public var logPaywall: @Sendable (Paywall) async throws -> Void
 }
 
+extension PurchasesClient {
+  public func prefetch(
+    paywallByID id: Paywall.ID
+  ) async throws {
+    for try await _ in paywalByID(id) {}
+  }
+}
+
 public struct FetchPaywallResponse {
   public let paywall: Paywall?
 }
