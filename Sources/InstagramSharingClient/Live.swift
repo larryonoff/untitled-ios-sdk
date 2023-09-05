@@ -1,21 +1,56 @@
 import Dependencies
+import DuckUIKit
 import Foundation
+import OSLog
 import UIKit
 
-extension InstagramClient {
-  public static func live() -> Self {
+private var _documentController: UIDocumentInteractionController?
+
+extension InstagramSharingClient: DependencyKey {
+  public static let liveValue = Self.live()
+}
+
+extension InstagramSharingClient {
+  static func live() -> Self {
     Self(
-      addToStory: { request in
+      shareToFeed: { request in
+        guard
+          Bundle.main.applicationQueriesSchemes.contains(
+            .URLScheme.instagram
+          )
+        else {
+          assertionFailure(
+            "Main Bundle doesn't contain `\(String.URLScheme.instagram)` query scheme"
+          )
+          return
+        }
+
+        @Dependency(\.openURL) var openURL
+
+        if let caption = request.caption {
+          let pasteboard = UIPasteboard.general
+          pasteboard.string = caption
+        }
+
+        await openURL(
+          .Instagram.shareToFeed(
+            phAssetID: request.phAssetID
+          )
+        )
+      },
+      shareToStories: { request in
         guard let facebookAppID = Bundle.main.facebookAppID else {
           assertionFailure("Facebook App ID not set")
           return
         }
 
         guard
-          Bundle.main.applicationQueriesSchemes.contains(.QueryScheme.instagramStories)
+          Bundle.main.applicationQueriesSchemes.contains(
+            .URLScheme.instagramStories
+          )
         else {
           assertionFailure(
-            "Main Bundle doesn't contain `\(String.QueryScheme.instagramStories)` query scheme"
+            "Main Bundle doesn't contain `\(String.URLScheme.instagramStories)` query scheme"
           )
           return
         }
@@ -43,7 +78,11 @@ extension InstagramClient {
           ]
         )
 
-        await openURL(.addToStory(facebookAppID: facebookAppID))
+        await openURL(
+          .Instagram.shareToStories(
+            facebookAppID: facebookAppID
+          )
+        )
       }
     )
   }
@@ -66,7 +105,13 @@ private extension String {
   static let backgroundTopColor = "com.instagram.sharedSticker.backgroundTopColor"
   static let backgroundBottomColor = "com.instagram.sharedSticker.backgroundBottomColor"
 
-  enum QueryScheme {
+  enum URLScheme {
+    static let instagram = "instagram"
     static let instagramStories = "instagram-stories"
   }
 }
+
+private let logger = Logger(
+  subsystem: ".SDK.InstagramExport",
+  category: "Instagram"
+)

@@ -2,17 +2,31 @@ import Dependencies
 import Foundation
 
 extension DependencyValues {
-  public var instagram: InstagramClient {
-    get { self[InstagramClient.self] }
-    set { self[InstagramClient.self] = newValue }
+  public var instagramSharing: InstagramSharingClient {
+    get { self[InstagramSharingClient.self] }
+    set { self[InstagramSharingClient.self] = newValue }
   }
 }
 
-public struct InstagramClient {
-  public var addToStory: @Sendable (AddToStoryRequest) async -> Void
+public struct InstagramSharingClient {
+  public var shareToFeed: @Sendable (ShareToFeedRequest) async -> Void
+  public var shareToStories: @Sendable (ShareToStoriesRequest) async -> Void
 }
 
-public struct AddToStoryRequest {
+public struct ShareToFeedRequest {
+  public let phAssetID: String
+  public let caption: String?
+
+  public init(
+    phAssetID: String,
+    caption: String?
+  ) {
+    self.phAssetID = phAssetID
+    self.caption = caption
+  }
+}
+
+public struct ShareToStoriesRequest {
   public enum BackgroundAsset {
     /// Data for an image asset in a supported format (JPG, PNG).
     /// Minimum dimensions 720x1280. Recommended image ratios 9:16 or 9:18.
@@ -55,14 +69,14 @@ public struct AddToStoryRequest {
   }
 }
 
-extension AddToStoryRequest: Equatable {}
+extension ShareToFeedRequest: Equatable {}
+extension ShareToFeedRequest: Hashable {}
+extension ShareToFeedRequest: Sendable {}
 
-extension AddToStoryRequest: Hashable {}
+extension ShareToStoriesRequest: Equatable {}
+extension ShareToStoriesRequest: Hashable {}
+extension ShareToStoriesRequest: Sendable {}
 
-extension AddToStoryRequest: Sendable {}
-
-extension AddToStoryRequest.BackgroundAsset: Equatable {}
-
-extension AddToStoryRequest.BackgroundAsset: Hashable {}
-
-extension AddToStoryRequest.BackgroundAsset: Sendable {}
+extension ShareToStoriesRequest.BackgroundAsset: Equatable {}
+extension ShareToStoriesRequest.BackgroundAsset: Hashable {}
+extension ShareToStoriesRequest.BackgroundAsset: Sendable {}
