@@ -17,6 +17,7 @@ let package = Package(
     .library(name: .Client.facebook, targets: [.Client.facebook]),
     .library(name: .Client.feedback, targets: [.Client.feedback]),
     .library(name: .Client.firebase, targets: [.Client.firebase]),
+    .library(name: .Client.instagramSharing, targets: [.Client.instagramSharing]),
     .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
@@ -30,7 +31,6 @@ let package = Package(
     .library(name: .dependencies, targets: [.dependencies]),
     .library(name: .foundation, targets: [.foundation]),
     .library(name: .graphics, targets: [.graphics]),
-    .library(name: .instagram, targets: [.instagram]),
     .library(name: .logging, targets: [.logging]),
     .library(name: .paywallReducer, targets: [.paywallReducer]),
     .library(name: .photos, targets: [.photos]),
@@ -121,13 +121,6 @@ let package = Package(
       name: .graphics,
       path: "Sources/Graphics"
     ),
-    .target(
-      name: .instagram,
-      dependencies: [
-        .External.customDump,
-        .External.dependencies
-      ]
-    ),
     .target(name: .sfSymbol),
     .target(
       name: .photos,
@@ -214,6 +207,7 @@ let package = Package(
     .Client.facebook,
     .Client.feedback,
     .Client.firebase,
+    .Client.instagramSharing,
     .Client.pasteboard,
     .Client.remoteSettings,
     .Client.userIdentifier,
@@ -301,6 +295,15 @@ extension Target {
         .External.dependencies
       ],
       path: "Sources/FirebaseClient"
+    )
+
+    static let instagramSharing = target(
+      name: .Client.instagramSharing,
+      dependencies: [
+        .External.customDump,
+        .External.dependencies
+      ],
+      path: "Sources/InstagramSharingClient"
     )
 
     static let pasteboard = target(
@@ -409,7 +412,7 @@ extension Target.Dependency {
   static let dependencies = byName(name: .dependencies)
   static let foundation = byName(name: .foundation)
   static let graphics = byName(name: .graphics)
-  static let instagram = byName(name: .instagram)
+  static let instagram = byName(name: .instagramSharing)
   static let logging = byName(name: .logging)
   static let paywallReducer = byName(name: .paywallReducer)
   static let photosExt = byName(name: .photos)
@@ -427,6 +430,7 @@ extension Target.Dependency {
     static let facebook = byName(name: .Client.facebook)
     static let feedbackGenerator = byName(name: .Client.feedback)
     static let firebase = byName(name: .Client.firebase)
+    static let instagramSharing = byName(name: .Client.instagramSharing)
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
@@ -522,7 +526,7 @@ extension String {
   static let dependencies = "DuckDependencies"
   static let foundation = "DuckFoundation"
   static let graphics = "DuckGraphics"
-  static let instagram = "Instagram"
+  static let instagramSharing = "Instagram"
   static let logging = "DuckLogging"
   static let paywallReducer = "DuckPaywallReducer"
   static let photos = "DuckPhotos"
@@ -540,6 +544,7 @@ extension String {
     static let facebook = "DuckFacebookClient"
     static let feedback = "DuckFeedbackClient"
     static let firebase = "DuckFirebaseClient"
+    static let instagramSharing = "DuckInstagramSharingClient"
     static let pasteboard = "DuckPasteboardClient"
     static let photosAuthorization = "DuckPhotosAuthorization"
     static let purchases = "DuckPurchasesClient"
