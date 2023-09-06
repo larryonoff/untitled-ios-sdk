@@ -1,5 +1,4 @@
 import Dependencies
-import DuckUIKit
 import Foundation
 import OSLog
 import UIKit
