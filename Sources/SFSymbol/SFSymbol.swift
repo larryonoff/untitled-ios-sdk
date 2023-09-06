@@ -121,6 +121,13 @@ extension SFSymbol {
     public static let arrowDown: SFSymbol = "icloud.and.arrow.down"
   }
 
+  public static let infinity: SFSymbol = "infinity"
+
+  public enum Infinity {
+    public static let circle = "infinity.circle"
+    public static let circleFill = "infinity.circle.fill"
+  }
+
   public static let ladybug: SFSymbol = "ladybug"
 
   public enum Ladybug {
