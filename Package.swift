@@ -27,6 +27,7 @@ let package = Package(
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
     .library(name: .avFoundation, targets: [.avFoundation]),
     .library(name: .composableArchitecture, targets: [.composableArchitecture]),
+    .library(name: .composablePhotos, targets: [.composablePhotos]),
     .library(name: .concurrency, targets: [.concurrency]),
     .library(name: .dependencies, targets: [.dependencies]),
     .library(name: .foundation, targets: [.foundation]),
@@ -34,6 +35,7 @@ let package = Package(
     .library(name: .logging, targets: [.logging]),
     .library(name: .paywallReducer, targets: [.paywallReducer]),
     .library(name: .photos, targets: [.photos]),
+    .library(name: .photosUI, targets: [.photosUI]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .swiftUI, targets: [.swiftUI]),
     .library(name: .uiKit, targets: [.uiKit]),
@@ -123,22 +125,6 @@ let package = Package(
     ),
     .target(name: .sfSymbol),
     .target(
-      name: .photos,
-      dependencies: [
-        .graphics,
-        .uiKit,
-        .External.composableArchitecture,
-        .External.customDump,
-        .External.dependencies,
-        .External.tagged
-      ],
-      path: "Sources/Photos",
-      linkerSettings: [
-        .linkedFramework("Photos"),
-        .linkedFramework("PhotosUI")
-      ]
-    ),
-    .target(
       name: .Client.photosAuthorization,
       dependencies: [
         .External.dependencies,
@@ -147,27 +133,6 @@ let package = Package(
       path: "Sources/PhotosAuthorization",
       linkerSettings: [
         .linkedFramework("Photos")
-      ]
-    ),
-    .target(
-      name: .Client.purchases,
-      dependencies: [
-        .Client.analytics,
-        .foundation,
-        .logging,
-        .Client.userIdentifier,
-        .External.adapty,
-        .External.dependencies,
-        .External.tagged
-      ],
-      path: "Sources/PurchasesClient",
-      exclude: ["swiftgen.yml"],
-      resources: [
-        .process("Resources")
-      ],
-      linkerSettings: [
-        .linkedFramework("Combine"),
-        .linkedFramework("StoreKit")
       ]
     ),
     .target(
@@ -184,13 +149,6 @@ let package = Package(
       path: "Sources/UIKit"
     ),
     .target(
-      name: .Client.userSettings,
-      dependencies: [
-        .External.dependencies
-      ],
-      path: "Sources/UserSettings"
-    ),
-    .target(
       name: .videoPlayer,
       dependencies: [
         .swiftUI
@@ -200,6 +158,9 @@ let package = Package(
         .linkedFramework("AVKit")
       ]
     ),
+    .composablePhotos,
+    .photos,
+    .photosUI,
     .Client.analytics,
     .Client.application,
     .Client.appMetrica,
@@ -209,8 +170,10 @@ let package = Package(
     .Client.firebase,
     .Client.instagramSharing,
     .Client.pasteboard,
+    .Client.purchases,
     .Client.remoteSettings,
     .Client.userIdentifier,
+    .Client.userSettings,
     .Client.userTracking,
     .dependencies,
     .foundation,
@@ -318,6 +281,28 @@ extension Target {
       ]
     )
 
+    static let purchases = target(
+      name: .Client.purchases,
+      dependencies: [
+        .Client.analytics,
+        .foundation,
+        .logging,
+        .Client.userIdentifier,
+        .External.adapty,
+        .External.dependencies,
+        .External.tagged
+      ],
+      path: "Sources/PurchasesClient",
+      exclude: ["swiftgen.yml"],
+      resources: [
+        .process("Resources")
+      ],
+      linkerSettings: [
+        .linkedFramework("Combine"),
+        .linkedFramework("StoreKit")
+      ]
+    )
+
     static let remoteSettings = target(
       name: .Client.remoteSettings,
       dependencies: [
@@ -341,6 +326,14 @@ extension Target {
       path: "Sources/UserIdentifier"
     )
 
+    static let userSettings = target(
+      name: .Client.userSettings,
+      dependencies: [
+        .External.dependencies
+      ],
+      path: "Sources/UserSettings"
+    )
+
     static let userTracking = target(
       name: .Client.userTracking,
       dependencies: [
@@ -358,6 +351,15 @@ extension Target {
       ]
     )
   }
+
+  static let composablePhotos = target(
+    name: .composablePhotos,
+    dependencies: [
+      .photosUI,
+      .External.composableArchitecture,
+    ],
+    path: "Sources/ComposablePhotos"
+  )
 
   static let dependencies = target(
     name: .dependencies,
@@ -390,10 +392,42 @@ extension Target {
     dependencies: [
       .Client.analytics,
       .Client.purchases,
-      .composableArchitectureExt,
+      .composableArchitecture,
       .External.composableArchitecture
     ],
     path: "Sources/PaywallReducer"
+  )
+
+  static let photos = target(
+    name: .photos,
+    dependencies: [
+      .graphics,
+      .uiKit,
+      .External.customDump,
+      .External.dependencies,
+      .External.tagged
+    ],
+    path: "Sources/Photos",
+    linkerSettings: [
+      .linkedFramework("Photos")
+    ]
+  )
+
+  static let photosUI = target(
+    name: .photosUI,
+    dependencies: [
+      .graphics,
+      .photos,
+      .uiKit,
+      .External.customDump,
+      .External.dependencies,
+      .External.tagged
+    ],
+    path: "Sources/PhotosUI",
+    linkerSettings: [
+      .linkedFramework("Photos"),
+      .linkedFramework("PhotosUI")
+    ]
   )
 
   static let webView = target(
@@ -407,7 +441,8 @@ extension Target {
 
 extension Target.Dependency {
   static let avFoundation = byName(name: .avFoundation)
-  static let composableArchitectureExt = byName(name: .composableArchitecture)
+  static let composableArchitecture = byName(name: .composableArchitecture)
+  static let composablePhotos = byName(name: .composablePhotos)
   static let concurrency = byName(name: .concurrency)
   static let dependencies = byName(name: .dependencies)
   static let foundation = byName(name: .foundation)
@@ -415,7 +450,8 @@ extension Target.Dependency {
   static let instagram = byName(name: .instagramSharing)
   static let logging = byName(name: .logging)
   static let paywallReducer = byName(name: .paywallReducer)
-  static let photosExt = byName(name: .photos)
+  static let photos = byName(name: .photos)
+  static let photosUI = byName(name: .photosUI)
   static let sfSymbol = byName(name: .sfSymbol)
   static let swiftUI = byName(name: .swiftUI)
   static let uiKit = byName(name: .uiKit)
@@ -523,6 +559,7 @@ extension String {
   static let avFoundation = "DuckAVFoundation"
   static let concurrency = "DuckConcurrency"
   static let composableArchitecture = "DuckComposableArchitecture"
+  static let composablePhotos = "DuckComposablePhotos"
   static let dependencies = "DuckDependencies"
   static let foundation = "DuckFoundation"
   static let graphics = "DuckGraphics"
@@ -530,6 +567,7 @@ extension String {
   static let logging = "DuckLogging"
   static let paywallReducer = "DuckPaywallReducer"
   static let photos = "DuckPhotos"
+  static let photosUI = "DuckPhotosUI"
   static let sfSymbol = "SFSymbol"
   static let swiftUI = "DuckSwiftUI"
   static let uiKit = "DuckUIKit"

@@ -1,4 +1,5 @@
 import DuckGraphics
+import DuckPhotos
 import SwiftUI
 import Photos
 
