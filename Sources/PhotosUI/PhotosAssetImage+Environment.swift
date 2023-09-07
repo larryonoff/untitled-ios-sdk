@@ -1,3 +1,4 @@
+import Photos
 import SwiftUI
 
 extension EnvironmentValues {
