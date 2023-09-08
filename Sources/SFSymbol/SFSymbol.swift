@@ -158,6 +158,12 @@ extension SFSymbol {
     public static let rectangle: SFSymbol = "pause.rectangle"
   }
 
+  public static let pencil: SFSymbol = "pencil"
+
+  public enum Pencil {
+    public static let line: SFSymbol = "pencil.line"
+  }
+
   public static let photo: SFSymbol = "photo"
 
   public enum Photo {
@@ -195,6 +201,16 @@ extension SFSymbol {
   public static let questionmark: SFSymbol = "questionmark"
   public static let questionmarkCircle: SFSymbol = "questionmark.circle"
 
+  public static let rectangle: SFSymbol = "rectangle"
+
+  public enum Rectangle {
+    public static let onRectangle: SFSymbol = "rectangle.on.rectangle"
+
+    public enum Portrait {
+      public static let onRectanglePortrait: SFSymbol = "rectangle.portrait.on.rectangle.portrait"
+    }
+  }
+
   public static let speaker: SFSymbol = "speaker"
 
   public enum Speaker {
@@ -218,6 +234,10 @@ extension SFSymbol {
 
   public static let squareAndArrowUp: SFSymbol = "square.and.arrow.up"
   public static let squareAndPencil: SFSymbol = "square.and.pencil"
+
+  public enum Square {
+    public static let onSquare: SFSymbol = "square.on.square"
+  }
 
   public static let trash: SFSymbol = "trash"
 
