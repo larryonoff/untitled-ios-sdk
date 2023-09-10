@@ -211,6 +211,12 @@ extension SFSymbol {
     }
   }
 
+  public static let sparkles: SFSymbol = "sparkles"
+
+  public enum Sparkles {
+    public static let rectangleStack: SFSymbol = "sparkles.rectangle.stack"
+  }
+
   public static let speaker: SFSymbol = "speaker"
 
   public enum Speaker {
