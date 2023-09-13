@@ -21,7 +21,7 @@ extension InstagramSharingClient {
           assertionFailure(
             "Main Bundle doesn't contain `\(String.URLScheme.instagram)` query scheme"
           )
-          return
+          return false
         }
 
         @Dependency(\.openURL) var openURL
@@ -31,16 +31,55 @@ extension InstagramSharingClient {
           pasteboard.string = caption
         }
 
-        await openURL(
+        return await openURL(
           .Instagram.shareToFeed(
             phAssetID: request.phAssetID
+          )
+        )
+      },
+      shareToReels: { request in
+        guard let facebookAppID = Bundle.main.facebookAppID else {
+          assertionFailure("Facebook App ID not set")
+          return false
+        }
+
+        guard
+          Bundle.main.applicationQueriesSchemes.contains(
+            .URLScheme.instagramReels
+          )
+        else {
+          assertionFailure(
+            "Main Bundle doesn't contain `\(String.URLScheme.instagramReels)` query scheme"
+          )
+          return false
+        }
+
+        @Dependency(\.date) var date
+        @Dependency(\.openURL) var openURL
+
+        var shareItem: [String: Any] = [:]
+
+        shareItem[.backgroundVideo] = request.backgroundVideo
+        shareItem[.stickerImage] = request.stickerImage
+        shareItem[.appID] = facebookAppID
+
+        UIPasteboard.general.setItems(
+          [shareItem],
+          options: [
+            .expirationDate:  date().addingTimeInterval(60 * 5)
+          ]
+        )
+
+        return await openURL(
+          .Instagram.shareToReels(
+            facebookAppID: facebookAppID
           )
         )
       },
       shareToStories: { request in
         guard let facebookAppID = Bundle.main.facebookAppID else {
           assertionFailure("Facebook App ID not set")
-          return
+          return false
         }
 
         guard
@@ -51,7 +90,7 @@ extension InstagramSharingClient {
           assertionFailure(
             "Main Bundle doesn't contain `\(String.URLScheme.instagramStories)` query scheme"
           )
-          return
+          return false
         }
 
         @Dependency(\.date) var date
@@ -77,7 +116,7 @@ extension InstagramSharingClient {
           ]
         )
 
-        await openURL(
+        return await openURL(
           .Instagram.shareToStories(
             facebookAppID: facebookAppID
           )
@@ -98,6 +137,7 @@ extension Bundle {
 }
 
 private extension String {
+  static let appID = "com.instagram.sharedSticker.appID"
   static let backgroundImage = "com.instagram.sharedSticker.backgroundImage"
   static let backgroundVideo = "com.instagram.sharedSticker.backgroundVideo"
   static let stickerImage = "com.instagram.sharedSticker.stickerImage"
@@ -106,6 +146,7 @@ private extension String {
 
   enum URLScheme {
     static let instagram = "instagram"
+    static let instagramReels = "instagram-reels"
     static let instagramStories = "instagram-stories"
   }
 }

@@ -10,6 +10,12 @@ extension URL {
       URL(string: "instagram://library?LocalIdentifier=\(phAssetID)")!
     }
 
+    public static func shareToReels(
+      facebookAppID: String
+    ) -> URL {
+      URL(string: "instagram-reels://share?source_application=\(facebookAppID)")!
+    }
+
     public static func shareToStories(
       facebookAppID: String
     ) -> URL {

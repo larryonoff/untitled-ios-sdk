@@ -9,8 +9,9 @@ extension DependencyValues {
 }
 
 public struct InstagramSharingClient {
-  public var shareToFeed: @Sendable (ShareToFeedRequest) async -> Void
-  public var shareToStories: @Sendable (ShareToStoriesRequest) async -> Void
+  public var shareToFeed: @Sendable (ShareToFeedRequest) async -> Bool
+  public var shareToReels: @Sendable (ShareToReelsRequest) async -> Bool
+  public var shareToStories: @Sendable (ShareToStoriesRequest) async -> Bool
 }
 
 public struct ShareToFeedRequest {
@@ -25,6 +26,28 @@ public struct ShareToFeedRequest {
     self.caption = caption
   }
 }
+
+public struct ShareToReelsRequest {
+  /// Data for video asset in a supported format (H.264, H.265, WebM).
+  /// Videos can be 1080p and up to 20 seconds in duration.
+  /// Under 50 MB recommended.
+  public let backgroundVideo: Data
+
+  /// Data for an image asset in a supported format (JPG, PNG).
+  /// Recommended dimensions: 640x480.
+  /// This image appears as a sticker over the background.
+  /// You must pass the Instagram app a background asset (image or video), a sticker asset, or both.
+  public let stickerImage: Data?
+
+  public init(
+    backgroundVideo: Data,
+    stickerImage: Data? = nil
+  ) {
+    self.backgroundVideo = backgroundVideo
+    self.stickerImage = stickerImage
+  }
+}
+
 
 public struct ShareToStoriesRequest {
   public enum BackgroundAsset {
@@ -72,6 +95,10 @@ public struct ShareToStoriesRequest {
 extension ShareToFeedRequest: Equatable {}
 extension ShareToFeedRequest: Hashable {}
 extension ShareToFeedRequest: Sendable {}
+
+extension ShareToReelsRequest: Equatable {}
+extension ShareToReelsRequest: Hashable {}
+extension ShareToReelsRequest: Sendable {}
 
 extension ShareToStoriesRequest: Equatable {}
 extension ShareToStoriesRequest: Hashable {}
