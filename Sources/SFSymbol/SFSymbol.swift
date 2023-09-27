@@ -201,6 +201,7 @@ extension SFSymbol {
     public static let square: SFSymbol = "plus.square"
     public static let rectangle: SFSymbol = "plus.rectangle"
     public static let rectangleOnRectangle: SFSymbol = "plus.rectangle.on.rectangle"
+    public static let squareOnSquare: SFSymbol = "plus.square.on.square"
   }
 
   public static let questionmark: SFSymbol = "questionmark"
