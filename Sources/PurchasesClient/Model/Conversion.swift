@@ -48,38 +48,16 @@ extension Product.SubscriptionPeriod {
     to period: Product.SubscriptionPeriod
   ) -> Decimal {
     switch (unit, period.unit) {
-    case (.day, .day):
-      return price * Decimal(value) / Decimal(period.value)
-    case (.day, .week):
-      return price * Decimal(value) * 7 / Decimal(period.value)
     case (.day, .month):
-      return price * Decimal(value) * 30 / Decimal(period.value)
+      return price / Decimal(value) * 30.417 * Decimal(period.value)
     case (.day, .year):
-      return price * Decimal(value) * 365 / Decimal(period.value)
-    case (.week, .day):
-      return price / 7
-    case (.week, .week):
-      return price * Decimal(value) / Decimal(period.value)
+      return price / Decimal(value) * 365.3 * Decimal(period.value)
     case (.week, .month):
-      return price * Decimal(value) * 4.345 / Decimal(period.value)
+      return price / Decimal(value) * 4.345 * Decimal(period.value)
     case (.week, .year):
-      return price * Decimal(value) * 52.143 / Decimal(period.value)
-    case (.month, .day):
-      return price * Decimal(value) / Decimal(period.value) / 30
-    case (.month, .week):
-      return price * Decimal(value) / Decimal(period.value) / 4.345
-    case (.month, .month):
-      return price * Decimal(value) / Decimal(period.value)
-    case (.month, .year):
-      return price * Decimal(value) * 12 / Decimal(period.value)
-    case (.year, .day):
-      return price * Decimal(value) / Decimal(period.value) / 365
-    case (.year, .week):
-      return price * Decimal(value) / Decimal(period.value) / 52.143
-    case (.year, .month):
-      return price * Decimal(value) / Decimal(period.value) / 12
-    case (.year, .year):
-      return price * Decimal(value) / Decimal(period.value)
+      return price / Decimal(value) * 52.1786 * Decimal(period.value)
+    default:
+      return price * Decimal(Double(period.numberOfDays) / Double(numberOfDays))
     }
   }
 }
