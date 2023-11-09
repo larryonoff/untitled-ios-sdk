@@ -128,6 +128,12 @@ extension SFSymbol {
     public static let circleFill = "infinity.circle.fill"
   }
 
+  public static let info: SFSymbol = "info"
+
+  public enum Info {
+    public static let circle: SFSymbol = "info.circle"
+  }
+
   public static let ladybug: SFSymbol = "ladybug"
 
   public enum Ladybug {
