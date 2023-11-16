@@ -57,7 +57,7 @@ extension Product.SubscriptionPeriod {
     case (.week, .year):
       return price / Decimal(value) * 52.1786 * Decimal(period.value)
     default:
-      return price * Decimal(Double(period.numberOfDays) / Double(numberOfDays))
+      return price * Decimal(Double(period.value) / Double(value))
     }
   }
 }
