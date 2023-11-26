@@ -54,6 +54,8 @@ extension SFSymbol {
 
   public static let bell: SFSymbol = "bell"
 
+  public static let book: SFSymbol = "book"
+
   public static let checkmark: SFSymbol = "checkmark"
 
   public enum Checkmark {
@@ -221,6 +223,19 @@ extension SFSymbol {
     public enum Portrait {
       public static let onRectanglePortrait: SFSymbol = "rectangle.portrait.on.rectangle.portrait"
     }
+  }
+
+  public static let shield: SFSymbol = "shield"
+
+  public enum Shield {
+    public static let fill: SFSymbol = "shield.fill"
+    public static let slash: SFSymbol = "shield.slash"
+
+    public enum Slash {
+      public static let fill: SFSymbol = "shield.slash.fill"
+    }
+
+    public static let checkered: SFSymbol = "shield.checkered"
   }
 
   public static let sparkles: SFSymbol = "sparkles"
