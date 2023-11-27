@@ -9,11 +9,11 @@ extension View {
   @available(watchOS, introduced: 6, deprecated: 9)
   public func navigationLinkDestination<State, Action, Destination: View>(
     store: Store<PresentationState<State>, PresentationAction<Action>>,
-    @ViewBuilder content: @escaping (Store<State, Action>) -> Destination
+    @ViewBuilder destination: @escaping (Store<State, Action>) -> Destination
   ) -> some View {
     self.presentation(store: store) { `self`, $isPresented, destinationContent in
       self.navigationLinkDestination(isPresented: $isPresented) {
-        destinationContent(content)
+        destinationContent(destination)
       }
     }
   }
