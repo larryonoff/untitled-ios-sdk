@@ -4,65 +4,51 @@ import DuckComposableArchitecture
 import DuckPurchasesClient
 import IdentifiedCollections
 
-public struct PaywallReducer: Reducer {
-  public enum Action: Equatable {
-    public enum Delegate: Equatable {
-      case dismissed
+@Reducer
+public struct PaywallReducer {
+  public enum Action {
+    public enum Delegate {
+      case dismiss
     }
 
-    public enum ProductAction: Equatable {
+    public enum ProductAction {
       case tapped
     }
 
     case onAppear
     case delegate(Delegate)
 
-    case alert(PresentationAction<AlertAction>)
-
     case dismissTapped
-
-    case fetchPaywallResponse(TaskResult<Paywall?>)
-
-    case oneTimeOfferDismissed
-
-    case product(id: Product.ID, action: ProductAction)
+    case purchaseCancelled
+    case restorePurchasesTapped
 
     case purchase
-    case purchaseCancelled
-    case purchaseResponse(TaskResult<PurchaseResult>)
 
-    case restorePurchases
-    case restorePurchasesResponse(TaskResult<RestorePurchasesResult>)
+    case fetchPaywallResponse(Result<Paywall?, Error>)
+
+    case purchaseResponse(Result<PurchaseResult, Error>)
+    case restorePurchasesResponse(Result<RestorePurchasesResult, Error>)
+
+    case destination(PresentationAction<Destination.Action>)
+    case products(IdentifiedAction<Product.ID, ProductAction>)
   }
 
-  public enum AlertAction: Equatable {}
-
   public struct State: Equatable {
-    @PresentationState public var alert: AlertState<AlertAction>?
-
-    @Box public var oneTimeOffer: OneTimeOfferState?
+    @PresentationState
+    public var destination: Destination.State?
 
     public let paywallID: Paywall.ID
-    @Box public var paywall: Paywall?
+    public var paywall: Paywall?
 
-    @Box public var products: IdentifiedArrayOf<Product> = []
-    @Box public var productComparing: Product?
-    @Box public var productSelected: Product?
+    public var products: IdentifiedArrayOf<Product> = []
+    public var productComparing: Product?
+    public var productSelected: Product?
 
-    @Box public var placement: Placement?
+    public var placement: Placement?
 
-    @Box public var isEligibleForIntroductoryOffer: Bool = false
-    @Box public var isFetchingPaywall: Bool = false
-    @Box public var isOneTimeOfferEnabled: Bool = false
-    @Box public var isPurchasing: Bool = false
-
-    var canPresentOneTimeOffer: Bool {
-      isOneTimeOfferEnabled && paywall?.payUpFrontProductID != nil
-    }
-
-    var isOneTimeOfferPresented: Bool {
-      oneTimeOffer != nil
-    }
+    public var isEligibleForIntroductoryOffer: Bool = false
+    public var isFetchingPaywall: Bool = false
+    public var isPurchasing: Bool = false
 
     public init(
       paywallID: Paywall.ID,
@@ -71,23 +57,23 @@ public struct PaywallReducer: Reducer {
       self.paywallID = paywallID
       self.placement = placement
     }
-
-    mutating
-    func setError(_ error: Error) {
-      if oneTimeOffer != nil {
-        oneTimeOffer?.alert = .failure(error)
-      } else {
-        alert = .failure(error)
-      }
-    }
   }
 
-  public struct OneTimeOfferState: Equatable {
-    @Box public var isEligibleForIntroductoryOffer: Bool
-    @Box public var isPurchasing: Bool = false
+  @Reducer
+  public struct Destination {
+    public enum Action {
+      public enum Alert: Equatable {}
 
-    @Box public var alert: AlertState<Action>?
-    @Box public var product: Product?
+      case alert(Alert)
+    }
+
+    public enum State: Equatable {
+      case alert(AlertState<Action.Alert>)
+    }
+
+    public var body: some ReducerOf<Self> {
+      EmptyReducer()
+    }
   }
 
   private enum CancelID: Hashable {
@@ -100,6 +86,14 @@ public struct PaywallReducer: Reducer {
   public init() {}
 
   public var body: some ReducerOf<Self> {
+    coreReducer
+      .ifLet(\.$destination, action: \.destination) {
+        Destination()
+      }
+  }
+
+  @ReducerBuilder<State, Action>
+  private var coreReducer: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -121,30 +115,44 @@ public struct PaywallReducer: Reducer {
               )
             }
           } catch: { error, send in
-            await send(
-              .fetchPaywallResponse(
-                .failure(error)
-              )
-            )
+            await send(.fetchPaywallResponse(.failure(error)))
           },
           logPaywallOpened(state: state)
         )
       case .delegate:
         return .none
       case .dismissTapped:
-        if state.attemptPresentOneTimeOffer() {
-          return .none
-        }
-
         return .merge(
           logPaywallDismissed(state: state),
-          .send(.delegate(.dismissed))
+          .send(.delegate(.dismiss))
         )
+      case .purchaseCancelled:
+        state.isPurchasing = false
+
+        return .cancel(id: CancelID.purchase)
+      case .restorePurchasesTapped:
+        state.isPurchasing = true
+
+        return .run { send in
+          await send(
+            .restorePurchasesResponse(
+              await Result {
+                try await purchases.restorePurhases()
+              }
+            )
+          )
+        }
+        .cancellable(id: CancelID.purchase, cancelInFlight: true)
+      case .purchase:
+        guard let product = state.productSelected else {
+          return .none
+        }
+        return purchase(product, state: &state)
       case let .fetchPaywallResponse(result):
         state.isFetchingPaywall = false
 
         do {
-          let paywall = try result.value
+          let paywall = try result.get()
 
           var products = (paywall?.products ?? [])
 
@@ -168,25 +176,41 @@ public struct PaywallReducer: Reducer {
         } catch {
           state.paywall = nil
           state.productSelected = nil
-          state.alert = .failure(error)
+          state.destination = .alert(.failure(error))
         }
 
         return .none
-      case .oneTimeOfferDismissed:
-        let isOneTimeOfferPresented = state.oneTimeOffer != nil
-        state.oneTimeOffer = nil
+      case let .purchaseResponse(result):
+        state.isPurchasing = false
 
-        if isOneTimeOfferPresented {
-          // .delegate(.dismissed) delayed since
-          // SwiftUI doesn't dismiss properly multiple views
-          return .run { send in
-            try? await Task.sleep(nanoseconds: 5_00_000_000)
-            await send(.delegate(.dismissed))
+        do {
+          switch try result.get() {
+          case .success:
+            return .send(.delegate(.dismiss))
+          case .userCancelled:
+            return .none
           }
+        } catch {
+          state.destination = .alert(.failure(error))
         }
 
         return .none
-      case let .product(productID, .tapped):
+      case let .restorePurchasesResponse(result):
+        state.isPurchasing = false
+
+        do {
+          switch try result.get() {
+          case .success:
+            return .send(.delegate(.dismiss))
+          case .userCancelled:
+            return .none
+          }
+        } catch {
+          state.destination = .alert(.failure(error))
+        }
+
+        return .none
+      case let .products(.element(id: productID, action: .tapped)):
         let productChanged = productID != state.productSelected?.id
 
         state.productSelected = state.paywall?
@@ -201,71 +225,10 @@ public struct PaywallReducer: Reducer {
         }
 
         return .none
-      case .purchase:
-        guard
-          let product = state.oneTimeOffer?.product ?? state.productSelected
-        else {
-          return .none
-        }
-        return purchase(product, state: &state)
-      case .purchaseCancelled:
-        state.isPurchasing = false
-        state.oneTimeOffer?.isPurchasing = false
-
-        return .cancel(id: CancelID.purchase)
-      case let .purchaseResponse(result):
-        state.isPurchasing = false
-        state.oneTimeOffer?.isPurchasing = false
-
-        do {
-          switch try result.value {
-          case .success:
-            return .send(.delegate(.dismissed))
-          case .userCancelled:
-            return .none
-          }
-        } catch {
-          state.setError(error)
-        }
-
-        return .none
-      case .restorePurchases:
-        state.isPurchasing = true
-        state.oneTimeOffer?.isPurchasing = true
-
-        return .run { send in
-          await send(
-            .restorePurchasesResponse(
-              await TaskResult {
-                try await purchases.restorePurhases()
-              }
-            )
-          )
-        }
-        .cancellable(id: CancelID.purchase, cancelInFlight: true)
-      case let .restorePurchasesResponse(result):
-        state.isPurchasing = false
-        state.oneTimeOffer?.isPurchasing = false
-
-        do {
-          switch try result.value {
-          case .success:
-            return .send(.delegate(.dismissed))
-          case .userCancelled:
-            return .none
-          }
-        } catch {
-          state.setError(error)
-        }
-
-        return .none
-      case .alert(.dismiss):
-        state.alert = nil
-        state.oneTimeOffer?.alert = nil
+      case .destination:
         return .none
       }
     }
-    .ifLet(\.$alert, action: /Action.alert)
   }
 
   // MARK: - Effects
@@ -275,12 +238,11 @@ public struct PaywallReducer: Reducer {
     state: inout State
   ) -> Effect<Action> {
     state.isPurchasing = true
-    state.oneTimeOffer?.isPurchasing = true
 
     return .run { [paywallID = state.paywallID] send in
       await send(
         .purchaseResponse(
-          await TaskResult {
+          await Result {
             try await purchases
               .purchase(.request(product: product, paywallID: paywallID))
           }
@@ -320,30 +282,5 @@ public struct PaywallReducer: Reducer {
         parameters: params
       )
     }
-  }
-}
-
-private extension PaywallReducer.State {
-  var isEligibleForOneTimeOffer: Bool {
-    canPresentOneTimeOffer && paywall?.payUpFrontProduct != nil
-  }
-
-  mutating
-  func attemptPresentOneTimeOffer() -> Bool {
-    guard
-      !isOneTimeOfferPresented,
-      canPresentOneTimeOffer,
-      let oneTimeProduct = paywall?.payUpFrontProduct
-    else {
-      return false
-    }
-
-    let oneTimeOffer = PaywallReducer.OneTimeOfferState(
-      isEligibleForIntroductoryOffer: isEligibleForIntroductoryOffer,
-      product: oneTimeProduct
-    )
-    self.oneTimeOffer = oneTimeOffer
-
-    return true
   }
 }
