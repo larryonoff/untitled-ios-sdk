@@ -15,14 +15,16 @@ public struct PaywallReducer {
       case tapped
     }
 
-    case onAppear
     case delegate(Delegate)
 
+    case onAppear
     case dismissTapped
     case purchaseCancelled
     case restorePurchasesTapped
 
     case purchase
+
+    case selectProductWithID(Product.ID?)
 
     case fetchPaywallResponse(Result<Paywall?, Error>)
 
@@ -96,6 +98,8 @@ public struct PaywallReducer {
   private var coreReducer: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
+      case .delegate:
+        return .none
       case .onAppear:
         state.isEligibleForIntroductoryOffer =
           purchases.purchases().isEligibleForIntroductoryOffer
@@ -119,8 +123,6 @@ public struct PaywallReducer {
           },
           logPaywallOpened(state: state)
         )
-      case .delegate:
-        return .none
       case .dismissTapped:
         return .merge(
           logPaywallDismissed(state: state),
@@ -148,6 +150,8 @@ public struct PaywallReducer {
           return .none
         }
         return purchase(product, state: &state)
+      case let .selectProductWithID(productID):
+        return selectProduct(withID: productID, state: &state)
       case let .fetchPaywallResponse(result):
         state.isFetchingPaywall = false
 
@@ -211,20 +215,7 @@ public struct PaywallReducer {
 
         return .none
       case let .products(.element(id: productID, action: .tapped)):
-        let productChanged = productID != state.productSelected?.id
-
-        state.productSelected = state.paywall?
-          .products
-          .first { $0.id == productID }
-
-        if
-          let product = state.productSelected,
-          !productChanged
-        {
-          return purchase(product, state: &state)
-        }
-
-        return .none
+        return selectProduct(withID: productID, state: &state)
       case .destination:
         return .none
       }
@@ -250,6 +241,26 @@ public struct PaywallReducer {
       )
     }
     .cancellable(id: CancelID.purchase, cancelInFlight: true)
+  }
+
+  private func selectProduct(
+    withID productID: Product.ID?,
+    state: inout State
+  ) -> Effect<Action> {
+    let productChanged = productID != state.productSelected?.id
+
+    state.productSelected = state.paywall?
+      .products
+      .first { $0.id == productID }
+
+    if
+      let product = state.productSelected,
+      !productChanged
+    {
+      return purchase(product, state: &state)
+    }
+
+    return .none
   }
 
   // MARK: - Analytics
