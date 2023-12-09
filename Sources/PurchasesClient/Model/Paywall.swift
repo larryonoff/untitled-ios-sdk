@@ -59,7 +59,7 @@ extension Paywall {
     _ paywall: AdaptyPaywall,
     products: [AdaptyPaywallProduct]?
   ) {
-    self.id = .init(paywall.id)
+    self.id = .init(paywall.placementId)
     self.products = products?
       .compactMap { .init($0) } ?? []
     self.productSelectedID = paywall
