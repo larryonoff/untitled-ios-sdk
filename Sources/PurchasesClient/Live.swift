@@ -442,7 +442,7 @@ final class PurchasesClientImpl {
   private static func _paywall(
     by id: Paywall.ID
   ) async throws -> AdaptyPaywall? {
-    try await Adapty.getPaywall(id.rawValue)
+    try await Adapty.getPaywall(placementId: id.rawValue)
   }
 
   private static func _paywallProducts(
