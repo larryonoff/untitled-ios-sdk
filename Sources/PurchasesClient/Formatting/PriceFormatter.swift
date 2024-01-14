@@ -4,7 +4,21 @@ final class PriceFormatter {
   private static var cache: [AnyHashable: NumberFormatter] = [:]
   private static let lock = NSRecursiveLock()
 
-  var locale: Locale = .autoupdatingCurrent
+  private var _locale: Locale = .autoupdatingCurrent
+
+  var locale: Locale {
+    get {
+      Self.lock.sync {
+        self._locale
+      }
+    }
+    set {
+      Self.lock.sync {
+        self._locale = newValue
+      }
+    }
+  }
+
   var roundingMode: NumberFormatter.RoundingMode = .down
 
   init() {}
@@ -70,7 +84,5 @@ private struct _FormatterKey {
 }
 
 extension _FormatterKey: Equatable {}
-
 extension _FormatterKey: Hashable {}
-
 extension _FormatterKey: Sendable {}

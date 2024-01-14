@@ -1,33 +1,6 @@
 import Foundation
 
 extension Product {
-  public func displayDiscount(
-    comparingTo product: Product
-  ) -> String? {
-    guard let discount = discount(comparingTo: product) else {
-      return nil
-    }
-
-    return discountFormatter.string(
-      from: NSDecimalNumber(decimal: discount)
-    )
-  }
-
-  public static func displayPrice(
-    _ price: Decimal,
-    priceLocale: Locale,
-    roundingRule: Product.FormatStyle.RoundingRule = .down
-  ) -> String? {
-    priceFormatter.locale = priceLocale
-    priceFormatter.roundingMode = roundingRule.toNumberFormatterRoundingMode
-
-    return priceFormatter.string(from: price)
-  }
-}
-
-// MARK: - Product
-
-extension Product {
   public enum FormatStyle {
     public struct Price {
       public enum Separator: String {
@@ -40,11 +13,11 @@ extension Product {
         case omitted
       }
 
-      var roundingRule: RoundingRule
-      var separator: Separator
-      var subscriptionPeriod: Product.SubscriptionPeriod?
-      var subscriptionPeriodStyle: SubscriptionPeriodStyle
-      var subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle
+      public var roundingRule: RoundingRule
+      public var separator: Separator
+      public var subscriptionPeriod: Product.SubscriptionPeriod?
+      public var subscriptionPeriodStyle: SubscriptionPeriodStyle
+      public var subscriptionPeriodUnitStyle: Product.SubscriptionPeriod.FormatStyle.UnitStyle
 
       public init(
         roundingRule: RoundingRule = .down,
@@ -170,27 +143,18 @@ extension FormatStyle where Self == Product.FormatStyle.Price {
 }
 
 extension Product.FormatStyle.Price: Codable {}
-
 extension Product.FormatStyle.Price: Equatable {}
-
 extension Product.FormatStyle.Price: Sendable {}
-
 extension Product.FormatStyle.Price: Hashable {}
 
 extension Product.FormatStyle.Price.Separator: Codable {}
-
 extension Product.FormatStyle.Price.Separator: Equatable {}
-
 extension Product.FormatStyle.Price.Separator: Sendable {}
-
 extension Product.FormatStyle.Price.Separator: Hashable {}
 
 extension Product.FormatStyle.Price.SubscriptionPeriodStyle: Codable {}
-
 extension Product.FormatStyle.Price.SubscriptionPeriodStyle: Equatable {}
-
 extension Product.FormatStyle.Price.SubscriptionPeriodStyle: Sendable {}
-
 extension Product.FormatStyle.Price.SubscriptionPeriodStyle: Hashable {}
 
 extension Product.FormatStyle.RoundingRule {
@@ -214,6 +178,31 @@ extension Product.FormatStyle.RoundingRule {
       )
       return .up
     }
+  }
+}
+
+extension Product {
+  public func displayDiscount(
+    comparingTo product: Product
+  ) -> String? {
+    guard let discount = discount(comparingTo: product) else {
+      return nil
+    }
+
+    return discountFormatter.string(
+      from: NSDecimalNumber(decimal: discount)
+    )
+  }
+
+  public static func displayPrice(
+    _ price: Decimal,
+    priceLocale: Locale,
+    roundingRule: Product.FormatStyle.RoundingRule = .down
+  ) -> String? {
+    priceFormatter.locale = priceLocale
+    priceFormatter.roundingMode = roundingRule.toNumberFormatterRoundingMode
+
+    return priceFormatter.string(from: price)
   }
 }
 

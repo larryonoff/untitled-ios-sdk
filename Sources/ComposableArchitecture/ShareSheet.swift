@@ -42,21 +42,15 @@ extension View {
   ///   - store: A store that is focused on ``PresentationState`` and ``PresentationAction`` for an
   ///     share sheet.
   public func shareSheet<Data: RandomAccessCollection>(
-    store: Store<PresentationState<ShareSheet<Data>.State>, PresentationAction<ShareSheet<Data>.Action>>
+    store: Store<
+      PresentationState<ShareSheet<Data>.State>,
+      PresentationAction<ShareSheet<Data>.Action>
+    >
   ) -> some View {
-    self.shareSheet(store: store, state: { $0 }, action: { $0 })
+    self._shareSheet(store: store, state: { $0 }, action: { $0 })
   }
 
-  /// Displays a share sheet when then store's state becomes non-`nil`, and dismisses it when it becomes
-  /// `nil`.
-  ///
-  /// - Parameters:
-  ///   - store: A store that is focused on ``PresentationState`` and ``PresentationAction`` for an
-  ///     share sheet.
-  ///   - toDestinationState: A transformation to extract alert state from the presentation state.
-  ///   - fromDestinationAction: A transformation to embed alert actions into the presentation
-  ///     action.
-  public func shareSheet<State, Action, Data: RandomAccessCollection>(
+  private func _shareSheet<State, Action, Data: RandomAccessCollection>(
     store: Store<PresentationState<State>, PresentationAction<Action>>,
     state toDestinationState: @escaping (_ state: State) -> ShareSheet<Data>.State?,
     action fromDestinationAction: @escaping (_ sheetAction: ShareSheet<Data>.Action) -> Action
