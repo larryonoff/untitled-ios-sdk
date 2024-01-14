@@ -45,7 +45,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "2.9.0"
+      from: "2.9.2"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -57,11 +57,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "16.2.1"
+      from: "16.3.1"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.18.0"
+      from: "10.19.1"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -69,19 +69,19 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/apple/swift-collections",
-      from: "1.0.5"
+      from: "1.0.6"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.5.0"
+      from: "1.6.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "1.1.1"
+      from: "1.1.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "1.1.1"
+      from: "1.1.5"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
