@@ -1,4 +1,4 @@
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 
 import PackageDescription
 
@@ -53,7 +53,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
-      from: "5.1.0"
+      .upToNextMinor(from: "5.1.0")
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
