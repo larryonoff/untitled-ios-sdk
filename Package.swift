@@ -395,7 +395,11 @@ extension Target {
       .composableArchitecture,
       .External.composableArchitecture
     ],
-    path: "Sources/PaywallReducer"
+    path: "Sources/PaywallReducer",
+    exclude: ["swiftgen.yml"],
+    resources: [
+      .process("Resources")
+    ]
   )
 
   static let photos = target(
