@@ -49,8 +49,23 @@ public struct PaywallReducer {
     public var placement: Placement?
 
     public var isEligibleForIntroductoryOffer: Bool = false
+    public var isIntroductoryOfferCancelConfirmationEnabled: Bool = false
     public var isFetchingPaywall: Bool = false
     public var isPurchasing: Bool = false
+
+    public var isIntroductoryOfferCancelConfirmationNeeded: Bool {
+      guard
+        isEligibleForIntroductoryOffer,
+        isIntroductoryOfferCancelConfirmationEnabled
+      else {
+        return false
+      }
+
+      let hasIntroductoryOffer = paywall?.products
+        .contains { $0.subscription?.introductoryOffer != nil } ?? false
+
+      return hasIntroductoryOffer
+    }
 
     public init(
       paywallID: Paywall.ID,
@@ -64,7 +79,9 @@ public struct PaywallReducer {
   @Reducer
   public struct Destination {
     public enum Action {
-      public enum Alert: Equatable {}
+      public enum Alert: Equatable {
+        case rejectIntroductoryOffer
+      }
 
       case alert(Alert)
     }
@@ -124,10 +141,12 @@ public struct PaywallReducer {
           logPaywallOpened(state: state)
         )
       case .dismissTapped:
-        return .merge(
-          logPaywallDismissed(state: state),
-          .send(.delegate(.dismiss))
-        )
+        if state.isIntroductoryOfferCancelConfirmationNeeded {
+          state.destination = .alert(.cancelIntroductoryOffer)
+          return .none
+        }
+
+        return dismiss(state: &state)
       case .purchaseCancelled:
         state.isPurchasing = false
 
@@ -216,6 +235,8 @@ public struct PaywallReducer {
         return .none
       case let .products(.element(id: productID, action: .tapped)):
         return selectProduct(withID: productID, state: &state)
+      case .destination(.presented(.alert(.rejectIntroductoryOffer))):
+        return dismiss(state: &state)
       case .destination:
         return .none
       }
@@ -223,6 +244,15 @@ public struct PaywallReducer {
   }
 
   // MARK: - Effects
+
+  private func dismiss(
+    state: inout State
+  ) -> Effect<Action> {
+    .merge(
+      logPaywallDismissed(state: state),
+      .send(.delegate(.dismiss))
+    )
+  }
 
   private func purchase(
     _ product: Product,

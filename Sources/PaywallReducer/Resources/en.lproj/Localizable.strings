@@ -1,0 +1,4 @@
+"cancelIntroductoryOffer.title" = "Are you sure?";
+"cancelIntroductoryOffer.message" = "The free trial is a one-time offer. If you decline it, you won’t be activate it later";
+"cancelIntroductoryOffer.action.reject" = "Reject free trial";
+"cancelIntroductoryOffer.action.cancel" = "Cancel";
