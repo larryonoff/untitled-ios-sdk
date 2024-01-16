@@ -5,7 +5,7 @@ strings:
   inputs: 
     - en.lproj/Localizable.strings
   outputs:
-    templateName: structured-swift4
+    templateName: structured-swift5
     output: Localizable.generated.swift
     params:
       bundle: Bundle.module
