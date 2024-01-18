@@ -53,7 +53,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
-      .upToNextMinor(from: "5.1.0")
+      from: "5.2.1"
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
