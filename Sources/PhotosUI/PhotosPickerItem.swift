@@ -1,3 +1,4 @@
+import CoreServices
 import Photos
 import PhotosUI
 
@@ -14,6 +15,11 @@ public struct PhotosPickerItem {
 
   public var itemIdentifier: String?
 
+  public var supportedContentTypes: [UTType] {
+    itemProvider.registeredTypeIdentifiers
+      .compactMap { UTType($0) }
+  }
+
   private let itemProvider: NSItemProvider
 
   init(_ result: PHPickerResult) {
@@ -27,6 +33,19 @@ public struct PhotosPickerItem {
     try await itemProvider.loadObject(ofClass: type)
   }
 
+  public func loadTransferable(
+    type: Data.Type
+  ) async throws -> Data? {
+    if itemProvider._hasItem(conformingTo: .quickTimeMovie) {
+      let fileURL = try await itemProvider._loadFileRepresentation(for: .quickTimeMovie)
+      return try fileURL.flatMap {
+        try Data.init(contentsOf: $0)
+      }
+    }
+
+    return nil
+  }
+
   public func loadTransferable<T>(
     type: T.Type
   ) async throws -> T? where T: _ObjectiveCBridgeable, T._ObjectiveCType : NSItemProviderReading {
@@ -35,15 +54,11 @@ public struct PhotosPickerItem {
 }
 
 extension PhotosPickerItem: Equatable {}
-
 extension PhotosPickerItem: Hashable {}
-
 extension PhotosPickerItem: @unchecked Sendable {}
 
 extension PhotosPickerItem.EncodingDisambiguationPolicy: Equatable {}
-
 extension PhotosPickerItem.EncodingDisambiguationPolicy: Hashable {}
-
 extension PhotosPickerItem.EncodingDisambiguationPolicy: Sendable {}
 
 extension PhotosPickerItem.EncodingDisambiguationPolicy {
@@ -60,8 +75,24 @@ extension PhotosPickerItem.EncodingDisambiguationPolicy {
 }
 
 extension NSItemProvider {
+  func _hasItem(conformingTo contentType: UTType) -> Bool {
+    hasItemConformingToTypeIdentifier(contentType.identifier)
+  }
+
+  func _loadFileRepresentation(for contentType: UTType) async throws -> URL? {
+    try await withCheckedThrowingContinuation { continuation in
+      self.loadFileRepresentation(forTypeIdentifier: contentType.identifier) { url, error in
+        if let error {
+          continuation.resume(throwing: error)
+        } else {
+          continuation.resume(returning: url)
+        }
+      }
+    }
+  }
+
   func loadObject(
-      ofClass aClass: NSItemProviderReading.Type
+    ofClass aClass: NSItemProviderReading.Type
   ) async throws -> NSItemProviderReading? {
     try await withCheckedThrowingContinuation { continuation in
       _ = self.loadObject(ofClass: aClass) { object, error in
@@ -74,7 +105,7 @@ extension NSItemProvider {
   }
 
   func loadObject<T>(
-      ofClass aClass: T.Type
+    ofClass aClass: T.Type
   ) async throws -> T? where T: _ObjectiveCBridgeable, T._ObjectiveCType : NSItemProviderReading {
     try await withCheckedThrowingContinuation { continuation in
       _ = self.loadObject(ofClass: aClass) { object, error in
