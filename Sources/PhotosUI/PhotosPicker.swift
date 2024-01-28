@@ -207,7 +207,5 @@ public enum PhotosPickerSelectionBehavior {
 }
 
 extension PhotosPickerSelectionBehavior: Equatable {}
-
 extension PhotosPickerSelectionBehavior: Hashable {}
-
 extension PhotosPickerSelectionBehavior: Sendable {}
