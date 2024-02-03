@@ -13,4 +13,16 @@ extension View {
       )
     )
   }
+
+  @ViewBuilder
+  public func navigationLinkDestination<D: Hashable, Content: View>(
+    item: Binding<D?>,
+    @ViewBuilder destination: @escaping (D) -> Content
+  ) -> some View {
+    navigationLinkDestination(isPresented: item.isPresent()) {
+      if let item = item.wrappedValue {
+        destination(item)
+      }
+    }
+  }
 }
