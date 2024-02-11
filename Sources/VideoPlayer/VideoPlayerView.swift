@@ -1,4 +1,5 @@
 import AVKit
+import Combine
 import DuckSwiftUI
 import Foundation
 import SwiftUI
@@ -12,18 +13,24 @@ open class VideoPlayerView: UIView {
     set {
       guard newValue != playerLayer.player else { return }
       playerLayer.player = newValue
-
       playerDidChange()
     }
   }
 
   public var videoAlignment: Alignment = .center {
-    didSet { setNeedsLayout() }
+    didSet {
+      guard oldValue != videoAlignment else { return }
+      setNeedsLayout()
+    }
   }
 
-  public var videoGravity: AVLayerVideoGravity {
-    get { playerLayer.videoGravity }
-    set { playerLayer.videoGravity = newValue }
+  public var videoContentMode: SwiftUI.ContentMode? {
+    get { .init(playerLayer.videoGravity) }
+    set {
+      guard newValue != videoContentMode else { return }
+      playerLayer.videoGravity = newValue.avLayerVideoGravity
+      setNeedsLayout()
+    }
   }
 
   @objc dynamic
@@ -78,7 +85,6 @@ open class VideoPlayerView: UIView {
   open override func layoutSubviews() {
     super.layoutSubviews()
     layoutVideo()
-    layoutContentLayoutGuide()
   }
 
   // MARK: - setup
@@ -127,54 +133,59 @@ open class VideoPlayerView: UIView {
     ])
   }
 
-  private var currentItemObserver: NSKeyValueObservation?
-  private var currentItemPresentationSizeObserver: NSKeyValueObservation?
-  private var videoRectObserver: NSKeyValueObservation?
+  private var bindindsCancellables = Set<AnyCancellable>()
+  private var currentItemCancellable: Cancellable?
+  private var currentItemPresentationSizeCancellable: Cancellable?
 
   private func setupBindings() {
-    videoRectObserver = playerLayer.observe(
-      \.videoRect,
-       options: [.new, .initial],
-       changeHandler: { [weak self] object, _ in
-         guard let self else { return }
-         self.videoRect = object.videoRect
-         self.setNeedsLayout()
-       }
-    )
+    playerLayer
+      .publisher(for: \.videoRect, options: [.new, .initial])
+      .sink { [weak self] videoRect in
+        guard let self else { return }
+        self.videoRect = videoRect
+        self.setNeedsLayout()
+      }
+      .store(in: &bindindsCancellables)
+
+    playerLayer
+      .publisher(for: \.isReadyForDisplay)
+      .sink { [weak self] isReadyForDisplay in
+        guard let self else { return }
+        guard isReadyForDisplay else { return }
+        self.videoRect = self.playerLayer.videoRect
+        self.setNeedsLayout()
+      }
+      .store(in: &bindindsCancellables)
 
     updateCurrentItemObserver()
   }
 
   private func updateCurrentItemObserver() {
     guard let player else {
-      currentItemObserver?.invalidate()
-      currentItemObserver = nil
+      currentItemCancellable?.cancel()
+      currentItemCancellable = nil
 
       currentItemDidChange(nil)
       return
     }
 
-    currentItemObserver = player.observe(
-      \.currentItem,
-       options: [.new, .initial],
-       changeHandler: { [weak self] player, _ in
-         self?.currentItemDidChange(player.currentItem)
-       }
-    )
+    currentItemCancellable = player
+      .publisher(for: \.currentItem, options: [.new, .initial])
+      .sink { [weak self] in
+        self?.currentItemDidChange($0)
+      }
   }
 
   private func currentItemDidChange(_ item: AVPlayerItem?) {
     if let item {
-      currentItemPresentationSizeObserver = item.observe(
-        \.presentationSize,
-         options: [.new, .initial],
-         changeHandler: { [weak self] _, _ in
+      currentItemPresentationSizeCancellable = item
+        .publisher(for: \.presentationSize, options: [.new, .initial])
+        .sink { [weak self] _ in
            self?.setNeedsLayout()
          }
-      )
     } else {
-      currentItemPresentationSizeObserver?.invalidate()
-      currentItemPresentationSizeObserver = nil
+      currentItemPresentationSizeCancellable?.cancel()
+      currentItemPresentationSizeCancellable = nil
     }
 
     setNeedsLayout()
@@ -184,10 +195,7 @@ open class VideoPlayerView: UIView {
 
   private func layoutVideo() {
     CATransaction.begin()
-
-    defer {
-      CATransaction.commit()
-    }
+    defer { CATransaction.commit()}
 
     if let animation = layer.animation(forKey: "position") {
       CATransaction.setAnimationDuration(animation.duration)
@@ -198,32 +206,20 @@ open class VideoPlayerView: UIView {
       CATransaction.setDisableActions(true)
     }
 
-    guard
+    if
       let playerItem = player?.currentItem,
       !playerItem.presentationSize.isEmpty
-    else {
+    {
+      playerLayer.frame = playerItem.presentationSize.aligned(
+        in: bounds,
+        videoAlignment: videoAlignment,
+        videoGravity: videoContentMode.avLayerVideoGravity
+      )
+    } else {
       playerLayer.frame = bounds
-      return
     }
 
-    playerLayer.frame = playerItem.presentationSize.aligned(
-      in: bounds,
-      videoAlignment: videoAlignment,
-      videoGravity: videoGravity
-    )
-  }
-
-  private func layoutContentLayoutGuide() {
-    let contentRect = playerLayer.frame
-
-    videoRectLeftConstraint.constant =
-      bounds.minX + contentRect.minX
-    videoRectRightConstraint.constant =
-      -(bounds.width - contentRect.maxX)
-    videoRectTopConstraint.constant =
-      bounds.minY + contentRect.minY
-    videoRectBottomConstraint.constant =
-      -(bounds.height - contentRect.maxY)
+    videoRectDidChange(playerLayer.frame)
   }
 
   // MARK: - state changes
@@ -245,6 +241,31 @@ open class VideoPlayerView: UIView {
       videoRectRightConstraint.constant = -(bounds.width - rect.maxX)
       videoRectTopConstraint.constant = rect.minY
       videoRectBottomConstraint.constant = -(bounds.height - rect.maxY)
+    }
+  }
+}
+
+private extension Optional<SwiftUI.ContentMode> {
+  var avLayerVideoGravity: AVLayerVideoGravity {
+    switch self {
+    case .fit?: .resizeAspect
+    case .fill?: .resizeAspectFill
+    case nil: .resize
+    }
+  }
+}
+
+private extension SwiftUI.ContentMode {
+  init?(_ value: AVLayerVideoGravity) {
+    switch value {
+    case .resize:
+      return nil
+    case .resizeAspect:
+      self = .fit
+    case .resizeAspectFill:
+      self = .fill
+    default:
+      return nil
     }
   }
 }
