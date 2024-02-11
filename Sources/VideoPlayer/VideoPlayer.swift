@@ -2,26 +2,12 @@ import AVKit
 import Foundation
 import SwiftUI
 
-public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
-  public enum Gravity: Equatable, Hashable {
-    case fit
-    case fill
-    case resize
+@available(*, deprecated, renamed: "CustomVideoPlayer")
+public typealias VideoPlayerX = CustomVideoPlayer
 
-    var avLayerVideoGravity: AVLayerVideoGravity {
-      switch self {
-      case .fit:
-        return .resizeAspect
-      case .fill:
-        return .resizeAspectFill
-      case .resize:
-        return .resize
-      }
-    }
-  }
-
-  var videoAlignment: Alignment = .center
-  var videoGravity: Gravity = .fit
+public struct CustomVideoPlayer<VideoOverlay> where VideoOverlay: View {
+  @Environment(\.videoAlignment) var videoAlignment
+  @Environment(\.videoContentMode) var videoContentMode
 
   private let player: AVPlayer?
 
@@ -31,21 +17,9 @@ public struct VideoPlayerX<VideoOverlay> where VideoOverlay: View {
     self.player = player
     self.videoOverlay = videoOverlay()
   }
-
-  public func videoGravity(_ gravity: Gravity) -> Self {
-    var view = self
-    view.videoGravity = gravity
-    return view
-  }
-
-  public func videoAlignment(_ alignment: Alignment) -> Self {
-    var view = self
-    view.videoAlignment = alignment
-    return view
-  }
 }
 
-extension VideoPlayerX where VideoOverlay == EmptyView {
+extension CustomVideoPlayer where VideoOverlay == EmptyView {
   public init(player: AVPlayer?) {
     self.player = player
     self.videoOverlay = nil
@@ -54,7 +28,7 @@ extension VideoPlayerX where VideoOverlay == EmptyView {
 
 // MARK: - UIViewRepresentable
 
-extension VideoPlayerX: UIViewRepresentable {
+extension CustomVideoPlayer: UIViewRepresentable {
   public final class Coordinator {
     var videoOverlayHostingController: UIHostingController<VideoOverlay>?
   }
@@ -67,7 +41,7 @@ extension VideoPlayerX: UIViewRepresentable {
     context: Context
   ) -> VideoPlayerView {
     let playerView = VideoPlayerView(player: player)
-    playerView.videoGravity = videoGravity.avLayerVideoGravity
+    playerView.videoContentMode = videoContentMode
     playerView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     playerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
@@ -108,9 +82,41 @@ extension VideoPlayerX: UIViewRepresentable {
 
     uiView.player = player
     uiView.videoAlignment = videoAlignment
-    uiView.videoGravity = videoGravity.avLayerVideoGravity
+    uiView.videoContentMode = videoContentMode
 
     uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     uiView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+  }
+}
+
+// MARK: - Environment
+
+extension EnvironmentValues {
+  private struct VideoAlignmentKey: EnvironmentKey {
+    static let defaultValue: Alignment = .center
+  }
+
+  public var videoAlignment: Alignment {
+    get { self[VideoAlignmentKey.self] }
+    set { self[VideoAlignmentKey.self] = newValue }
+  }
+
+  private struct VideoContentModeKey: EnvironmentKey {
+    static let defaultValue: ContentMode? = .fit
+  }
+
+  public var videoContentMode: ContentMode? {
+    get { self[VideoContentModeKey.self] }
+    set { self[VideoContentModeKey.self] = newValue }
+  }
+}
+
+extension View {
+  public func videoAlignment(_ alignment: Alignment) -> some View {
+    self.environment(\.videoAlignment, alignment)
+  }
+
+  public func videoContentMode(_ contentMode: ContentMode?) -> some View {
+    self.environment(\.videoContentMode, contentMode)
   }
 }
