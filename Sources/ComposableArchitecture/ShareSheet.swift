@@ -2,10 +2,11 @@
 import DuckSwiftUI
 import SwiftUI
 
-public struct ShareSheet<Data: RandomAccessCollection>: Reducer {
+@Reducer
+public struct ShareSheet<Data: RandomAccessCollection> {
   public enum Action {
     public enum Delegate {
-      case completed(TaskResult<Data>)
+      case completed(Result<Data, Error>)
       case cancelled
     }
 
@@ -24,15 +25,7 @@ public struct ShareSheet<Data: RandomAccessCollection>: Reducer {
   }
 
   public init() {}
-
-  public var body: some ReducerOf<Self> {
-    EmptyReducer()
-  }
 }
-
-extension ShareSheet.State: Equatable where Data: Equatable {}
-extension ShareSheet.Action: Equatable where Data: Equatable {}
-extension ShareSheet.Action.Delegate: Equatable where Data: Equatable {}
 
 extension View {
   /// Displays a share sheet when then store's state becomes non-`nil`, and dismisses it when it becomes
@@ -66,7 +59,7 @@ extension View {
         isPresented: $isPresented,
         data: shareState?.data,
         onCompletion: { result in
-          let action = fromDestinationAction(.delegate(.completed(TaskResult(result))))
+          let action = fromDestinationAction(.delegate(.completed(result)))
           store.send(.presented(action))
         },
         onCancellation: {
