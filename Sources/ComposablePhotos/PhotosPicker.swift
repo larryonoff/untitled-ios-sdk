@@ -3,7 +3,8 @@ import DuckPhotosUI
 import Foundation
 import SwiftUI
 
-public struct PhotosPickerReducer: Reducer {
+@Reducer
+public struct PhotosPickerReducer {
   public enum Action: Equatable {
     case setSelection([DuckPhotosUI.PhotosPickerItem])
   }
@@ -33,13 +34,17 @@ public struct PhotosPickerReducer: Reducer {
   }
 
   public init() {}
-
-  public var body: some ReducerOf<Self> {
-    EmptyReducer()
-  }
 }
 
 extension View {
+  public func photosPicker(
+    _ item: Binding<Store<PhotosPickerReducer.State, PhotosPickerReducer.Action>?>
+  ) -> some View {
+    self.sheet(item: item) {
+      _PhotosPicker(store: $0)
+    }
+  }
+
   public func photosPicker(
     store: Store<PresentationState<PhotosPickerReducer.State>, PresentationAction<PhotosPickerReducer.Action>>
   ) -> some View {
