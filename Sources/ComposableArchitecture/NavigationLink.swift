@@ -1,3 +1,4 @@
+@_spi(Reflection) import CasePaths
 @_spi(Presentation) import ComposableArchitecture
 import DuckSwiftUI
 import SwiftUI
@@ -11,9 +12,9 @@ extension View {
     store: Store<PresentationState<State>, PresentationAction<Action>>,
     @ViewBuilder destination: @escaping (Store<State, Action>) -> Destination
   ) -> some View {
-    self.presentation(store: store) { `self`, $isPresented, destinationContent in
-      self.navigationLinkDestination(isPresented: $isPresented) {
-        destinationContent(destination)
+    self.presentation(store: store) { `self`, $item, _destination in
+      self.navigationLinkDestination(item: $item) { _ in
+        _destination(destination)
       }
     }
   }
