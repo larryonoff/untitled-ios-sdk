@@ -34,9 +34,6 @@ extension Product.SubscriptionOffer.PaymentMode {
 }
 
 extension Product.SubscriptionOffer.PaymentMode.FormatStyle: Codable {}
-
 extension Product.SubscriptionOffer.PaymentMode.FormatStyle: Equatable {}
-
 extension Product.SubscriptionOffer.PaymentMode.FormatStyle: Sendable {}
-
 extension Product.SubscriptionOffer.PaymentMode.FormatStyle: Hashable {}
