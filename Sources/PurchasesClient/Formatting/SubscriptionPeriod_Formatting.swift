@@ -206,25 +206,16 @@ extension Product.SubscriptionPeriod {
 }
 
 extension Product.SubscriptionPeriod.FormatStyle: Codable {}
-
 extension Product.SubscriptionPeriod.FormatStyle: Equatable {}
-
 extension Product.SubscriptionPeriod.FormatStyle: Sendable {}
-
 extension Product.SubscriptionPeriod.FormatStyle: Hashable {}
 
 extension Product.SubscriptionPeriod.FormatStyle.UnitStyle: Codable {}
-
 extension Product.SubscriptionPeriod.FormatStyle.UnitStyle: Equatable {}
-
 extension Product.SubscriptionPeriod.FormatStyle.UnitStyle: Sendable {}
-
 extension Product.SubscriptionPeriod.FormatStyle.UnitStyle: Hashable {}
 
 extension Product.SubscriptionPeriod.FormatStyle.ValueDisplayStrategy: Codable {}
-
 extension Product.SubscriptionPeriod.FormatStyle.ValueDisplayStrategy: Equatable {}
-
 extension Product.SubscriptionPeriod.FormatStyle.ValueDisplayStrategy: Sendable {}
-
 extension Product.SubscriptionPeriod.FormatStyle.ValueDisplayStrategy: Hashable {}

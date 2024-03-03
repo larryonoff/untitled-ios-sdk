@@ -41,9 +41,6 @@ extension Product.SubscriptionOffer {
 }
 
 extension Product.SubscriptionOffer.FormatStyle: Codable {}
-
 extension Product.SubscriptionOffer.FormatStyle: Equatable {}
-
 extension Product.SubscriptionOffer.FormatStyle: Sendable {}
-
 extension Product.SubscriptionOffer.FormatStyle: Hashable {}

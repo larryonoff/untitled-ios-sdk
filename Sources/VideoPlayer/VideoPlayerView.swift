@@ -106,22 +106,14 @@ open class VideoPlayerView: UIView {
   private func setupConstraints() {
     addLayoutGuide(videoRectLayoutGuide)
 
-    videoRectLeftConstraint = videoRectLayoutGuide.leftAnchor.constraint(
-      equalTo: leftAnchor,
-      constant: 0
-    )
-    videoRectRightConstraint = videoRectLayoutGuide.rightAnchor.constraint(
-      equalTo: rightAnchor,
-      constant: 0
-    )
-    videoRectTopConstraint = videoRectLayoutGuide.topAnchor.constraint(
-      equalTo: topAnchor,
-      constant: 0
-    )
-    videoRectBottomConstraint = videoRectLayoutGuide.bottomAnchor.constraint(
-      equalTo: bottomAnchor,
-      constant: 0
-    )
+    videoRectLeftConstraint = videoRectLayoutGuide.leftAnchor
+      .constraint(equalTo: leftAnchor, constant: 0)
+    videoRectRightConstraint = videoRectLayoutGuide.rightAnchor
+      .constraint(equalTo: rightAnchor, constant: 0)
+    videoRectTopConstraint = videoRectLayoutGuide.topAnchor
+      .constraint(equalTo: topAnchor, constant: 0)
+    videoRectBottomConstraint = videoRectLayoutGuide.bottomAnchor
+      .constraint(equalTo: bottomAnchor, constant: 0)
 
     self.videoRect = playerLayer.videoRect
 
@@ -181,8 +173,8 @@ open class VideoPlayerView: UIView {
       currentItemPresentationSizeCancellable = item
         .publisher(for: \.presentationSize, options: [.new, .initial])
         .sink { [weak self] _ in
-           self?.setNeedsLayout()
-         }
+          self?.setNeedsLayout()
+        }
     } else {
       currentItemPresentationSizeCancellable?.cancel()
       currentItemPresentationSizeCancellable = nil

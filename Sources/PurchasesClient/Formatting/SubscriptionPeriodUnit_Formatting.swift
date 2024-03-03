@@ -102,9 +102,6 @@ extension Product.SubscriptionPeriod.Unit {
 }
 
 extension Product.SubscriptionPeriod.Unit.FormatStyle: Codable {}
-
 extension Product.SubscriptionPeriod.Unit.FormatStyle: Equatable {}
-
 extension Product.SubscriptionPeriod.Unit.FormatStyle: Sendable {}
-
 extension Product.SubscriptionPeriod.Unit.FormatStyle: Hashable {}
