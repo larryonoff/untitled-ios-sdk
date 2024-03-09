@@ -29,6 +29,7 @@ let package = Package(
     .library(name: .composableArchitecture, targets: [.composableArchitecture]),
     .library(name: .composablePhotos, targets: [.composablePhotos]),
     .library(name: .concurrency, targets: [.concurrency]),
+    .library(name: .coreImage, targets: [.coreImage]),
     .library(name: .dependencies, targets: [.dependencies]),
     .library(name: .foundation, targets: [.foundation]),
     .library(name: .graphics, targets: [.graphics]),
@@ -104,6 +105,11 @@ let package = Package(
         .swiftUI
       ],
       path: "Sources/ComposableArchitecture"
+    ),
+    .target(
+      name: .coreImage,
+      dependencies: [],
+      path: "Sources/CoreImage"
     ),
     .target(
       name: .avFoundation,
@@ -448,6 +454,7 @@ extension Target.Dependency {
   static let composableArchitecture = byName(name: .composableArchitecture)
   static let composablePhotos = byName(name: .composablePhotos)
   static let concurrency = byName(name: .concurrency)
+  static let coreImage = byName(name: .coreImage)
   static let dependencies = byName(name: .dependencies)
   static let foundation = byName(name: .foundation)
   static let graphics = byName(name: .graphics)
@@ -562,6 +569,7 @@ extension Target.Dependency {
 extension String {
   static let avFoundation = "DuckAVFoundation"
   static let concurrency = "DuckConcurrency"
+  static let coreImage = "DuckCoreImage"
   static let composableArchitecture = "DuckComposableArchitecture"
   static let composablePhotos = "DuckComposablePhotos"
   static let dependencies = "DuckDependencies"
