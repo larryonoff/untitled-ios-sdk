@@ -11,10 +11,6 @@ public struct PaywallReducer {
       case dismiss
     }
 
-    public enum ProductAction {
-      case tapped
-    }
-
     case delegate(Delegate)
 
     case onAppear
@@ -27,16 +23,16 @@ public struct PaywallReducer {
     case selectProductWithID(Product.ID?)
 
     case fetchPaywallResponse(Result<Paywall?, Error>)
-
     case purchaseResponse(Result<PurchaseResult, Error>)
     case restorePurchasesResponse(Result<RestorePurchasesResult, Error>)
 
     case destination(PresentationAction<Destination.Action>)
-    case products(IdentifiedAction<Product.ID, ProductAction>)
+    case products(IdentifiedActionOf<ProductItem>)
   }
 
+  @ObservableState
   public struct State: Equatable {
-    @PresentationState
+    @Presents
     public var destination: Destination.State?
 
     public let paywallID: Paywall.ID
@@ -77,21 +73,20 @@ public struct PaywallReducer {
   }
 
   @Reducer
-  public struct Destination {
+  public struct ProductItem {
     public enum Action {
-      public enum Alert: Equatable {
-        case rejectIntroductoryOffer
-      }
-
-      case alert(Alert)
+      case tapped
     }
 
-    public enum State: Equatable {
-      case alert(AlertState<Action.Alert>)
-    }
+    public typealias State = Product
+  }
 
-    public var body: some ReducerOf<Self> {
-      EmptyReducer()
+  @Reducer(state: .equatable)
+  public enum Destination {
+    case alert(AlertState<Alert>)
+
+    public enum Alert: Equatable {
+      case rejectIntroductoryOffer
     }
   }
 
@@ -105,14 +100,12 @@ public struct PaywallReducer {
   public init() {}
 
   public var body: some ReducerOf<Self> {
-    coreReducer
-      .ifLet(\.$destination, action: \.destination) {
-        Destination()
-      }
+    coreBody
+      .ifLet(\.$destination, action: \.destination)
   }
 
   @ReducerBuilder<State, Action>
-  private var coreReducer: some ReducerOf<Self> {
+  private var coreBody: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .delegate:
