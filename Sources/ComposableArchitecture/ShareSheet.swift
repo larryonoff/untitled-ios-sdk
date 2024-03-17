@@ -13,8 +13,8 @@ public struct ShareSheet<Data: RandomAccessCollection> {
     case delegate(Delegate)
   }
 
+  @ObservableState
   public struct State {
-    public let id = UUID()
     public let data: Data
 
     public init(
@@ -25,6 +25,27 @@ public struct ShareSheet<Data: RandomAccessCollection> {
   }
 
   public init() {}
+}
+
+extension View {
+  /// Presents a share sheet when a piece of optional state held in a store becomes non-`nil`.
+  public func shareSheet<Data: RandomAccessCollection>(
+    _ item: Binding<StoreOf<ShareSheet<Data>>?>
+  ) -> some View {
+    let store = item.wrappedValue
+    let state = store?.withState { $0 }
+
+    return self.shareSheet(
+      isPresented: item.isPresent(),
+      data: state?.data,
+      onCompletion: { result in
+        store?.send(.delegate(.completed(result)))
+      },
+      onCancellation: {
+        store?.send(.delegate(.cancelled))
+      }
+    )
+  }
 }
 
 extension View {
