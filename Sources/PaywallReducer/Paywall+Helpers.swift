@@ -1,6 +1,6 @@
 import ComposableArchitecture
 
-extension AlertState<PaywallReducer.Destination.Action.Alert> {
+extension AlertState<PaywallReducer.Destination.Alert> {
   static var cancelIntroductoryOffer: Self {
     AlertState {
       TextState(L10n.CancelIntroductoryOffer.title)
