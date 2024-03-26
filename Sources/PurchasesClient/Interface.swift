@@ -11,7 +11,7 @@ extension DependencyValues {
 public struct PurchasesClient {
   public var initialize: @Sendable () -> Void
 
-  public var paywalByID: @Sendable (Paywall.ID) -> AsyncThrowingStream<FetchPaywallResponse, Error>
+  public var paywallByID: @Sendable (Paywall.ID) -> AsyncThrowingStream<FetchPaywallResponse, Error>
 
   public var purchase: @Sendable (PurchaseRequest) async throws -> PurchaseResult
   public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
@@ -33,7 +33,7 @@ extension PurchasesClient {
   public func prefetch(
     paywallByID id: Paywall.ID
   ) async throws {
-    for try await _ in paywalByID(id) {}
+    for try await _ in paywallByID(id) {}
   }
 }
 
