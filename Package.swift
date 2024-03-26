@@ -291,6 +291,7 @@ extension Target {
       name: .Client.purchases,
       dependencies: [
         .Client.analytics,
+        .Client.remoteSettings,
         .foundation,
         .logging,
         .Client.userIdentifier,

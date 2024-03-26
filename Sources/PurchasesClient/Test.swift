@@ -6,7 +6,7 @@ extension PurchasesClient: TestDependencyKey {
 
   public static let testValue = Self(
     initialize: unimplemented("\(Self.self).initialize"),
-    paywalByID: unimplemented("\(Self.self).paywalByID", placeholder: .finished()),
+    paywallByID: unimplemented("\(Self.self).paywalByID", placeholder: .finished()),
     purchase: unimplemented("\(Self.self).purchase", placeholder: .userCancelled),
     restorePurhases: unimplemented("\(Self.self).restorePurhases", placeholder: .userCancelled),
     purchases: unimplemented("\(Self.self).purchases", placeholder: Purchases()),
@@ -22,7 +22,7 @@ extension PurchasesClient: TestDependencyKey {
 extension PurchasesClient {
   public static let noop = Self(
     initialize: {},
-    paywalByID: { _ in .finished() },
+    paywallByID: { _ in .finished() },
     purchase: { _ in try await Task.never() },
     restorePurhases: { try await Task.never() },
     purchases: { Purchases() },
@@ -38,7 +38,7 @@ extension PurchasesClient {
 extension PurchasesClient {
   public static let mock = Self(
     initialize: { },
-    paywalByID: { _ in .finished() },
+    paywallByID: { _ in .finished() },
     purchase: { _ in .success(.init(isPremium: true)) },
     restorePurhases: { .success(.init(isPremium: true)) },
     purchases: { Purchases(isPremium: true) },

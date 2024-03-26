@@ -1,5 +1,5 @@
 import Adapty
-@preconcurrency import Foundation
+import Foundation
 import StoreKit
 import Tagged
 
@@ -89,6 +89,14 @@ public struct Product {
     self.displayPrice = displayPrice
     self.subscription = subscription
   }
+
+  // MARK: - Dynamic Properties
+
+  public var isEligibleForTrial: Bool {
+    subscription?
+      .introductoryOffer?
+      .paymentMode == .freeTrial
+  }
 }
 
 extension Product.SubscriptionPeriod {
@@ -112,70 +120,45 @@ extension Product.SubscriptionPeriod {
 extension Product.SubscriptionPeriod.Unit: CustomStringConvertible {
   public var description: String {
     switch self {
-    case .day:
-      return "day"
-    case .week:
-      return "week"
-    case .month:
-      return "month"
-    case .year:
-      return "year"
+    case .day: "day"
+    case .week: "week"
+    case .month: "month"
+    case .year: "year"
     }
   }
 }
 
 extension Product: Equatable {}
-
 extension Product: Hashable {}
-
 extension Product: Identifiable {}
-
 extension Product: Sendable {}
 
 extension Product.SubscriptionInfo: Codable {}
-
 extension Product.SubscriptionInfo: Equatable {}
-
 extension Product.SubscriptionInfo: Hashable {}
-
 extension Product.SubscriptionInfo: Sendable {}
 
 extension Product.SubscriptionOffer: Codable {}
-
 extension Product.SubscriptionOffer: Equatable {}
-
 extension Product.SubscriptionOffer: Hashable {}
-
 extension Product.SubscriptionOffer: Sendable {}
 
 extension Product.SubscriptionOffer.OfferType: Codable {}
-
 extension Product.SubscriptionOffer.OfferType: Equatable {}
-
 extension Product.SubscriptionOffer.OfferType: Hashable {}
-
 extension Product.SubscriptionOffer.OfferType: Sendable {}
 
 extension Product.SubscriptionOffer.PaymentMode: Codable {}
-
 extension Product.SubscriptionOffer.PaymentMode: Equatable {}
-
 extension Product.SubscriptionOffer.PaymentMode: Hashable {}
-
 extension Product.SubscriptionOffer.PaymentMode: Sendable {}
 
 extension Product.SubscriptionPeriod: Codable {}
-
 extension Product.SubscriptionPeriod: Equatable {}
-
 extension Product.SubscriptionPeriod: Hashable {}
-
 extension Product.SubscriptionPeriod: Sendable {}
 
 extension Product.SubscriptionPeriod.Unit: Codable {}
-
 extension Product.SubscriptionPeriod.Unit: Equatable {}
-
 extension Product.SubscriptionPeriod.Unit: Hashable {}
-
 extension Product.SubscriptionPeriod.Unit: Sendable {}

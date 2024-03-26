@@ -26,7 +26,7 @@ extension PurchasesClient {
       initialize: {
         impl.initialize()
       },
-      paywalByID: { id in
+      paywallByID: { id in
         impl.paywall(by: id)
       },
       purchase: { request in

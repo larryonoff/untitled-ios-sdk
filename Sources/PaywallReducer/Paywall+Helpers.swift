@@ -1,19 +1,34 @@
 import ComposableArchitecture
 
-extension AlertState<PaywallReducer.Destination.Alert> {
-  static var cancelIntroductoryOffer: Self {
-    AlertState {
-      TextState(L10n.CancelIntroductoryOffer.title)
-    } actions: {
-      ButtonState(role: .destructive, action: .rejectIntroductoryOffer) {
-        TextState(L10n.CancelIntroductoryOffer.Action.reject)
-      }
+extension PaywallReducer.State {
+  @inlinable
+  public var isRestoreDisabled: Bool {
+    isFetchingPaywall || isPurchasing
+  }
 
-      ButtonState(role: .cancel) {
-        TextState(L10n.CancelIntroductoryOffer.Action.cancel)
-      }
-    } message: {
-      TextState(L10n.CancelIntroductoryOffer.message)
+  public var isSelectedEligibleForTrial: Bool {
+    productSelected?.isEligibleForTrial == true &&
+    isEligibleForIntroductoryOffer
+  }
+}
+
+extension PaywallReducer {
+  func presentIntroductoryOfferIfNeeded(_ state: inout State) -> Bool {
+    guard remoteSettings.isIntroductoryOfferEnabled else { return false }
+    guard state.isEligibleForIntroductoryOffer else { return false }
+
+    if let product = state.paywall?.introductoryOfferProduct {
+      state.destination = .freeTrial(
+        .init(
+          paywallID: state.paywallID,
+          product: product,
+          isEligibleForIntroductoryOffer: state.isEligibleForIntroductoryOffer
+        )
+      )
+
+      return true
     }
+
+    return false
   }
 }

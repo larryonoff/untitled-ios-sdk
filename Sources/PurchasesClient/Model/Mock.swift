@@ -7,11 +7,6 @@ extension Paywall {
       .mockYear,
       .mockMonth
     ],
-    productComparingID: .mockMonth,
-    productSelectedID: .mockYear,
-    payUpFrontProductID: nil,
-    filterPayUpFrontProduct: true,
-    variantID: nil,
     remoteConfigString: nil
   )
 }

@@ -2,6 +2,7 @@ import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckComposableArchitecture
 import DuckPurchasesClient
+import DuckRemoteSettingsClient
 import IdentifiedCollections
 
 @Reducer
@@ -14,13 +15,14 @@ public struct PaywallReducer {
     case delegate(Delegate)
 
     case onAppear
+
+    case cancelPurchaseTapped
     case dismissTapped
-    case purchaseCancelled
     case restorePurchasesTapped
 
     case purchase
 
-    case selectProductWithID(Product.ID?)
+    case setSelectedProductID(Product.ID?)
 
     case fetchPaywallResponse(Result<Paywall?, Error>)
     case purchaseResponse(Result<PurchaseResult, Error>)
@@ -42,26 +44,16 @@ public struct PaywallReducer {
     public var productComparing: Product?
     public var productSelected: Product?
 
+    public var productSelectedID: Product.ID? {
+      productSelected?.id
+    }
+
     public var placement: Placement?
 
     public var isEligibleForIntroductoryOffer: Bool = false
-    public var isIntroductoryOfferCancelConfirmationEnabled: Bool = false
     public var isFetchingPaywall: Bool = false
+    public var isHiddenPricesEnabled: Bool = true
     public var isPurchasing: Bool = false
-
-    public var isIntroductoryOfferCancelConfirmationNeeded: Bool {
-      guard
-        isEligibleForIntroductoryOffer,
-        isIntroductoryOfferCancelConfirmationEnabled
-      else {
-        return false
-      }
-
-      let hasIntroductoryOffer = paywall?.products
-        .contains { $0.subscription?.introductoryOffer != nil } ?? false
-
-      return hasIntroductoryOffer
-    }
 
     public init(
       paywallID: Paywall.ID,
@@ -84,6 +76,7 @@ public struct PaywallReducer {
   @Reducer(state: .equatable)
   public enum Destination {
     case alert(AlertState<Alert>)
+    case freeTrial(PaywallFreeTrial)
 
     public enum Alert: Equatable {
       case rejectIntroductoryOffer
@@ -96,6 +89,7 @@ public struct PaywallReducer {
 
   @Dependency(\.analytics) var analytics
   @Dependency(\.purchases) var purchases
+  @Dependency(\.remoteSettings) var remoteSettings
 
   public init() {}
 
@@ -114,55 +108,25 @@ public struct PaywallReducer {
         state.isEligibleForIntroductoryOffer =
           purchases.purchases().isEligibleForIntroductoryOffer
         state.isFetchingPaywall = true
+        state.isHiddenPricesEnabled = remoteSettings.isHiddenPricesEnabled
 
         return .concatenate(
-          .run { [paywallID = state.paywallID] send in
-            // HACK
-            // sometimes product cannot be selected or purchased
-            try? await Task.sleep(nanoseconds: 1_000_000_00)
-
-            for try await response in purchases.paywalByID(paywallID) {
-              await send(
-                .fetchPaywallResponse(
-                  .success(response.paywall)
-                )
-              )
-            }
-          } catch: { error, send in
-            await send(.fetchPaywallResponse(.failure(error)))
-          },
-          logPaywallOpened(state: state)
+          fetchPaywall(state: &state),
+          logView(state: state)
         )
+      case .cancelPurchaseTapped:
+        return purchaseCancel(state: &state)
       case .dismissTapped:
-        if state.isIntroductoryOfferCancelConfirmationNeeded {
-          state.destination = .alert(.cancelIntroductoryOffer)
+        if presentIntroductoryOfferIfNeeded(&state) {
           return .none
         }
 
         return dismiss(state: &state)
-      case .purchaseCancelled:
-        state.isPurchasing = false
-
-        return .cancel(id: CancelID.purchase)
       case .restorePurchasesTapped:
-        state.isPurchasing = true
-
-        return .run { send in
-          await send(
-            .restorePurchasesResponse(
-              await Result {
-                try await purchases.restorePurhases()
-              }
-            )
-          )
-        }
-        .cancellable(id: CancelID.purchase, cancelInFlight: true)
+        return restorePurchases(state: &state)
       case .purchase:
-        guard let product = state.productSelected else {
-          return .none
-        }
-        return purchase(product, state: &state)
-      case let .selectProductWithID(productID):
+        return purchase(state: &state)
+      case let .setSelectedProductID(productID):
         return selectProduct(withID: productID, state: &state)
       case let .fetchPaywallResponse(result):
         state.isFetchingPaywall = false
@@ -172,9 +136,11 @@ public struct PaywallReducer {
 
           var products = (paywall?.products ?? [])
 
-          if let paywall, paywall.filterPayUpFrontProduct {
-            products = products
-              .filter { $0.id != paywall.payUpFrontProductID }
+          if
+            let filteredProductIDs = paywall?.filteredProductIDs,
+            !filteredProductIDs.isEmpty
+          {
+            products = products.filter { !filteredProductIDs.contains($0.id) }
           }
 
           state.paywall = paywall
@@ -226,12 +192,22 @@ public struct PaywallReducer {
         }
 
         return .none
-      case let .products(.element(id: productID, action: .tapped)):
-        return selectProduct(withID: productID, state: &state)
-      case .destination(.presented(.alert(.rejectIntroductoryOffer))):
+      case .destination(.dismiss):
+        let isIntroOfferPresented = state.destination?.is(\.freeTrial) == true
+
+        state.destination = nil
+
+        if isIntroOfferPresented {
+          return dismiss(state: &state)
+        }
+
+        return .none
+      case .destination(.presented(.freeTrial(.delegate(.dismiss)))):
         return dismiss(state: &state)
       case .destination:
         return .none
+      case let .products(.element(id: productID, action: .tapped)):
+        return selectProduct(withID: productID, state: &state)
       }
     }
   }
@@ -241,10 +217,37 @@ public struct PaywallReducer {
   private func dismiss(
     state: inout State
   ) -> Effect<Action> {
-    .merge(
-      logPaywallDismissed(state: state),
+    if state.destination != nil {
+      state.destination = nil
+
+      return .concatenate(
+        .run { _ in try? await Task.sleep(nanoseconds: 1_000_000_00) },
+        dismiss(state: &state)
+      )
+    }
+
+    return .merge(
+      logDismiss(state: state),
       .send(.delegate(.dismiss))
     )
+  }
+
+  private func fetchPaywall(
+    state: inout State
+  ) -> Effect<Action> {
+    state.isFetchingPaywall = true
+
+    return .run(priority: .high) { [paywallID = state.paywallID] send in
+      // HACK
+      // sometimes product cannot be selected or purchased
+      try? await Task.sleep(nanoseconds: 1_000_000_00)
+
+      for try await response in purchases.paywallByID(paywallID) {
+        await send(.fetchPaywallResponse(.success(response.paywall)))
+      }
+    } catch: { error, send in
+      await send(.fetchPaywallResponse(.failure(error)))
+    }
   }
 
   private func purchase(
@@ -259,6 +262,39 @@ public struct PaywallReducer {
           await Result {
             try await purchases
               .purchase(.request(product: product, paywallID: paywallID))
+          }
+        )
+      )
+    }
+    .cancellable(id: CancelID.purchase, cancelInFlight: true)
+  }
+
+  private func purchase(
+    state: inout State
+  ) -> Effect<Action> {
+    guard let product = state.productSelected else {
+      return .none
+    }
+    return purchase(product, state: &state)
+  }
+
+  private func purchaseCancel(
+    state: inout State
+  ) -> Effect<Action> {
+    state.isPurchasing = false
+    return .cancel(id: CancelID.purchase)
+  }
+
+  private func restorePurchases(
+    state: inout State
+  ) -> Effect<Action> {
+    state.isPurchasing = true
+
+    return .run { send in
+      await send(
+        .restorePurchasesResponse(
+          await Result {
+            try await purchases.restorePurhases()
           }
         )
       )
@@ -288,7 +324,7 @@ public struct PaywallReducer {
 
   // MARK: - Analytics
 
-  private func logPaywallOpened(
+  private func logView(
     state: State
   ) -> Effect<Action> {
     var params: [AnalyticsClient.EventParameterName: Any] = [:]
@@ -297,13 +333,13 @@ public struct PaywallReducer {
 
     return .run { [params] _ in
       analytics.log(
-        "paywall_opened",
+        "paywall_view",
         parameters: params
       )
     }
   }
 
-  private func logPaywallDismissed(
+  private func logDismiss(
     state: State
   ) -> Effect<Action> {
     var params: [AnalyticsClient.EventParameterName: Any] = [:]
@@ -312,7 +348,7 @@ public struct PaywallReducer {
 
     return .run { [params] _ in
       analytics.log(
-        "paywall_dismissed",
+        "paywall_dismiss",
         parameters: params
       )
     }

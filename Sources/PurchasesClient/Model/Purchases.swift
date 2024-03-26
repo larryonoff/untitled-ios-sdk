@@ -13,11 +13,8 @@ public struct Purchases {
 }
 
 extension Purchases: Codable {}
-
 extension Purchases: Equatable {}
-
 extension Purchases: Hashable {}
-
 extension Purchases: Sendable {}
 
 extension Purchases {
