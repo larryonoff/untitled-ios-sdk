@@ -4,10 +4,7 @@ import XCTestDynamicOverlay
 extension AnalyticsClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
-  public static let testValue = Self(
-    logEvent: unimplemented("\(Self.self).logEvent"),
-    setUserProperty: unimplemented("\(Self.self).setUserProperty")
-  )
+  public static let testValue = Self()
 }
 
 extension AnalyticsClient {

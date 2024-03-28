@@ -1,4 +1,5 @@
 import Dependencies
+import DependenciesMacros
 
 extension DependencyValues {
   public var analytics: AnalyticsClient {
@@ -7,31 +8,25 @@ extension DependencyValues {
   }
 }
 
+@DependencyClient
 public struct AnalyticsClient {
-  public var logEvent: @Sendable (EventName, [EventParameterName: Any]?) -> Void
-  public var setUserProperty: @Sendable (Any?, UserPropertyName) -> Void
+  public var logEvent: @Sendable (
+    _ _: EventName,
+    _ parameters: [EventParameterName: Any]?
+  ) -> Void
 
-  public init(
-    logEvent: @escaping @Sendable (EventName, [EventParameterName: Any]?) -> Void,
-    setUserProperty: @escaping @Sendable (Any?, UserPropertyName) -> Void
-  ) {
-    self.logEvent = logEvent
-    self.setUserProperty = setUserProperty
-  }
-}
+  @DependencyEndpoint(method: "set")
+  public var setUserProperty: @Sendable (
+    _ _ : Any?,
+    _ for: UserPropertyName
+  ) -> Void
 
-extension AnalyticsClient {
+  // MARK: - Extension
+
   public func log(
     _ eventName: EventName,
     parameters: [EventParameterName: Any]? = nil
   ) {
-    self.logEvent(eventName, parameters)
-  }
-
-  public func set(
-    _ value: Any?,
-    for name: UserPropertyName
-  ) {
-    self.setUserProperty(value, name)
+    self.logEvent(eventName, parameters: parameters)
   }
 }

@@ -197,6 +197,7 @@ extension Target {
         .foundation,
         .logging,
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.tagged
       ],
       path: "Sources/AnalyticsClient"
@@ -517,6 +518,13 @@ extension Target.Dependency {
       name: "Dependencies",
       package: "swift-dependencies"
     )
+
+    enum Dependencies {
+      static let macros = product(
+        name: "DependenciesMacros",
+        package: "swift-dependencies"
+      )
+    }
 
     static let deviceKit = byName(name: "DeviceKit")
 
