@@ -511,6 +511,6 @@ final class _AdaptyDelegate: AdaptyDelegate {
 }
 
 private let logger = Logger(
-  subsystem: ".SDK.purchases-client",
+  subsystem: ".SDK.PurchasesClient",
   category: "Purchases"
 )
