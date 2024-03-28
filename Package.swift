@@ -93,8 +93,8 @@ let package = Package(
       from: "2.8.0"
     ),
     .package(
-      url: "https://github.com/yandexmobile/metrica-sdk-ios",
-      from: "4.5.2"
+      url: "https://github.com/appmetrica/appmetrica-sdk-ios",
+      from: "5.1.0"
     )
   ],
   targets: [
@@ -221,8 +221,9 @@ extension Target {
         .Client.analytics,
         .Client.userIdentifier,
         .External.dependencies,
-        .External.Yandex.appMetrica,
-        .External.Yandex.appMetricaCrashes
+        .External.Dependencies.macros,
+        .External.AppMetrica.core,
+        .External.AppMetrica.crashes
       ],
       path: "Sources/AppMetricaClient"
     )
@@ -561,15 +562,15 @@ extension Target.Dependency {
 
     static let swiftUIBackports = byName(name: "SwiftUIBackports")
 
-    enum Yandex {
-      static let appMetrica = Target.Dependency.product(
-        name: "YandexMobileMetrica",
-        package: "metrica-sdk-ios"
+    enum AppMetrica {
+      static let core = Target.Dependency.product(
+        name: "AppMetricaCore",
+        package: "appmetrica-sdk-ios"
       )
 
-      static let appMetricaCrashes = Target.Dependency.product(
-        name: "YandexMobileMetricaCrashes",
-        package: "metrica-sdk-ios"
+      static let crashes = Target.Dependency.product(
+        name: "AppMetricaCrashes",
+        package: "appmetrica-sdk-ios"
       )
     }
   }
