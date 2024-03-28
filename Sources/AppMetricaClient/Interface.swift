@@ -10,7 +10,7 @@ extension DependencyValues {
 
 @DependencyClient
 public struct AppMetricaClient {
-  public var deviceID: @Sendable () async -> String? = { nil }
+  public var deviceID: @Sendable () -> String? = { nil }
 
   public var reset: @Sendable () -> Void
 }
