@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "appmetrica-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/appmetrica/appmetrica-sdk-ios",
+      "state" : {
+        "revision" : "118dd58b3057bd8900727b755c6531989571265d",
+        "version" : "5.1.0"
+      }
+    },
+    {
       "identity" : "combine-schedulers",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
@@ -136,21 +145,21 @@
       }
     },
     {
+      "identity" : "kscrash",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kstenerud/KSCrash",
+      "state" : {
+        "revision" : "2cff3a74753b0b22f25a138936f0ef029aebaa39",
+        "version" : "1.16.2"
+      }
+    },
+    {
       "identity" : "leveldb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/leveldb.git",
       "state" : {
         "revision" : "0706abcc6b0bd9cedfbb015ba840e4a780b5159b",
         "version" : "1.22.2"
-      }
-    },
-    {
-      "identity" : "metrica-sdk-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/yandexmobile/metrica-sdk-ios",
-      "state" : {
-        "revision" : "13d8b11181a33938ef42759d49466a621df5e7db",
-        "version" : "4.5.2"
       }
     },
     {

@@ -1,6 +1,6 @@
 import DuckAnalyticsClient
 import DuckFoundation
-import YandexMobileMetrica
+import AppMetricaCore
 
 extension AnalyticsClient {
   public static func appMetrica(
@@ -12,34 +12,29 @@ extension AnalyticsClient {
           return
         }
 
-        YMMYandexMetrica.log(
+        AppMetrica.log(
           eventName,
           parameters: parameters
         )
       },
       setUserProperty: { value, name in
-        YMMYandexMetrica.set(value, for: name)
+        AppMetrica.set(value, for: name)
       }
     )
   }
 }
 
-extension YMMYandexMetrica {
+extension AppMetrica {
   static func log(
     _ eventName: AnalyticsClient.EventName,
     parameters: [AnalyticsClient.EventParameterName: Any]?
   ) {
     let _parameters = parameters?
       .mapKeys(\.rawValue)
-      .mapValues { value -> Any in
-        if let value = value as? CustomStringConvertible {
-          return value.description
-        }
-        return value
-      }
+      .mapValues(String.init(describing:))
 
     reportEvent(
-      eventName.rawValue,
+      name: eventName.rawValue,
       parameters: _parameters
     )
   }
@@ -48,33 +43,31 @@ extension YMMYandexMetrica {
     _ value: Any?,
     for name: AnalyticsClient.UserPropertyName
   ) {
-    var profileUpdate: YMMUserProfileUpdate?
+    var update: UserProfileUpdate?
 
     if let _value = value as? Int {
-      profileUpdate = YMMProfileAttribute
+      update = ProfileAttribute
         .customNumber(name.rawValue)
         .withValue(Double(_value))
     } else if let _value = value as? Double {
-      profileUpdate = YMMProfileAttribute
+      update = ProfileAttribute
         .customCounter(name.rawValue)
         .withDelta(_value)
     } else if let _value = value as? Bool {
-      profileUpdate = YMMProfileAttribute
+      update = ProfileAttribute
         .customBool(name.rawValue)
         .withValue(_value)
     }  else if let _value = value as? String {
-      profileUpdate = YMMProfileAttribute
+      update = ProfileAttribute
         .customString(name.rawValue)
         .withValue(_value)
     }
 
-    if let profileUpdate {
-      let profile = YMMMutableUserProfile()
-      profile.apply(from: [
-        profileUpdate
-      ])
+    if let update {
+      let profile = MutableUserProfile()
+      profile.apply(update)
 
-      report(profile)
+      reportUserProfile(profile)
     }
   }
 }

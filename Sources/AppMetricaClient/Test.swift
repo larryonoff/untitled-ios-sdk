@@ -4,10 +4,7 @@ import XCTestDynamicOverlay
 extension AppMetricaClient: TestDependencyKey {
   public static var previewValue = Self.noop
 
-  public static let testValue = Self(
-    deviceID: unimplemented("\(Self.self).deviceID"),
-    reset: unimplemented("\(Self.self).reset")
-  )
+  public static let testValue = Self()
 }
 
 extension AppMetricaClient {

@@ -1,10 +1,10 @@
+import AppMetricaCore
+import AppMetricaCrashes
 import DuckDependencies
 import DuckLogging
 import DuckUserIdentifierClient
 import Foundation
 import OSLog
-import YandexMobileMetrica
-import YandexMobileMetricaCrashes
 
 extension AppMetricaClient {
   public static func live(
@@ -15,33 +15,23 @@ extension AppMetricaClient {
       return Self.noop
     }
 
-    let configuration = YMMYandexMetricaConfiguration(apiKey: apiKey)!
-    configuration.crashReporting = true
+    let configuration = AppMetricaConfiguration(apiKey: apiKey)!
     configuration.sessionTimeout = 5 * 60
+    configuration.sessionsAutoTracking = true
     configuration.userProfileID = userIdentifier().uuidString
 
-    #if DEBUG
-    configuration.logs = true
-    #endif
+//    #if DEBUG
+//    configuration.areLogsEnabled = true
+//    #endif
 
-    YMMYandexMetrica.activate(with: configuration)
+    AppMetrica.activate(with: configuration)
 
     return Self(
       deviceID: {
-        do {
-          return try await YMMYandexMetrica
-            .requestAppMetricaDeviceID(withCompletionQueue: nil)
-        } catch {
-          logger.error("deviceID failure", dump: [
-            "error": error
-          ])
-          return nil
-        }
+        AppMetrica.deviceID
       },
       reset: {
-        YMMYandexMetrica.setUserProfileID(
-          userIdentifier().uuidString
-        )
+        AppMetrica.userProfileID = userIdentifier().uuidString
       }
     )
   }
@@ -54,6 +44,6 @@ extension Bundle {
 }
 
 private let logger = Logger(
-  subsystem: "OnelightSDK.YandexAppMetrica",
-  category: "YandexAppMetrica"
+  subsystem: ".SDK.AppMetricaClient",
+  category: "AppMetrica"
 )
