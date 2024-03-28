@@ -25,7 +25,7 @@ public struct PaywallReducer {
     case setSelectedProductID(Product.ID?)
 
     case fetchPaywallResponse(Result<Paywall?, Error>)
-    case purchaseResponse(Result<PurchaseResult, Error>)
+    case purchaseResponse(Result<PurchaseResult, Error>, Product)
     case restorePurchasesResponse(Result<RestorePurchasesResult, Error>)
 
     case destination(PresentationAction<Destination.Action>)
@@ -112,7 +112,7 @@ public struct PaywallReducer {
 
         return .concatenate(
           fetchPaywall(state: &state),
-          logView(state: state)
+          analytics.logView(state: state)
         )
       case .cancelPurchaseTapped:
         return purchaseCancel(state: &state)
@@ -162,21 +162,24 @@ public struct PaywallReducer {
         }
 
         return .none
-      case let .purchaseResponse(result):
+      case let .purchaseResponse(result, product):
         state.isPurchasing = false
 
         do {
           switch try result.get() {
-          case .success:
-            return .send(.delegate(.dismiss))
+          case let .success:
+            return .concatenate(
+              analytics.logPurchase(product, result: result, state: state),
+              .send(.delegate(.dismiss))
+            )
           case .userCancelled:
             return .none
           }
         } catch {
           state.destination = .alert(.failure(error))
-        }
 
-        return .none
+          return analytics.logPurchase(product, result: result, state: state)
+        }
       case let .restorePurchasesResponse(result):
         state.isPurchasing = false
 
@@ -226,10 +229,7 @@ public struct PaywallReducer {
       )
     }
 
-    return .merge(
-      logDismiss(state: state),
-      .send(.delegate(.dismiss))
-    )
+    return .send(.delegate(.dismiss))
   }
 
   private func fetchPaywall(
@@ -256,17 +256,19 @@ public struct PaywallReducer {
   ) -> Effect<Action> {
     state.isPurchasing = true
 
-    return .run { [paywallID = state.paywallID] send in
-      await send(
-        .purchaseResponse(
-          await Result {
-            try await purchases
-              .purchase(.request(product: product, paywallID: paywallID))
-          }
-        )
-      )
-    }
-    .cancellable(id: CancelID.purchase, cancelInFlight: true)
+    return .merge(
+      analytics.logPurchase(product, state: state),
+      .run { [paywallID = state.paywallID] send in
+        let result = await Result {
+          try await purchases.purchase(
+            .request(product: product, paywallID: paywallID)
+          )
+        }
+
+        await send(.purchaseResponse(result, product))
+      }
+      .cancellable(id: CancelID.purchase, cancelInFlight: true)
+    )
   }
 
   private func purchase(
@@ -291,13 +293,11 @@ public struct PaywallReducer {
     state.isPurchasing = true
 
     return .run { send in
-      await send(
-        .restorePurchasesResponse(
-          await Result {
-            try await purchases.restorePurhases()
-          }
-        )
-      )
+      let result = await Result {
+        try await purchases.restorePurhases()
+      }
+
+      await send(.restorePurchasesResponse(result))
     }
     .cancellable(id: CancelID.purchase, cancelInFlight: true)
   }
@@ -320,37 +320,5 @@ public struct PaywallReducer {
     }
 
     return .none
-  }
-
-  // MARK: - Analytics
-
-  private func logView(
-    state: State
-  ) -> Effect<Action> {
-    var params: [AnalyticsClient.EventParameterName: Any] = [:]
-    params[.contentID] = state.paywallID
-    params[.placement] = state.placement
-
-    return .run { [params] _ in
-      analytics.log(
-        "paywall_view",
-        parameters: params
-      )
-    }
-  }
-
-  private func logDismiss(
-    state: State
-  ) -> Effect<Action> {
-    var params: [AnalyticsClient.EventParameterName: Any] = [:]
-    params[.contentID] = state.paywallID
-    params[.placement] = state.placement
-
-    return .run { [params] _ in
-      analytics.log(
-        "paywall_dismiss",
-        parameters: params
-      )
-    }
   }
 }

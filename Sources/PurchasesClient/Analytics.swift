@@ -1,38 +1,32 @@
 import DuckAnalyticsClient
 import Foundation
 
-extension AnalyticsClient.EventName {
-  public static let subscriptionFailed: Self = "sub_failed"
-  public static let subscriptionPurchased: Self = "sub_purchased"
-}
-
-extension AnalyticsClient.EventParameterName {
-  public static let subscriptionPeriod: Self = "subs_period"
-  public static let subscriptionTrialPeriod: Self = "subs_trial_period"
-}
-
 extension AnalyticsClient.UserPropertyName {
   public static let isPremium: Self = "is_premium"
 }
 
-extension Product {
-  var analyticsParameters: [AnalyticsClient.EventParameterName: Any] {
-    var parameters: [AnalyticsClient.EventParameterName: Any] = [:]
-    parameters[.subscriptionPeriod] = subscription?
-      .subscriptionPeriod
-      .analyticsValue
+extension Dictionary<AnalyticsClient.EventParameterName, Any> {
+  mutating
+  public func insertOrUpdate(_ product: Product) {
+    var params: [AnalyticsClient.EventParameterName: Any] = [:]
+    params[.contentID] = product.id
 
     if
-      let introductoryOffer = subscription?.introductoryOffer,
-      introductoryOffer.paymentMode == .freeTrial
+      let subscription = product.subscription
     {
-      parameters[.subscriptionTrialPeriod] =
-        introductoryOffer.period.analyticsValue
+      params["subs_period"] = subscription.subscriptionPeriod.analyticsValue
+      params["subs_period_unit"] = subscription.subscriptionPeriod.unit.analyticsValue
+
+      if let introductoryOffer = subscription.introductoryOffer {
+        params["subs_intro_offer_type"] = introductoryOffer.type.rawValue
+        params["subs_intro_offer_payment_mode"] = introductoryOffer.paymentMode.rawValue
+      }
     }
 
-    return parameters
+    merge(params) { (_, new) in new }
   }
 }
+
 
 extension Product.SubscriptionPeriod.Unit {
   public var analyticsValue: String {
@@ -52,40 +46,5 @@ extension Product.SubscriptionPeriod {
     default:
       return "\(value)_\(unit.analyticsValue)"
     }
-  }
-}
-
-extension AnalyticsClient {
-  func logPurchase(
-    _ request: PurchaseRequest
-  ) {
-
-    log(
-      .subscriptionPurchased,
-      parameters: request.product.analyticsParameters
-    )
-  }
-
-  func logPurchaseFailed(
-    with error: Error,
-    request: PurchaseRequest
-  ) {
-    let nsError = error as NSError
-
-    var parameters: [EventParameterName: Any] = [
-      .errorCode: nsError.code,
-      .errorDomain: nsError.domain,
-      .errorDescription: nsError.localizedDescription
-    ]
-
-    parameters.merge(
-      request.product.analyticsParameters,
-      uniquingKeysWith: { (_, new) in new }
-    )
-
-    log(
-      .subscriptionFailed,
-      parameters: parameters
-    )
   }
 }

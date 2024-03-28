@@ -1,4 +1,4 @@
-import Tagged
+@_exported import Tagged
 
 extension AnalyticsClient {
   public typealias EventName = Tagged<(AnalyticsClient, evenName: ()), String>
