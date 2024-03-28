@@ -64,25 +64,17 @@ public enum PurchaseResult {
 }
 
 extension FetchPaywallResponse: Equatable {}
-
 extension FetchPaywallResponse: Hashable {}
-
 extension FetchPaywallResponse: Sendable {}
 
 extension PurchaseRequest: Equatable {}
-
 extension PurchaseRequest: Hashable {}
-
 extension PurchaseRequest: Sendable {}
 
 extension RestorePurchasesResult: Equatable {}
-
 extension RestorePurchasesResult: Hashable {}
-
 extension RestorePurchasesResult: Sendable {}
 
 extension PurchaseResult: Equatable {}
-
 extension PurchaseResult: Hashable {}
-
 extension PurchaseResult: Sendable {}
