@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/abseil-cpp-binary.git",
       "state" : {
-        "revision" : "bfc0b6f81adc06ce5121eb23f628473638d67c5c",
-        "version" : "1.2022062300.0"
+        "revision" : "7ce7be095bc3ed3c98b009532fe2d7698c132614",
+        "version" : "1.2024011601.0"
       }
     },
     {
@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adaptyteam/AdaptySDK-iOS",
       "state" : {
-        "revision" : "ec6481914d1e39402960889d21814ce4ddf5a176",
-        "version" : "2.10.1"
+        "revision" : "306ddc073d72dad375c2e4296d4d7016786c2889",
+        "version" : "2.10.2"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "be49849dcba96f2b5ee550d4eceb2c0fa27dade4",
-        "version" : "10.22.1"
+        "revision" : "fcf5ced6dae2d43fced2581e673cc3b59bdb8ffa",
+        "version" : "10.23.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "482cfa4e5880f0a29f66ecfd60c5a62af28bd1f0",
-        "version" : "10.22.1"
+        "revision" : "6ec4ca62b00a665fa09b594fab897753a8c635fa",
+        "version" : "10.23.0"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/grpc-binary.git",
       "state" : {
-        "revision" : "a673bc2937fbe886dd1f99c401b01b6d977a9c98",
-        "version" : "1.49.1"
+        "revision" : "67043f6389d0e28b38fa02d1c6952afeb04d807f",
+        "version" : "1.62.1"
       }
     },
     {
@@ -221,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-custom-dump",
       "state" : {
-        "revision" : "6ea3b1b6a4957806d72030a32360d4bcb155a0d2",
-        "version" : "1.2.0"
+        "revision" : "f01efb26f3a192a0e88dcdb7c3c391ec2fc25d9c",
+        "version" : "1.3.0"
       }
     },
     {
@@ -230,8 +230,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-dependencies",
       "state" : {
-        "revision" : "09e49dd46932adfe80ce672b4b3772d79ee6c21a",
-        "version" : "1.2.1"
+        "revision" : "d3a5af3038a09add4d7682f66555d6212058a3c0",
+        "version" : "1.2.2"
       }
     },
     {
