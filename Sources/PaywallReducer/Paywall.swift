@@ -109,7 +109,6 @@ public struct PaywallReducer {
       case .onAppear:
         state.isEligibleForIntroductoryOffer =
           purchases.purchases().isEligibleForIntroductoryOffer
-        state.isFetchingPaywall = true
         state.isHiddenPricesEnabled = remoteSettings.isSubsHiddenPricesEnabled
 
         return .concatenate(
