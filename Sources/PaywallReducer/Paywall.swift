@@ -42,10 +42,12 @@ public struct PaywallReducer {
 
     public var products: IdentifiedArrayOf<Product> = []
     public var productComparing: Product?
-    public var productSelected: Product?
+    public var productSelectedID: Product.ID?
 
-    public var productSelectedID: Product.ID? {
-      productSelected?.id
+    public var productSelected: Product? {
+      productSelectedID.flatMap { productID in
+        paywall?.products.first { $0.id == productID }
+      }
     }
 
     public var placement: Placement?
@@ -124,10 +126,10 @@ public struct PaywallReducer {
         return dismiss(state: &state)
       case .restorePurchasesTapped:
         return restorePurchases(state: &state)
-      case .purchase:
-        return purchase(state: &state)
       case let .setSelectedProductID(productID):
         return selectProduct(withID: productID, state: &state)
+      case .purchase:
+        return purchase(state: &state)
       case let .fetchPaywallResponse(result):
         state.isFetchingPaywall = false
 
@@ -147,8 +149,8 @@ public struct PaywallReducer {
           state.products = IdentifiedArray(uncheckedUniqueElements: products)
 
           state.productComparing = paywall?.productComparing
-          state.productSelected =
-            paywall?.productSelected ?? products.first
+          state.productSelectedID =
+            paywall?.productSelected?.id ?? products.first?.id
 
           if let paywall = paywall {
             return .run { _ in
@@ -157,7 +159,7 @@ public struct PaywallReducer {
           }
         } catch {
           state.paywall = nil
-          state.productSelected = nil
+          state.productSelectedID = nil
           state.destination = .alert(.failure(error))
         }
 
@@ -308,9 +310,7 @@ public struct PaywallReducer {
   ) -> Effect<Action> {
     let productChanged = productID != state.productSelected?.id
 
-    state.productSelected = state.paywall?
-      .products
-      .first { $0.id == productID }
+    state.productSelectedID = productID
 
     if
       let product = state.productSelected,
