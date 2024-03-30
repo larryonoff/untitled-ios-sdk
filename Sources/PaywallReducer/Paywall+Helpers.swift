@@ -14,7 +14,7 @@ extension PaywallReducer.State {
 
 extension PaywallReducer {
   func presentIntroductoryOfferIfNeeded(_ state: inout State) -> Bool {
-    guard remoteSettings.isSubsOnboardingIntroOfferEnabled else { return false }
+    guard remoteSettings.isPaywallOnboardingIntroOfferEnabled else { return false }
     guard state.isEligibleForIntroductoryOffer else { return false }
 
     if let product = state.paywall?.introductoryOfferProduct {
