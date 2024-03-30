@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import CustomDump
-@preconcurrency import Foundation
+import Foundation
 import PhotosUI
 import SwiftUI
 
