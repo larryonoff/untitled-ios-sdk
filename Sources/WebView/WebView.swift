@@ -3,7 +3,23 @@ import UIKit
 import WebKit
 
 public struct WebView: View {
+  public enum ReadyState: String, Equatable, Hashable, Sendable {
+    case unknown
+    case loading
+    case complete
+
+    public var isLoading: Bool {
+      switch self {
+      case .unknown: false
+      case .loading: true
+      case .complete: false
+      }
+    }
+  }
+
   private let request: URLRequest
+
+  private var onReadyStateChange: (ReadyState) -> Void = { _ in }
 
   public init(url: URL) {
     self.request = URLRequest(url: url)
@@ -13,13 +29,26 @@ public struct WebView: View {
     self.request = request
   }
 
+  public func onReadyStateChange(
+    _ perform: @escaping (ReadyState) -> Void
+  ) -> Self {
+    var copy = self
+    copy.onReadyStateChange = onReadyStateChange
+    return copy
+  }
+
   public var body: some View {
-    _WebView(request: request)
+    _WebView(
+      request: request,
+      onReadyStateChange: onReadyStateChange
+    )
+    .equatable()
   }
 }
 
 struct _WebView: UIViewRepresentable {
   let request: URLRequest
+  let onReadyStateChange: (WebView.ReadyState) -> Void
 
   func makeUIView(context: Context) -> WKWebView {
     let configuration = WKWebViewConfiguration()
@@ -65,10 +94,77 @@ struct _WebView: UIViewRepresentable {
   ) {}
 
   func makeCoordinator() -> Coordinator {
-    Coordinator()
+    Coordinator(
+      onReadyStateChange: onReadyStateChange
+    )
   }
 
   // MARK: - Coordinator
 
-  final class Coordinator: NSObject, WKNavigationDelegate {}
+  final class Coordinator: NSObject, WKNavigationDelegate {
+    let onReadyStateChange: (WebView.ReadyState) -> Void
+
+    init(
+      onReadyStateChange: @escaping (WebView.ReadyState) -> Void
+    ) {
+      self.onReadyStateChange = onReadyStateChange
+    }
+
+    // MARK: - WKNavigationDelegate
+
+    func webView(
+      _ webView: WKWebView,
+      didStartProvisionalNavigation navigation: WKNavigation!
+    ) {
+      onReadyStateChange(.loading)
+    }
+
+    func webView(
+      _ webView: WKWebView,
+      didFailProvisionalNavigation navigation: WKNavigation!,
+      withError error: Error
+    ) {
+      checkReadyState(for: webView)
+    }
+
+    func webView(
+      _ webView: WKWebView,
+      didFail navigation: WKNavigation!,
+      withError error: Error
+    ) {
+      checkReadyState(for: webView)
+    }
+
+    func webView(
+      _ webView: WKWebView,
+      didFinish navigation: WKNavigation!
+    ) {
+      // sometimes scrollView.contentSize doesn't fit all the frame.size available
+      // so, we call setNeedsLayout to redraw the layout
+      let webViewFrameSize = webView.frame.size
+      let scrollViewSize = webView.scrollView.contentSize
+      if scrollViewSize.width < webViewFrameSize.width || scrollViewSize.height < webViewFrameSize.height {
+        webView.setNeedsLayout()
+      }
+
+      checkReadyState(for: webView)
+    }
+
+    // MARK: - Internals
+
+    private func checkReadyState(for webView: WKWebView) {
+      webView.evaluateJavaScript("document.readyState") { [weak self] response, error in
+        let readyState = response
+          .flatMap { $0 as? String }
+          .flatMap(WebView.ReadyState.init(rawValue:)) ?? .unknown
+        self?.onReadyStateChange(readyState)
+      }
+    }
+  }
+}
+
+extension _WebView: Equatable {
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.request == rhs.request
+  }
 }
