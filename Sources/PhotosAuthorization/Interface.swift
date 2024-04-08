@@ -7,7 +7,7 @@ extension DependencyValues {
   }
 }
 
-public struct PhotosAuthorizationClient {
+public struct PhotosAuthorizationClient: Sendable {
   public var authorizationStatus: @Sendable (AccessLevel) -> AuthorizationStatus
   public var authorizationStatusUpdates: @Sendable (AccessLevel) -> AsyncStream<AuthorizationStatus>
   public var requestAuthorization: @Sendable (AccessLevel) async -> AuthorizationStatus

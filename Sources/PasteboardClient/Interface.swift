@@ -8,7 +8,7 @@ extension DependencyValues {
   }
 }
 
-public struct PasteboardClient {
+public struct PasteboardClient: Sendable {
   public var changes: @Sendable () -> AsyncStream<Void>
 
   public var items: @Sendable () async throws -> [[String: Any]]?

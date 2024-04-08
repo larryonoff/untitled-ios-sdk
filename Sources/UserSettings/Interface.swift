@@ -8,7 +8,7 @@ extension DependencyValues {
   }
 }
 
-public struct UserSettingsClient {
+public struct UserSettingsClient: Sendable {
   public var boolForKey: (String) -> Bool
   public var dataForKey: (String) -> Data?
   public var doubleForKey: (String) -> Double

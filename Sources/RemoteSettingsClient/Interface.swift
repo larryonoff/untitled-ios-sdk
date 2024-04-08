@@ -8,7 +8,7 @@ extension DependencyValues {
   }
 }
 
-public struct RemoteSettingsClient {
+public struct RemoteSettingsClient: Sendable {
   public struct FetchRequest {
     public var activate: Bool
     public var expirationDuration: TimeInterval
