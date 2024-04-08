@@ -8,7 +8,7 @@ extension DependencyValues {
   }
 }
 
-public struct InstagramSharingClient {
+public struct InstagramSharingClient: Sendable {
   public var shareToFeed: @Sendable (ShareToFeedRequest) async -> Bool
   public var shareToReels: @Sendable (ShareToReelsRequest) async -> Bool
   public var shareToStories: @Sendable (ShareToStoriesRequest) async -> Bool

@@ -9,7 +9,7 @@ extension DependencyValues {
 }
 
 @DependencyClient
-public struct AnalyticsClient {
+public struct AnalyticsClient: Sendable {
   public var logEvent: @Sendable (
     _ _: EventName,
     _ parameters: [EventParameterName: Any]?

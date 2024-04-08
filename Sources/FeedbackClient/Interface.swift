@@ -18,7 +18,7 @@ extension DependencyValues {
   }
 }
 
-public struct FeedbackGenerator {
+public struct FeedbackGenerator: Sendable {
   private var generate: @Sendable (Feedback) async -> Void
 
   public init(_ generate: @escaping @Sendable (Feedback) async -> Void) {

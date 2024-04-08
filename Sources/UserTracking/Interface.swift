@@ -8,7 +8,7 @@ extension DependencyValues {
   }
 }
 
-public struct UserTrackingClient {
+public struct UserTrackingClient: Sendable {
   public var initialize: @Sendable () -> Void
 
   public var authorizationStatus: @Sendable () -> AuthorizationStatus

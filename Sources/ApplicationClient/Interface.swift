@@ -9,7 +9,7 @@ extension DependencyValues {
   }
 }
 
-public struct ApplicationClient {
+public struct ApplicationClient: Sendable {
   public var isIdleTimerDisabled: @Sendable () async -> Bool
   public var setIdleTimerDisabled: @Sendable (Bool) async -> Void
 }
