@@ -2,7 +2,7 @@ import Dependencies
 import XCTestDynamicOverlay
 
 extension RemoteSettingsClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = Self(
     fetch: unimplemented("\(Self.self).fetch"),

@@ -2,7 +2,7 @@ import Dependencies
 import XCTestDynamicOverlay
 
 extension PhotosAuthorizationClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = PhotosAuthorizationClient(
     authorizationStatus: unimplemented("\(Self.self).authorizationStatus", placeholder: .notDetermined),

@@ -3,7 +3,7 @@ import Foundation
 import XCTestDynamicOverlay
 
 extension UserIdentifierGenerator {
-  static var previewValue = Self.noop
+  static let previewValue = Self.noop
 
   static let testValue = Self(
     generate: unimplemented("\(Self.self).generate", placeholder: .zero),

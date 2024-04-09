@@ -3,7 +3,7 @@ import Foundation
 import XCTestDynamicOverlay
 
 extension InstagramSharingClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = Self(
     shareToFeed: unimplemented("\(Self.self).shareToFeed", placeholder: false),
