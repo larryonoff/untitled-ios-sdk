@@ -3,7 +3,7 @@ import Foundation
 import XCTestDynamicOverlay
 
 extension PasteboardClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = Self(
     changes: unimplemented("\(Self.self).changes"),

@@ -2,7 +2,7 @@ import Dependencies
 import XCTestDynamicOverlay
 
 extension FacebookClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = Self(
     appDidFinishLaunching: unimplemented("\(Self.self).appDidFinishLaunching"),

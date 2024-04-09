@@ -2,7 +2,7 @@ import Dependencies
 import XCTestDynamicOverlay
 
 extension ConnectivityClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = Self(
     connectivityInfo: unimplemented("\(Self.self).connectivityInfo"),

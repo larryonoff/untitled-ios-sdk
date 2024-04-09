@@ -3,7 +3,7 @@ import Foundation
 import XCTestDynamicOverlay
 
 extension UserTrackingClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = UserTrackingClient(
     initialize: unimplemented("\(Self.self).initialize"),

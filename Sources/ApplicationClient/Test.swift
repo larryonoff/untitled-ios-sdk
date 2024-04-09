@@ -4,7 +4,7 @@ import Dependencies
 import XCTestDynamicOverlay
 
 extension ApplicationClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = Self(
     isIdleTimerDisabled: unimplemented("\(Self.self).isIdleTimerDisabled", placeholder: true),

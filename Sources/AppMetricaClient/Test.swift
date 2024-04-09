@@ -2,7 +2,7 @@ import Dependencies
 import XCTestDynamicOverlay
 
 extension AppMetricaClient: TestDependencyKey {
-  public static var previewValue = Self.noop
+  public static let previewValue = Self.noop
 
   public static let testValue = Self()
 }
