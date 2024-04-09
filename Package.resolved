@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adaptyteam/AdaptySDK-iOS",
       "state" : {
-        "revision" : "306ddc073d72dad375c2e4296d4d7016786c2889",
-        "version" : "2.10.2"
+        "revision" : "44e9510c532d8947f6346be985c097d89fbfea82",
+        "version" : "2.10.3"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/appmetrica/appmetrica-sdk-ios",
       "state" : {
-        "revision" : "118dd58b3057bd8900727b755c6531989571265d",
-        "version" : "5.1.0"
+        "revision" : "766808009096e0e6f0648fbaf1b5460508b6c3ae",
+        "version" : "5.2.0"
       }
     },
     {
@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kstenerud/KSCrash",
       "state" : {
-        "revision" : "2cff3a74753b0b22f25a138936f0ef029aebaa39",
-        "version" : "1.16.2"
+        "revision" : "8e29ada12998c47b1ca595bb21d47a27f4e57b22",
+        "version" : "1.17.0"
       }
     },
     {
