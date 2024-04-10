@@ -93,6 +93,10 @@ let package = Package(
       from: "2.8.0"
     ),
     .package(
+      url:"https://github.com/pointfreeco/swiftui-navigation",
+      from: "1.3.0"
+    ),
+    .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
       from: "5.2.0"
     )
@@ -146,7 +150,8 @@ let package = Package(
       dependencies: [
         .graphics,
         .External.composableArchitecture,
-        .External.swiftUIBackports
+        .External.swiftUIBackports,
+        .External.swiftUINavigation
       ],
       path: "Sources/SwiftUI"
     ),
@@ -561,6 +566,11 @@ extension Target.Dependency {
     )
 
     static let swiftUIBackports = byName(name: "SwiftUIBackports")
+
+    static let swiftUINavigation = product(
+      name: "SwiftUINavigation",
+      package: "swiftui-navigation"
+    )
 
     enum AppMetrica {
       static let core = Target.Dependency.product(
