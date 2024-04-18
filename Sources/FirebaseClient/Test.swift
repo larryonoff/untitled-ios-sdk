@@ -1,14 +1,9 @@
 import Dependencies
-import XCTestDynamicOverlay
 
 extension FirebaseClient: TestDependencyKey {
   public static let previewValue = Self.noop
 
-  public static let testValue = Self(
-    initialize: unimplemented("\(Self.self).initialize"),
-    recordError: unimplemented("\(Self.self).recordError"),
-    reset: unimplemented("\(Self.self).reset")
-  )
+  public static let testValue = Self()
 }
 
 extension FirebaseClient {

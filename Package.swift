@@ -238,7 +238,8 @@ extension Target {
       dependencies: [
         .logging,
         .External.connectivity,
-        .External.dependencies
+        .External.dependencies,
+        .External.Dependencies.macros
       ],
       path: "Sources/ConnectivityClient"
     )
@@ -269,7 +270,8 @@ extension Target {
         .Client.userIdentifier,
         .External.Firebase.analytics,
         .External.Firebase.crashlytics,
-        .External.dependencies
+        .External.dependencies,
+        .External.Dependencies.macros
       ],
       path: "Sources/FirebaseClient"
     )
