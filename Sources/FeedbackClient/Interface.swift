@@ -52,19 +52,13 @@ public enum Feedback {
 }
 
 extension Feedback: Equatable {}
-
 extension Feedback: Hashable {}
-
 extension Feedback: Sendable {}
 
 extension Feedback.ImpactType: Equatable {}
-
 extension Feedback.ImpactType: Hashable {}
-
 extension Feedback.ImpactType: Sendable {}
 
 extension Feedback.NotificationType: Equatable {}
-
 extension Feedback.NotificationType: Hashable {}
-
 extension Feedback.NotificationType: Sendable {}

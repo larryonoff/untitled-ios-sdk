@@ -37,7 +37,5 @@ extension RemoteSettingsClient.FetchRequest {
 }
 
 extension RemoteSettingsClient.FetchRequest: Equatable {}
-
 extension RemoteSettingsClient.FetchRequest: Hashable {}
-
 extension RemoteSettingsClient.FetchRequest: Sendable {}

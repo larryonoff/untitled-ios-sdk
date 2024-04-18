@@ -13,9 +13,7 @@ public enum Environment {
 }
 
 extension Environment: Equatable {}
-
 extension Environment: Hashable {}
-
 extension Environment: Sendable {}
 
 extension Environment: TestDependencyKey {
