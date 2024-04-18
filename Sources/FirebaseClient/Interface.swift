@@ -1,4 +1,5 @@
 import Dependencies
+import DependenciesMacros
 
 extension DependencyValues {
   public var firebase: FirebaseClient {
@@ -7,11 +8,15 @@ extension DependencyValues {
   }
 }
 
+@DependencyClient
 public struct FirebaseClient {
   public var initialize: @Sendable () -> Void
+
+  @DependencyEndpoint(method: "record")
   public var recordError: @Sendable (
-    _ error: Error,
+    _ _: Error,
     _ userInfo: [String: Any]?
   ) async -> Void
+
   public var reset: @Sendable () -> Void
 }

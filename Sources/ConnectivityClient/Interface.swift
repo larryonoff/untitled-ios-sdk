@@ -1,4 +1,5 @@
 import Dependencies
+import DependenciesMacros
 
 extension DependencyValues {
   public var connectivity: ConnectivityClient {
@@ -7,7 +8,10 @@ extension DependencyValues {
   }
 }
 
+@DependencyClient
 public struct ConnectivityClient: Sendable {
-  public var connectivityInfo: @Sendable () async -> ConnectivityInfo
-  public var updates: @Sendable () -> AsyncStream<ConnectivityInfo>
+  public var connectivityInfo: @Sendable (
+  ) async -> ConnectivityInfo = { .init(isConnected: false , state: .disconnected) }
+
+  public var updates: @Sendable () -> AsyncStream<ConnectivityInfo> = { .finished }
 }
