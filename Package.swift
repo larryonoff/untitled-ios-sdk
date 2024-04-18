@@ -74,7 +74,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.9.2"
+      from: "1.9.3"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -247,6 +247,7 @@ extension Target {
       name: .Client.facebook,
       dependencies: [
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.Facebook.core
       ],
       path: "Sources/FacebookClient"

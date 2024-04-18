@@ -1,4 +1,5 @@
 import Dependencies
+import DependenciesMacros
 import Foundation
 import UIKit
 
@@ -9,9 +10,23 @@ extension DependencyValues {
   }
 }
 
-public struct FacebookClient {
-  public var appDidFinishLaunching: ([UIApplication.LaunchOptionsKey: Any]?) -> Void
-  public var appOpenURL: (URL, [UIApplication.OpenURLOptionsKey: Any]) -> Void
-  public var anonymousID: @Sendable () -> String
+@DependencyClient
+public struct FacebookClient: Sendable {
+  public var continueUserActivity: (
+    _ _: NSUserActivity
+  ) -> Bool = { _ in false }
+
+  public var didFinishLaunching: (
+    _ options: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool = { _ in false }
+
+  @DependencyEndpoint(method: "open")
+  public var openURL: (
+    _ _: URL,
+    _ options: [UIApplication.OpenURLOptionsKey: Any]
+  ) -> Bool = { _, _ in false }
+
+  public var anonymousID: @Sendable () -> String = { "" }
+
   public var userID: @Sendable () -> String?
 }
