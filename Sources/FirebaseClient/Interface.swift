@@ -9,7 +9,7 @@ extension DependencyValues {
 }
 
 @DependencyClient
-public struct FirebaseClient {
+public struct FirebaseClient: Sendable {
   public var initialize: @Sendable () -> Void
 
   @DependencyEndpoint(method: "record")
