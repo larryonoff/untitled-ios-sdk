@@ -4,7 +4,7 @@ import Foundation
 
 extension ConnectivityClient {
   public static func live(
-    connectivityURLs: [URL]
+    connectivityURLs: [URL] = []
   ) -> Self {
     Self(
       connectivityInfo: {
