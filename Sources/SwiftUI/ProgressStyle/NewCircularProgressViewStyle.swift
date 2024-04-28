@@ -1,8 +1,6 @@
 import SwiftUI
 
 public struct NewCircularProgressViewStyle: ProgressViewStyle {
-  let tint: Color
-
   @State
   private var isRotating: Bool = false
 
@@ -12,7 +10,7 @@ public struct NewCircularProgressViewStyle: ProgressViewStyle {
 
       Circle()
         .trim(from: 0.1, to: 0.9)
-        .stroke(tint, style: .init(lineWidth: 2, lineCap: .round))
+        .stroke(.tint, style: .init(lineWidth: 2, lineCap: .round))
         .rotationEffect(.degrees(isRotating ? 360 : 0))
         .animation(
           .linear(duration: 1)
@@ -29,11 +27,7 @@ public struct NewCircularProgressViewStyle: ProgressViewStyle {
 }
 
 extension ProgressViewStyle where Self == NewCircularProgressViewStyle {
-  public static func newCircular(
-    tint: Color
-  ) -> Self {
-    NewCircularProgressViewStyle(
-      tint: tint
-    )
+  public static var newCircular: Self {
+    NewCircularProgressViewStyle()
   }
 }
