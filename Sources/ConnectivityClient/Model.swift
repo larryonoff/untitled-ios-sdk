@@ -2,6 +2,14 @@ public struct ConnectivityInfo {
   public var isConnected: Bool
 
   public var state: ConnectivityState
+
+  public init(
+    isConnected: Bool = false,
+    state: ConnectivityState = .loopback
+  ) {
+    self.isConnected = isConnected
+    self.state = state
+  }
 }
 
 public enum ConnectivityState {
@@ -18,40 +26,36 @@ public enum ConnectivityState {
 }
 
 extension ConnectivityInfo: Equatable {}
-
 extension ConnectivityInfo: Hashable {}
-
 extension ConnectivityInfo: Sendable {}
 
 extension ConnectivityState: CustomStringConvertible {
   public var description: String {
     switch self {
     case .cellularWithInternet:
-      return "Cellular with Internet connectivity"
+      "Cellular with Internet connectivity"
     case .cellularWithoutInternet:
-      return "Cellular without Internet connectivity"
+      "Cellular without Internet connectivity"
     case .disconnected:
-      return "Disconnected"
+      "Disconnected"
     case .ethernetWithInternet:
-      return "Ethernet with Internet connectivity"
+      "Ethernet with Internet connectivity"
     case .ethernetWithoutInternet:
       return "Ethernet without Internet connectivity"
     case .loopback:
-      return "Loopback"
+      "Loopback"
     case .otherWithInternet:
-      return "Other with Internet connectivity"
+      "Other with Internet connectivity"
     case .otherWithoutInternet:
-      return "Other without Internet connectivity"
+      "Other without Internet connectivity"
     case .wifiWithInternet:
-      return "Wi-Fi with Internet connectivity"
+      "Wi-Fi with Internet connectivity"
     case .wifiWithoutInternet:
-      return "Wi-Fi without Internet connectivity"
+      "Wi-Fi without Internet connectivity"
     }
   }
 }
 
 extension ConnectivityState: Equatable {}
-
 extension ConnectivityState: Hashable {}
-
 extension ConnectivityState: Sendable {}
