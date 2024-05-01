@@ -26,10 +26,10 @@ let package = Package(
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
     .library(name: .Composable.connectivity, targets: [.Composable.connectivity]),
+    .library(name: .Composable.photos, targets: [.Composable.photos]),
     .library(name: .Composable.purchases, targets: [.Composable.purchases]),
     .library(name: .avFoundation, targets: [.avFoundation]),
     .library(name: .composableArchitecture, targets: [.composableArchitecture]),
-    .library(name: .composablePhotos, targets: [.composablePhotos]),
     .library(name: .concurrency, targets: [.concurrency]),
     .library(name: .coreImage, targets: [.coreImage]),
     .library(name: .dependencies, targets: [.dependencies]),
@@ -171,7 +171,6 @@ let package = Package(
         .linkedFramework("AVKit")
       ]
     ),
-    .composablePhotos,
     .photos,
     .photosUI,
     .Client.analytics,
@@ -189,6 +188,7 @@ let package = Package(
     .Client.userSettings,
     .Client.userTracking,
     .Composable.connectivity,
+    .Composable.photos,
     .Composable.purchases,
     .dependencies,
     .foundation,
@@ -383,6 +383,15 @@ extension Target {
       path: "Sources/ConnectivityComposable"
     )
 
+    static let photos = target(
+      name: .Composable.photos,
+      dependencies: [
+        .photosUI,
+        .External.composableArchitecture,
+      ],
+      path: "Sources/PhotosComposable"
+    )
+
     static let purchases = target(
       name: .Composable.purchases,
       dependencies: [
@@ -392,15 +401,6 @@ extension Target {
       path: "Sources/PurchasesComposable"
     )
   }
-
-  static let composablePhotos = target(
-    name: .composablePhotos,
-    dependencies: [
-      .photosUI,
-      .External.composableArchitecture,
-    ],
-    path: "Sources/ComposablePhotos"
-  )
 
   static let dependencies = target(
     name: .dependencies,
@@ -487,7 +487,6 @@ extension Target {
 extension Target.Dependency {
   static let avFoundation = byName(name: .avFoundation)
   static let composableArchitecture = byName(name: .composableArchitecture)
-  static let composablePhotos = byName(name: .composablePhotos)
   static let concurrency = byName(name: .concurrency)
   static let coreImage = byName(name: .coreImage)
   static let dependencies = byName(name: .dependencies)
@@ -524,6 +523,7 @@ extension Target.Dependency {
 
   enum Composable {
     static let connectivity = byName(name: .Composable.connectivity)
+    static let photos = byName(name: .Composable.photos)
     static let purchases = byName(name: .Composable.purchases)
   }
 
@@ -623,7 +623,6 @@ extension String {
   static let concurrency = "DuckConcurrency"
   static let coreImage = "DuckCoreImage"
   static let composableArchitecture = "DuckComposableArchitecture"
-  static let composablePhotos = "DuckComposablePhotos"
   static let dependencies = "DuckDependencies"
   static let foundation = "DuckFoundation"
   static let graphics = "DuckGraphics"
@@ -658,6 +657,7 @@ extension String {
 
   enum Composable {
     static let connectivity = "DuckConnectivityComposable"
+    static let photos = "DuckPhotosComposable"
     static let purchases = "DuckPurchasesComposable"
   }
 }
