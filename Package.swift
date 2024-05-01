@@ -25,6 +25,8 @@ let package = Package(
     .library(name: .Client.userIdentifier, targets: [.Client.userIdentifier]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
+    .library(name: .Composable.connectivity, targets: [.Composable.connectivity]),
+    .library(name: .Composable.purchases, targets: [.Composable.purchases]),
     .library(name: .avFoundation, targets: [.avFoundation]),
     .library(name: .composableArchitecture, targets: [.composableArchitecture]),
     .library(name: .composablePhotos, targets: [.composablePhotos]),
@@ -186,6 +188,8 @@ let package = Package(
     .Client.userIdentifier,
     .Client.userSettings,
     .Client.userTracking,
+    .Composable.connectivity,
+    .Composable.purchases,
     .dependencies,
     .foundation,
     .logging,
@@ -369,6 +373,26 @@ extension Target {
     )
   }
 
+  enum Composable {
+    static let connectivity = target(
+      name: .Composable.connectivity,
+      dependencies: [
+        .Client.connectivity,
+        .External.composableArchitecture
+      ],
+      path: "Sources/ConnectivityComposable"
+    )
+
+    static let purchases = target(
+      name: .Composable.purchases,
+      dependencies: [
+        .Client.purchases,
+        .External.composableArchitecture
+      ],
+      path: "Sources/PurchasesComposable"
+    )
+  }
+
   static let composablePhotos = target(
     name: .composablePhotos,
     dependencies: [
@@ -498,6 +522,11 @@ extension Target.Dependency {
     static let userTracking = byName(name: .Client.userTracking)
   }
 
+  enum Composable {
+    static let connectivity = byName(name: .Composable.connectivity)
+    static let purchases = byName(name: .Composable.purchases)
+  }
+
   enum External {
     static let adapty = product(
       name: "Adapty",
@@ -625,5 +654,10 @@ extension String {
     static let userIdentifier = "DuckUserIdentifierClient"
     static let userSettings = "DuckUserSettings"
     static let userTracking = "DuckUserTracking"
+  }
+
+  enum Composable {
+    static let connectivity = "DuckConnectivityComposable"
+    static let purchases = "DuckPurchasesComposable"
   }
 }
