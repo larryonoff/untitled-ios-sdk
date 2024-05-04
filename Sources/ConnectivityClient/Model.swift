@@ -41,7 +41,7 @@ extension ConnectivityState: CustomStringConvertible {
     case .ethernetWithInternet:
       "Ethernet with Internet connectivity"
     case .ethernetWithoutInternet:
-      return "Ethernet without Internet connectivity"
+      "Ethernet without Internet connectivity"
     case .loopback:
       "Loopback"
     case .otherWithInternet:
