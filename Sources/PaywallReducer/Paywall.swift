@@ -2,6 +2,7 @@ import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckComposableArchitecture
 import DuckPurchasesClient
+import DuckPurchasesComposable
 import DuckRemoteSettingsClient
 import IdentifiedCollections
 
@@ -52,9 +53,18 @@ public struct PaywallReducer {
 
     public var placement: Placement?
 
-    public var isEligibleForIntroductoryOffer: Bool = false
+    @SharedReader(.purchases)
+    public var purchases = Purchases()
+
+    public var isEligibleForIntroductoryOffer: Bool {
+      purchases.isEligibleForIntroductoryOffer
+    }
+
     public var isFetchingPaywall: Bool = false
+
+    @SharedReader(.isPaywallProductHiddenPricesEnabled)
     public var isHiddenPricesEnabled: Bool = true
+
     public var isPurchasing: Bool = false
 
     public init(
@@ -107,10 +117,6 @@ public struct PaywallReducer {
       case .delegate:
         return .none
       case .onAppear:
-        state.isEligibleForIntroductoryOffer =
-          purchases.purchases().isEligibleForIntroductoryOffer
-        state.isHiddenPricesEnabled = remoteSettings.isPaywallProductHiddenPricesEnabled
-
         return .concatenate(
           fetchPaywall(state: &state),
           analytics.logView(state: state)
