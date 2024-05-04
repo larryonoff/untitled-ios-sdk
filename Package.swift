@@ -139,18 +139,6 @@ let package = Package(
     ),
     .target(name: .sfSymbol),
     .target(
-      name: .Client.photosAuthorization,
-      dependencies: [
-        .External.dependencies,
-        .External.Dependencies.macros,
-        .External.tagged
-      ],
-      path: "Sources/PhotosAuthorizationClient",
-      linkerSettings: [
-        .linkedFramework("Photos")
-      ]
-    ),
-    .target(
       name: .swiftUI,
       dependencies: [
         .graphics,
@@ -185,6 +173,7 @@ let package = Package(
     .Client.firebase,
     .Client.instagramSharing,
     .Client.pasteboard,
+    .Client.photosAuthorization,
     .Client.purchases,
     .Client.remoteSettings,
     .Client.userIdentifier,
@@ -303,6 +292,19 @@ extension Target {
       path: "Sources/PasteboardClient",
       linkerSettings: [
         .linkedFramework("UIKit")
+      ]
+    )
+
+    static let photosAuthorization = target(
+      name: .Client.photosAuthorization,
+      dependencies: [
+        .External.dependencies,
+        .External.Dependencies.macros,
+        .External.tagged
+      ],
+      path: "Sources/PhotosAuthorizationClient",
+      linkerSettings: [
+        .linkedFramework("Photos")
       ]
     )
 
