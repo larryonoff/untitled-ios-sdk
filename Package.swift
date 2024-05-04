@@ -26,6 +26,7 @@ let package = Package(
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
     .library(name: .Composable.connectivity, targets: [.Composable.connectivity]),
+    .library(name: .Composable.paywall, targets: [.Composable.paywall]),
     .library(name: .Composable.photos, targets: [.Composable.photos]),
     .library(name: .Composable.photosAuthorization, targets: [.Composable.photosAuthorization]),
     .library(name: .Composable.purchases, targets: [.Composable.purchases]),
@@ -38,7 +39,6 @@ let package = Package(
     .library(name: .foundation, targets: [.foundation]),
     .library(name: .graphics, targets: [.graphics]),
     .library(name: .logging, targets: [.logging]),
-    .library(name: .paywallReducer, targets: [.paywallReducer]),
     .library(name: .photos, targets: [.photos]),
     .library(name: .photosUI, targets: [.photosUI]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
@@ -191,6 +191,7 @@ let package = Package(
     .Client.userSettings,
     .Client.userTracking,
     .Composable.connectivity,
+    .Composable.paywall,
     .Composable.photos,
     .Composable.photosAuthorization,
     .Composable.purchases,
@@ -198,7 +199,6 @@ let package = Package(
     .dependencies,
     .foundation,
     .logging,
-    .paywallReducer,
     .webView
   ]
 )
@@ -388,6 +388,23 @@ extension Target {
       path: "Sources/ConnectivityComposable"
     )
 
+    static let paywall = target(
+      name: .Composable.paywall,
+      dependencies: [
+        .Client.analytics,
+        .Client.purchases,
+        .Composable.purchases,
+        .Composable.remoteSettings,
+        .composableArchitecture,
+        .External.composableArchitecture
+      ],
+      path: "Sources/PaywallReducer",
+      exclude: ["swiftgen.yml"],
+      resources: [
+        .process("Resources")
+      ]
+    )
+
     static let photos = target(
       name: .Composable.photos,
       dependencies: [
@@ -452,21 +469,6 @@ extension Target {
     ]
   )
 
-  static let paywallReducer = target(
-    name: .paywallReducer,
-    dependencies: [
-      .Client.analytics,
-      .Client.purchases,
-      .composableArchitecture,
-      .External.composableArchitecture
-    ],
-    path: "Sources/PaywallReducer",
-    exclude: ["swiftgen.yml"],
-    resources: [
-      .process("Resources")
-    ]
-  )
-
   static let photos = target(
     name: .photos,
     dependencies: [
@@ -518,7 +520,6 @@ extension Target.Dependency {
   static let graphics = byName(name: .graphics)
   static let instagram = byName(name: .instagramSharing)
   static let logging = byName(name: .logging)
-  static let paywallReducer = byName(name: .paywallReducer)
   static let photos = byName(name: .photos)
   static let photosUI = byName(name: .photosUI)
   static let sfSymbol = byName(name: .sfSymbol)
@@ -547,6 +548,7 @@ extension Target.Dependency {
 
   enum Composable {
     static let connectivity = byName(name: .Composable.connectivity)
+    static let paywall = byName(name: .Composable.paywall)
     static let photos = byName(name: .Composable.photos)
     static let photosAuthorization = byName(name: .Composable.photosAuthorization)
     static let purchases = byName(name: .Composable.purchases)
@@ -654,7 +656,6 @@ extension String {
   static let graphics = "DuckGraphics"
   static let instagramSharing = "Instagram"
   static let logging = "DuckLogging"
-  static let paywallReducer = "DuckPaywallReducer"
   static let photos = "DuckPhotos"
   static let photosUI = "DuckPhotosUI"
   static let sfSymbol = "SFSymbol"
@@ -683,6 +684,7 @@ extension String {
 
   enum Composable {
     static let connectivity = "DuckConnectivityComposable"
+    static let paywall = "DuckPaywallReducer"
     static let photos = "DuckPhotosComposable"
     static let photosAuthorization = "DuckPhotosAuthorizationComposable"
     static let purchases = "DuckPurchasesComposable"
