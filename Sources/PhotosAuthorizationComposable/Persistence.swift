@@ -1,5 +1,5 @@
 import ComposableArchitecture
-import DuckPhotosAuthorizationClient
+@_exported import DuckPhotosAuthorizationClient
 
 extension PersistenceReaderKey where Self == PhotosAuthorizationPersistenceKey {
   public static func photosAuthorization(

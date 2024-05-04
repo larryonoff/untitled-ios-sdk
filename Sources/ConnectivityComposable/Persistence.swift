@@ -1,5 +1,5 @@
 import ComposableArchitecture
-import DuckConnectivityClient
+@_exported import DuckConnectivityClient
 
 extension PersistenceReaderKey where Self == InMemoryKey<ConnectivityInfo> {
   public static var connectivity: Self {
