@@ -259,11 +259,6 @@ extension RemoteSettingKey: PersistenceReaderKey {
     let task = Task {
       let value = load(initialValue: initialValue)
       didSet(value)
-
-      for await _ in store.infoUpdates() {
-        let value = load(initialValue: initialValue)
-        didSet(value)
-      }
     }
 
     return Shared.Subscription {
