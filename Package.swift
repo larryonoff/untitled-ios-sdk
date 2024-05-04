@@ -64,7 +64,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.23.0"
+      from: "10.24.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -76,7 +76,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.9.3"
+      from: "1.10.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -100,7 +100,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "5.2.0"
+      from: "5.3.1"
     )
   ],
   targets: [
