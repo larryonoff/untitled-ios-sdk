@@ -29,6 +29,7 @@ let package = Package(
     .library(name: .Composable.photos, targets: [.Composable.photos]),
     .library(name: .Composable.photosAuthorization, targets: [.Composable.photosAuthorization]),
     .library(name: .Composable.purchases, targets: [.Composable.purchases]),
+    .library(name: .Composable.remoteSettings, targets: [.Composable.remoteSettings]),
     .library(name: .avFoundation, targets: [.avFoundation]),
     .library(name: .composableArchitecture, targets: [.composableArchitecture]),
     .library(name: .concurrency, targets: [.concurrency]),
@@ -193,6 +194,7 @@ let package = Package(
     .Composable.photos,
     .Composable.photosAuthorization,
     .Composable.purchases,
+    .Composable.remoteSettings,
     .dependencies,
     .foundation,
     .logging,
@@ -413,6 +415,15 @@ extension Target {
       ],
       path: "Sources/PurchasesComposable"
     )
+
+    static let remoteSettings = target(
+      name: .Composable.remoteSettings,
+      dependencies: [
+        .Client.remoteSettings,
+        .External.composableArchitecture
+      ],
+      path: "Sources/RemoteSettingsComposable"
+    )
   }
 
   static let dependencies = target(
@@ -539,6 +550,7 @@ extension Target.Dependency {
     static let photos = byName(name: .Composable.photos)
     static let photosAuthorization = byName(name: .Composable.photosAuthorization)
     static let purchases = byName(name: .Composable.purchases)
+    static let remoteSettings = byName(name: .Composable.remoteSettings)
   }
 
   enum External {
@@ -674,5 +686,6 @@ extension String {
     static let photos = "DuckPhotosComposable"
     static let photosAuthorization = "DuckPhotosAuthorizationComposable"
     static let purchases = "DuckPurchasesComposable"
+    static let remoteSettings = "DuckRemoteSettingsComposable"
   }
 }
