@@ -1,53 +1,53 @@
 import Photos
 
-public enum AccessLevel: UInt {
-  case addOnly
-  case readWrite
+public enum PhotosAuthorization {
+  public enum AccessLevel: UInt {
+    case addOnly
+    case readWrite
+  }
+
+  public enum AuthorizationStatus: UInt {
+    case notDetermined = 0
+    case restricted
+    case denied
+    case authorized
+    case limited
+  }
 }
 
-public enum AuthorizationStatus: UInt {
-  case notDetermined = 0
-  case restricted
-  case denied
-  case authorized
-  case limited
-}
-
-extension AccessLevel: CustomStringConvertible {
+extension PhotosAuthorization.AccessLevel: CustomStringConvertible {
   public var description: String {
     switch self {
     case .addOnly:
-      return "AccessLevel.addOnly"
+      "AccessLevel.addOnly"
     case .readWrite:
-      return "AccessLevel.readWrite"
+      "AccessLevel.readWrite"
     }
   }
 }
 
-extension AccessLevel: Equatable {}
+extension PhotosAuthorization.AccessLevel: Equatable {}
+extension PhotosAuthorization.AccessLevel: Hashable {}
+extension PhotosAuthorization.AccessLevel: Sendable {}
 
-extension AccessLevel: Hashable {}
-
-extension AccessLevel: Sendable {}
-
-extension AuthorizationStatus: CustomStringConvertible {
+extension PhotosAuthorization.AuthorizationStatus: CustomStringConvertible {
   public var description: String {
     switch self {
     case .authorized:
-      return "AuthorizationStatus.authorized"
+      "AuthorizationStatus.authorized"
     case .denied:
-      return "AuthorizationStatus.denied"
+      "AuthorizationStatus.denied"
     case .notDetermined:
-      return "AuthorizationStatus.notDetermined"
+      "AuthorizationStatus.notDetermined"
     case .restricted:
-      return "AuthorizationStatus.restricted"
+      "AuthorizationStatus.restricted"
     case .limited:
-      return "AuthorizationStatus.limited"
+      "AuthorizationStatus.limited"
     }
   }
 }
 
-extension AccessLevel {
+extension PhotosAuthorization.AccessLevel {
   init(_ acl: PHAccessLevel) {
     switch acl {
     case .addOnly:
@@ -62,21 +62,17 @@ extension AccessLevel {
 
   var phAccessLevel: PHAccessLevel {
     switch self {
-    case .addOnly:
-      return .addOnly
-    case .readWrite:
-      return .readWrite
+    case .addOnly: .addOnly
+    case .readWrite: .readWrite
     }
   }
 }
 
-extension AuthorizationStatus: Equatable {}
+extension PhotosAuthorization.AuthorizationStatus: Equatable {}
+extension PhotosAuthorization.AuthorizationStatus: Hashable {}
+extension PhotosAuthorization.AuthorizationStatus: Sendable {}
 
-extension AuthorizationStatus: Hashable {}
-
-extension AuthorizationStatus: Sendable {}
-
-extension AuthorizationStatus {
+extension PhotosAuthorization.AuthorizationStatus {
   init(_ status: PHAuthorizationStatus) {
     switch status {
     case .notDetermined:
