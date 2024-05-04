@@ -27,6 +27,7 @@ let package = Package(
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
     .library(name: .Composable.connectivity, targets: [.Composable.connectivity]),
     .library(name: .Composable.photos, targets: [.Composable.photos]),
+    .library(name: .Composable.photosAuthorization, targets: [.Composable.photosAuthorization]),
     .library(name: .Composable.purchases, targets: [.Composable.purchases]),
     .library(name: .avFoundation, targets: [.avFoundation]),
     .library(name: .composableArchitecture, targets: [.composableArchitecture]),
@@ -140,9 +141,10 @@ let package = Package(
       name: .Client.photosAuthorization,
       dependencies: [
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.tagged
       ],
-      path: "Sources/PhotosAuthorization",
+      path: "Sources/PhotosAuthorizationClient",
       linkerSettings: [
         .linkedFramework("Photos")
       ]
@@ -189,6 +191,7 @@ let package = Package(
     .Client.userTracking,
     .Composable.connectivity,
     .Composable.photos,
+    .Composable.photosAuthorization,
     .Composable.purchases,
     .dependencies,
     .foundation,
@@ -387,9 +390,19 @@ extension Target {
       name: .Composable.photos,
       dependencies: [
         .photosUI,
-        .External.composableArchitecture,
+        .External.composableArchitecture
       ],
       path: "Sources/PhotosComposable"
+    )
+
+    static let photosAuthorization = target(
+      name: .Composable.photosAuthorization,
+      dependencies: [
+        .photosUI,
+        .Client.photosAuthorization,
+        .External.composableArchitecture
+      ],
+      path: "Sources/PhotosAuthorizationComposable"
     )
 
     static let purchases = target(
@@ -524,6 +537,7 @@ extension Target.Dependency {
   enum Composable {
     static let connectivity = byName(name: .Composable.connectivity)
     static let photos = byName(name: .Composable.photos)
+    static let photosAuthorization = byName(name: .Composable.photosAuthorization)
     static let purchases = byName(name: .Composable.purchases)
   }
 
@@ -647,7 +661,7 @@ extension String {
     static let firebase = "DuckFirebaseClient"
     static let instagramSharing = "DuckInstagramSharingClient"
     static let pasteboard = "DuckPasteboardClient"
-    static let photosAuthorization = "DuckPhotosAuthorization"
+    static let photosAuthorization = "DuckPhotosAuthorizationClient"
     static let purchases = "DuckPurchasesClient"
     static let remoteSettings = "DuckRemoteSettingsClient"
     static let userIdentifier = "DuckUserIdentifierClient"
@@ -658,6 +672,7 @@ extension String {
   enum Composable {
     static let connectivity = "DuckConnectivityComposable"
     static let photos = "DuckPhotosComposable"
+    static let photosAuthorization = "DuckPhotosAuthorizationComposable"
     static let purchases = "DuckPurchasesComposable"
   }
 }
