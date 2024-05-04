@@ -446,6 +446,7 @@ extension Target {
   static let dependencies = target(
     name: .dependencies,
     dependencies: [
+      .External.composableArchitecture,
       .External.dependencies,
       .External.deviceKit
     ],
