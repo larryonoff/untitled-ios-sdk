@@ -53,8 +53,7 @@ public struct PaywallReducer {
 
     public var placement: Placement?
 
-    @SharedReader(.purchases)
-    public var purchases = Purchases()
+    @SharedReader(.purchases) public var purchases
 
     public var isEligibleForIntroductoryOffer: Bool {
       purchases.isEligibleForIntroductoryOffer
@@ -62,8 +61,7 @@ public struct PaywallReducer {
 
     public var isFetchingPaywall: Bool = false
 
-    @SharedReader(.isPaywallProductHiddenPricesEnabled)
-    public var isHiddenPricesEnabled: Bool = true
+    @SharedReader(.isPaywallProductHiddenPricesEnabled) public var isHiddenPricesEnabled
 
     public var isPurchasing: Bool = false
 

@@ -2,9 +2,9 @@ import ComposableArchitecture
 import Foundation
 import Dependencies
 
-extension PersistenceReaderKey where Self == InMemoryKey<BundleInfo> {
+extension PersistenceReaderKey where Self == PersistenceKeyDefault<InMemoryKey<BundleInfo>> {
   public static var bundle: Self {
-    inMemory("bundleInfo")
+    PersistenceKeyDefault(.inMemory("bundleInfo"), .main)
   }
 }
 

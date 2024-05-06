@@ -16,16 +16,25 @@ extension RemoteSettingsClient {
   }
 }
 
-extension PersistenceReaderKey where Self == RemoteSettingKey<Bool> {
+extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSettingKey<Bool>> {
   public static var isPaywallProductHiddenPricesEnabled: Self {
-    remoteSetting("paywall_product_hidden_price_enabled")
+    PersistenceKeyDefault(
+      .remoteSetting("paywall_product_hidden_price_enabled"),
+      true
+    )
   }
 
   public static var isPaywallOnboardingIntroOfferEnabled: Self {
-    remoteSetting("paywall_onboarding_intro_offer_enabled")
+    PersistenceKeyDefault(
+      .remoteSetting("paywall_onboarding_intro_offer_enabled"),
+      true
+    )
   }
 
   public static var isPaywallOnboardingEnabled: Self {
-    remoteSetting("paywall_onboarding_enabled")
+    PersistenceKeyDefault(
+      .remoteSetting("paywall_onboarding_enabled"),
+      true
+    )
   }
 }
