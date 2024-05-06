@@ -1,9 +1,9 @@
 import ComposableArchitecture
 @_exported import DuckPurchasesClient
 
-extension PersistenceReaderKey where Self == PurchasesPersistenceKey {
+extension PersistenceReaderKey where Self == PersistenceKeyDefault<PurchasesPersistenceKey> {
   public static var purchases: Self {
-    PurchasesPersistenceKey()
+    PersistenceKeyDefault(PurchasesPersistenceKey(), .init())
   }
 }
 
