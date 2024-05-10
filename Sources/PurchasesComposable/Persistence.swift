@@ -7,10 +7,14 @@ extension PersistenceReaderKey where Self == PersistenceKeyDefault<PurchasesPers
   }
 }
 
-public struct PurchasesPersistenceKey: PersistenceReaderKey, Hashable, Sendable {
+public struct PurchasesPersistenceKey: PersistenceReaderKey, Sendable {
   @Dependency(\.purchases) var purchases
 
   public init() {}
+
+  public var id: AnyHashable {
+    PurchasesPersistenceKeyID()
+  }
 
   public func load(initialValue: Purchases?) -> Purchases? {
     purchases.purchases()
@@ -30,10 +34,6 @@ public struct PurchasesPersistenceKey: PersistenceReaderKey, Hashable, Sendable 
       task.cancel()
     }
   }
-
-  public static func == (lhs: Self, rhs: Self) -> Bool {
-    true
-  }
-
-  public func hash(into hasher: inout Hasher) {}
 }
+
+private struct PurchasesPersistenceKeyID: Hashable {}
