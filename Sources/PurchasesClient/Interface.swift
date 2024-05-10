@@ -11,7 +11,9 @@ extension DependencyValues {
 public struct PurchasesClient: Sendable {
   public var initialize: @Sendable () -> Void
 
-  public var paywallByID: @Sendable (Paywall.ID) -> AsyncThrowingStream<FetchPaywallResponse, Error>
+  public var paywallByID: @Sendable (
+    _ _: Paywall.ID
+  ) -> AsyncThrowingStream<FetchPaywallResponse, Error>
 
   public var purchase: @Sendable (PurchaseRequest) async throws -> PurchaseResult
   public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
@@ -25,8 +27,13 @@ public struct PurchasesClient: Sendable {
 
   public var reset: @Sendable () async throws -> Void
 
-  public var setFallbackPaywalls: @Sendable (Data) async throws -> Void
-  public var logPaywall: @Sendable (Paywall) async throws -> Void
+  public var setFallbackPaywalls: @Sendable (
+    _ fileURL: URL
+  ) async throws -> Void
+
+  public var logPaywall: @Sendable (
+    _ _: Paywall
+  ) async throws -> Void
 }
 
 extension PurchasesClient {

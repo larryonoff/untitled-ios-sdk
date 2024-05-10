@@ -31,7 +31,7 @@ extension Paywall {
     self.id = .init(paywall.placementId)
     self.products = products?
       .compactMap { .init($0) } ?? []
-    self.remoteConfigString = paywall.remoteConfigString
+    self.remoteConfigString = paywall.remoteConfig?.jsonString
   }
 }
 
