@@ -86,7 +86,7 @@ extension PurchasesClient {
         try await impl.reset()
       },
       setFallbackPaywalls: {
-        try await impl.setFallbackPaywalls($0)
+        try await impl.setFallbackPaywalls(fileURL: $0)
       },
       logPaywall: { paywall in
         try await impl.log(paywall)
@@ -163,27 +163,26 @@ final class PurchasesClientImpl {
       }
     }
 
-    Adapty.activate(
-      apiKey,
-      customerUserId: userIdentifier().uuidString,
-      { error in
-        if let error {
-          logger.info("initialize failure", dump: [
-            "error": error
-          ])
-        }
+    let config = Adapty.Configuration.builder(withAPIKey: apiKey)
+      .with(customerUserId: userIdentifier().uuidString)
+      .build()
+
+    Adapty.activate(with: config) { error in
+      if let error {
+        logger.info("initialize failure", dump: [
+          "error": error
+        ])
       }
-    )
+    }
 
     Task { [weak self] in
       if
         let fallbackURL = Bundle.main.url(
           forResource: "fallback_paywalls",
           withExtension: "json"
-        ),
-        let fallbackData = try? Data(contentsOf: fallbackURL)
+        )
       {
-        try? await self?.setFallbackPaywalls(fallbackData)
+        try? await self?.setFallbackPaywalls(fileURL: fallbackURL)
       }
     }
 
@@ -378,11 +377,11 @@ final class PurchasesClientImpl {
     }
   }
 
-  func setFallbackPaywalls(_ data: Data) async throws {
+  func setFallbackPaywalls(fileURL: URL) async throws {
     do {
       logger.info("set fallback paywalls")
 
-      try await Adapty.setFallbackPaywalls(data)
+      try await Adapty.setFallbackPaywalls(fileURL: fileURL)
 
       logger.info("set fallback paywalls success")
     } catch {
