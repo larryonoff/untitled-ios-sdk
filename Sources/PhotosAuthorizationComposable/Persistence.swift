@@ -13,7 +13,7 @@ extension PersistenceReaderKey where Self == PhotosAuthorizationPersistenceKey {
   }
 }
 
-public struct PhotosAuthorizationPersistenceKey: PersistenceReaderKey, Hashable, Sendable {
+public struct PhotosAuthorizationPersistenceKey: PersistenceReaderKey, Sendable {
   @Dependency(\.photosAuthorization) var photosAuthorization
 
   let accessLevel: PhotosAuthorization.AccessLevel
@@ -22,6 +22,10 @@ public struct PhotosAuthorizationPersistenceKey: PersistenceReaderKey, Hashable,
     accessLevel: PhotosAuthorization.AccessLevel
   ) {
     self.accessLevel = accessLevel
+  }
+
+  public var id: AnyHashable {
+    PhotosAuthorizationPersistenceKeyID(accessLevel: accessLevel)
   }
 
   public func load(
@@ -44,12 +48,8 @@ public struct PhotosAuthorizationPersistenceKey: PersistenceReaderKey, Hashable,
       task.cancel()
     }
   }
+}
 
-  public static func == (lhs: Self, rhs: Self) -> Bool {
-    lhs.accessLevel == rhs.accessLevel
-  }
-
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(accessLevel)
-  }
+private struct PhotosAuthorizationPersistenceKeyID: Hashable {
+  let accessLevel: PhotosAuthorization.AccessLevel
 }

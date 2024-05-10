@@ -246,6 +246,10 @@ public struct RemoteSettingKey<Value> {
 }
 
 extension RemoteSettingKey: PersistenceReaderKey {
+  public var id: AnyHashable {
+    RemoteSettingKeyID(key: key)
+  }
+
   public func load(initialValue: Value?) -> Value? {
     self.lookup.loadValue(from: self.store, at: self.key, default: initialValue)
   }
@@ -267,14 +271,8 @@ extension RemoteSettingKey: PersistenceReaderKey {
   }
 }
 
-extension RemoteSettingKey: Hashable {
-  public static func == (lhs: RemoteSettingKey, rhs: RemoteSettingKey) -> Bool {
-    lhs.key == rhs.key
-  }
-
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(self.key)
-  }
+private struct RemoteSettingKeyID: Hashable {
+  let key: String
 }
 
 private protocol Lookup<Value> {

@@ -78,7 +78,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.10.2"
+      from: "1.10.3"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -86,7 +86,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "1.2.2"
+      from: "1.3.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
