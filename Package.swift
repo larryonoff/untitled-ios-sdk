@@ -54,11 +54,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
-      from: "6.1.1"
+      from: "7.0.0"
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
-      from: "5.2.2"
+      from: "5.3.0"
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
@@ -66,7 +66,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.24.0"
+      from: "10.26.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
