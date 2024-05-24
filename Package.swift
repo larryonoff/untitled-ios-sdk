@@ -54,7 +54,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
-      from: "7.0.0"
+      from: "6.1.1"
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
