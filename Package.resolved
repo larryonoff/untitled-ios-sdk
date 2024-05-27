@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/rwbutler/Connectivity",
       "state" : {
-        "revision" : "ac5a98af6564f6000f01e9c4cf0b89c7e8282513",
-        "version" : "7.0.0"
+        "revision" : "baf392cd229138c268e5dbaf3ee84e6ae0876173",
+        "version" : "6.1.1"
       }
     },
     {
