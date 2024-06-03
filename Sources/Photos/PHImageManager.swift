@@ -9,36 +9,34 @@ extension PHImageManager {
     options: PHImageRequestOptions?
   ) -> AsyncThrowingStream<(UIImage?, info: [AnyHashable: Any]?), Error> {
     AsyncThrowingStream { continuation in
-      Task {
-        let requestID = requestImage(
-          for: asset,
-          targetSize: targetSize,
-          contentMode: contentMode,
-          options: options,
-          resultHandler: { image, info in
-            let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
+      let requestID = requestImage(
+        for: asset,
+        targetSize: targetSize,
+        contentMode: contentMode,
+        options: options,
+        resultHandler: { image, info in
+          let resultInfo = info.flatMap(PHImageRequestResultInfo.init)
 
-            if let error = resultInfo?.error {
-              return continuation.finish(throwing: error)
-            }
-
-            if resultInfo?.isCancelled == true {
-              return continuation.finish(throwing: CancellationError())
-            }
-
-            continuation.yield((image, info))
-
-            // when degraded image is provided,
-            // the completion handler will be called again.
-            if resultInfo?.isDegraded == nil || resultInfo?.isDegraded == false {
-              continuation.finish()
-            }
+          if let error = resultInfo?.error {
+            return continuation.finish(throwing: error)
           }
-        )
 
-        continuation.onTermination = { [weak self] _ in
-          self?.cancelImageRequest(requestID)
+          if resultInfo?.isCancelled == true {
+            return continuation.finish(throwing: CancellationError())
+          }
+
+          continuation.yield((image, info))
+
+          // when degraded image is provided,
+          // the completion handler will be called again.
+          if resultInfo?.isDegraded == nil || resultInfo?.isDegraded == false {
+            continuation.finish()
+          }
         }
+      )
+
+      continuation.onTermination = { [weak self] _ in
+        self?.cancelImageRequest(requestID)
       }
     }
   }
