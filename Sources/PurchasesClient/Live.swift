@@ -193,7 +193,7 @@ final class PurchasesClientImpl {
     by id: Paywall.ID
   ) -> AsyncThrowingStream<FetchPaywallResponse, Error> {
     AsyncThrowingStream { [weak self] continuation in
-      Task { [weak self] in
+      let task = Task { [weak self] in
         do {
           logger.info("get paywall", dump: [
             "id": id
@@ -300,6 +300,8 @@ final class PurchasesClientImpl {
           continuation.finish(throwing: error)
         }
       }
+
+      continuation.onTermination = { _ in task.cancel() }
     }
   }
 
