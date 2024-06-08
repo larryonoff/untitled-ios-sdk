@@ -58,15 +58,15 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
-      from: "5.3.0"
+      from: "5.4.0"
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "17.0.0"
+      from: "17.0.2"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.26.0"
+      from: "10.27.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -74,11 +74,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/apple/swift-collections",
-      from: "1.1.0"
+      from: "1.1.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.10.3"
+      from: "1.11.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
