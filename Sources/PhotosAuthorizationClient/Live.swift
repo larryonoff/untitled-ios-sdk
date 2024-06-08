@@ -1,5 +1,6 @@
 import Combine
 import Dependencies
+import DuckLogging
 import Photos
 
 extension PhotosAuthorizationClient: DependencyKey {
