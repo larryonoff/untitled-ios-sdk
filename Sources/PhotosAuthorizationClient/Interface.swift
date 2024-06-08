@@ -12,20 +12,20 @@ extension DependencyValues {
 public struct PhotosAuthorizationClient: Sendable {
   public var authorizationStatus: @Sendable (
     _ for: PhotosAuthorization.AccessLevel
-  ) -> PhotosAuthorization.AuthorizationStatus
+  ) -> PhotosAuthorization.AuthorizationStatus = { _ in .notDetermined }
 
   public var authorizationStatusUpdates: @Sendable (
     _ for: PhotosAuthorization.AccessLevel
-  ) -> AsyncStream<PhotosAuthorization.AuthorizationStatus>
+  ) -> AsyncStream<PhotosAuthorization.AuthorizationStatus> = { _ in .finished }
 
   public var requestAuthorization: @Sendable (
     _ for: PhotosAuthorization.AccessLevel
-  ) async -> PhotosAuthorization.AuthorizationStatus
+  ) async -> PhotosAuthorization.AuthorizationStatus = { _ in .notDetermined }
 }
 
 extension PhotosAuthorizationClient {
   public func requestAuthorizationIfNeeded(
-    for acl: AccessLevel
+    for acl: PhotosAuthorization.AccessLevel
   ) async -> PhotosAuthorization.AuthorizationStatus {
     let status = authorizationStatus(acl)
 

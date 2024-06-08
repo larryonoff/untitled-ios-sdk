@@ -298,6 +298,7 @@ extension Target {
     static let photosAuthorization = target(
       name: .Client.photosAuthorization,
       dependencies: [
+        .logging,
         .External.dependencies,
         .External.Dependencies.macros,
         .External.tagged
