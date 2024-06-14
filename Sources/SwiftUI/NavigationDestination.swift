@@ -10,7 +10,7 @@ extension View {
     item: Binding<D?>,
     @ViewBuilder destination: @escaping (D) -> C
   ) -> some View {
-    navigationDestination(isPresented: item.isPresent()) {
+    navigationDestination(isPresented: Binding(item)) {
       if let item = item.wrappedValue {
         destination(item)
       }

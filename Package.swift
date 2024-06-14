@@ -78,7 +78,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.11.0"
+      from: "1.11.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -86,7 +86,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "1.3.0"
+      from: "1.3.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -94,15 +94,15 @@ let package = Package(
     ),
     .package(
       url:"https://github.com/shaps80/SwiftUIBackports",
-      from: "2.8.0"
+      from: "2.8.1"
     ),
     .package(
       url:"https://github.com/pointfreeco/swiftui-navigation",
-      from: "1.3.0"
+      from: "1.5.0"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "5.3.1"
+      from: "5.4.0"
     )
   ],
   targets: [
