@@ -36,7 +36,7 @@ extension View {
     let state = store?.withState { $0 }
 
     return self.shareSheet(
-      isPresented: item.isPresent(),
+      isPresented: Binding(item),
       data: state?.data,
       onCompletion: { result in
         store?.send(.delegate(.completed(result)))

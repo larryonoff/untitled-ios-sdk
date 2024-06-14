@@ -30,7 +30,7 @@ private struct _MailComposeModifier<Action>: ViewModifier {
 
   func body(content: Content) -> some View {
     content.mailCompose(
-      isPresented: viewStore.binding(send: dismiss).isPresent(),
+      isPresented: Binding(viewStore.binding(send: dismiss)),
       emailData: viewStore.state,
       onDismiss: { viewStore.send(dismiss) },
       onSubmit: onSubmit
