@@ -54,8 +54,8 @@ extension PersistenceReaderKey {
   ///
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
-  public static func remoteSetting<Value: RawRepresentable>(_ key: String) -> Self
-  where Value.RawValue == Int, Self == RemoteSettingKey<Value> {
+  public static func remoteSetting<Value: RawRepresentable<Int>>(_ key: String) -> Self
+  where Self == RemoteSettingKey<Value> {
     RemoteSettingKey(key)
   }
 
@@ -64,8 +64,8 @@ extension PersistenceReaderKey {
   ///
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
-  public static func remoteSetting<Value: RawRepresentable>(_ key: String) -> Self
-  where Value.RawValue == String, Self == RemoteSettingKey<Value> {
+  public static func remoteSetting<Value: RawRepresentable<String>>(_ key: String) -> Self
+  where Self == RemoteSettingKey<Value> {
     RemoteSettingKey(key)
   }
 
@@ -119,8 +119,8 @@ extension PersistenceReaderKey {
   ///
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
-  public static func remoteSetting<Value: RawRepresentable>(_ key: String) -> Self
-  where Value.RawValue == Int, Self == RemoteSettingKey<Value?> {
+  public static func remoteSetting<Value: RawRepresentable<Int>>(_ key: String) -> Self
+  where Self == RemoteSettingKey<Value?> {
     RemoteSettingKey(key)
   }
 
@@ -129,8 +129,8 @@ extension PersistenceReaderKey {
   ///
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
-  public static func remoteSetting<Value: RawRepresentable>(_ key: String) -> Self
-  where Value.RawValue == String, Self == RemoteSettingKey<Value?> {
+  public static func remoteSetting<Value: RawRepresentable<String>>(_ key: String) -> Self
+  where Self == RemoteSettingKey<Value?> {
     RemoteSettingKey(key)
   }
 }
@@ -177,16 +177,14 @@ public struct RemoteSettingKey<Value> {
     self.store = store
   }
 
-  public init(_ key: String)
-  where Value: RawRepresentable, Value.RawValue == Int {
+  public init(_ key: String) where Value: RawRepresentable<Int> {
     @Dependency(\.remoteSettings) var store
     self.lookup = RawRepresentableLookup(base: IntLookup())
     self.key = key
     self.store = store
   }
 
-  public init(_ key: String)
-  where Value: RawRepresentable, Value.RawValue == String {
+  public init(_ key: String) where Value: RawRepresentable<String> {
     @Dependency(\.remoteSettings) var store
     self.lookup = RawRepresentableLookup(base: StringLookup())
     self.key = key
@@ -228,16 +226,14 @@ public struct RemoteSettingKey<Value> {
     self.store = store
   }
 
-  public init<R: RawRepresentable>(_ key: String)
-  where R.RawValue == Int, Value == R? {
+  public init<R: RawRepresentable<Int>>(_ key: String) where Value == R? {
     @Dependency(\.remoteSettings) var store
     self.lookup = OptionalLookup(base: RawRepresentableLookup(base: IntLookup()))
     self.key = key
     self.store = store
   }
 
-  public init<R: RawRepresentable>(_ key: String)
-  where R.RawValue == String, Value == R? {
+  public init<R: RawRepresentable<String>>(_ key: String) where Value == R? {
     @Dependency(\.remoteSettings) var store
     self.lookup = OptionalLookup(base: RawRepresentableLookup(base: StringLookup()))
     self.key = key

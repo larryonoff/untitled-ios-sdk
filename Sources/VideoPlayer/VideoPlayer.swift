@@ -19,7 +19,7 @@ public struct CustomVideoPlayer<VideoOverlay> where VideoOverlay: View {
   }
 }
 
-extension CustomVideoPlayer where VideoOverlay == EmptyView {
+extension CustomVideoPlayer<EmptyView> {
   public init(player: AVPlayer?) {
     self.player = player
     self.videoOverlay = nil
