@@ -2,13 +2,12 @@ import Combine
 import SwiftUI
 
 extension View {
-  public func onReceive<P>(
-    _ publisher: P?,
-    perform action: @escaping (P.Output) -> Void) -> some View
-  where P: Publisher, P.Failure == Never
+  public func onReceive<Output>(
+    _ publisher: (some Publisher<Output, Never>)?,
+    perform action: @escaping (Output) -> Void) -> some View
   {
     Group {
-      if let publisher = publisher {
+      if let publisher {
         self.onReceive(publisher, perform: action)
       } else {
         self
