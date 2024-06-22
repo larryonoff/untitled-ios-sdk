@@ -138,6 +138,7 @@ public struct PaywallReducer {
 
         do {
           let paywall = try result.get()
+          let paywallChanged = paywall?.id != state.paywall?.id
 
           var products = (paywall?.products ?? [])
 
@@ -155,7 +156,7 @@ public struct PaywallReducer {
           state.productSelectedID =
             paywall?.productSelected?.id ?? products.first?.id
 
-          if let paywall = paywall {
+          if let paywall, paywallChanged {
             return .run { _ in
               try await purchases.logPaywall(paywall)
             }
