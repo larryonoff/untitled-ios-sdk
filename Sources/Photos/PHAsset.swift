@@ -10,6 +10,16 @@ extension PHAsset: Identifiable {
 }
 
 extension PHAsset {
+  public static func fetchAsset(withLocalIdentifier identifier: String) -> PHAsset? {
+    let options = PHFetchOptions()
+    options.fetchLimit = 1
+    options.wantsIncrementalChangeDetails = false
+
+    return PHAsset
+      .fetchAssets(withLocalIdentifiers: [identifier], options: options)
+      .firstObject
+  }
+
   public func requestContentEditingInput(
     with options: PHContentEditingInputRequestOptions?
   ) async -> (PHContentEditingInput?, [AnyHashable: Any]) {
