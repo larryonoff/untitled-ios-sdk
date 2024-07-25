@@ -39,7 +39,7 @@ public struct PhotosPickerItem {
     if itemProvider._hasItem(conformingTo: .quickTimeMovie) {
       let fileURL = try await itemProvider._loadFileRepresentation(for: .quickTimeMovie)
       return try fileURL.flatMap {
-        try Data.init(contentsOf: $0)
+        try Data(contentsOf: $0)
       }
     }
 
@@ -64,12 +64,9 @@ extension PhotosPickerItem.EncodingDisambiguationPolicy: Sendable {}
 extension PhotosPickerItem.EncodingDisambiguationPolicy {
   var phPickerConfigurationAssetRepresentationMode: PHPickerConfiguration.AssetRepresentationMode {
     switch self {
-    case .automatic:
-      return .automatic
-    case .current:
-      return .current
-    case .compatible:
-      return .compatible
+    case .automatic: .automatic
+    case .current: .current
+    case .compatible: .compatible
     }
   }
 }
@@ -83,10 +80,9 @@ extension NSItemProvider {
     try await withCheckedThrowingContinuation { continuation in
       self.loadFileRepresentation(forTypeIdentifier: contentType.identifier) { url, error in
         if let error {
-          continuation.resume(throwing: error)
-        } else {
-          continuation.resume(returning: url)
+          return continuation.resume(throwing: error)
         }
+        continuation.resume(returning: url)
       }
     }
   }
