@@ -1,3 +1,4 @@
+import Dependencies
 import Photos
 
 extension PHAssetResourceManager {
@@ -5,24 +6,16 @@ extension PHAssetResourceManager {
     for resource: PHAssetResource,
     options: PHAssetResourceRequestOptions?
   ) async throws -> Data? {
-    var requestID: PHAssetResourceDataRequestID?
-
-    let _onCancel = {
-      guard let requestID else { return }
-      self.cancelDataRequest(requestID)
-    }
+    let requestID = LockIsolated<PHAssetResourceDataRequestID?>(nil)
 
     return try await withTaskCancellationHandler {
       try await withCheckedThrowingContinuation { continuation in
         var data: Data?
 
-        requestID = self.requestData(
-          for: resource,
-          options: options,
-          dataReceivedHandler: { _data in
-            data = _data
-          },
-          completionHandler: { error in
+        requestID.setValue(
+          self.requestData(for: resource, options: options) {
+            data = $0
+          } completionHandler: { error in
             if let error {
               continuation.resume(throwing: error)
             } else {
@@ -32,7 +25,7 @@ extension PHAssetResourceManager {
         )
       }
     } onCancel: {
-      _onCancel()
+      requestID.value.flatMap { self.cancelDataRequest($0) }
     }
   }
 }
