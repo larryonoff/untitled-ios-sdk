@@ -30,17 +30,14 @@ private struct ShareSheetViewModifier<Data: RandomAccessCollection>: ViewModifie
   let onCancellation: () -> Void
 
   func body(content: Content) -> some View {
-    content.sheet(
-      isPresented: isPresented,
-      content: {
-        if let data {
-          ShareView(
-            data: data,
-            onCompletion: onCompletion,
-            onCancellation: onCancellation
-          )
-        }
+    content.sheet(isPresented: isPresented) {
+      if let data {
+        ShareView(
+          data: data,
+          onCompletion: onCompletion,
+          onCancellation: onCancellation
+        )
       }
-    )
+    }
   }
 }
