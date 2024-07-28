@@ -56,6 +56,8 @@ extension SFSymbol {
 
   public static let book: SFSymbol = "book"
 
+  public static let bookmark: SFSymbol = "bookmark"
+
   public static let checkmark: SFSymbol = "checkmark"
 
   public enum Checkmark {
