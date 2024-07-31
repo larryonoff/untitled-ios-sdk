@@ -28,13 +28,17 @@ extension BidirectionalCollection {
       return nil
     }
 
+    guard idx > startIndex else {
+      return loop ? last : nil
+    }
+
     let nextIdx = index(before: idx)
 
-    if nextIdx < startIndex {
-      return loop ? last : nil
-    } else {
+    if nextIdx >= startIndex {
       return self[nextIdx]
     }
+
+    return loop ? last : nil
   }
 }
 
