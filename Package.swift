@@ -66,7 +66,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "10.27.0"
+      from: "11.0.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -617,7 +617,7 @@ extension Target.Dependency {
       )
 
       static let remoteConfig = product(
-        name: "FirebaseRemoteConfigSwift",
+        name: "FirebaseRemoteConfig",
         package: "firebase-ios-sdk"
       )
     }
