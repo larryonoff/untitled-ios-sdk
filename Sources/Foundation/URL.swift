@@ -19,6 +19,10 @@ extension URL {
     return values.isDirectory
   }
 
+  public static func mail(to email: String) -> URL? {
+    URL(string: "mailto:\(email)")
+  }
+
   #if canImport(UIKit)
   public static var settings: URL {
     URL(string: UIApplication.openSettingsURLString)!
