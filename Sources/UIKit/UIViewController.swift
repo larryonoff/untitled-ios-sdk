@@ -1,6 +1,19 @@
 import UIKit
 
 extension UIViewController {
+  public var topMostViewController: UIViewController {
+    var topController: UIViewController = self
+
+    while
+      let presented = topController.presentedViewController
+        ?? (topController as? UINavigationController)?.topViewController
+    {
+      topController = presented
+    }
+
+    return topController
+  }
+
   public func embed(_ viewController: UIViewController) {
     let viewToEmbed = viewController.view!
     viewToEmbed.translatesAutoresizingMaskIntoConstraints = false
