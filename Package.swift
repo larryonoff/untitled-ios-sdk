@@ -139,20 +139,6 @@ let package = Package(
     ),
     .target(name: .sfSymbol),
     .target(
-      name: .swiftUI,
-      dependencies: [
-        .graphics,
-        .External.composableArchitecture,
-        .External.swiftUIBackports,
-        .External.swiftUINavigation
-      ],
-      path: "Sources/SwiftUI"
-    ),
-    .target(
-      name: .uiKit,
-      path: "Sources/UIKit"
-    ),
-    .target(
       name: .videoPlayer,
       dependencies: [
         .swiftUI
@@ -164,6 +150,8 @@ let package = Package(
     ),
     .photos,
     .photosUI,
+    .swiftUI,
+    .uiKit,
     .Client.analytics,
     .Client.application,
     .Client.appMetrica,
@@ -504,6 +492,23 @@ extension Target {
       .linkedFramework("Photos"),
       .linkedFramework("PhotosUI")
     ]
+  )
+
+  static let swiftUI = target(
+    name: .swiftUI,
+    dependencies: [
+      .graphics,
+      .uiKit,
+      .External.composableArchitecture,
+      .External.swiftUIBackports,
+      .External.swiftUINavigation
+    ],
+    path: "Sources/SwiftUI"
+  )
+
+  static let uiKit = target(
+    name: .uiKit,
+    path: "Sources/UIKit"
   )
 
   static let webView = target(
