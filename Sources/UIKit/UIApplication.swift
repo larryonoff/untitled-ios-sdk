@@ -1,6 +1,21 @@
 import UIKit
 
 extension UIApplication {
+  public var activeScene: UIWindowScene? {
+    for scene in connectedScenes {
+      guard
+        scene.activationState == .foregroundActive,
+        let scene = scene as? UIWindowScene
+      else {
+        continue
+      }
+
+      return scene
+    }
+
+    return nil
+  }
+
   public var topMostWindow: UIWindow? {
     var topWindow: UIWindow?
 
@@ -19,17 +34,7 @@ extension UIApplication {
   }
 
   public var topMostViewController: UIViewController? {
-    guard let window = topMostWindow else {
-      return nil
-    }
-
-    var topViewController = window.rootViewController
-
-    while let presented = topViewController?.presentedViewController {
-      topViewController = presented
-    }
-
-    return topViewController
+    topMostWindow?.topMostViewController
   }
 }
 
