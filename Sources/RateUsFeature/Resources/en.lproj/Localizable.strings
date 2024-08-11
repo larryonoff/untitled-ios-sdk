@@ -1,0 +1,9 @@
+"rateUs" = "Rate Us";
+"rateUs.title" = "Love the App?";
+"rateUs.doNotLove.title" = "We are so sorry 😔";
+"rateUs.doNotLove.subtitle" = "Please share your feedback to help us improve the app";
+"rateUs.contactUsAction" = "Share";
+"rateUs.doNotLoveAction" = "No, I don’t";
+"rateUs.dismissAction" = "Cancel";
+"rateUs.loveAction" = "Yes, I love it! 😍";
+"rateUs.shareAction" = "Share";

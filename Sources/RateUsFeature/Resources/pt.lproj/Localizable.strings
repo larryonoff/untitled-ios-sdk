@@ -1,0 +1,9 @@
+"rateUs" = "Avalie-nos";
+"rateUs.title" = "Gostou do aplicativo?";
+"rateUs.doNotLove.title" = "Lamentamos muito 😔";
+"rateUs.doNotLove.subtitle" = "A partilha de feedback ajuda-nos a melhorar a aplicação";
+"rateUs.contactUsAction" = "Compartilhar";
+"rateUs.doNotLoveAction" = "Não, eu não";
+"rateUs.dismissAction" = "Cancelar";
+"rateUs.loveAction" = "Sim, adorei! 😍";
+"rateUs.shareAction" = "Compartilhar";

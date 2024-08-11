@@ -1,0 +1,9 @@
+"rateUs" = "Oceń nas";
+"rateUs.title" = "Podoba Ci się aplikacja?";
+"rateUs.doNotLove.title" = "Przykro nam 😔";
+"rateUs.doNotLove.subtitle" = "Udostępnij swoją opinię, aby pomóc nam ulepszyć aplikację";
+"rateUs.contactUsAction" = "Udostępnij";
+"rateUs.doNotLoveAction" = "Nie, nie podoba";
+"rateUs.dismissAction" = "Anuluj";
+"rateUs.loveAction" = "Tak, uwielbiam ją! 😍";
+"rateUs.shareAction" = "Udostępnij";
