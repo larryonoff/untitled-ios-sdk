@@ -1,0 +1,9 @@
+"rateUs" = "Bizi Değerlendirin";
+"rateUs.title" = "Uygulamayı sevdiniz mi?";
+"rateUs.doNotLove.title" = "Çok üzgünüz 😔";
+"rateUs.doNotLove.subtitle" = "Uygulamayı iyileştirebilmemiz için geri bildiriminizi paylaşın";
+"rateUs.contactUsAction" = "Paylaş";
+"rateUs.doNotLoveAction" = "Hayır, beğenmedim";
+"rateUs.dismissAction" = "İptal";
+"rateUs.loveAction" = "Evet, sevdim! 😍";
+"rateUs.shareAction" = "Paylaş";

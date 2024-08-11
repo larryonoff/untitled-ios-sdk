@@ -11,15 +11,15 @@ import Foundation
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
   internal enum CancelIntroductoryOffer {
-    /// The free trial is a one-time offer. If you decline it, you won’t be activate it later
-    internal static let message = L10n.tr("Localizable", "cancelIntroductoryOffer.message", fallback: "The free trial is a one-time offer. If you decline it, you won’t be activate it later")
+    /// Free trial is a limited-time offer. Activate it now!
+    internal static let message = L10n.tr("Localizable", "cancelIntroductoryOffer.message", fallback: "Free trial is a limited-time offer. Activate it now!")
     /// Are you sure?
     internal static let title = L10n.tr("Localizable", "cancelIntroductoryOffer.title", fallback: "Are you sure?")
     internal enum Action {
       /// Cancel
       internal static let cancel = L10n.tr("Localizable", "cancelIntroductoryOffer.action.cancel", fallback: "Cancel")
-      /// Reject free trial
-      internal static let reject = L10n.tr("Localizable", "cancelIntroductoryOffer.action.reject", fallback: "Reject free trial")
+      /// Reject my free trial
+      internal static let reject = L10n.tr("Localizable", "cancelIntroductoryOffer.action.reject", fallback: "Reject my free trial")
     }
   }
 }

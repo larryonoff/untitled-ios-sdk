@@ -1,0 +1,9 @@
+"rateUs" = "Betygsätt oss";
+"rateUs.title" = "Älskar du appen?";
+"rateUs.doNotLove.title" = "Vi beklagar 😔";
+"rateUs.doNotLove.subtitle" = "Dela din feedback för att hjälpa oss att förbättra appen";
+"rateUs.contactUsAction" = "Dela";
+"rateUs.doNotLoveAction" = "Nej, jag gör inte";
+"rateUs.dismissAction" = "Avbryt";
+"rateUs.loveAction" = "Ja, jag älskar det! 😍";
+"rateUs.shareAction" = "Dela";

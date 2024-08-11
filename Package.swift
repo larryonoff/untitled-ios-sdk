@@ -25,12 +25,16 @@ let package = Package(
     .library(name: .Client.userIdentifier, targets: [.Client.userIdentifier]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
+
     .library(name: .Composable.connectivity, targets: [.Composable.connectivity]),
     .library(name: .Composable.paywall, targets: [.Composable.paywall]),
     .library(name: .Composable.photos, targets: [.Composable.photos]),
     .library(name: .Composable.photosAuthorization, targets: [.Composable.photosAuthorization]),
     .library(name: .Composable.purchases, targets: [.Composable.purchases]),
     .library(name: .Composable.remoteSettings, targets: [.Composable.remoteSettings]),
+
+    .library(name: .Feature.rateUs, targets: [.Feature.rateUs]),
+
     .library(name: .avFoundation, targets: [.avFoundation]),
     .library(name: .composableArchitecture, targets: [.composableArchitecture]),
     .library(name: .concurrency, targets: [.concurrency]),
@@ -173,6 +177,7 @@ let package = Package(
     .Composable.photosAuthorization,
     .Composable.purchases,
     .Composable.remoteSettings,
+    .Feature.rateUs,
     .dependencies,
     .foundation,
     .logging,
@@ -434,6 +439,21 @@ extension Target {
     )
   }
 
+  enum Feature {
+    static let rateUs = target(
+      name: .Feature.rateUs,
+      dependencies: [
+        .dependencies,
+        .foundation,
+        .swiftUI,
+        .External.composableArchitecture,
+        .Client.analytics,
+        .Client.purchases,
+      ],
+      path: "Sources/RateUsFeature"
+    )
+  }
+
   static let dependencies = target(
     name: .dependencies,
     dependencies: [
@@ -563,6 +583,10 @@ extension Target.Dependency {
     static let photosAuthorization = byName(name: .Composable.photosAuthorization)
     static let purchases = byName(name: .Composable.purchases)
     static let remoteSettings = byName(name: .Composable.remoteSettings)
+  }
+
+  enum Feature {
+    static let rateUs = byName(name: .Feature.rateUs)
   }
 
   enum External {
@@ -699,5 +723,9 @@ extension String {
     static let photosAuthorization = "DuckPhotosAuthorizationComposable"
     static let purchases = "DuckPurchasesComposable"
     static let remoteSettings = "DuckRemoteSettingsComposable"
+  }
+
+  enum Feature {
+    static let rateUs = "DuckRateUsFeature"
   }
 }
