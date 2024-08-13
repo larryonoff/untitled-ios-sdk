@@ -78,8 +78,8 @@ internal enum L10n {
           internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.plural", fallback: "years")
           /// years
           internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.plural2", fallback: "years")
-          /// annually
-          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.recurrent", fallback: "annually")
+          /// yearly
+          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.recurrent", fallback: "yearly")
         }
       }
     }
