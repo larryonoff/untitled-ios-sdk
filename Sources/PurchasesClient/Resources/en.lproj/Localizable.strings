@@ -1,5 +1,7 @@
 "error.unknown.description" = "Oops, something went wrong 😔";
 
+"product.lifetime" = "Lifetime";
+
 "product.subscriptionOffer.freeTrial" = "%d-%@ free trial";
 "product.subscriptionOffer.paymentMode.freeTrial" = "Free Trial";
 "product.subscriptionOffer.paymentMode.payAsYouGo" = "Pay as You Go";
