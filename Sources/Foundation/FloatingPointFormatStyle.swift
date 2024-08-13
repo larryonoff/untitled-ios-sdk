@@ -3,23 +3,43 @@ import Foundation
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension FloatingPointFormatStyle {
   public struct Duration: Codable, Hashable {
-    var locale: Locale
-    var minIntegerDigits: UInt
-    var minFractionDigits: UInt
+    public enum UnitWidth: Codable, Hashable {
+      case narrow
+      case ommited
+    }
+
+    public var locale: Locale
+    public var minIntegerDigits: UInt
+    public var minFractionDigits: UInt
+    public var width: UnitWidth
 
     public init(
       locale: Locale = .autoupdatingCurrent,
       minIntegerDigits: UInt = 0,
-      minFractionDigits: UInt = 1
+      minFractionDigits: UInt = 1,
+      width: UnitWidth = .narrow
     ) {
       self.locale = locale
       self.minIntegerDigits = minIntegerDigits
       self.minFractionDigits = minFractionDigits
+      self.width = width
+    }
+
+    public func width(_ width: UnitWidth) -> Self {
+      modify { $0.width = width }
+    }
+
+    func modify(
+      _ transform: (inout Self) throws -> Void
+    ) rethrows -> Self {
+      var new = self
+      try transform(&new)
+      return new
     }
   }
 
   public struct Timer: Codable, Hashable {
-    var locale: Locale
+    public var locale: Locale
 
     public init(
       locale: Locale = .autoupdatingCurrent
@@ -38,8 +58,14 @@ extension FloatingPointFormatStyle.Duration: Foundation.FormatStyle {
     format += "\(minFractionDigits > 0 ? "\(minFractionDigits)" : "")"
     format += "f"
 
-    let valueString = String(format: format, TimeInterval(value))
-    return "\(valueString)s"
+    let string = String(format: format, TimeInterval(value))
+
+    switch width {
+    case .narrow:
+      return "\(string)s"
+    case .ommited:
+      return string
+    }
   }
 }
 
@@ -71,13 +97,17 @@ extension Foundation.FormatStyle
       minFractionDigits: minFractionDigits
     )
   }
+
+  public static var duration: Self {
+    self.duration()
+  }
 }
 
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension Foundation.FormatStyle
   where Self == FloatingPointFormatStyle<Double>.Timer
 {
-  public static func timer() -> Self {
+  public static var timer: Self {
     .init()
   }
 }
