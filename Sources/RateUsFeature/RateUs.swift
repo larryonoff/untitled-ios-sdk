@@ -24,14 +24,22 @@ public struct RateUs {
 
     public var mode: Mode = .default
 
-    public var contactMail: String?
+    public var contactURL: URL?
     public var placement: Placement?
 
     public init(
       contactMail: String?,
       placement: Placement?
     ) {
-      self.contactMail = contactMail
+      self.contactURL = contactMail.flatMap(URL.mail(to:))
+      self.placement = placement
+    }
+
+    public init(
+      contactURL: URL?,
+      placement: Placement?
+    ) {
+      self.contactURL = contactURL
       self.placement = placement
     }
   }
@@ -53,9 +61,9 @@ public struct RateUs {
         return .none
 
       case .contactUsTapped:
-        return .run { [contactMail = state.contactMail] send in
-          if let contactMail, let url = URL.mail(to: contactMail) {
-            await openURL(url)
+        return .run { [contactURL = state.contactURL] send in
+          if let contactURL {
+            await openURL(contactURL)
           }
 
           await dismiss()
@@ -68,7 +76,7 @@ public struct RateUs {
         return .none
       case .loveTapped:
         return .run { [placement = state.placement] _ in
-          try? await Task.sleep(for: .seconds(2))
+          try? await Task.sleep(for: .seconds(1))
           await requestReview()
 
           await dismiss()
