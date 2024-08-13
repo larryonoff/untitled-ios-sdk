@@ -17,6 +17,8 @@ internal enum L10n {
     }
   }
   internal enum Product {
+    /// Lifetime
+    internal static let lifetime = L10n.tr("Localizable", "product.lifetime", fallback: "Lifetime")
     internal enum SubscriptionOffer {
       /// %d-%@ free trial
       internal static func freeTrial(_ p1: Int, _ p2: Any) -> String {
