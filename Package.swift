@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:5.10
 
 import PackageDescription
 
@@ -6,8 +6,8 @@ let package = Package(
   name: "Untitled",
   defaultLocalization: "en",
   platforms: [
-    .iOS(.v15),
-    .macOS(.v12)
+    .iOS(.v16),
+    .macOS(.v13)
   ],
   products: [
     .library(name: .Client.analytics, targets: [.Client.analytics]),
