@@ -26,6 +26,6 @@
 "product.subscriptionPeriod.unit.day.recurrent" = "quotidien";
 "product.subscriptionPeriod.unit.week.recurrent" = "hebdomadaire";
 "product.subscriptionPeriod.unit.month.recurrent" = "mensuel";
-"product.subscriptionPeriod.unit.year.recurrent" = "annuel";
+"product.subscriptionPeriod.unit.year.recurrent" = "par année";
 
 "purchases.error.premiumExpired.description" = "Vous ne disposez d'aucun abonnement actif. Nous vous prions de vérifier les détails de votre compte";

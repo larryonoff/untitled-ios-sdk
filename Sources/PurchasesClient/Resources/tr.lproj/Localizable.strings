@@ -26,6 +26,6 @@
 "product.subscriptionPeriod.unit.day.recurrent" = "günlük";
 "product.subscriptionPeriod.unit.week.recurrent" = "haftalık";
 "product.subscriptionPeriod.unit.month.recurrent" = "aylık";
-"product.subscriptionPeriod.unit.year.recurrent" = "yıllık";
+"product.subscriptionPeriod.unit.year.recurrent" = "her yıl";
 
 "purchases.error.premiumExpired.description" = "Aktif aboneliğiniz yok. Lütfen hesap ayrıntılarınızı kontrol edin";

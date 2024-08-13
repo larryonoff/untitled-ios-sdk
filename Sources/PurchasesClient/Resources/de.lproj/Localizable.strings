@@ -24,8 +24,8 @@
 "product.subscriptionPeriod.unit.year.compactName" = "J.";
 
 "product.subscriptionPeriod.unit.day.recurrent" = "täglich";
-"product.subscriptionPeriod.unit.week.recurrent" = "pro Woche";
+"product.subscriptionPeriod.unit.week.recurrent" = "wöchentlich";
 "product.subscriptionPeriod.unit.month.recurrent" = "monatlich";
-"product.subscriptionPeriod.unit.year.recurrent" = "pro Jahr";
+"product.subscriptionPeriod.unit.year.recurrent" = "jährlich";
 
 "purchases.error.premiumExpired.description" = "Du hast kein laufendes Abo. Überprüfe deine Kontodaten";
