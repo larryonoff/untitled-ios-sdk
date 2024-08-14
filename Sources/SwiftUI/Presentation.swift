@@ -57,6 +57,7 @@ private struct _PresentationModifier<State, Action, Content: View>: UIViewRepres
             content(store)
           }
         }
+        .environment(\.self, context.environment)
       )
     }
   }
