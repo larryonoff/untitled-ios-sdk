@@ -82,7 +82,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.11.1"
+      from: "1.13.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -101,8 +101,8 @@ let package = Package(
       from: "2.8.1"
     ),
     .package(
-      url:"https://github.com/pointfreeco/swiftui-navigation",
-      from: "1.5.0"
+      url:"https://github.com/pointfreeco/swift-navigation",
+      from: "2.0.5"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
@@ -663,7 +663,7 @@ extension Target.Dependency {
 
     static let swiftUINavigation = product(
       name: "SwiftUINavigation",
-      package: "swiftui-navigation"
+      package: "swift-navigation"
     )
 
     enum AppMetrica {
