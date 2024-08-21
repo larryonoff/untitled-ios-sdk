@@ -38,6 +38,7 @@ let package = Package(
     .library(name: .avFoundation, targets: [.avFoundation]),
     .library(name: .composableArchitecture, targets: [.composableArchitecture]),
     .library(name: .concurrency, targets: [.concurrency]),
+    .library(name: .core, targets: [.core]),
     .library(name: .coreImage, targets: [.coreImage]),
     .library(name: .dependencies, targets: [.dependencies]),
     .library(name: .foundation, targets: [.foundation]),
@@ -148,10 +149,17 @@ let package = Package(
         .linkedFramework("AVKit")
       ]
     ),
+
+    .core,
+    .dependencies,
+    .foundation,
+    .logging,
     .photos,
     .photosUI,
     .swiftUI,
     .uiKit,
+    .webView,
+
     .Client.analytics,
     .Client.application,
     .Client.appMetrica,
@@ -167,17 +175,15 @@ let package = Package(
     .Client.userIdentifier,
     .Client.userSettings,
     .Client.userTracking,
+
     .Composable.connectivity,
     .Composable.paywall,
     .Composable.photos,
     .Composable.photosAuthorization,
     .Composable.purchases,
     .Composable.remoteSettings,
+
     .Feature.rateUs,
-    .dependencies,
-    .foundation,
-    .logging,
-    .webView
   ]
 )
 
@@ -186,6 +192,7 @@ extension Target {
     static let analytics = target(
       name: .Client.analytics,
       dependencies: [
+        .core,
         .foundation,
         .logging,
         .External.dependencies,
@@ -347,6 +354,7 @@ extension Target {
     static let userSettings = target(
       name: .Client.userSettings,
       dependencies: [
+        .core,
         .External.dependencies
       ],
       path: "Sources/UserSettings"
@@ -450,6 +458,15 @@ extension Target {
     )
   }
 
+  static let core = target(
+    name: .core,
+    dependencies: [
+      .External.composableArchitecture,
+      .External.tagged
+    ],
+    path: "Sources/Core"
+  )
+
   static let dependencies = target(
     name: .dependencies,
     dependencies: [
@@ -539,6 +556,7 @@ extension Target.Dependency {
   static let avFoundation = byName(name: .avFoundation)
   static let composableArchitecture = byName(name: .composableArchitecture)
   static let concurrency = byName(name: .concurrency)
+  static let core = byName(name: .core)
   static let coreImage = byName(name: .coreImage)
   static let dependencies = byName(name: .dependencies)
   static let foundation = byName(name: .foundation)
@@ -676,6 +694,7 @@ extension Target.Dependency {
 extension String {
   static let avFoundation = "DuckAVFoundation"
   static let concurrency = "DuckConcurrency"
+  static let core = "DuckCore"
   static let coreImage = "DuckCoreImage"
   static let composableArchitecture = "DuckComposableArchitecture"
   static let dependencies = "DuckDependencies"
