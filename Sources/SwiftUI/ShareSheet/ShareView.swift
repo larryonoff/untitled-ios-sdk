@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import SwiftUIBackports
 
 @available(tvOS, unavailable)
 struct ShareView<Data: RandomAccessCollection>: View {
@@ -45,7 +44,7 @@ struct ShareView<Data: RandomAccessCollection>: View {
       onCancellation: onCancellation
     )
     .edgesIgnoringSafeArea(.all)
-    .backport.presentationDetents([.medium, .large])
+    .presentationDetents([.medium, .large])
   }
 }
 
