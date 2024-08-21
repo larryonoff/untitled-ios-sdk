@@ -97,10 +97,6 @@ let package = Package(
       from: "0.10.0"
     ),
     .package(
-      url:"https://github.com/shaps80/SwiftUIBackports",
-      from: "2.8.1"
-    ),
-    .package(
       url:"https://github.com/pointfreeco/swift-navigation",
       from: "2.0.5"
     ),
@@ -520,7 +516,6 @@ extension Target {
       .graphics,
       .uiKit,
       .External.composableArchitecture,
-      .External.swiftUIBackports,
       .External.swiftUINavigation
     ],
     path: "Sources/SwiftUI"
@@ -658,8 +653,6 @@ extension Target.Dependency {
       name: "Tagged",
       package: "swift-tagged"
     )
-
-    static let swiftUIBackports = byName(name: "SwiftUIBackports")
 
     static let swiftUINavigation = product(
       name: "SwiftUINavigation",

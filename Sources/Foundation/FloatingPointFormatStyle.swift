@@ -1,6 +1,5 @@
 import Foundation
 
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension FloatingPointFormatStyle {
   public struct Duration: Codable, Hashable {
     public enum UnitWidth: Codable, Hashable {
@@ -49,7 +48,6 @@ extension FloatingPointFormatStyle {
   }
 }
 
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension FloatingPointFormatStyle.Duration: Foundation.FormatStyle {
   public func format(_ value: Value) -> String {
     var format = "%"
@@ -69,7 +67,6 @@ extension FloatingPointFormatStyle.Duration: Foundation.FormatStyle {
   }
 }
 
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension FloatingPointFormatStyle.Timer: Foundation.FormatStyle {
   public func format(_ value: Value) -> String {
     let minutes = Int(value) / 60 % 60
@@ -84,7 +81,6 @@ extension FloatingPointFormatStyle.Timer: Foundation.FormatStyle {
   }
 }
 
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension Foundation.FormatStyle
   where Self == FloatingPointFormatStyle<Double>.Duration
 {
@@ -103,7 +99,6 @@ extension Foundation.FormatStyle
   }
 }
 
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension Foundation.FormatStyle
   where Self == FloatingPointFormatStyle<Double>.Timer
 {
