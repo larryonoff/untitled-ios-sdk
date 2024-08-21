@@ -1,4 +1,5 @@
 import Dependencies
+import DuckCore
 import Foundation
 
 extension DependencyValues {
@@ -42,14 +43,11 @@ extension UserSettingsClient {
   public func setOnboardingCompleted(
     _ newValue: Bool
   ) async {
-    await setBool(newValue, .isOnboardingCompleted)
+    await setBool(newValue, .isOnboardingCompletedKey)
   }
 
   public var isOnboardingCompleted: Bool {
-    boolForKey(.isOnboardingCompleted)
+    boolForKey(.isOnboardingCompletedKey)
   }
 }
 
-extension String {
-  static let isOnboardingCompleted = "onboarding-completed"
-}
