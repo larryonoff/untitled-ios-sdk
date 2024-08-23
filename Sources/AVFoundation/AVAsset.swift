@@ -48,7 +48,7 @@ extension AVAsset {
   ) async throws -> AVAsset {
     let composition = AVMutableComposition()
 
-    try composition.insertTimeRange(
+    try await composition.insertTimeRange(
       CMTimeRange(
         start: .zero,
         duration: try await load(.duration)
