@@ -13,6 +13,7 @@ let package = Package(
     .library(name: .Client.analytics, targets: [.Client.analytics]),
     .library(name: .Client.application, targets: [.Client.application]),
     .library(name: .Client.appMetrica, targets: [.Client.appMetrica]),
+    .library(name: .Client.autoPresentation, targets: [.Client.autoPresentation]),
     .library(name: .Client.connectivity, targets: [.Client.connectivity]),
     .library(name: .Client.facebook, targets: [.Client.facebook]),
     .library(name: .Client.feedback, targets: [.Client.feedback]),
@@ -164,6 +165,7 @@ let package = Package(
     .Client.analytics,
     .Client.application,
     .Client.appMetrica,
+    .Client.autoPresentation,
     .Client.connectivity,
     .Client.facebook,
     .Client.feedback,
@@ -227,6 +229,22 @@ extension Target {
         .External.AppMetrica.crashes
       ],
       path: "Sources/AppMetricaClient"
+    )
+
+    static let autoPresentation = target(
+      name: .Client.autoPresentation,
+      dependencies: [
+        .core,
+        .dependencies,
+        .logging,
+        .Client.userSession,
+        .Client.userSettings,
+        .External.Collections.orderedCollections,
+        .External.composableArchitecture,
+        .External.dependencies,
+        .External.Dependencies.macros,
+      ],
+      path: "Sources/AutoPresentationClient"
     )
 
     static let connectivity = target(
@@ -590,6 +608,7 @@ extension Target.Dependency {
     static let analytics = byName(name: .Client.analytics)
     static let application = byName(name: .Client.application)
     static let appMetrica = byName(name: .Client.appMetrica)
+    static let autoPresentation = byName(name: .Client.autoPresentation)
     static let connectivity = byName(name: .Client.connectivity)
     static let facebook = byName(name: .Client.facebook)
     static let feedbackGenerator = byName(name: .Client.feedback)
@@ -730,6 +749,7 @@ extension String {
     static let analytics = "DuckAnalyticsClient"
     static let application = "DuckApplicationClient"
     static let appMetrica = "DuckAppMetricaClient"
+    static let autoPresentation = "DuckAutoPresentationClient"
     static let connectivity = "DuckConnectivityClient"
     static let facebook = "DuckFacebookClient"
     static let feedback = "DuckFeedbackClient"
