@@ -1,3 +1,4 @@
+import Dependencies
 import DuckLogging
 import DuckUserIdentifierClient
 import Firebase
@@ -6,16 +7,26 @@ import FirebaseCrashlytics
 import OSLog
 
 extension FirebaseClient {
-  public static func live(
-    userIdentifier: UserIdentifierGenerator
-  ) -> FirebaseClient {
+  public static func live() -> FirebaseClient {
+    @Dependency(\.userIdentifier) var userIdentifier
+
     let impl = FirebaseClientImpl(
       userIdentifier: userIdentifier
     )
+    impl.initialize()
 
     return Self(
-      initialize: {
-        impl.initialize()
+      appInstanceID: {
+        FirebaseAnalytics.Analytics.appInstanceID()
+      },
+      logEvent: { eventName, parameters in
+        FirebaseAnalytics.Analytics.log(
+          eventName,
+          parameters: parameters
+        )
+      },
+      logMessage: {
+        Crashlytics.crashlytics().log($0)
       },
       recordError: { error, userInfo in
         impl.record(error, userInfo: userInfo)

@@ -8,7 +8,9 @@ extension FirebaseClient: TestDependencyKey {
 
 extension FirebaseClient {
   public static let noop = Self(
-    initialize: {},
+    appInstanceID: { nil },
+    logEvent: { _, _ in },
+    logMessage: { _ in },
     recordError: { _, _ in },
     reset: {}
   )
