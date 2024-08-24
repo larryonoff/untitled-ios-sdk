@@ -369,7 +369,8 @@ extension Target {
       name: .Client.userSettings,
       dependencies: [
         .core,
-        .External.dependencies
+        .External.dependencies,
+        .External.Dependencies.macros
       ],
       path: "Sources/UserSettings"
     )

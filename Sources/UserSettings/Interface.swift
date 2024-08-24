@@ -1,5 +1,5 @@
 import Dependencies
-import DuckCore
+import DependenciesMacros
 import Foundation
 
 extension DependencyValues {
@@ -9,45 +9,16 @@ extension DependencyValues {
   }
 }
 
+@DependencyClient
 public struct UserSettingsClient: Sendable {
-  public var boolForKey: (String) -> Bool
-  public var dataForKey: (String) -> Data?
-  public var doubleForKey: (String) -> Double
-  public var integerForKey: (String) -> Int
-  public var remove: (String) async -> Void
-  public var setBool: (Bool, String) async -> Void
-  public var setData: (Data?, String) async -> Void
-  public var setDouble: (Double, String) async -> Void
-  public var setInteger: (Int, String) async -> Void
+  public var boolForKey: @Sendable (_ forKey: String) -> Bool = { _ in false }
+  public var dataForKey: @Sendable (_ forKey: String) -> Data?
+  public var doubleForKey: @Sendable (_ forKey: String) -> Double = { _ in 0 }
+  public var integerForKey: @Sendable (_ forKey: String) -> Int = { _ in 0 }
+
+  public var removeValueForKey: @Sendable (_ forKey: String) async -> Void
+  public var setBool: @Sendable (_ _: Bool, _ forKey: String) async -> Void
+  public var setData: @Sendable (_ _: Data?, _ forKey: String) async -> Void
+  public var setDouble: @Sendable (_ _: Double, _ forKey: String) async -> Void
+  public var setInteger: @Sendable (_ _: Int, _ forKey: String) async -> Void
 }
-
-extension UserSettingsClient {
-  public func setEncodable<Value: Encodable>(
-    _ value: Value?,
-    forKey key: String,
-    using encoder: JSONEncoder
-  ) async throws {
-    let valueData = try value
-      .flatMap { try encoder.encode($0) }
-    await setData(valueData, key)
-  }
-
-  public func decodableForKey<Value: Decodable>(
-    _ key: String,
-    using decoder: JSONDecoder
-  ) throws -> Value? {
-    try dataForKey(key)
-      .flatMap { try decoder.decode(Value.self, from: $0) }
-  }
-
-  public func setOnboardingCompleted(
-    _ newValue: Bool
-  ) async {
-    await setBool(newValue, .isOnboardingCompletedKey)
-  }
-
-  public var isOnboardingCompleted: Bool {
-    boolForKey(.isOnboardingCompletedKey)
-  }
-}
-
