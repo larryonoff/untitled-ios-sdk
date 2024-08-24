@@ -2,6 +2,17 @@ import ComposableArchitecture
 import Foundation
 import Dependencies
 
+extension DependencyValues {
+  public var bundle: BundleInfo {
+    get { self[BundleKey.self] }
+    set { self[BundleKey.self] = newValue }
+  }
+
+  private enum BundleKey: DependencyKey {
+    static let liveValue = BundleInfo.main
+  }
+}
+
 extension PersistenceReaderKey where Self == PersistenceKeyDefault<InMemoryKey<BundleInfo>> {
   public static var bundle: Self {
     PersistenceKeyDefault(.inMemory("bundleInfo"), .main)
