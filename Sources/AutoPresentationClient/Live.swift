@@ -23,8 +23,8 @@ extension AutoPresentationClient {
       availableFeatures: {
         impl.availableFeatures
       },
-      canPresentFeature: {
-        impl.canPresentFeature($0, placement: $1, userInfo: $2)
+      isEligibleForPresentation: {
+        impl.isEligibleForPresentation($0, placement: $1, userInfo: $2)
       },
       increment: {
         await impl.increment($0)
@@ -62,7 +62,7 @@ private final class AutoPresentationClientImpl {
     Array(conditions.keys)
   }
 
-  func canPresentFeature(
+  func isEligibleForPresentation(
     _ feature: AutoPresentation.Feature,
     placement: Placement?,
     userInfo: Any?
