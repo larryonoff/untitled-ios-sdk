@@ -9,22 +9,22 @@ public enum AutoPresentation {
   public typealias Feature = Tagged<FeatureTag, String>
 
   public struct FeatureCondition: Sendable {
-    public var canPresent: @Sendable (
+    public var isEligibleForPresentation: @Sendable (
       _ for: Placement?,
       _ userInfo: Any?
     ) -> Bool
 
-    public var increment: @Sendable () -> Void
-    public var logEvent: @Sendable (Event) -> Void
-    public var reset: @Sendable () -> Void
+    public var increment: @Sendable () async -> Void
+    public var logEvent: @Sendable (Event) async -> Void
+    public var reset: @Sendable () async -> Void
 
     public init(
-      canPresent: @escaping @Sendable (Placement?, Any?) -> Bool,
-      increment: @escaping @Sendable () -> Void,
-      logEvent: @escaping @Sendable (Event) -> Void,
-      reset: @escaping @Sendable () -> Void
+      isEligibleForPresentation: @escaping @Sendable (Placement?, Any?) -> Bool,
+      increment: @escaping @Sendable () async -> Void,
+      logEvent: @escaping @Sendable (Event) async -> Void,
+      reset: @escaping @Sendable () async -> Void
     ) {
-      self.canPresent = canPresent
+      self.isEligibleForPresentation = isEligibleForPresentation
       self.increment = increment
       self.logEvent = logEvent
       self.reset = reset

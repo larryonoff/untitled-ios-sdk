@@ -104,7 +104,7 @@ private final class AutoPresentationClientImpl {
       return false
     }
 
-    let isEligibleForPresentation = condition.canPresent(
+    let isEligibleForPresentation = condition.isEligibleForPresentation(
       placement,
       userInfo
     )
@@ -122,7 +122,7 @@ private final class AutoPresentationClientImpl {
     let totalSessionCount = Int(userSession.metrics().totalSessionCount)
     await userSettings.setAutoPresentationSession(totalSessionCount)
 
-    conditions[feature]?.increment()
+    await conditions[feature]?.increment()
 
     logger.info("increment", dump: [
       "feature": feature
@@ -131,7 +131,7 @@ private final class AutoPresentationClientImpl {
 
   func logEvent(_ event: AutoPresentation.Event) async {
     for condition in conditions.values {
-      condition.logEvent(event)
+      await condition.logEvent(event)
     }
   }
 
@@ -141,7 +141,7 @@ private final class AutoPresentationClientImpl {
     await userSettings.setAutoPresentationSession(nil)
 
     for condition in conditions.values {
-      condition.reset()
+      await condition.reset()
     }
   }
 }
