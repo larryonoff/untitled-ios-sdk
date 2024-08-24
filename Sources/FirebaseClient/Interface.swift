@@ -1,5 +1,6 @@
 import Dependencies
 import DependenciesMacros
+import DuckAnalyticsClient
 
 extension DependencyValues {
   public var firebase: FirebaseClient {
@@ -10,7 +11,28 @@ extension DependencyValues {
 
 @DependencyClient
 public struct FirebaseClient: Sendable {
-  public var initialize: @Sendable () -> Void
+  /// Returns the unique ID for this instance of the application
+  /// or nil if analyticsStorage is denied.
+  public var appInstanceID: @Sendable () -> String?
+
+  /// Adds FirebaseAnalytics logging
+  ///
+  /// - Parameters:
+  ///   - name: Event to log
+  ///   - parameters: Event parameters to log
+  public var logEvent: @Sendable (
+    _ _: AnalyticsClient.EventName,
+    _ parameters: [AnalyticsClient.EventParameterName: Any]?
+  ) async -> Void
+
+  /// Adds logging that is sent with your crash data. The logging does not appear in app
+  /// logs and is only visible in the Crashlytics dashboard.
+  ///
+  /// - Parameters:
+  ///   - message: Message to log
+  public var logMessage: @Sendable (
+    _ _: String
+  ) async -> Void
 
   @DependencyEndpoint(method: "record")
   public var recordError: @Sendable (
