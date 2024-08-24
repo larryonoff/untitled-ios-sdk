@@ -6,8 +6,8 @@ import FirebaseAnalytics
 import FirebaseCrashlytics
 import OSLog
 
-extension FirebaseClient {
-  public static func live() -> FirebaseClient {
+extension FirebaseClient: DependencyKey {
+  public static let liveValue: Self = {
     @Dependency(\.userIdentifier) var userIdentifier
 
     let impl = FirebaseClientImpl(
@@ -35,7 +35,7 @@ extension FirebaseClient {
         impl.reset()
       }
     )
-  }
+  }()
 }
 
 final class FirebaseClientImpl {
