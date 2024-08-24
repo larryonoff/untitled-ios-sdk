@@ -14,8 +14,7 @@ public struct AutoPresentationClient: Sendable {
   public var availableFeatures: @Sendable (
   ) -> [AutoPresentation.Feature] = { [] }
 
-  @DependencyEndpoint(method: "canPresent")
-  public var canPresentFeature: @Sendable (
+  public var isEligibleForPresentation: @Sendable (
     _ _: AutoPresentation.Feature,
     _ placement: Placement?,
     _ userInfo: Any?
@@ -31,5 +30,18 @@ public struct AutoPresentationClient: Sendable {
   ) async -> Void
 
   public var reset: @Sendable () async -> Void
+
+  public func featureToPresent(
+    _ placement: Placement?,
+    _ userInfo: Any?
+  ) async -> AutoPresentation.Feature? {
+    for feature in availableFeatures() {
+      if await isEligibleForPresentation(feature, placement, userInfo) {
+        return feature
+      }
+    }
+
+    return nil
+  }
 }
 
