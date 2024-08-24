@@ -23,6 +23,7 @@ let package = Package(
     .library(name: .Client.purchases, targets: [.Client.purchases]),
     .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
     .library(name: .Client.userIdentifier, targets: [.Client.userIdentifier]),
+    .library(name: .Client.userSession, targets: [.Client.userSession]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
 
@@ -173,6 +174,7 @@ let package = Package(
     .Client.purchases,
     .Client.remoteSettings,
     .Client.userIdentifier,
+    .Client.userSession,
     .Client.userSettings,
     .Client.userTracking,
 
@@ -349,6 +351,18 @@ extension Target {
         .External.tagged
       ],
       path: "Sources/UserIdentifier"
+    )
+
+    static let userSession = target(
+      name: .Client.userSession,
+      dependencies: [
+        .core,
+        .dependencies,
+        .External.dependencies,
+        .External.Dependencies.macros,
+        .External.keychainAccess
+      ],
+      path: "Sources/UserSessionClient"
     )
 
     static let userSettings = target(
@@ -585,6 +599,7 @@ extension Target.Dependency {
     static let purchases = byName(name: .Client.purchases)
     static let remoteSettings = byName(name: .Client.remoteSettings)
     static let userIdentifier = byName(name: .Client.userIdentifier)
+    static let userSession = byName(name: .Client.userSession)
     static let userSettings = byName(name: .Client.userSettings)
     static let userTracking = byName(name: .Client.userTracking)
   }
@@ -724,6 +739,7 @@ extension String {
     static let purchases = "DuckPurchasesClient"
     static let remoteSettings = "DuckRemoteSettingsClient"
     static let userIdentifier = "DuckUserIdentifierClient"
+    static let userSession = "DuckUserSessionClient"
     static let userSettings = "DuckUserSettings"
     static let userTracking = "DuckUserTracking"
   }
