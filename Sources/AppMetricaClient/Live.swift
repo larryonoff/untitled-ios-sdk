@@ -1,15 +1,15 @@
 import AppMetricaCore
 import AppMetricaCrashes
-import DuckDependencies
+import Dependencies
 import DuckLogging
 import DuckUserIdentifierClient
 import Foundation
 import OSLog
 
-extension AppMetricaClient {
-  public static func live(
-    userIdentifier: UserIdentifierGenerator
-  ) -> Self {
+extension AppMetricaClient: DependencyKey {
+  public static let liveValue: Self = {
+    @Dependency(\.userIdentifier) var userIdentifier
+
     guard let apiKey = Bundle.main.appMetricaAPIKey else {
       assertionFailure("Cannot find valid AppMetrica settings")
       return Self.noop
@@ -30,11 +30,11 @@ extension AppMetricaClient {
       deviceID: {
         AppMetrica.deviceID
       },
-      reset: {
+      reset: { [userIdentifier] in
         AppMetrica.userProfileID = userIdentifier().uuidString
       }
     )
-  }
+  }()
 }
 
 extension Bundle {
