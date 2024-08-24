@@ -118,6 +118,26 @@ extension Version: CustomStringConvertible {
   }
 }
 
+extension Version: Codable {
+  public init(from decoder: any Decoder) throws {
+    var container = try decoder.unkeyedContainer()
+    let rawString = try container.decode(String.self)
+    guard let version = Version(rawString) else {
+      throw DecodingError.dataCorruptedError(
+        in: container,
+        debugDescription: "Cannot decode version from string"
+      )
+    }
+
+    self = version
+  }
+
+  public func encode(to encoder: any Encoder) throws {
+    var container = try encoder.unkeyedContainer()
+    try container.encode(description)
+  }
+}
+
 extension Version: Equatable {
   @inlinable
   public static func == (lhs: Version, rhs: Version) -> Bool {
@@ -126,5 +146,4 @@ extension Version: Equatable {
 }
 
 extension Version: Hashable {}
-
 extension Version: Sendable {}
