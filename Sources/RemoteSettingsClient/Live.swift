@@ -1,10 +1,11 @@
+import Dependencies
 import DuckLogging
 import Foundation
 import FirebaseRemoteConfig
 import OSLog
 
-extension RemoteSettingsClient {
-  public static let live: Self = {
+extension RemoteSettingsClient: DependencyKey {
+  public static let liveValue: Self = {
     return Self(
       fetch: { request in
         do {
