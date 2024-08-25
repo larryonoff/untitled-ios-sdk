@@ -10,13 +10,8 @@ extension AutoPresentationClient {
   public static func live(
     conditions: OrderedDictionary<AutoPresentation.Feature, AutoPresentation.FeatureCondition>
   ) -> Self {
-    @Dependency(\.userSession) var userSession
-    @Dependency(\.userSettings) var userSettings
-
     let impl = AutoPresentationClientImpl(
-      conditions: conditions,
-      userSession: userSession,
-      userSettings: userSettings
+      conditions: conditions
     )
 
     return AutoPresentationClient(
@@ -40,22 +35,18 @@ extension AutoPresentationClient {
 }
 
 private final class AutoPresentationClientImpl {
-  let conditions: OrderedDictionary<AutoPresentation.Feature, AutoPresentation.FeatureCondition>
+  @Dependency(\.userSession) var userSession
+  @Dependency(\.userSettings) var userSettings
 
-  let userSession: UserSessionClient
-  let userSettings: UserSettingsClient
+  let conditions: OrderedDictionary<AutoPresentation.Feature, AutoPresentation.FeatureCondition>
 
   init(
     conditions: OrderedDictionary<
     AutoPresentation.Feature,
     AutoPresentation.FeatureCondition
-    >,
-    userSession: UserSessionClient,
-    userSettings: UserSettingsClient
+    >
   ) {
     self.conditions = conditions
-    self.userSession = userSession
-    self.userSettings = userSettings
   }
 
   var availableFeatures: [AutoPresentation.Feature] {
