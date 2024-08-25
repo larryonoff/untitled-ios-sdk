@@ -36,9 +36,10 @@ public struct AutoPresentationClient: Sendable {
     _ userInfo: [AutoPresentation.UserInfoKey: Any]?
   ) async -> AutoPresentation.Feature? {
     for feature in availableFeatures() {
-      if await isEligibleForPresentation(feature, placement, userInfo) {
-        return feature
+      guard await isEligibleForPresentation(feature, placement, userInfo) else {
+        continue
       }
+      return feature
     }
 
     return nil
