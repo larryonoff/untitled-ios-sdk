@@ -65,7 +65,7 @@ private final class AutoPresentationClientImpl {
   func isEligibleForPresentation(
     _ feature: AutoPresentation.Feature,
     placement: Placement?,
-    userInfo: Any?
+    userInfo: [AutoPresentation.UserInfoKey: Any]?
   ) -> Bool {
     logger.info("canPresentFeature", dump: [
       "feature": feature,
