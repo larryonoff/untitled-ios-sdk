@@ -17,7 +17,7 @@ public struct AutoPresentationClient: Sendable {
   public var isEligibleForPresentation: @Sendable (
     _ _: AutoPresentation.Feature,
     _ placement: Placement?,
-    _ userInfo: [AutoPresentation.UserInfoKey: Any]?
+    _ userInfo: AutoPresentation.UserInfo?
   ) async -> Bool = { _, _, _ in false }
 
   public var increment: @Sendable (

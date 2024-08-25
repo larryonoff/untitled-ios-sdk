@@ -11,10 +11,12 @@ public enum AutoPresentation {
   public enum UserInfoKeyTag: Sendable {}
   public typealias UserInfoKey = Tagged<FeatureTag, String>
 
+  public typealias UserInfo = [UserInfoKey: Any]
+
   public struct FeatureCondition: Sendable {
     public var isEligibleForPresentation: @Sendable (
       _ for: Placement?,
-      _ userInfo: [UserInfoKey: Any]?
+      _ userInfo: UserInfo?
     ) -> Bool
 
     public var increment: @Sendable () async -> Void
@@ -24,7 +26,7 @@ public enum AutoPresentation {
     public init(
       isEligibleForPresentation: @escaping @Sendable (
         Placement?,
-        [UserInfoKey: Any]?
+        UserInfo?
       ) -> Bool,
       increment: @escaping @Sendable () async -> Void,
       logEvent: @escaping @Sendable (Event) async -> Void,
