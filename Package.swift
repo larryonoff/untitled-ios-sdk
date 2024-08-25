@@ -10,6 +10,8 @@ let package = Package(
     .macOS(.v13)
   ],
   products: [
+    .library(name: .AutoPresentation.rateUs, targets: [.AutoPresentation.rateUs]),
+
     .library(name: .Client.analytics, targets: [.Client.analytics]),
     .library(name: .Client.application, targets: [.Client.application]),
     .library(name: .Client.appMetrica, targets: [.Client.appMetrica]),
@@ -162,6 +164,8 @@ let package = Package(
     .uiKit,
     .webView,
 
+    .AutoPresentation.rateUs,
+
     .Client.analytics,
     .Client.application,
     .Client.appMetrica,
@@ -192,6 +196,19 @@ let package = Package(
 )
 
 extension Target {
+  enum AutoPresentation {
+    static let rateUs = target(
+      name: .AutoPresentation.rateUs,
+      dependencies: [
+        .Client.autoPresentation,
+        .Client.remoteSettings,
+        .Client.userSettings,
+        .Composable.remoteSettings,
+      ],
+      path: "Sources/AutoPresentationRateUs"
+    )
+  }
+
   enum Client {
     static let analytics = target(
       name: .Client.analytics,
@@ -604,6 +621,10 @@ extension Target.Dependency {
   static let videoPlayer = byName(name: .videoPlayer)
   static let webView = byName(name: .webView)
 
+  enum AutoPresentation {
+    static let rateUs = byName(name: .AutoPresentation.rateUs)
+  }
+
   enum Client {
     static let analytics = byName(name: .Client.analytics)
     static let application = byName(name: .Client.application)
@@ -744,6 +765,10 @@ extension String {
   static let uiKit = "DuckUIKit"
   static let videoPlayer = "DuckVideoPlayer"
   static let webView = "DuckWebView"
+
+  enum AutoPresentation {
+    static let rateUs = "DuckAutoPresentationRateUs"
+  }
 
   enum Client {
     static let analytics = "DuckAnalyticsClient"
