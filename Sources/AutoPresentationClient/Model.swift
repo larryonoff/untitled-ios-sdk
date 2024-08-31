@@ -39,17 +39,3 @@ public enum AutoPresentation {
     }
   }
 }
-
-extension AutoPresentation.Event {
-  public static let saveOrShare: Self = "save_share"
-}
-
-extension AutoPresentation.UserInfoKey {
-  public static let isSaveOrShareEligibilityEnabled: Self = "save_share_eligibility_enabled"
-}
-
-extension Optional<AutoPresentation.UserInfo> {
-  public var isSaveOrShareEligibilityEnabled: Bool {
-    (self?[.isSaveOrShareEligibilityEnabled] as? Bool) ?? false
-  }
-}

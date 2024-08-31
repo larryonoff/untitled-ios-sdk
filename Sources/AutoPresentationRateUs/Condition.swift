@@ -7,10 +7,10 @@ import DuckUserSettings
 
 extension AutoPresentation.FeatureCondition {
   public static func rateUs(
-    saveOrShareCount: Int = 1
+    impressionCount: Int? = 1
   ) -> Self {
     let impl = RateUsConditionImpl(
-      saveOrShareCount: saveOrShareCount
+      impressionCount: impressionCount
     )
 
     return AutoPresentation.FeatureCondition(
@@ -35,10 +35,10 @@ private final class RateUsConditionImpl {
   @Dependency(\.userSession) var userSession
   @Dependency(\.userSettings) var userSettings
 
-  let saveOrShareCount: Int
+  let impressionCount: Int?
 
-  init(saveOrShareCount: Int) {
-    self.saveOrShareCount = saveOrShareCount
+  init(impressionCount: Int?) {
+    self.impressionCount = impressionCount
   }
 
   // MARK: - Conformance
@@ -57,8 +57,8 @@ private final class RateUsConditionImpl {
         isPresentationDelayExpired
     }
 
-    if userInfo.isSaveOrShareEligibilityEnabled {
-      return isEligibleAfterSaveOrShare
+    if impressionCount != nil {
+      return isEligibleAfterImpression
     }
 
     return false
@@ -68,16 +68,16 @@ private final class RateUsConditionImpl {
     let totalSessionCount = Int(userSession.metrics().totalSessionCount)
 
     await userSettings.setRateUsPresentationSession(totalSessionCount)
-    await userSettings.setRateUsSaveOrShareCount(nil)
+    await userSettings.setRateUsImpressionCount(nil)
   }
 
   func log(_ event: AutoPresentation.Event) async {
     switch event {
-    case .saveOrShare:
+    case .rateUsImpression:
       if isNeverPresented || isPresentationDelayExpired {
-        let saveOrShareCount = userSettings.rateUsSaveOrShareCount ?? 0
+        let saveOrShareCount = userSettings.rateUsImpressionCount ?? 0
 
-        await userSettings.setRateUsSaveOrShareCount(
+        await userSettings.setRateUsImpressionCount(
           saveOrShareCount + 1
         )
 
@@ -86,7 +86,7 @@ private final class RateUsConditionImpl {
           "saveOrShareCount": saveOrShareCount
         ])
       } else {
-        await userSettings.setRateUsSaveOrShareCount(nil)
+        await userSettings.setRateUsImpressionCount(nil)
 
         logger.info("logEvent", dump: [
           "event": event,
@@ -100,15 +100,15 @@ private final class RateUsConditionImpl {
 
   func reset() async {
     await userSettings.setRateUsPresentationSession(nil)
-    await userSettings.setRateUsSaveOrShareCount(nil)
+    await userSettings.setRateUsImpressionCount(nil)
   }
 
   // MARK: - Conditions
 
-  private var isEligibleAfterSaveOrShare: Bool {
+  private var isEligibleAfterImpression: Bool {
     logger.info("validate after save or share")
 
-    guard saveOrShareCount > 0 else {
+    guard let impressionCount, impressionCount > 0 else {
       logger.info("validate after save or share", dump: [
         "eligible": false,
         "reason": "save or share delay less than or equal to 0"
@@ -118,7 +118,7 @@ private final class RateUsConditionImpl {
     }
 
     guard
-      let saveOrShareCount = userSettings.rateUsSaveOrShareCount
+      let loggedImpressionCount = userSettings.rateUsImpressionCount
     else {
       logger.info("validate after save or share", dump: [
         "eligible": false,
@@ -128,7 +128,7 @@ private final class RateUsConditionImpl {
       return false
     }
 
-    let isCountEligible = saveOrShareCount >= self.saveOrShareCount
+    let isCountEligible = loggedImpressionCount >= impressionCount
 
     let isEligible: Bool = if isNeverPresented {
       isCountEligible

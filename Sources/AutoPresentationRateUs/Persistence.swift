@@ -15,22 +15,22 @@ extension UserSettingsClient {
     }
   }
 
-  var rateUsSaveOrShareCount: Int? {
-    dataForKey(.rateUsSaveOrShareCount)
+  var rateUsImpressionCount: Int? {
+    dataForKey(.rateUsImpressionCount)
       .flatMap { String(data: $0, encoding: .utf8) }
       .flatMap(Int.init)
   }
 
-  func setRateUsSaveOrShareCount(_ newValue: Int?) async {
+  func setRateUsImpressionCount(_ newValue: Int?) async {
     if let newValue {
-      await setData("\(newValue)".data(using: .utf8), .rateUsSaveOrShareCount)
+      await setData("\(newValue)".data(using: .utf8), .rateUsImpressionCount)
     } else {
-      await setData(nil, .rateUsSaveOrShareCount)
+      await setData(nil, .rateUsImpressionCount)
     }
   }
 }
 
 private extension String {
   static let rateUsPresentationSession = "auto-presentation.rate-us.presentation-session"
-  static let rateUsSaveOrShareCount = "auto-presentation.rate-us.save-share-count"
+  static let rateUsImpressionCount = "auto-presentation.rate-us.impression-count"
 }
