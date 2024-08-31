@@ -25,8 +25,8 @@ public enum AutoPresentation {
 
     public init(
       isEligibleForPresentation: @escaping @Sendable (
-        Placement?,
-        UserInfo?
+        _ for: Placement?,
+        _ userInfo: UserInfo?
       ) -> Bool,
       increment: @escaping @Sendable () async -> Void,
       logEvent: @escaping @Sendable (Event) async -> Void,

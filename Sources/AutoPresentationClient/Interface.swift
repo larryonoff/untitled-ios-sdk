@@ -33,7 +33,7 @@ public struct AutoPresentationClient: Sendable {
 
   public func featureToPresent(
     _ placement: Placement?,
-    _ userInfo: [AutoPresentation.UserInfoKey: Any]?
+    _ userInfo: AutoPresentation.UserInfo?
   ) async -> AutoPresentation.Feature? {
     for feature in availableFeatures() {
       guard await isEligibleForPresentation(feature, placement, userInfo) else {
