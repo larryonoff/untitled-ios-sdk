@@ -73,7 +73,7 @@ private final class RateUsConditionImpl {
 
   func log(_ event: AutoPresentation.Event) async {
     switch event {
-    case .rateUsImpression:
+    case .RateUs.impression:
       if isNeverPresented || isPresentationDelayExpired {
         let saveOrShareCount = userSettings.rateUsImpressionCount ?? 0
 

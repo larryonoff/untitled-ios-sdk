@@ -1,7 +1,9 @@
 import DuckAutoPresentationClient
 
 extension AutoPresentation.Event {
-  public static let rateUsImpression: Self = "rate-us.impression"
+  public enum RateUs {
+    public static let impression: AutoPresentation.Event = "rate-us.impression"
+  }
 }
 
 extension AutoPresentation.Feature {
