@@ -6,17 +6,26 @@ extension View {
   public func rateUs(
     _ item: Binding<StoreOf<RateUs>?>
   ) -> some View {
-    self.presentation(
-      item,
-      transitionController: RateUsTransitionController()
-    ) { store in
+    self.sheet(item: item) { store in
       RateUsView(store: store)
+        .presentationDetents([.height(272)])
+        ._presentationCornerRadius(24)
     }
   }
 }
 
-struct RateUsView: View {
-  let store: StoreOf<RateUs>
+private extension View {
+  func _presentationCornerRadius(_ cornerRadius: CGFloat) -> some View {
+    if #available(iOS 16.4, *) {
+      return self.presentationCornerRadius(cornerRadius)
+    } else {
+      return self
+    }
+  }
+}
+
+public struct RateUsView: View {
+  public let store: StoreOf<RateUs>
 
   var body: some View {
     WithPerceptionTracking {
@@ -139,7 +148,7 @@ private struct PrimaryButtonStyle: ButtonStyle {
       .padding(.vertical, 14)
       .padding(.horizontal, 20)
       .frame(minWidth: 174, minHeight: 50)
-      .background(.primary, in: shape)
+      .background(.tint, in: shape)
       .clipShape(shape)
   }
 
