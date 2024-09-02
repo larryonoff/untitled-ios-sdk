@@ -27,7 +27,11 @@ private extension View {
 public struct RateUsView: View {
   public let store: StoreOf<RateUs>
 
-  var body: some View {
+  public init(store: StoreOf<RateUs>) {
+    self.store = store
+  }
+
+  public var body: some View {
     WithPerceptionTracking {
       ZStack {
         Rectangle().fill(.background)
