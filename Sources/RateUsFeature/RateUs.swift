@@ -76,9 +76,7 @@ public struct RateUs {
         return .none
       case .loveTapped:
         return .run { [placement = state.placement] _ in
-          try? await Task.sleep(for: .seconds(1))
           await requestReview()
-
           await dismiss()
         }
       }
