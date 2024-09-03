@@ -11,25 +11,14 @@ extension DependencyValues {
 }
 
 private enum RequestReviewKey: DependencyKey {
-  static let liveValue = RequestReviewAction {
-    let stream = AsyncStream<Bool> { continuation in
-      let task = Task { @MainActor in
-        if let activeScene = UIApplication.shared.activeScene {
-          SKStoreReviewController.requestReview(in: activeScene)
-        } else {
-          SKStoreReviewController.requestReview()
-        }
-
-        continuation.yield(false)
-        continuation.finish()
-      }
-
-      continuation.onTermination = { @Sendable _ in
-        task.cancel()
-      }
+  static let liveValue = RequestReviewAction { @MainActor in
+    if let activeScene = UIApplication.shared.activeScene {
+      SKStoreReviewController.requestReview(in: activeScene)
+    } else {
+      SKStoreReviewController.requestReview()
     }
 
-    return await stream.first(where: { _ in true }) ?? false
+    return true
   }
 
   static let testValue = RequestReviewAction {
