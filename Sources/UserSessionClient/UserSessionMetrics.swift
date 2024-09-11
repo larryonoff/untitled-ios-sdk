@@ -42,9 +42,9 @@ public struct UserSessionMetrics {
     totalSessionCount == sessionCountSinceLastUpdate
   }
 
-  init(
-    date: Date,
-    version: Version?
+  public init(
+    date: Date = Date(),
+    version: Version? = nil
   ) {
     installationVersion = version
     installationDate = date

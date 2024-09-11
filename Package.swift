@@ -36,6 +36,7 @@ let package = Package(
     .library(name: .Composable.photosAuthorization, targets: [.Composable.photosAuthorization]),
     .library(name: .Composable.purchases, targets: [.Composable.purchases]),
     .library(name: .Composable.remoteSettings, targets: [.Composable.remoteSettings]),
+    .library(name: .Composable.userSession, targets: [.Composable.userSession]),
 
     .library(name: .Feature.rateUs, targets: [.Feature.rateUs]),
 
@@ -190,6 +191,7 @@ let package = Package(
     .Composable.photosAuthorization,
     .Composable.purchases,
     .Composable.remoteSettings,
+    .Composable.userSession,
 
     .Feature.rateUs,
   ]
@@ -491,6 +493,15 @@ extension Target {
       ],
       path: "Sources/RemoteSettingsComposable"
     )
+
+    static let userSession = target(
+      name: .Composable.userSession,
+      dependencies: [
+        .Client.userSession,
+        .External.composableArchitecture
+      ],
+      path: "Sources/UserSessionComposable"
+    )
   }
 
   enum Feature {
@@ -652,6 +663,7 @@ extension Target.Dependency {
     static let photosAuthorization = byName(name: .Composable.photosAuthorization)
     static let purchases = byName(name: .Composable.purchases)
     static let remoteSettings = byName(name: .Composable.remoteSettings)
+    static let userSession = byName(name: .Composable.userSession)
   }
 
   enum Feature {
@@ -797,6 +809,7 @@ extension String {
     static let photosAuthorization = "DuckPhotosAuthorizationComposable"
     static let purchases = "DuckPurchasesComposable"
     static let remoteSettings = "DuckRemoteSettingsComposable"
+    static let userSession = "DuckUserSessionComposable"
   }
 
   enum Feature {
