@@ -1,18 +1,22 @@
 import Foundation
 
-public final class AVCustomURLAsset: AVURLAsset {
-  private var resourceLoaderDelegate: AVAssetCustomURLResourceLoader?
+extension AVURLAsset {
+  public static func custom(url: URL) -> AVURLAsset {
+    let asset = AVCustomURLAsset(url: url, options: nil)
 
-  public init(url: URL) {
-    super.init(url: url, options: nil)
-
-    self.resourceLoaderDelegate =
+    asset.resourceLoaderDelegate =
       AVAssetCustomURLResourceLoader(url: url)
-    resourceLoader.setDelegate(
-      resourceLoaderDelegate!,
+    asset.resourceLoader.setDelegate(
+      asset.resourceLoaderDelegate!,
       queue: .global()
     )
+
+    return asset
   }
+}
+
+private final class AVCustomURLAsset: AVURLAsset {
+  var resourceLoaderDelegate: AVAssetCustomURLResourceLoader?
 }
 
 private final class AVAssetCustomURLResourceLoader: NSObject {
