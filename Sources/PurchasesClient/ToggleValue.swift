@@ -1,5 +1,6 @@
 import Combine
 import Dependencies
+import DuckAnalyticsClient
 import DuckLogging
 import DuckUserIdentifierClient
 
@@ -51,7 +52,7 @@ extension PurchasesClient {
         try await impl.setFallbackPaywalls(fileURL: $0)
       },
       logPaywall: {
-        try await impl.log($)
+        try await impl.log($0)
       }
     )
   }
