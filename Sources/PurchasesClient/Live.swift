@@ -29,8 +29,8 @@ extension PurchasesClient {
       paywallByID: { id in
         impl.paywall(by: id)
       },
-      purchase: { request in
-        try await impl.purchase(request)
+      purchase: {
+        try await impl.purchase($0)
       },
       restorePurhases: {
         try await impl.restorePurchases()
@@ -42,45 +42,10 @@ extension PurchasesClient {
         impl.purchasesUpdates
       },
       receipt: {
-        let bundle = Bundle.main
-
-        return try bundle.appStoreReceiptURL.flatMap { receiptURL in
-          let fileManager = FileManager.default
-          guard fileManager.fileExists(atPath: receiptURL.path) else {
-            return nil
-          }
-          return try Data(contentsOf: receiptURL)
-        }
+        try impl.receipt()
       },
       requestReview: {
-        #if canImport(UIKit)
-        let application = await UIApplication.shared
-        var activeScene: UIWindowScene?
-
-        for scene in await application.connectedScenes {
-          guard
-            await scene.activationState == .foregroundActive,
-            let scene = scene as? UIWindowScene
-          else {
-            continue
-          }
-
-          activeScene = scene
-          break
-        }
-
-        if let activeScene {
-          await SKStoreReviewController.requestReview(in: activeScene)
-
-          logger.info("requestReview success", dump: [
-            "WARNING": "dialog may not appear, Apple doesn't provide developers any control"
-          ])
-        } else {
-          logger.error("requestReview failure", dump: [
-            "error": "Active `UIWindowScene` not available"
-          ])
-        }
-        #endif
+        await impl.requestReview()
       },
       reset: {
         try await impl.reset()
@@ -88,8 +53,8 @@ extension PurchasesClient {
       setFallbackPaywalls: {
         try await impl.setFallbackPaywalls(fileURL: $0)
       },
-      logPaywall: { paywall in
-        try await impl.log(paywall)
+      logPaywall: {
+        try await impl.log($0)
       }
     )
   }
@@ -417,6 +382,49 @@ final class PurchasesClientImpl {
 
       throw error
     }
+  }
+
+  func receipt() throws -> Data? {
+    let bundle = Bundle.main
+
+    return try bundle.appStoreReceiptURL.flatMap { receiptURL in
+      let fileManager = FileManager.default
+      guard fileManager.fileExists(atPath: receiptURL.path) else {
+        return nil
+      }
+      return try Data(contentsOf: receiptURL)
+    }
+  }
+
+  func requestReview() async {
+#if canImport(UIKit)
+    let application = await UIApplication.shared
+    var activeScene: UIWindowScene?
+
+    for scene in await application.connectedScenes {
+      guard
+        await scene.activationState == .foregroundActive,
+        let scene = scene as? UIWindowScene
+      else {
+        continue
+      }
+
+      activeScene = scene
+      break
+    }
+
+    if let activeScene {
+      await SKStoreReviewController.requestReview(in: activeScene)
+
+      logger.info("requestReview success", dump: [
+        "WARNING": "dialog may not appear, Apple doesn't provide developers any control"
+      ])
+    } else {
+      logger.error("requestReview failure", dump: [
+        "error": "Active `UIWindowScene` not available"
+      ])
+    }
+#endif
   }
 
   func reset() async throws {
