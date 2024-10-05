@@ -5,7 +5,7 @@ import SwiftUI
 extension View {
   @_spi(Presentation) public func presentation<State, Action, Content: View>(
     _ item: Binding<Store<State, Action>?>,
-    transitionController: UIViewControllerTransitioningDelegate,
+    transitionController: any UIViewControllerTransitioningDelegate,
     @ViewBuilder content: @escaping (Store<State, Action>) -> Content
   ) -> some View {
     self.background(
@@ -38,7 +38,7 @@ extension View {
 @MainActor
 private struct _PresentationModifier<State, Action, Content: View>: UIViewRepresentable {
   let item: Binding<Store<State, Action>?>
-  let transitionController: UIViewControllerTransitioningDelegate
+  let transitionController: any UIViewControllerTransitioningDelegate
   @ViewBuilder let content: (Store<State, Action>) -> Content
 
   func makeCoordinator() -> Coordinator {
@@ -66,11 +66,11 @@ private struct _PresentationModifier<State, Action, Content: View>: UIViewRepres
   final class Coordinator {
     let view = UIView()
 
-    private let transitionController: UIViewControllerTransitioningDelegate
+    private let transitionController: any UIViewControllerTransitioningDelegate
     private weak var presentedViewController: UIViewController?
 
     init(
-      transitionController: UIViewControllerTransitioningDelegate
+      transitionController: any UIViewControllerTransitioningDelegate
     ) {
       self.transitionController = transitionController
     }

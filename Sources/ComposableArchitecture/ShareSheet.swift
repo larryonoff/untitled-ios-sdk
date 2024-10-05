@@ -6,7 +6,7 @@ import SwiftUI
 public struct ShareSheet<Data: RandomAccessCollection> {
   public enum Action {
     public enum Delegate {
-      case completed(Result<Data, Error>)
+      case completed(Result<Data, any Error>)
       case cancelled
     }
 

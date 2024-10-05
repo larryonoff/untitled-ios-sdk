@@ -9,7 +9,7 @@ extension View {
   public func shareSheet<Data: RandomAccessCollection>(
     isPresented: Binding<Bool>,
     data: Data?,
-    onCompletion: @escaping ((Result<Data, Swift.Error>) -> Void),
+    onCompletion: @escaping ((Result<Data, any Swift.Error>) -> Void),
     onCancellation: @escaping () -> Void = {}
   ) -> some View {
     self.modifier(
@@ -26,7 +26,7 @@ extension View {
 private struct ShareSheetViewModifier<Data: RandomAccessCollection>: ViewModifier {
   let isPresented: Binding<Bool>
   let data: Data?
-  let onCompletion: ((Result<Data, Swift.Error>) -> Void)
+  let onCompletion: ((Result<Data, any Swift.Error>) -> Void)
   let onCancellation: () -> Void
 
   func body(content: Content) -> some View {

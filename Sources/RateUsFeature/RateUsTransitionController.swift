@@ -9,13 +9,13 @@ extension RateUsTransitionController: UIViewControllerTransitioningDelegate {
     forPresented presented: UIViewController,
     presenting: UIViewController,
     source: UIViewController
-  ) -> UIViewControllerAnimatedTransitioning? {
+  ) -> (any UIViewControllerAnimatedTransitioning)? {
     RateUsAnimationTransitionController(isPresentation: true)
   }
 
   func animationController(
     forDismissed dismissed: UIViewController
-  ) -> UIViewControllerAnimatedTransitioning? {
+  ) -> (any UIViewControllerAnimatedTransitioning)? {
     RateUsAnimationTransitionController(isPresentation: false)
   }
 }
@@ -44,13 +44,13 @@ final class RateUsAnimationTransitionController: NSObject {
 
 extension RateUsAnimationTransitionController: UIViewControllerAnimatedTransitioning {
   func transitionDuration(
-    using transitionContext: UIViewControllerContextTransitioning?
+    using transitionContext: (any UIViewControllerContextTransitioning)?
   ) -> TimeInterval {
     return 0.5
   }
 
   func animateTransition(
-    using transitionContext: UIViewControllerContextTransitioning
+    using transitionContext: any UIViewControllerContextTransitioning
   ) {
     let key: UITransitionContextViewControllerKey = isPresentation ? .to : .from
 

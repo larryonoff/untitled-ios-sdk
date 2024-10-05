@@ -63,7 +63,7 @@ final class FirebaseClientImpl {
     logger.info("initialize success")
   }
 
-  func record(_ error: Error, userInfo: [String: Any]?) {
+  func record(_ error: any Error, userInfo: [String: Any]?) {
     Crashlytics.crashlytics().record(error: error, userInfo: userInfo)
   }
 

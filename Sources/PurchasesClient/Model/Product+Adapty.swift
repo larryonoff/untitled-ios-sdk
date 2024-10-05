@@ -2,7 +2,7 @@ import Adapty
 import Foundation
 
 extension Product {
-  init?(_ product: AdaptyProduct) {
+  init?(_ product: any AdaptyProduct) {
     self.init(
       id: .init(product.vendorProductId),
       displayName: product.localizedTitle,
@@ -19,7 +19,7 @@ extension Product {
 }
 
 extension Product.SubscriptionInfo {
-  init?(_ product: AdaptyProduct) {
+  init?(_ product: any AdaptyProduct) {
     guard
       let subscriptionGroupID = product.subscriptionGroupIdentifier,
       let subscriptionPeriod = product.subscriptionPeriod
@@ -42,7 +42,7 @@ extension Product.SubscriptionInfo {
 extension Product.SubscriptionOffer {
   static func introductoryOffer(
     _ discount: AdaptyProductDiscount,
-    product: AdaptyProduct
+    product: any AdaptyProduct
   ) -> Self? {
     guard
       let paymentMode = Product.SubscriptionOffer.PaymentMode(discount.paymentMode),

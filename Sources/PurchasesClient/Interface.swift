@@ -13,7 +13,7 @@ public struct PurchasesClient: Sendable {
 
   public var paywallByID: @Sendable (
     _ _: Paywall.ID
-  ) -> AsyncThrowingStream<FetchPaywallResponse, Error>
+  ) -> AsyncThrowingStream<FetchPaywallResponse, any Error>
 
   public var purchase: @Sendable (PurchaseRequest) async throws -> PurchaseResult
   public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult

@@ -26,7 +26,7 @@ extension FirebaseAnalytics.Analytics {
     let _parameters = parameters?
       .mapKeys(\.rawValue)
       .mapValues { value -> Any in
-        if let value = value as? CustomStringConvertible {
+        if let value = value as? any CustomStringConvertible {
           return value.description
         }
         return value

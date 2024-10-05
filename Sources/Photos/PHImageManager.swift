@@ -20,7 +20,7 @@ extension PHImageManager {
     targetSize: CGSize,
     contentMode: PHImageContentMode,
     options: PHImageRequestOptions?
-  ) -> AsyncThrowingStream<(UIImage?, info: [AnyHashable: Any]?), Error> {
+  ) -> AsyncThrowingStream<(UIImage?, info: [AnyHashable: Any]?), any Error> {
     AsyncThrowingStream { continuation in
       let requestID = requestImage(
         for: asset,
@@ -139,7 +139,7 @@ extension PHImageManager {
 
 public struct PHImageRequestResultInfo {
   /// An error that occurred when Photos attempted to load the image.
-  public let error: Error?
+  public let error: (any Error)?
 
   /// Whether the image request was canceled.
   public let isCancelled: Bool?
@@ -154,7 +154,7 @@ public struct PHImageRequestResultInfo {
   public let requestID: PHImageRequestID?
 
   public init(_ info: [AnyHashable: Any]) {
-    self.error = info[PHImageErrorKey] as? Swift.Error
+    self.error = info[PHImageErrorKey] as? any Swift.Error
     self.isCancelled = info[PHImageCancelledKey] as? Bool
     self.isDegraded = info[PHImageResultIsDegradedKey] as? Bool
     self.isInCloud = info[PHImageResultIsInCloudKey] as? Bool

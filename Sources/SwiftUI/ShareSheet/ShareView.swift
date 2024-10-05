@@ -4,12 +4,12 @@ import SwiftUI
 @available(tvOS, unavailable)
 struct ShareView<Data: RandomAccessCollection>: View {
   private let data: Data
-  private let onCompletion: (Result<Data, Swift.Error>) -> Void
+  private let onCompletion: (Result<Data, any Swift.Error>) -> Void
   private let onCancellation: () -> Void
 
   init(
     data: Data,
-    onCompletion: @escaping (Result<Data, Swift.Error>) -> Void,
+    onCompletion: @escaping (Result<Data, any Swift.Error>) -> Void,
     onCancellation: @escaping () -> Void = {}
   ) {
     self.data = data
@@ -19,7 +19,7 @@ struct ShareView<Data: RandomAccessCollection>: View {
 
   init(
     item: String,
-    onCompletion: @escaping (Result<Data, Swift.Error>) -> Void,
+    onCompletion: @escaping (Result<Data, any Swift.Error>) -> Void,
     onCancellation: @escaping () -> Void = {}
   ) where Data == CollectionOfOne<String> {
     self.data = CollectionOfOne(item)
@@ -29,7 +29,7 @@ struct ShareView<Data: RandomAccessCollection>: View {
 
   init(
     url: URL,
-    onCompletion: @escaping (Result<Data, Swift.Error>) -> Void,
+    onCompletion: @escaping (Result<Data, any Swift.Error>) -> Void,
     onCancellation: @escaping () -> Void = {}
   ) where Data == CollectionOfOne<URL> {
     self.data = CollectionOfOne(url)
@@ -52,12 +52,12 @@ private struct _ShareView<Data: RandomAccessCollection>: UIViewControllerReprese
   typealias UIViewControllerType = UIActivityViewController
 
   private let data: Data
-  private let onCompletion: (Result<Data, Swift.Error>) -> Void
+  private let onCompletion: (Result<Data, any Swift.Error>) -> Void
   private let onCancellation: () -> Void
 
   init(
     data: Data,
-    onCompletion: @escaping (Result<Data, Swift.Error>) -> Void,
+    onCompletion: @escaping (Result<Data, any Swift.Error>) -> Void,
     onCancellation: @escaping () -> Void
   ) {
     self.data = data
