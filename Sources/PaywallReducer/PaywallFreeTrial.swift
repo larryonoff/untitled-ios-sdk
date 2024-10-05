@@ -15,8 +15,8 @@ public struct PaywallFreeTrial {
     case purchaseTapped
     case restorePurchasesTapped
 
-    case purchaseResponse(Result<PurchaseResult, Error>)
-    case restorePurchasesResponse(Result<RestorePurchasesResult, Error>)
+    case purchaseResponse(Result<PurchaseResult, any Error>)
+    case restorePurchasesResponse(Result<RestorePurchasesResult, any Error>)
 
     case destination(PresentationAction<Destination.Action>)
   }

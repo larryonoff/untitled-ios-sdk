@@ -39,7 +39,7 @@ extension AnalyticsClient {
 
   func logPurchase<Success>(
     _ product: Product,
-    result: Result<Success, Error>,
+    result: Result<Success, any Error>,
     state: PaywallReducer.State
   ) -> Effect<PaywallReducer.Action> {
     var params: [AnalyticsClient.EventParameterName: Any] = [:]

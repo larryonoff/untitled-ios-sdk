@@ -5,7 +5,7 @@ struct _MailComposeView: UIViewControllerRepresentable {
   @Environment(\.dismiss) private var dismiss
 
   let emailData: MailComposeData
-  let completion: (Result<MailComposeResult, Error>) -> Void
+  let completion: (Result<MailComposeResult, any Error>) -> Void
 
   func makeUIViewController(
     context: Context
@@ -70,7 +70,7 @@ struct _MailComposeView: UIViewControllerRepresentable {
     func mailComposeController(
       _ controller: MFMailComposeViewController,
       didFinishWith result: MFMailComposeResult,
-      error: Error?
+      error: (any Error)?
     ) {
       if let error = error {
         return parent.completion(.failure(error))

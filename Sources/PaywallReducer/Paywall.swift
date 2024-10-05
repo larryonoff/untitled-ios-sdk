@@ -25,9 +25,9 @@ public struct PaywallReducer {
 
     case setSelectedProductID(Product.ID?)
 
-    case fetchPaywallResponse(Result<Paywall?, Error>)
-    case purchaseResponse(Result<PurchaseResult, Error>, Product)
-    case restorePurchasesResponse(Result<RestorePurchasesResult, Error>)
+    case fetchPaywallResponse(Result<Paywall?, any Error>)
+    case purchaseResponse(Result<PurchaseResult, any Error>, Product)
+    case restorePurchasesResponse(Result<RestorePurchasesResult, any Error>)
 
     case destination(PresentationAction<Destination.Action>)
     case products(IdentifiedActionOf<ProductItem>)

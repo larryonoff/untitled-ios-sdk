@@ -69,7 +69,7 @@ extension Box: Comparable where RawValue: Comparable {
   }
 }
 extension Box: Decodable where RawValue: Decodable {
-  public init(from decoder: Decoder) throws {
+  public init(from decoder: any Decoder) throws {
     do {
       self.init(try decoder.singleValueContainer().decode(RawValue.self))
     } catch {
@@ -79,7 +79,7 @@ extension Box: Decodable where RawValue: Decodable {
 }
 
 extension Box: Encodable where RawValue: Encodable {
-  public func encode(to encoder: Encoder) throws {
+  public func encode(to encoder: any Encoder) throws {
     do {
       var container = encoder.singleValueContainer()
       try container.encode(wrappedValue)

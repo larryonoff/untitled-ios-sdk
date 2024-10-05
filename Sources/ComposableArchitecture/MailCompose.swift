@@ -7,7 +7,7 @@ extension View {
   public func mailCompose<Action>(
     _ store: Store<MailComposeData?, Action>,
     dismiss: Action,
-    onSubmit: ((Result<MailComposeResult, Error>) -> Void)? = nil
+    onSubmit: ((Result<MailComposeResult, any Error>) -> Void)? = nil
   ) -> some View {
     self.modifier(
       _MailComposeModifier(
@@ -26,7 +26,7 @@ extension View {
 private struct _MailComposeModifier<Action>: ViewModifier {
   @StateObject var viewStore: ViewStore<MailComposeData?, Action>
   let dismiss: Action
-  let onSubmit: ((Result<MailComposeResult, Error>) -> Void)?
+  let onSubmit: ((Result<MailComposeResult, any Error>) -> Void)?
 
   func body(content: Content) -> some View {
     content.mailCompose(

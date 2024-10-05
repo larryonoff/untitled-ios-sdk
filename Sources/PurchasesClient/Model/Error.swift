@@ -41,7 +41,7 @@ extension Error {
     return false
   }
 
-  func _map() -> Error {
+  func _map() -> any Error {
     if self is PurchasesError {
       return self
     }

@@ -13,7 +13,7 @@ extension View {
     isPresented: Binding<Bool>,
     emailData: MailComposeData? = nil,
     onDismiss: (() -> Void)? = nil,
-    onSubmit: ((Result<MailComposeResult, Error>) -> Void)? = nil,
+    onSubmit: ((Result<MailComposeResult, any Error>) -> Void)? = nil,
     @ViewBuilder cannotSendEmails: () -> CannotSendContent
   ) -> some View {
     self.modifier(
@@ -38,7 +38,7 @@ extension View {
     isPresented: Binding<Bool>,
     emailData: MailComposeData? = nil,
     onDismiss: (() -> Void)? = nil,
-    onSubmit: ((Result<MailComposeResult, Error>) -> Void)? = nil
+    onSubmit: ((Result<MailComposeResult, any Error>) -> Void)? = nil
   ) -> some View {
     self.modifier(
       _MailComposeViewModifier(
@@ -56,14 +56,14 @@ private struct _MailComposeViewModifier<CannotSendContent: View>: ViewModifier {
   var isPresented: Binding<Bool>
   var emailData: MailComposeData?
   var onDismiss: (() -> Void)?
-  var onSubmit: ((Result<MailComposeResult, Error>) -> Void)?
+  var onSubmit: ((Result<MailComposeResult, any Error>) -> Void)?
   var cannotSendEmails: CannotSendContent
 
   init(
     isPresented: Binding<Bool>,
     emailData: MailComposeData? = nil,
     onDismiss: (() -> Void)? = nil,
-    onSubmit: ((Result<MailComposeResult, Error>) -> Void)? = nil,
+    onSubmit: ((Result<MailComposeResult, any Error>) -> Void)? = nil,
     @ViewBuilder cannotSendEmails: () -> CannotSendContent
   ) {
     self.isPresented = isPresented

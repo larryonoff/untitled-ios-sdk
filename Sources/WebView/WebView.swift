@@ -122,7 +122,7 @@ struct _WebView: UIViewRepresentable {
     func webView(
       _ webView: WKWebView,
       didFailProvisionalNavigation navigation: WKNavigation!,
-      withError error: Error
+      withError error: any Error
     ) {
       checkReadyState(for: webView)
     }
@@ -130,7 +130,7 @@ struct _WebView: UIViewRepresentable {
     func webView(
       _ webView: WKWebView,
       didFail navigation: WKNavigation!,
-      withError error: Error
+      withError error: any Error
     ) {
       checkReadyState(for: webView)
     }

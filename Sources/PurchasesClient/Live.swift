@@ -156,7 +156,7 @@ final class PurchasesClientImpl {
 
   func paywall(
     by id: Paywall.ID
-  ) -> AsyncThrowingStream<FetchPaywallResponse, Error> {
+  ) -> AsyncThrowingStream<FetchPaywallResponse, any Error> {
     AsyncThrowingStream { [weak self] continuation in
       let task = Task { [weak self] in
         do {

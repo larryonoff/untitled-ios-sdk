@@ -126,8 +126,8 @@ open class VideoPlayerView: UIView {
   }
 
   private var bindindsCancellables = Set<AnyCancellable>()
-  private var currentItemCancellable: Cancellable?
-  private var currentItemPresentationSizeCancellable: Cancellable?
+  private var currentItemCancellable: (any Cancellable)?
+  private var currentItemPresentationSizeCancellable: (any Cancellable)?
 
   private func setupBindings() {
     playerLayer

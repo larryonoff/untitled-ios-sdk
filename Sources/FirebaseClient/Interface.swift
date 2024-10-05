@@ -36,7 +36,7 @@ public struct FirebaseClient: Sendable {
 
   @DependencyEndpoint(method: "record")
   public var recordError: @Sendable (
-    _ _: Error,
+    _ _: any Error,
     _ userInfo: [String: Any]?
   ) async -> Void
 
