@@ -88,35 +88,3 @@ extension CustomVideoPlayer: UIViewRepresentable {
     uiView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
   }
 }
-
-// MARK: - Environment
-
-extension EnvironmentValues {
-  private struct VideoAlignmentKey: EnvironmentKey {
-    static let defaultValue: Alignment = .center
-  }
-
-  public var videoAlignment: Alignment {
-    get { self[VideoAlignmentKey.self] }
-    set { self[VideoAlignmentKey.self] = newValue }
-  }
-
-  private struct VideoContentModeKey: EnvironmentKey {
-    static let defaultValue: ContentMode? = .fit
-  }
-
-  public var videoContentMode: ContentMode? {
-    get { self[VideoContentModeKey.self] }
-    set { self[VideoContentModeKey.self] = newValue }
-  }
-}
-
-extension View {
-  public func videoAlignment(_ alignment: Alignment) -> some View {
-    self.environment(\.videoAlignment, alignment)
-  }
-
-  public func videoContentMode(_ contentMode: ContentMode?) -> some View {
-    self.environment(\.videoContentMode, contentMode)
-  }
-}
