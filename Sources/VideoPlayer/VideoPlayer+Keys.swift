@@ -34,13 +34,13 @@ extension View {
   }
 
   @inlinable nonisolated
-  public func videoIsMuted(_ value: Bool) -> some View {
-    self.environment(\.videoIsMuted, value)
+  public func videoLoopingDisabled(_ value: Bool) -> some View {
+    environment(\.videoLoopingEnabled, !value)
   }
 
   @inlinable nonisolated
-  public func videoLoopingDisabled(_ value: Bool) -> some View {
-    environment(\.videoLoopingEnabled, !value)
+  public func videoMuted(_ value: Bool) -> some View {
+    self.environment(\.videoIsMuted, value)
   }
 }
 
@@ -54,10 +54,10 @@ extension EnvironmentValues {
   }
 
   private struct Video_IsMutedKey: EnvironmentKey {
-    static var defaultValue: Bool { true }
+    static var defaultValue: Bool { false }
   }
 
   private struct Video_LoopingEnabledKey: EnvironmentKey {
-    static var defaultValue: Bool { true }
+    static var defaultValue: Bool { false }
   }
 }
