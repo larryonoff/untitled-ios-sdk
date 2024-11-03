@@ -1,6 +1,18 @@
 import AVFoundation
 
 extension AVPlayer {
+  nonisolated public var isAtEnd: Bool {
+    guard let currentItem else { return true }
+
+    let currentTime = self.currentTime().seconds
+    let duration = currentItem.duration.seconds
+
+    guard duration.isFinite else { return false }
+
+    let tolerance: Double = 0.01
+    return currentTime >= (duration - tolerance)
+  }
+
   /**
     @abstract    Requests invocation of a block during playback to report changing time.
     @param      interval
@@ -11,7 +23,7 @@ extension AVPlayer {
             than requested. Even so, the player will invoke the block sufficiently often for the client to update indications
             of the current time appropriately in its end-user interface.
   */
-  public func periodicTime(
+  nonisolated public func periodicTime(
     forInterval interval: CMTime
   ) -> AsyncStream<CMTime> {
     AsyncStream { continuation in
@@ -37,7 +49,7 @@ extension AVPlayer {
     @param      block
       The block to be invoked when any of the specified times is crossed during normal playback.
   */
-  public func boundaryTime(
+  nonisolated public func boundaryTime(
     forTimes times: [CMTime]
   ) -> AsyncStream<Void> {
     guard !times.isEmpty else {
