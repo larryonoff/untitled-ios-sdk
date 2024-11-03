@@ -3,6 +3,7 @@ import Foundation
 
 public struct Paywall {
   public typealias ID = Tagged<Self, String>
+  public typealias PromoOffer = Tagged<Self, String>
   public typealias VariantID = Tagged<(Self, variantID: ()), String>
 
   public let id: ID
