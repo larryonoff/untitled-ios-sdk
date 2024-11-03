@@ -8,6 +8,6 @@ extension EnvironmentValues {
   }
 
   private struct DeviceKey: EnvironmentKey {
-    static var defaultValue = Device.current
+    static var defaultValue: Device { .current }
   }
 }

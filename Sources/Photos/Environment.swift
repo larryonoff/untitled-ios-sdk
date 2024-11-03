@@ -6,16 +6,19 @@ extension EnvironmentValues {
     get { self[PhotosImageManagerKey.self] }
     set { self[PhotosImageManagerKey.self] = newValue }
   }
-
-  private struct PhotosImageManagerKey: EnvironmentKey {
-    static let defaultValue = PHImageManager()
-  }
 }
 
 extension View {
+  @inlinable nonisolated
   public func photosImageManager(
     _ imageManager: PHImageManager
   ) -> some View {
     environment(\.photosImageManager, imageManager)
+  }
+}
+
+extension EnvironmentValues {
+  private struct PhotosImageManagerKey: EnvironmentKey {
+    static var defaultValue: PHImageManager { .default() }
   }
 }
