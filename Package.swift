@@ -575,6 +575,7 @@ extension Target {
     name: .purchases,
     dependencies: [
       .foundation,
+      .Client.remoteSettings,
       .External.adapty,
       .External.tagged
     ],
