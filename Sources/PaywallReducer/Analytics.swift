@@ -69,6 +69,6 @@ extension AnalyticsClient {
 }
 
 extension AnalyticsClient.EventName {
-  static let productAction: Self = "product_action"
+  static var productAction: Self { "product_action" }
 }
 

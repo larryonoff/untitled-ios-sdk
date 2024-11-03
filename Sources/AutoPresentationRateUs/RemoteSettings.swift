@@ -35,13 +35,13 @@ extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSetting
 }
 
 private enum Default {
-  static let rateUsEnabled = true
-  static let rateUsSessionsDelay: Int = 15
-  static let rateUsStartSession: Int = 2
+  static var rateUsEnabled: Bool { true }
+  static var rateUsSessionsDelay: Int { 15 }
+  static var rateUsStartSession: Int { 2 }
 }
 
 private extension String {
-  static let rateUsEnabled: String = "rate_us_enabled"
-  static let rateUsSessionsDelay: String = "rate_us_sessions_delay"
-  static let rateUsStartSession: String = "rate_us_start_session"
+  static var rateUsEnabled: String { "rate_us_enabled" }
+  static var rateUsSessionsDelay: String { "rate_us_sessions_delay" }
+  static var rateUsStartSession: String { "rate_us_start_session" }
 }

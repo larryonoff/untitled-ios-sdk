@@ -69,5 +69,5 @@ package extension Purchases {
 }
 
 extension String {
-  static let purchaserInfoKey: Self = "AdaptySDK_Purchaser_Info"
+  static var purchaserInfoKey: Self { "AdaptySDK_Purchaser_Info" }
 }

@@ -8,5 +8,5 @@ extension PersistenceKey where Self == PersistenceKeyDefault<AppStorageKey<Bool>
 }
 
 extension String {
-  public static let isOnboardingCompletedKey = "onboarding-completed"
+  public static var isOnboardingCompletedKey: Self { "onboarding-completed" }
 }

@@ -4,6 +4,6 @@ public enum PlacementTag: Sendable {}
 public typealias Placement = Tagged<PlacementTag, String>
 
 extension Placement {
-  public static let newSession: Self = "start_session"
-  public static let sceneDidBecomeActive: Self = "scene_become_active"
+  public static var newSession: Self { "start_session" }
+  public static var sceneDidBecomeActive: Self { "scene_become_active" }
 }

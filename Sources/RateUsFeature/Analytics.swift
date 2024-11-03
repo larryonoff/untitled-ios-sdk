@@ -56,18 +56,18 @@ extension RateUs {
 
 
 extension AnalyticsClient.EventName {
-  static let rateUsView: Self = "screen_rate_us_view"
-  static let rateUsAction: Self = "screen_rate_us_action"
-  static let rateUsDoNotLoveView: Self = "screen_rate_us_dont_love_view"
-  static let rateUsDoNotLoveAction: Self = "screen_rate_us_dont_love_action"
+  static var rateUsView: Self { "screen_rate_us_view" }
+  static var rateUsAction: Self { "screen_rate_us_action" }
+  static var rateUsDoNotLoveView: Self { "screen_rate_us_dont_love_view" }
+  static var rateUsDoNotLoveAction: Self { "screen_rate_us_dont_love_action" }
 }
 
 extension AnalyticsClient {
   enum RateUsAction {
-    static let dismiss = "close"
-    static let contact = "contact_us"
-    static let doNotLove = "dont_love"
-    static let love = "love"
+    static var dismiss: String { "close" }
+    static var contact: String { "contact_us" }
+    static var doNotLove: String { "dont_love" }
+    static var love: String { "love" }
   }
 }
 

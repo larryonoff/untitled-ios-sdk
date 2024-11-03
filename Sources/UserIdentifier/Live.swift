@@ -58,5 +58,7 @@ private extension Keychain {
 }
 
 extension UserIdentifier {
-  static let zero = UserIdentifier(UUID(uuidString: "00000000-0000-0000-0000-000000000000")!)
+  static var zero: Self {
+    .init(UUID(uuidString: "00000000-0000-0000-0000-000000000000")!)
+  }
 }

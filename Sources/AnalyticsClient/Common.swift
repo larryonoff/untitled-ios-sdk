@@ -1,13 +1,13 @@
 extension AnalyticsClient.EventParameterName {
-  public static let action: Self = "action"
-  public static let changes: Self = "changes"
-  public static let contentID: Self = "content_id"
-  public static let errorCode: Self = "error_code"
-  public static let errorDomain: Self = "error_domain"
-  public static let errorDescription: Self = "error_description"
-  public static let placement: Self = "placement"
-  public static let result: Self = "result"
-  public static let sessionID: Self = "session_id"
-  public static let url: Self = "url"
-  public static let value: Self = "value"
+  public static var action: Self { "action" }
+  public static var changes: Self { "changes" }
+  public static var contentID: Self { "content_id" }
+  public static var errorCode: Self { "error_code" }
+  public static var errorDomain: Self { "error_domain" }
+  public static var errorDescription: Self { "error_description" }
+  public static var placement: Self { "placement" }
+  public static var result: Self { "result" }
+  public static var sessionID: Self { "session_id" }
+  public static var url: Self { "url" }
+  public static var value: Self { "value" }
 }

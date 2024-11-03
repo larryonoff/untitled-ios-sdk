@@ -101,7 +101,7 @@ extension Version: Comparable {
 }
 
 extension Version {
-  public static let zero = Version(0, 0, 0)
+  public static var zero: Self { Version(0, 0, 0) }
 }
 
 extension Version: CustomStringConvertible {
