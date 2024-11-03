@@ -1,28 +1,7 @@
 import Adapty
-import Foundation
 import StoreKit
-import Tagged
 
-public enum PurchasesError: Swift.Error {
-  case unknown
-  case premiumExpired
-  case productUnavailable
-}
-
-extension PurchasesError: LocalizedError {
-  public var errorDescription: String? {
-    switch self {
-    case .unknown:
-      return L10n.Error.Unknown.description
-    case .premiumExpired:
-      return L10n.Purchases.Error.PremiumExpired.description
-    case .productUnavailable:
-      return "Product not available"
-    }
-  }
-}
-
-extension Error {
+package extension Error {
   var isPaymentCancelled: Bool {
     if let adaptyError = self as? AdaptyError {
       if adaptyError.adaptyErrorCode == .paymentCancelled {

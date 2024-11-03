@@ -1,7 +1,7 @@
 import Adapty
 import Foundation
 
-extension Product {
+package extension Product {
   init?(_ product: any AdaptyProduct) {
     self.init(
       id: .init(product.vendorProductId),
@@ -18,7 +18,7 @@ extension Product {
   }
 }
 
-extension Product.SubscriptionInfo {
+package extension Product.SubscriptionInfo {
   init?(_ product: any AdaptyProduct) {
     guard
       let subscriptionGroupID = product.subscriptionGroupIdentifier,
@@ -28,18 +28,20 @@ extension Product.SubscriptionInfo {
       return nil
     }
 
-    self.introductoryOffer = product.introductoryDiscount.flatMap {
-      .introductoryOffer($0, product: product)
-    }
-    self.promotionalOffers = product.skProduct.discounts
-      .compactMap { Product.SubscriptionOffer($0) }
-    self.subscriptionGroupID = subscriptionGroupID
-    self.subscriptionPeriod = subscriptionPeriod
-    self.isEligibleForIntroOffer = true
+    self.init(
+      introductoryOffer: product.introductoryDiscount.flatMap {
+        .introductoryOffer($0, product: product)
+      },
+      promotionalOffers: product.skProduct.discounts
+        .compactMap { Product.SubscriptionOffer($0) },
+      subscriptionGroupID: subscriptionGroupID,
+      subscriptionPeriod: subscriptionPeriod,
+      isEligibleForIntroOffer: true
+    )
   }
 }
 
-extension Product.SubscriptionOffer {
+package extension Product.SubscriptionOffer {
   static func introductoryOffer(
     _ discount: AdaptyProductDiscount,
     product: any AdaptyProduct
@@ -66,7 +68,7 @@ extension Product.SubscriptionOffer {
   }
 }
 
-extension Product.SubscriptionOffer.PaymentMode {
+package extension Product.SubscriptionOffer.PaymentMode {
   init?(_ paymentMode: AdaptyProductDiscount.PaymentMode) {
     switch paymentMode {
     case .freeTrial:

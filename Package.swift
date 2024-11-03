@@ -51,6 +51,7 @@ let package = Package(
     .library(name: .logging, targets: [.logging]),
     .library(name: .photos, targets: [.photos]),
     .library(name: .photosUI, targets: [.photosUI]),
+    .library(name: .purchases, targets: [.purchases]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .swiftUI, targets: [.swiftUI]),
     .library(name: .uiKit, targets: [.uiKit]),
@@ -161,6 +162,7 @@ let package = Package(
     .logging,
     .photos,
     .photosUI,
+    .purchases,
     .swiftUI,
     .uiKit,
     .webView,
@@ -351,16 +353,13 @@ extension Target {
         .Client.remoteSettings,
         .foundation,
         .logging,
+        .purchases,
         .Client.userIdentifier,
         .External.adapty,
         .External.dependencies,
         .External.tagged
       ],
       path: "Sources/PurchasesClient",
-      exclude: ["swiftgen.yml"],
-      resources: [
-        .process("Resources")
-      ],
       linkerSettings: [
         .linkedFramework("Combine"),
         .linkedFramework("StoreKit")
@@ -479,6 +478,7 @@ extension Target {
     static let purchases = target(
       name: .Composable.purchases,
       dependencies: [
+        .purchases,
         .Client.purchases,
         .External.composableArchitecture
       ],
@@ -571,6 +571,23 @@ extension Target {
     ]
   )
 
+  static let purchases = target(
+    name: .purchases,
+    dependencies: [
+      .foundation,
+      .External.adapty,
+      .External.tagged
+    ],
+    path: "Sources/Purchases",
+    exclude: ["swiftgen.yml"],
+    resources: [
+      .process("Resources")
+    ],
+    linkerSettings: [
+      .linkedFramework("StoreKit")
+    ]
+  )
+
   static let photosUI = target(
     name: .photosUI,
     dependencies: [
@@ -626,6 +643,7 @@ extension Target.Dependency {
   static let logging = byName(name: .logging)
   static let photos = byName(name: .photos)
   static let photosUI = byName(name: .photosUI)
+  static let purchases = byName(name: .purchases)
   static let sfSymbol = byName(name: .sfSymbol)
   static let swiftUI = byName(name: .swiftUI)
   static let uiKit = byName(name: .uiKit)
@@ -772,6 +790,7 @@ extension String {
   static let logging = "DuckLogging"
   static let photos = "DuckPhotos"
   static let photosUI = "DuckPhotosUI"
+  static let purchases = "DuckPurchases"
   static let sfSymbol = "SFSymbol"
   static let swiftUI = "DuckSwiftUI"
   static let uiKit = "DuckUIKit"

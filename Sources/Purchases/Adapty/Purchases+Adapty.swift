@@ -1,30 +1,16 @@
 import Adapty
 import Foundation
 
-public struct Purchases {
-  public var isEligibleForIntroductoryOffer: Bool = true
-  public var isPremium: Bool = false
-
-  public init(
-    isPremium: Bool = false
-  ) {
-    self.isPremium = isPremium
-  }
-}
-
-extension Purchases: Codable {}
-extension Purchases: Equatable {}
-extension Purchases: Hashable {}
-extension Purchases: Sendable {}
-
-extension Purchases {
+package extension Purchases {
   init(_ profile: AdaptyProfile?) {
     guard
       let profile,
       let accessLevel = profile.accessLevels["premium"]
     else {
-      self.isEligibleForIntroductoryOffer = true
-      self.isPremium = false
+      self.init(
+        isPremium: false,
+        isEligibleForIntroductoryOffer: true
+      )
       return
     }
 
@@ -32,12 +18,14 @@ extension Purchases {
       .values
       .map(\.vendorProductId)
 
-    self.isEligibleForIntroductoryOffer = subscriptionsProductIDs.isEmpty
-    self.isPremium = accessLevel.isActive
+    self.init(
+      isPremium: accessLevel.isActive,
+      isEligibleForIntroductoryOffer: subscriptionsProductIDs.isEmpty
+    )
   }
 }
 
-extension Purchases {
+package extension Purchases {
   private struct VH<T: Codable>: Codable {
     let value: T
     let hash: String?

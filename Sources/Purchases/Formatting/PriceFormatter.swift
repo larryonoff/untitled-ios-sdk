@@ -1,3 +1,4 @@
+import DuckFoundation
 import Foundation
 
 final class PriceFormatter {

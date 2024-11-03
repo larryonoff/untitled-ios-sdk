@@ -1,6 +1,4 @@
-import Adapty
 import Foundation
-import StoreKit
 import Tagged
 
 public struct Product {
