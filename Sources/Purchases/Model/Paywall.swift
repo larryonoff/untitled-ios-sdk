@@ -1,4 +1,3 @@
-import Adapty
 import Foundation
 @_exported import Tagged
 
@@ -22,18 +21,6 @@ extension Paywall: Equatable {}
 extension Paywall: Hashable {}
 extension Paywall: Identifiable {}
 extension Paywall: Sendable {}
-
-extension Paywall {
-  init(
-    _ paywall: AdaptyPaywall,
-    products: [AdaptyPaywallProduct]?
-  ) {
-    self.id = .init(paywall.placementId)
-    self.products = products?
-      .compactMap { .init($0) } ?? []
-    self.remoteConfigString = paywall.remoteConfig?.jsonString
-  }
-}
 
 // MARK: - Remote Config
 
