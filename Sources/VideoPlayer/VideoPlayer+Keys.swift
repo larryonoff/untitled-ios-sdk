@@ -11,6 +11,11 @@ extension EnvironmentValues {
     set { self[Video_ContentModeKey.self] = newValue }
   }
 
+  public var videoDisappearBehavior: VideoDisappearBehavior {
+    get { self[Video_DisappearBehaviorKey.self] }
+    set { self[Video_DisappearBehaviorKey.self] = newValue }
+  }
+
   public var videoIsMuted: Bool {
     get { self[Video_IsMutedKey.self] }
     set { self[Video_IsMutedKey.self] = newValue }
@@ -19,6 +24,11 @@ extension EnvironmentValues {
   public var videoLoopingEnabled: Bool {
     get { self[Video_LoopingEnabledKey.self] }
     set { self[Video_LoopingEnabledKey.self] = newValue }
+  }
+
+  public var videoPauseBehavior: VideoPauseBehavior {
+    get { self[Video_PauseBehaviorKey.self] }
+    set { self[Video_PauseBehaviorKey.self] = newValue }
   }
 }
 
@@ -34,6 +44,13 @@ extension View {
   }
 
   @inlinable nonisolated
+  public func videoDisappearBehavior(
+    _ value: VideoDisappearBehavior?
+  ) -> some View {
+    environment(\.videoDisappearBehavior, value ?? .default)
+  }
+
+  @inlinable nonisolated
   public func videoLoopingDisabled(_ value: Bool) -> some View {
     environment(\.videoLoopingEnabled, !value)
   }
@@ -41,6 +58,13 @@ extension View {
   @inlinable nonisolated
   public func videoMuted(_ value: Bool) -> some View {
     self.environment(\.videoIsMuted, value)
+  }
+
+  @inlinable nonisolated
+  public func videoPauseBehavior(
+    _ value: VideoPauseBehavior?
+  ) -> some View {
+    environment(\.videoPauseBehavior, value ?? .default)
   }
 }
 
@@ -53,11 +77,19 @@ extension EnvironmentValues {
     static var defaultValue: ContentMode? { .fit }
   }
 
+  private struct Video_DisappearBehaviorKey: EnvironmentKey {
+    static var defaultValue: VideoDisappearBehavior { .default }
+  }
+
   private struct Video_IsMutedKey: EnvironmentKey {
     static var defaultValue: Bool { false }
   }
 
   private struct Video_LoopingEnabledKey: EnvironmentKey {
     static var defaultValue: Bool { false }
+  }
+
+  private struct Video_PauseBehaviorKey: EnvironmentKey {
+    static var defaultValue: VideoPauseBehavior { .default }
   }
 }
