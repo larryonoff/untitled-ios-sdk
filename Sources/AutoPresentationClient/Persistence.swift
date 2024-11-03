@@ -17,5 +17,5 @@ extension UserSettingsClient {
 }
 
 private extension String {
-  static let autoPresentationSession = ".sdk.auto-presentation-session"
+  static var autoPresentationSession: String { ".sdk.auto-presentation-session" }
 }

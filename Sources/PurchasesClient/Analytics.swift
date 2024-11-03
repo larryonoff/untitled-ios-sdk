@@ -2,7 +2,7 @@ import DuckAnalyticsClient
 import Foundation
 
 extension AnalyticsClient.UserPropertyName {
-  public static let isPremium: Self = "is_premium"
+  public static var isPremium: Self { "is_premium" }
 }
 
 extension Dictionary<AnalyticsClient.EventParameterName, Any> {

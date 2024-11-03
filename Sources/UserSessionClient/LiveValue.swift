@@ -226,7 +226,7 @@ struct KeychainStorage {
 }
 
 extension String {
-  static let metrics: String = "metrics"
+  static var metrics: String { "metrics" }
 }
 
 let log = Logger(

@@ -137,17 +137,17 @@ extension Bundle {
 }
 
 private extension String {
-  static let appID = "com.instagram.sharedSticker.appID"
-  static let backgroundImage = "com.instagram.sharedSticker.backgroundImage"
-  static let backgroundVideo = "com.instagram.sharedSticker.backgroundVideo"
-  static let stickerImage = "com.instagram.sharedSticker.stickerImage"
-  static let backgroundTopColor = "com.instagram.sharedSticker.backgroundTopColor"
-  static let backgroundBottomColor = "com.instagram.sharedSticker.backgroundBottomColor"
+  static var appID: String { "com.instagram.sharedSticker.appID" }
+  static var backgroundImage: String { "com.instagram.sharedSticker.backgroundImage" }
+  static var backgroundVideo: String { "com.instagram.sharedSticker.backgroundVideo" }
+  static var stickerImage: String { "com.instagram.sharedSticker.stickerImage" }
+  static var backgroundTopColor: String { "com.instagram.sharedSticker.backgroundTopColor" }
+  static var backgroundBottomColor: String { "com.instagram.sharedSticker.backgroundBottomColor" }
 
   enum URLScheme {
-    static let instagram = "instagram"
-    static let instagramReels = "instagram-reels"
-    static let instagramStories = "instagram-stories"
+    static var instagram: String { "instagram" }
+    static var instagramReels: String { "instagram-reels" }
+    static var instagramStories: String { "instagram-stories" }
   }
 }
 

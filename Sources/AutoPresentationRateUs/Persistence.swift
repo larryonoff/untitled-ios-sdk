@@ -31,6 +31,6 @@ extension UserSettingsClient {
 }
 
 private extension String {
-  static let rateUsPresentationSession = "auto-presentation.rate-us.presentation-session"
-  static let rateUsImpressionCount = "auto-presentation.rate-us.impression-count"
+  static var rateUsPresentationSession: String { "auto-presentation.rate-us.presentation-session" }
+  static var rateUsImpressionCount: String { "auto-presentation.rate-us.impression-count" }
 }

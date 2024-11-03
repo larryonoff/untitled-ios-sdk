@@ -1,7 +1,7 @@
 import Foundation
 
 extension URL {
-  public static let instagram = URL(string: "instagram://app")!
+  public static var instagram: Self { URL(string: "instagram://app")! }
 
   public enum Instagram {
     public static func shareToFeed(
