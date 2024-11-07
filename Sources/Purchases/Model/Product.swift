@@ -13,6 +13,8 @@ public struct Product {
   }
 
   public struct SubscriptionOffer {
+    public typealias ID = Tagged<Self, String>
+
     public enum OfferType: String {
       case introductory
       case promotional
@@ -24,7 +26,7 @@ public struct Product {
       case freeTrial = "free_trial"
     }
 
-    public let id: String?
+    public let id: ID?
 
     public let type: Product.SubscriptionOffer.OfferType
 
@@ -68,6 +70,15 @@ public struct Product {
   public var priceLocale: Locale
   public var displayPrice: String
 
+  public var promoOfferID: SubscriptionOffer.ID?
+
+  public var promoOffer: SubscriptionOffer? {
+    promoOfferID.flatMap { promoOfferID in
+      subscription?.promotionalOffers
+        .first { $0.id == promoOfferID }
+    }
+  }
+
   public var subscription: SubscriptionInfo?
 
   public init(
@@ -98,6 +109,15 @@ public struct Product {
 }
 
 extension Product.SubscriptionPeriod {
+  public var numberOfDays: Int {
+    switch unit {
+    case .day: value
+    case .week: value * Product.SubscriptionPeriod.day(7).numberOfDays
+    case .month: value * Product.SubscriptionPeriod.week(4).numberOfDays
+    case .year: value * Product.SubscriptionPeriod.month(12).numberOfDays
+    }
+  }
+
   public static func year(_ value: Int) -> Self {
     .init(unit: .year, value: value)
   }
