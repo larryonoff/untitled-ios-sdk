@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import DuckRemoteSettingsClient
 import DuckRemoteSettingsComposable
+import Model
 
 extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSettingKey<Bool>> {
   public static var isPaywallProductHiddenPricesEnabled: Self {
@@ -22,5 +23,11 @@ extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSetting
       .remoteSetting(RemoteSettingsClient.isPaywallOnboardingEnabledKey),
       true
     )
+  }
+}
+
+extension PersistenceReaderKey where Self == RemoteSettingKey<Paywall.PromoOfferType?> {
+  public static var paywallPromoOfferType: Self {
+    .remoteSetting(RemoteSettingsClient.paywallPromoOfferType)
   }
 }

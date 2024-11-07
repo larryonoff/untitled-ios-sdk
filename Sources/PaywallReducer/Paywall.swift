@@ -53,6 +53,7 @@ public struct PaywallReducer {
 
     public var placement: Placement?
 
+    @SharedReader(.paywallPromoOfferType) public var promoOfferType
     @SharedReader(.purchases) public var purchases
 
     public var isEligibleForIntroductoryOffer: Bool {
