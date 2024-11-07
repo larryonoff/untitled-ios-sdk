@@ -13,11 +13,11 @@ extension RemoteSettingsClient {
     boolForKey(Self.isPaywallOnboardingEnabledKey) ?? true
   }
 
-  public var paywallPromoOffer: Paywall.PromoOffer? {
-    let string = stringForKey(Self.paywallPromoOffer)
+  public var paywallPromoOfferType: Paywall.PromoOfferType? {
+    let string = stringForKey(Self.paywallPromoOfferType)
     guard let string, !string.isEmpty else { return nil }
 
-    return Paywall.PromoOffer(string)
+    return Paywall.PromoOfferType(string)
   }
 }
 
@@ -34,7 +34,7 @@ extension RemoteSettingsClient {
     "paywall_onboarding_enabled"
   }
 
-  public static var paywallPromoOffer: String {
+  public static var paywallPromoOfferType: String {
     "paywall_promo_offer"
   }
 }
