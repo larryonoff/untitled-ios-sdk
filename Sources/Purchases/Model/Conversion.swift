@@ -1,5 +1,31 @@
 import Foundation
 
+extension Decimal {
+  public func discount(
+    comparingTo comparingValue: Decimal
+  ) -> Decimal {
+    let decimalHandler = NSDecimalNumberHandler(
+      roundingMode: .bankers,
+      scale: 2,
+      raiseOnExactness: false,
+      raiseOnOverflow: false,
+      raiseOnUnderflow: false,
+      raiseOnDivideByZero: false
+    )
+
+    let decimalPrice = NSDecimalNumber(decimal: self)
+    let decimalComparingPrice = NSDecimalNumber(decimal: comparingValue)
+
+    let ratio = decimalPrice
+      .dividing(by: decimalComparingPrice)
+      .rounding(accordingToBehavior: decimalHandler)
+
+    return NSDecimalNumber(value: 1)
+      .subtracting(ratio)
+      .decimalValue
+  }
+}
+
 extension Product {
   public func discount(
     comparingTo product: Product
@@ -20,25 +46,30 @@ extension Product {
       priceComparing = product.price
     }
 
-    let decimalHandler = NSDecimalNumberHandler(
-      roundingMode: .bankers,
-      scale: 2,
-      raiseOnExactness: false,
-      raiseOnOverflow: false,
-      raiseOnUnderflow: false,
-      raiseOnDivideByZero: false
-    )
+    return price.discount(comparingTo: priceComparing)
+  }
+}
 
-    let decimalPrice = NSDecimalNumber(decimal: price)
-    let decimalComparingPrice = NSDecimalNumber(decimal: priceComparing)
+extension Product.SubscriptionOffer {
+  public func discount(
+    comparingTo product: Product
+  ) -> Decimal? {
+    guard paymentMode != .freeTrial else { return nil }
 
-    let ratio = decimalPrice
-      .dividing(by: decimalComparingPrice)
-      .rounding(accordingToBehavior: decimalHandler)
+    let price: Decimal
+    let priceComparing: Decimal
 
-    return NSDecimalNumber(value: 1)
-      .subtracting(ratio)
-      .decimalValue
+    if let subscription = product.subscription {
+      price = self.period
+        .convertPrice(self.price, to: .init(unit: .year, value: 1))
+      priceComparing = subscription.subscriptionPeriod
+        .convertPrice(product.price, to: .init(unit: .year, value: 1))
+    } else {
+      price = self.price
+      priceComparing = product.price
+    }
+
+    return price.discount(comparingTo: priceComparing)
   }
 }
 
@@ -65,7 +96,7 @@ extension Product.SubscriptionPeriod {
     case (.year, .month):
       return price / Decimal(value) / 12 * Decimal(period.value)
     default:
-      return price * Decimal(Double(period.value) / Double(value))
+      return price * Decimal(Double(period.numberOfDays) / Double(numberOfDays))
     }
   }
 }
