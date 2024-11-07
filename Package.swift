@@ -480,6 +480,7 @@ extension Target {
       dependencies: [
         .purchases,
         .Client.purchases,
+        .Composable.remoteSettings,
         .External.composableArchitecture
       ],
       path: "Sources/PurchasesComposable"
