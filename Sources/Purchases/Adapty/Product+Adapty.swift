@@ -15,6 +15,8 @@ package extension Product {
       ) ?? "",
       subscription: .init(product)
     )
+    self.promoOfferID = product.promotionalOfferId
+      .flatMap { SubscriptionOffer.ID($0) }
   }
 }
 
@@ -54,7 +56,7 @@ package extension Product.SubscriptionOffer {
     }
 
     return .init(
-      id: discount.identifier,
+      id: discount.identifier.flatMap { .init($0) },
       type: .introductory,
       price: discount.price,
       priceLocale: product.skProduct.priceLocale,
