@@ -7,8 +7,13 @@ extension PaywallReducer.State {
   }
 
   public var isSelectedEligibleForTrial: Bool {
-    productSelected?.isEligibleForTrial == true &&
-    isEligibleForIntroductoryOffer
+    isEligibleForIntroductoryOffer &&
+    productSelected?.isEligibleForTrial == true
+  }
+
+  public var isSelectedEligibleForPromoOffer: Bool {
+    promoOfferType != nil &&
+    productSelected?.isEligibleForPromoOffer == true
   }
 }
 
