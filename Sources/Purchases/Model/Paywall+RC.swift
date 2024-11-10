@@ -1,3 +1,5 @@
+import Foundation
+
 extension Paywall {
   public var filteredProductIDs: [Product.ID] {
     remoteConfig?["filtered_product_ids"]
@@ -27,6 +29,8 @@ extension Paywall {
     return products.first { $0.id == productSelectedID }
   }
 
+  // MARK: - Intro Offer
+
   public var introductoryOfferProductID: Product.ID? {
     remoteConfig?["introductory_offer_product_id"]
       .flatMap { $0 as? String }
@@ -37,6 +41,15 @@ extension Paywall {
     guard let introductoryOfferProductID else { return nil }
     return products.first { $0.id == introductoryOfferProductID }
   }
+
+  // MARK: - Intro Offer
+
+  public var offerDuration: TimeInterval? {
+    remoteConfig?["offer_duration"]
+      .flatMap { $0 as? TimeInterval }
+  }
+
+  // MARK: - AB Variant
 
   public var variantID: VariantID? {
     remoteConfig?["variant_id"]
