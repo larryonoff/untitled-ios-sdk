@@ -70,15 +70,6 @@ public struct Product {
   public var priceLocale: Locale
   public var displayPrice: String
 
-  public var promoOfferID: SubscriptionOffer.ID?
-
-  public var promoOffer: SubscriptionOffer? {
-    promoOfferID.flatMap { promoOfferID in
-      subscription?.promotionalOffers
-        .first { $0.id == promoOfferID }
-    }
-  }
-
   public var subscription: SubscriptionInfo?
 
   public init(
@@ -99,7 +90,22 @@ public struct Product {
     self.subscription = subscription
   }
 
-  // MARK: - Dynamic Properties
+  // MARK: - Promo Offer
+
+  public var isEligibleForPromoOffer: Bool {
+    promoOfferID != nil
+  }
+
+  public var promoOfferID: SubscriptionOffer.ID?
+
+  public var promoOffer: SubscriptionOffer? {
+    promoOfferID.flatMap { promoOfferID in
+      subscription?.promotionalOffers
+        .first { $0.id == promoOfferID }
+    }
+  }
+
+  // MARK: - Helper Properties
 
   public var isEligibleForTrial: Bool {
     subscription?
