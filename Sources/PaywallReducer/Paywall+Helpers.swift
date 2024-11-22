@@ -18,12 +18,12 @@ extension PaywallReducer.State {
 }
 
 extension PaywallReducer {
-  func presentIntroductoryOfferIfNeeded(_ state: inout State) -> Bool {
+  func presentPostDeclineIntroOfferIfNeeded(_ state: inout State) -> Bool {
     guard remoteSettings.isPaywallOnboardingIntroOfferEnabled else { return false }
     guard state.isEligibleForIntroductoryOffer else { return false }
 
     if let product = state.paywall?.introductoryOfferProduct {
-      state.destination = .freeTrial(
+      state.destination = .postDeclineIntroOffer(
         .init(
           paywallID: state.paywallID,
           product: product,
