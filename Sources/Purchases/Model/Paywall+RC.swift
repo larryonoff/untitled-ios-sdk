@@ -42,11 +42,22 @@ extension Paywall {
     return products.first { $0.id == introductoryOfferProductID }
   }
 
-  // MARK: - Intro Offer
-
   public var offerDuration: TimeInterval? {
     remoteConfig?["offer_duration"]
       .flatMap { $0 as? TimeInterval }
+  }
+
+  public var offerEndDate: Date? {
+    remoteConfig?["offer_end_date"]
+      .flatMap { $0 as? String }
+      .flatMap { string -> Date? in
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(identifier: "GMT")
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyyMMdd"
+
+        return formatter.date(from: string)
+      }
   }
 
   // MARK: - AB Variant
