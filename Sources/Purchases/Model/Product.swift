@@ -124,20 +124,52 @@ extension Product.SubscriptionPeriod {
     }
   }
 
-  public static func year(_ value: Int) -> Self {
-    .init(unit: .year, value: value)
-  }
-
-  public static func month(_ value: Int) -> Self {
-    .init(unit: .month, value: value)
+  public static func day(_ value: Int) -> Self {
+    .init(unit: .day, value: value)
   }
 
   public static func week(_ value: Int) -> Self {
     .init(unit: .week, value: value)
   }
 
-  public static func day(_ value: Int) -> Self {
-    .init(unit: .day, value: value)
+  public static func month(_ value: Int) -> Self {
+    .init(unit: .month, value: value)
+  }
+
+  public static func year(_ value: Int) -> Self {
+    .init(unit: .year, value: value)
+  }
+
+  public static var weekly: Self {
+    .init(unit: .week, value: 1)
+  }
+
+  public static var monthly: Product.SubscriptionPeriod {
+    .init(unit: .month, value: 1)
+  }
+
+  public static var yearly: Product.SubscriptionPeriod {
+    .init(unit: .year, value: 1)
+  }
+
+  public static var everyThreeDays: Product.SubscriptionPeriod {
+    .init(unit: .day, value: 3)
+  }
+
+  public static var everyTwoWeeks: Product.SubscriptionPeriod {
+    .init(unit: .week, value: 2)
+  }
+
+  public static var everyTwoMonths: Product.SubscriptionPeriod {
+    .init(unit: .month, value: 2)
+  }
+
+  public static var everyThreeMonths: Product.SubscriptionPeriod {
+    .init(unit: .month, value: 3)
+  }
+
+  public static var everySixMonths: Product.SubscriptionPeriod {
+    .init(unit: .month, value: 6)
   }
 }
 
