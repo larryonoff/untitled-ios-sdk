@@ -105,6 +105,12 @@ public struct Product {
     }
   }
 
+  public var promoOfferDiscount: Decimal? {
+    promoOffer?
+      .discount(comparingTo: self)
+      .flatMap { $0 }
+  }
+
   // MARK: - Helper Properties
 
   public var isEligibleForTrial: Bool {
