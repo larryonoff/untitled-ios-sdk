@@ -3,6 +3,7 @@ import Foundation
 
 public struct Paywall {
   public typealias ID = Tagged<(Self, id: ()), String>
+public typealias PaywallType = Tagged<(Self, type: ()), String>
   public typealias RemoteConfig = [String: Any]
   public typealias SpecialOfferType = Tagged<(Self, promoOffer: ()), String>
   public typealias VariantID = Tagged<(Self, variantID: ()), String>
