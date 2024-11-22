@@ -3,6 +3,7 @@ import Foundation
 
 public struct Paywall {
   public typealias ID = Tagged<(Self, id: ()), String>
+  public typealias RemoteConfig = [String: Any]
   public typealias SpecialOfferType = Tagged<(Self, promoOffer: ()), String>
   public typealias VariantID = Tagged<(Self, variantID: ()), String>
 
@@ -11,7 +12,7 @@ public struct Paywall {
 
   let remoteConfigString: String?
 
-  public var remoteConfig: [String: Any]? {
+  public var remoteConfig: RemoteConfig? {
     remoteConfigString?.data(using: .utf8).flatMap {
       try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any]
     }
