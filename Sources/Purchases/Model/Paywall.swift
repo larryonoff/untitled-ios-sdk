@@ -3,7 +3,7 @@ import Foundation
 
 public struct Paywall {
   public typealias ID = Tagged<(Self, id: ()), String>
-public typealias PaywallType = Tagged<(Self, type: ()), String>
+  public typealias PaywallType = Tagged<(Self, type: ()), String>
   public typealias RemoteConfig = [String: Any]
   public typealias SpecialOfferType = Tagged<(Self, promoOffer: ()), String>
   public typealias VariantID = Tagged<(Self, variantID: ()), String>
@@ -17,6 +17,25 @@ public typealias PaywallType = Tagged<(Self, type: ()), String>
     remoteConfigString?.data(using: .utf8).flatMap {
       try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any]
     }
+  }
+}
+
+extension Paywall.PaywallType {
+  public enum Offer {
+    public static var blackFriday: Paywall.PaywallType { "black_friday" }
+    public static var christmas: Paywall.PaywallType { "xmas" }
+    public static var cyberMonday: Paywall.PaywallType { "cyber_monday" }
+    public static var introductory: Paywall.PaywallType { "introductory" }
+    public static var limitedTime: Paywall.PaywallType { "lto" }
+    public static var newYear: Paywall.PaywallType { "new_year" }
+    public static var winterSale: Paywall.PaywallType { "winter_sale" }
+  }
+
+  public static var onboarding: Paywall.PaywallType { "onboarding" }
+  public static var main: Paywall.PaywallType { "main" }
+
+  public var isOnboarding: Bool {
+    self == .onboarding
   }
 }
 
