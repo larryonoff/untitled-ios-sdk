@@ -87,7 +87,7 @@ public struct PaywallReducer {
   @Reducer(state: .equatable)
   public enum Destination {
     case alert(AlertState<Alert>)
-    case freeTrial(PaywallFreeTrial)
+    case postDeclineIntroOffer(PostDeclineIntroOffer)
 
     public enum Alert: Equatable {
       case rejectIntroductoryOffer
@@ -115,25 +115,30 @@ public struct PaywallReducer {
       switch action {
       case .delegate:
         return .none
+
       case .onAppear:
         return .concatenate(
           fetchPaywall(state: &state),
           analytics.logView(state: state)
         )
+
       case .cancelPurchaseTapped:
         return purchaseCancel(state: &state)
       case .dismissTapped:
-        if presentIntroductoryOfferIfNeeded(&state) {
+        if presentPostDeclineIntroOfferIfNeeded(&state) {
           return .none
         }
 
         return dismiss(state: &state)
       case .restorePurchasesTapped:
         return restorePurchases(state: &state)
+
       case let .setSelectedProductID(productID):
         return selectProduct(withID: productID, state: &state)
+
       case .purchase:
         return purchase(state: &state)
+
       case let .fetchPaywallResponse(result):
         state.isFetchingPaywall = false
 
@@ -203,16 +208,16 @@ public struct PaywallReducer {
 
         return .none
       case .destination(.dismiss):
-        let isIntroOfferPresented = state.destination?.is(\.freeTrial) == true
+        let isPostDeclinePresented = state.destination?.is(\.postDeclineIntroOffer) == true
 
         state.destination = nil
 
-        if isIntroOfferPresented {
+        if isPostDeclinePresented {
           return dismiss(state: &state)
         }
 
         return .none
-      case .destination(.presented(.freeTrial(.delegate(.dismiss)))):
+      case .destination(.presented(.postDeclineIntroOffer(.delegate(.dismiss)))):
         return dismiss(state: &state)
       case .destination:
         return .none
@@ -231,7 +236,7 @@ public struct PaywallReducer {
       state.destination = nil
 
       return .concatenate(
-        .run { _ in try? await Task.sleep(nanoseconds: 1_000_000_00) },
+        .run { _ in try? await Task.sleep(for: .nanoseconds(1_000_000_00)) },
         dismiss(state: &state)
       )
     }
@@ -247,7 +252,7 @@ public struct PaywallReducer {
     return .run(priority: .high) { [paywallID = state.paywallID] send in
       // HACK
       // sometimes product cannot be selected or purchased
-      try? await Task.sleep(nanoseconds: 1_000_000_00)
+      try? await Task.sleep(for: .nanoseconds(1_000_000_00))
 
       for try await response in purchases.paywallByID(paywallID) {
         await send(.fetchPaywallResponse(.success(response.paywall)))

@@ -2,7 +2,7 @@ import ComposableArchitecture
 import DuckPurchasesClient
 
 @Reducer
-public struct PaywallFreeTrial {
+public struct PostDeclineIntroOffer {
   public enum Action {
     public enum Delegate {
       case dismiss
@@ -65,7 +65,7 @@ public struct PaywallFreeTrial {
       case .cancelPurchaseTapped:
         return purchaseCancel(state: &state)
       case .dismissTapped:
-        state.destination = .alert(.cancelIntroductoryOffer)
+        state.destination = .alert(.cancelOffer)
 
         return .none
       case .purchaseTapped:
