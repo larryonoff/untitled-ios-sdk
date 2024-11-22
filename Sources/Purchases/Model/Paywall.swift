@@ -3,7 +3,7 @@ import Foundation
 
 public struct Paywall {
   public typealias ID = Tagged<(Self, id: ()), String>
-  public typealias PromoOfferType = Tagged<(Self, promoOffer: ()), String>
+  public typealias SpecialOfferType = Tagged<(Self, promoOffer: ()), String>
   public typealias VariantID = Tagged<(Self, variantID: ()), String>
 
   public let id: ID
@@ -18,10 +18,12 @@ public struct Paywall {
   }
 }
 
-extension Paywall.PromoOfferType {
-  public static var blackFriday: Self { "bf" }
+extension Paywall.SpecialOfferType {
+  public static var blackFriday: Self { "black_friday" }
   public static var christmas: Self { "xmas" }
-  public static var newYear: Self { "ny" }
+  public static var cyberMonday: Self { "cyber_monday" }
+  public static var newYear: Self { "new_year" }
+  public static var winterSale: Self { "winter_sale" }
 }
 
 extension Paywall: Equatable {}
