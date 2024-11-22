@@ -61,7 +61,8 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "3.1.0"
+      .upToNextMinor(from: "3.1.0")
+    ),
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
