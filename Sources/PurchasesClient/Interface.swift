@@ -37,10 +37,19 @@ public struct PurchasesClient: Sendable {
 }
 
 extension PurchasesClient {
+  @discardableResult
   public func prefetch(
     paywallByID id: Paywall.ID
-  ) async throws {
-    for try await _ in paywallByID(id) {}
+  ) async -> Paywall? {
+    do {
+      var paywall: Paywall?
+      for try await response in paywallByID(id) {
+        paywall = response.paywall
+      }
+      return paywall
+    } catch {
+      return nil
+    }
   }
 }
 
