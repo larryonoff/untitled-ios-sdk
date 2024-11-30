@@ -25,9 +25,3 @@ extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSetting
     )
   }
 }
-
-extension PersistenceReaderKey where Self == RemoteSettingKey<Paywall.SpecialOfferType?> {
-  public static var paywallSpecialOfferType: Self {
-    .remoteSetting(RemoteSettingsClient.paywallSpecialOfferType)
-  }
-}

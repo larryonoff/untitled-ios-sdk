@@ -1,9 +1,9 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckComposableArchitecture
+import DuckPaywallDependencies
 import DuckPurchasesClient
 import DuckPurchasesComposable
-import DuckRemoteSettingsClient
 import IdentifiedCollections
 
 @Reducer
@@ -38,12 +38,24 @@ public struct PaywallReducer {
     @Presents
     public var destination: Destination.State?
 
-    public let paywallID: Paywall.ID
+    public var isFetchingPaywall: Bool = false
+    public var isPurchasing: Bool = false
+
+    public var paywallType: Paywall.PaywallType
+    public var paywallID: Paywall.ID
     public var paywall: Paywall?
 
     public var products: IdentifiedArrayOf<Product> = []
     public var productComparing: Product?
     public var productSelectedID: Product.ID?
+
+    public var placement: Placement?
+
+    // MARK: - Calculated Props
+
+    public var isEligibleForIntroOffer: Bool {
+      purchases.isEligibleForIntroductoryOffer
+    }
 
     public var productSelected: Product? {
       productSelectedID.flatMap { productID in
@@ -51,26 +63,48 @@ public struct PaywallReducer {
       }
     }
 
-    public var placement: Placement?
-
-    @SharedReader(.paywallPromoOfferType) public var promoOfferType
-    @SharedReader(.purchases) public var purchases
-
-    public var isEligibleForIntroductoryOffer: Bool {
-      purchases.isEligibleForIntroductoryOffer
+    public var eligibleOffer: Product.EligibleSubscriptionOffer? {
+      paywall?.eligibleOffers.first
     }
 
-    public var isFetchingPaywall: Bool = false
+    // MARK: - Shared State
 
     @SharedReader(.isPaywallProductHiddenPricesEnabled) public var isHiddenPricesEnabled
+    @SharedReader(.isPaywallOnboardingIntroOfferEnabled) public var isOnboardingIntroOfferEnabled
+    @SharedReader(.purchases) public var purchases
+    @SharedReader(.purchasesOffer) public var purchasesOffer
 
-    public var isPurchasing: Bool = false
+    // MARK: Init
 
     public init(
       paywallID: Paywall.ID,
+      paywallType: Paywall.PaywallType,
       placement: Placement?
     ) {
+      self.paywallType = paywallType
       self.paywallID = paywallID
+      self.placement = placement
+    }
+
+    public init(
+      paywallType: Paywall.PaywallType,
+      placement: Placement?
+    ) {
+      @Dependency(\.paywallID) var paywallID
+
+      self.paywallType = paywallType
+      self.paywallID = paywallID(paywallType)
+      self.placement = placement
+    }
+
+    public init(placement: Placement?) {
+      @Dependency(\.paywallID) var paywallID
+      @Dependency(\.paywallType) var paywallType
+
+      let paywallType_ = paywallType(placement)
+
+      self.paywallType = paywallType_
+      self.paywallID = paywallID(paywallType_)
       self.placement = placement
     }
   }
@@ -100,13 +134,16 @@ public struct PaywallReducer {
 
   @Dependency(\.analytics) var analytics
   @Dependency(\.purchases) var purchases
-  @Dependency(\.remoteSettings) var remoteSettings
 
   public init() {}
 
   public var body: some ReducerOf<Self> {
-    coreBody
-      .ifLet(\.$destination, action: \.destination)
+    CombineReducers {
+      PurchasesOffersLogic()
+
+      coreBody
+        .ifLet(\.$destination, action: \.destination)
+    }
   }
 
   @ReducerBuilder<State, Action>
@@ -146,21 +183,7 @@ public struct PaywallReducer {
           let paywall = try result.get()
           let paywallChanged = paywall?.id != state.paywall?.id
 
-          var products = (paywall?.products ?? [])
-
-          if
-            let filteredProductIDs = paywall?.filteredProductIDs,
-            !filteredProductIDs.isEmpty
-          {
-            products = products.filter { !filteredProductIDs.contains($0.id) }
-          }
-
-          state.paywall = paywall
-          state.products = IdentifiedArray(uncheckedUniqueElements: products)
-
-          state.productComparing = paywall?.productComparing
-          state.productSelectedID =
-            paywall?.productSelected?.id ?? products.first?.id
+          state.update(paywall)
 
           if let paywall, paywallChanged {
             return .run { _ in
@@ -207,6 +230,7 @@ public struct PaywallReducer {
         }
 
         return .none
+
       case .destination(.dismiss):
         let isPostDeclinePresented = state.destination?.is(\.postDeclineIntroOffer) == true
 
@@ -221,6 +245,7 @@ public struct PaywallReducer {
         return dismiss(state: &state)
       case .destination:
         return .none
+
       case let .products(.element(id: productID, action: .tapped)):
         return selectProduct(withID: productID, state: &state)
       }
