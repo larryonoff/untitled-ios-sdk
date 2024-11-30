@@ -1,1 +1,2 @@
+@_exported import DuckPaywallDependencies
 @_exported import DuckPurchasesClient

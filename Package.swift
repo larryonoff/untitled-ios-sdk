@@ -24,6 +24,7 @@ let package = Package(
     .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
+    .library(name: .Client.purchasesOffers, targets: [.Client.purchasesOffers]),
     .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
     .library(name: .Client.userIdentifier, targets: [.Client.userIdentifier]),
     .library(name: .Client.userSession, targets: [.Client.userSession]),
@@ -37,6 +38,8 @@ let package = Package(
     .library(name: .Composable.purchases, targets: [.Composable.purchases]),
     .library(name: .Composable.remoteSettings, targets: [.Composable.remoteSettings]),
     .library(name: .Composable.userSession, targets: [.Composable.userSession]),
+
+    .library(name: .Dependencies.paywall, targets: [.Dependencies.paywall]),
 
     .library(name: .Feature.rateUs, targets: [.Feature.rateUs]),
 
@@ -116,8 +119,9 @@ let package = Package(
     .target(
       name: .composableArchitecture,
       dependencies: [
+        .dependencies,
+        .swiftUI,
         .External.composableArchitecture,
-        .swiftUI
       ],
       path: "Sources/ComposableArchitecture"
     ),
@@ -181,6 +185,7 @@ let package = Package(
     .Client.pasteboard,
     .Client.photosAuthorization,
     .Client.purchases,
+    .Client.purchasesOffers,
     .Client.remoteSettings,
     .Client.userIdentifier,
     .Client.userSession,
@@ -194,6 +199,8 @@ let package = Package(
     .Composable.purchases,
     .Composable.remoteSettings,
     .Composable.userSession,
+
+    .Dependencies.paywall,
 
     .Feature.rateUs,
   ]
@@ -366,6 +373,20 @@ extension Target {
       ]
     )
 
+    static let purchasesOffers = target(
+      name: .Client.purchasesOffers,
+      dependencies: [
+        .External.dependencies,
+        .External.Dependencies.macros,
+        .dependencies,
+        .logging,
+        .Client.purchases,
+        .Client.remoteSettings,
+        .Dependencies.paywall
+      ],
+      path: "Sources/PurchasesOffersClient"
+    )
+
     static let remoteSettings = target(
       name: .Client.remoteSettings,
       dependencies: [
@@ -444,9 +465,11 @@ extension Target {
       dependencies: [
         .Client.analytics,
         .Client.purchases,
+        .Client.purchasesOffers,
         .Composable.purchases,
         .Composable.remoteSettings,
         .composableArchitecture,
+        .Dependencies.paywall,
         .External.composableArchitecture
       ],
       path: "Sources/PaywallReducer",
@@ -480,6 +503,7 @@ extension Target {
       dependencies: [
         .purchases,
         .Client.purchases,
+        .Client.purchasesOffers,
         .Composable.remoteSettings,
         .External.composableArchitecture
       ],
@@ -502,6 +526,18 @@ extension Target {
         .External.composableArchitecture
       ],
       path: "Sources/UserSessionComposable"
+    )
+  }
+
+  enum Dependencies {
+    static let paywall = target(
+      name: .Dependencies.paywall,
+      dependencies: [
+        .core,
+        .External.dependencies,
+        .Client.purchases,
+      ],
+      path: "Sources/PaywallDependencies"
     )
   }
 
@@ -532,6 +568,7 @@ extension Target {
   static let dependencies = target(
     name: .dependencies,
     dependencies: [
+      .core,
       .uiKit,
       .External.composableArchitecture,
       .External.dependencies,
@@ -669,6 +706,7 @@ extension Target.Dependency {
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
+    static let purchasesOffers = byName(name: .Client.purchasesOffers)
     static let remoteSettings = byName(name: .Client.remoteSettings)
     static let userIdentifier = byName(name: .Client.userIdentifier)
     static let userSession = byName(name: .Client.userSession)
@@ -684,6 +722,10 @@ extension Target.Dependency {
     static let purchases = byName(name: .Composable.purchases)
     static let remoteSettings = byName(name: .Composable.remoteSettings)
     static let userSession = byName(name: .Composable.userSession)
+  }
+
+  enum Dependencies {
+    static let paywall = byName(name: .Dependencies.paywall)
   }
 
   enum Feature {
@@ -816,6 +858,7 @@ extension String {
     static let pasteboard = "DuckPasteboardClient"
     static let photosAuthorization = "DuckPhotosAuthorizationClient"
     static let purchases = "DuckPurchasesClient"
+    static let purchasesOffers = "DuckPurchasesOffersClient"
     static let remoteSettings = "DuckRemoteSettingsClient"
     static let userIdentifier = "DuckUserIdentifierClient"
     static let userSession = "DuckUserSessionClient"
@@ -831,6 +874,10 @@ extension String {
     static let purchases = "DuckPurchasesComposable"
     static let remoteSettings = "DuckRemoteSettingsComposable"
     static let userSession = "DuckUserSessionComposable"
+  }
+
+  enum Dependencies {
+    static let paywall = "DuckPaywallDependencies"
   }
 
   enum Feature {
