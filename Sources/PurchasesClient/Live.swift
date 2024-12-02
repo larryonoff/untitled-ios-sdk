@@ -227,13 +227,18 @@ final class PurchasesClientImpl {
                 .getProductsIntroductoryOfferEligibility(products: _products)
 
               for (id, eligibility) in introductoryOfferEligibility {
-                guard let pIndex = paywall.products.firstIndex(where: { $0.id.rawValue == id }) else {
+                guard
+                  let pIndex = paywall.products.firstIndex(where: { $0.id.rawValue == id }),
+                  let adaptyProduct = _products.first(where: { $0.vendorProductId == id })
+                else {
                   continue
                 }
 
                 paywall.products[pIndex]
-                  .subscription?
-                  .isEligibleForIntroOffer = eligibility == .eligible
+                  .updateIntroductoryOfferEligibility(
+                    isEligibleForIntroOffer: eligibility == .eligible,
+                    promotionalOfferID: adaptyProduct.promotionalOfferId
+                  )
               }
 
               continuation.yield(
@@ -241,7 +246,6 @@ final class PurchasesClientImpl {
                   paywall: paywall
                 )
               )
-
             } catch {
               //
             }

@@ -15,8 +15,29 @@ package extension Product {
       ) ?? "",
       subscription: .init(product)
     )
-    self.promoOfferID = product.promotionalOfferId
-      .flatMap { SubscriptionOffer.ID($0) }
+
+    self.updateIntroductoryOfferEligibility(
+      isEligibleForIntroOffer: self.subscription?.isEligibleForIntroOffer ?? false,
+      promotionalOfferID: product.promotionalOfferId
+    )
+  }
+
+  mutating
+  package func updateIntroductoryOfferEligibility(
+    isEligibleForIntroOffer: Bool,
+    promotionalOfferID: String?
+  ) {
+    self.subscription?.isEligibleForIntroOffer = isEligibleForIntroOffer
+
+    if isEligibleForIntroOffer {
+      self.subscriptionOffer = self.subscription?.introductoryOffer
+    } else {
+      self.subscriptionOffer = promotionalOfferID
+        .flatMap { offerID -> Product.SubscriptionOffer? in
+          self.subscription?.promotionalOffers
+            .first { $0.id?.rawValue == offerID }
+        }
+    }
   }
 }
 
@@ -31,11 +52,11 @@ package extension Product.SubscriptionInfo {
     }
 
     self.init(
-      introductoryOffer: product.introductoryDiscount.flatMap {
-        .introductoryOffer($0, product: product)
-      },
+      introductoryOffer: product.introductoryDiscount
+        .flatMap { .init($0, product: product) },
       promotionalOffers: product.skProduct.discounts
         .compactMap { Product.SubscriptionOffer($0) },
+      winBackOffers: [],
       subscriptionGroupID: subscriptionGroupID,
       subscriptionPeriod: subscriptionPeriod,
       isEligibleForIntroOffer: true
@@ -44,10 +65,10 @@ package extension Product.SubscriptionInfo {
 }
 
 package extension Product.SubscriptionOffer {
-  static func introductoryOffer(
+  init?(
     _ discount: AdaptyProductDiscount,
     product: any AdaptyProduct
-  ) -> Self? {
+  ) {
     guard
       let paymentMode = Product.SubscriptionOffer.PaymentMode(discount.paymentMode),
       let period = Product.SubscriptionPeriod(discount.subscriptionPeriod)
@@ -55,16 +76,16 @@ package extension Product.SubscriptionOffer {
       return nil
     }
 
-    return .init(
+    self.init(
       id: discount.identifier.flatMap { .init($0) },
       type: .introductory,
       price: discount.price,
-      priceLocale: product.skProduct.priceLocale,
       displayPrice: Product.displayPrice(
         discount.price,
         priceLocale: product.skProduct.priceLocale
       ) ?? "",
       period: period,
+      periodCount: discount.numberOfPeriods,
       paymentMode: paymentMode
     )
   }
