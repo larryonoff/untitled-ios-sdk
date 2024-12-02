@@ -23,13 +23,7 @@ extension Product {
   }
 
   public var eligibleOffer: EligibleSubscriptionOffer? {
-    if subscription?.isEligibleForIntroOffer == true {
-      return subscription
-        .flatMap { $0.introductoryOffer }
-        .flatMap { EligibleSubscriptionOffer(product: self, offer: $0) }
-    }
-
-    return promoOffer.flatMap {
+    subscriptionOffer.flatMap {
       EligibleSubscriptionOffer(product: self, offer: $0)
     }
   }

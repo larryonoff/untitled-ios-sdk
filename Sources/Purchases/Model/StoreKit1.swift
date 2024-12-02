@@ -34,6 +34,7 @@ extension Product.SubscriptionInfo {
     self.subscriptionPeriod = subscriptionPeriod
     self.promotionalOffers = product.discounts
       .compactMap { Product.SubscriptionOffer($0) }
+    self.winBackOffers = []
     self.isEligibleForIntroOffer = true
   }
 }
@@ -44,12 +45,12 @@ extension Product.SubscriptionOffer {
     type = .init(discount.type)
 
     price = discount.price.decimalValue
-    priceLocale = discount.priceLocale
     displayPrice = Product.displayPrice(
       discount.price.decimalValue,
       priceLocale: discount.priceLocale
     ) ?? ""
     period = Product.SubscriptionPeriod(discount.subscriptionPeriod)
+    periodCount = discount.numberOfPeriods
     paymentMode = PaymentMode(discount.paymentMode)
   }
 }

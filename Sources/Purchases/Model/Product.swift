@@ -7,6 +7,7 @@ public struct Product {
   public struct SubscriptionInfo {
     public var introductoryOffer: Product.SubscriptionOffer?
     public var promotionalOffers: [Product.SubscriptionOffer]
+    public var winBackOffers: [Product.SubscriptionOffer]
     public var subscriptionGroupID: String
     public var subscriptionPeriod: Product.SubscriptionPeriod
     public var isEligibleForIntroOffer: Bool
@@ -18,6 +19,7 @@ public struct Product {
     public enum OfferType: String {
       case introductory
       case promotional
+      case winBack
     }
 
     public enum PaymentMode: String {
@@ -32,11 +34,11 @@ public struct Product {
 
     public let price: Decimal
 
-    public let priceLocale: Locale
-
     public let displayPrice: String
 
     public let period: Product.SubscriptionPeriod
+
+    public var periodCount: Int
 
     public let paymentMode: Product.SubscriptionOffer.PaymentMode
   }
@@ -72,6 +74,8 @@ public struct Product {
 
   public var subscription: SubscriptionInfo?
 
+  public var subscriptionOffer: Product.SubscriptionOffer?
+
   public init(
     id: ID,
     displayName: String,
@@ -88,27 +92,6 @@ public struct Product {
     self.priceLocale = priceLocale
     self.displayPrice = displayPrice
     self.subscription = subscription
-  }
-
-  // MARK: - Promo Offer
-
-  public var isEligibleForPromoOffer: Bool {
-    promoOfferID != nil
-  }
-
-  public var promoOfferID: SubscriptionOffer.ID?
-
-  public var promoOffer: SubscriptionOffer? {
-    promoOfferID.flatMap { promoOfferID in
-      subscription?.promotionalOffers
-        .first { $0.id == promoOfferID }
-    }
-  }
-
-  public var promoOfferDiscount: Decimal? {
-    promoOffer?
-      .discount(comparingTo: self)
-      .flatMap { $0 }
   }
 
   // MARK: - Helper Properties
