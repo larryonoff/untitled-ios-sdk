@@ -1,1 +1,1 @@
-@_exported import DuckPurchases
+@_exported import DuckPurchasesCore

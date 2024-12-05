@@ -1,5 +1,5 @@
 import ComposableArchitecture
-import DuckPurchasesComposable
+import DuckPurchases
 
 extension PaywallReducer.State {
   mutating

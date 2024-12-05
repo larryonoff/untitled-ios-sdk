@@ -1,5 +1,5 @@
 import CasePaths
-import DuckPurchases
+import DuckPurchasesCore
 import Foundation
 
 public enum PurchasesOfferType: Codable, Equatable, Hashable, Sendable {

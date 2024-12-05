@@ -4,7 +4,6 @@ import Foundation
 import DuckDependencies
 import DuckLogging
 import DuckPaywallDependencies
-import DuckPurchases
 import DuckPurchasesClient
 import DuckRemoteSettingsClient
 import UIKit

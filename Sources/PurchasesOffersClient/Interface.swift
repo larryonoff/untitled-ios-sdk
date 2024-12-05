@@ -1,6 +1,6 @@
 import Dependencies
 import DependenciesMacros
-import DuckPurchases
+import DuckPurchasesCore
 
 extension DependencyValues {
   public var purchasesOffers: PurchasesOffersClient {

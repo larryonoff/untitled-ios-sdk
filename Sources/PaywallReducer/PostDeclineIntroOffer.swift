@@ -1,5 +1,5 @@
 import ComposableArchitecture
-import DuckPurchasesClient
+import DuckPurchases
 
 @Reducer
 public struct PostDeclineIntroOffer {

@@ -1,6 +1,6 @@
 import Dependencies
 import DuckCore
-import DuckPurchases
+import DuckPurchasesCore
 
 extension DependencyValues {
   public var paywallType: PaywallTypeGenerator {

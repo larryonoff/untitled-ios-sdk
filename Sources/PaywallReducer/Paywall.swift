@@ -2,8 +2,7 @@ import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckComposableArchitecture
 import DuckPaywallDependencies
-import DuckPurchasesClient
-import DuckPurchasesComposable
+import DuckPurchases
 import IdentifiedCollections
 
 @Reducer

@@ -1,5 +1,4 @@
 import Dependencies
-import DuckPurchases
 import DuckPaywallDependencies
 import DuckPurchasesClient
 import DuckRemoteSettingsClient

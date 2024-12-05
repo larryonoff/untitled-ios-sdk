@@ -55,6 +55,7 @@ let package = Package(
     .library(name: .photos, targets: [.photos]),
     .library(name: .photosUI, targets: [.photosUI]),
     .library(name: .purchases, targets: [.purchases]),
+    .library(name: .purchasesCore, targets: [.purchasesCore]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .swiftUI, targets: [.swiftUI]),
     .library(name: .uiKit, targets: [.uiKit]),
@@ -171,6 +172,7 @@ let package = Package(
     .photos,
     .photosUI,
     .purchases,
+    .purchasesCore,
     .swiftUI,
     .uiKit,
     .webView,
@@ -362,7 +364,7 @@ extension Target {
       dependencies: [
         .foundation,
         .logging,
-        .purchases,
+        .purchasesCore,
         .Client.analytics,
         .Client.remoteSettings,
         .Client.userIdentifier,
@@ -468,12 +470,11 @@ extension Target {
     static let paywall = target(
       name: .Composable.paywall,
       dependencies: [
-        .Client.analytics,
-        .Client.purchases,
-        .Client.purchasesOffers,
-        .Composable.purchases,
-        .Composable.remoteSettings,
         .composableArchitecture,
+        .purchases,
+        .Client.analytics,
+        .Client.purchasesOffers,
+        .Composable.remoteSettings,
         .Dependencies.paywall,
         .External.composableArchitecture
       ],
@@ -506,7 +507,6 @@ extension Target {
     static let purchases = target(
       name: .Composable.purchases,
       dependencies: [
-        .purchases,
         .Client.purchases,
         .Client.purchasesOffers,
         .Composable.remoteSettings,
@@ -539,8 +539,8 @@ extension Target {
       name: .Dependencies.paywall,
       dependencies: [
         .core,
+        .purchasesCore,
         .External.dependencies,
-        .Client.purchases,
       ],
       path: "Sources/PaywallDependencies"
     )
@@ -552,10 +552,10 @@ extension Target {
       dependencies: [
         .dependencies,
         .foundation,
+        .purchases,
         .swiftUI,
         .External.composableArchitecture,
         .Client.analytics,
-        .Client.purchases,
       ],
       path: "Sources/RateUsFeature"
     )
@@ -617,12 +617,23 @@ extension Target {
   static let purchases = target(
     name: .purchases,
     dependencies: [
+      .purchasesCore,
+      .Client.purchases,
+      .Client.purchasesOffers,
+      .Composable.purchases,
+    ],
+    path: "Sources/Purchases"
+  )
+
+  static let purchasesCore = target(
+    name: .purchasesCore,
+    dependencies: [
       .foundation,
       .Client.remoteSettings,
       .External.adapty,
       .External.tagged
     ],
-    path: "Sources/Purchases",
+    path: "Sources/PurchasesCore",
     exclude: ["swiftgen.yml"],
     resources: [
       .process("Resources")
@@ -688,6 +699,7 @@ extension Target.Dependency {
   static let photos = byName(name: .photos)
   static let photosUI = byName(name: .photosUI)
   static let purchases = byName(name: .purchases)
+  static let purchasesCore = byName(name: .purchasesCore)
   static let sfSymbol = byName(name: .sfSymbol)
   static let swiftUI = byName(name: .swiftUI)
   static let uiKit = byName(name: .uiKit)
@@ -845,6 +857,7 @@ extension String {
   static let photos = "DuckPhotos"
   static let photosUI = "DuckPhotosUI"
   static let purchases = "DuckPurchases"
+  static let purchasesCore = "DuckPurchasesCore"
   static let sfSymbol = "SFSymbol"
   static let swiftUI = "DuckSwiftUI"
   static let uiKit = "DuckUIKit"
