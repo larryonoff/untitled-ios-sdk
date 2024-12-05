@@ -1,4 +1,4 @@
-import DuckPurchases
+import DuckPurchasesCore
 import Foundation
 
 struct PurchasesOfferCondition {

@@ -1,5 +1,4 @@
 import Dependencies
-import XCTestDynamicOverlay
 
 extension PurchasesClient: TestDependencyKey {
   public static let previewValue = Self.noop

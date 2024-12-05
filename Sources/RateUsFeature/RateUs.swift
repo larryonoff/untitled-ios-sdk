@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckDependencies
-import DuckPurchasesClient
+import DuckPurchases
 import Foundation
 
 @Reducer

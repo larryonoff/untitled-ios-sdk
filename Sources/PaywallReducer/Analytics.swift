@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
-import DuckPurchasesClient
+import DuckPurchases
 import Foundation
 
 extension AnalyticsClient {
