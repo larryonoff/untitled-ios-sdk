@@ -187,7 +187,7 @@ public struct PaywallReducer {
 
           if let paywall, paywallChanged {
             return .run { _ in
-              try await purchases.logPaywall(paywall)
+              try await purchases.log(paywall)
             }
           }
         } catch {
@@ -202,7 +202,7 @@ public struct PaywallReducer {
 
         do {
           switch try result.get() {
-          case let .success:
+          case .pending, .success:
             return .concatenate(
               analytics.logPurchase(product, result: result, state: state),
               .send(.delegate(.dismiss))
@@ -279,8 +279,8 @@ public struct PaywallReducer {
       // sometimes product cannot be selected or purchased
       try? await Task.sleep(for: .nanoseconds(1_000_000_00))
 
-      for try await response in purchases.paywallByID(paywallID) {
-        await send(.fetchPaywallResponse(.success(response.paywall)))
+      for try await paywall in purchases.paywall(by: paywallID) {
+        await send(.fetchPaywallResponse(.success(paywall)))
       }
     } catch: { error, send in
       await send(.fetchPaywallResponse(.failure(error)))

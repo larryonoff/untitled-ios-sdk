@@ -77,7 +77,7 @@ public struct PostDeclineIntroOffer {
 
         do {
           switch try result.get() {
-          case .success:
+          case .pending, .success:
             return .send(.delegate(.dismiss))
           case .userCancelled:
             return .none

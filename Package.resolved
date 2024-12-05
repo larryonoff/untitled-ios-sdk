@@ -1,5 +1,5 @@
 {
-  "originHash" : "ccacdfff834ddcbc169c76fd1e6b8e4fc8bfb9d24464eea30049a706115287c3",
+  "originHash" : "7f8a46896f3e54c475ab40aff9146206e703e61a04d702b32a33759200893d66",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adaptyteam/AdaptySDK-iOS",
       "state" : {
-        "revision" : "fcc8729a7e332d5403ae88bb34bfadaff3c30000",
-        "version" : "3.1.0"
+        "revision" : "8fe544964b15b9fe94d0f730692ba7166ca5f4ec",
+        "version" : "3.2.0"
       }
     },
     {
