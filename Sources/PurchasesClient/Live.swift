@@ -128,7 +128,7 @@ final class PurchasesClientImpl {
       }
     }
 
-    let config = Adapty.Configuration.builder(withAPIKey: apiKey)
+    let config = AdaptyConfiguration.builder(withAPIKey: apiKey)
       .with(customerUserId: userIdentifier().uuidString)
       .build()
 
@@ -191,8 +191,6 @@ final class PurchasesClientImpl {
 
           var paywall = Paywall(_paywall, products: nil)
 
-          continuation.yield(paywall)
-
           let adaptyProducts = try await Self.adaptyProducts(for: _paywall)
 
           if let adaptyProducts {
@@ -249,15 +247,29 @@ final class PurchasesClientImpl {
         throw PurchasesError.productUnavailable
       }
 
-      let purchasedInfo = try await Adapty.makePurchase(product: product)
-      let purchases = updatePurchases(purchasedInfo.profile)
+      let purchaseResult = try await Adapty.makePurchase(product: product)
 
-      logger.info("purchase success", dump: [
-        "purchases": purchases,
-        "request": request
-      ])
+      switch purchaseResult {
+      case .pending:
+        logger.info("purchase pending", dump: [
+          "request": request
+        ])
+        return .pending
+      case let .success(profile: profile, transaction: _):
+        let purchases = updatePurchases(profile)
 
-      return .success(purchases)
+        logger.info("purchase success", dump: [
+          "request": request,
+          "purchases": purchases
+        ])
+
+        return .success(purchases)
+      case .userCancelled:
+        logger.info("purchase userCancelled", dump: [
+          "request": request
+        ])
+        return .userCancelled
+      }
     } catch {
       logger.error("purchase failure", dump: [
         "error": error.localizedDescription,

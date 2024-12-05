@@ -88,7 +88,7 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
 
       let priceString = Product.displayPrice(
         price,
-        priceLocale: value.priceLocale,
+        formatStyle: value.priceFormatStyle,
         roundingRule: roundingRule
       )
 
@@ -120,7 +120,7 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
 
     return Product.displayPrice(
       value.price,
-      priceLocale: value.priceLocale,
+      formatStyle: value.priceFormatStyle,
       roundingRule: roundingRule
     ) ?? ""
   }
@@ -192,6 +192,17 @@ extension Product {
     return discountFormatter.string(
       from: NSDecimalNumber(decimal: discount)
     )
+  }
+
+  public static func displayPrice(
+    _ price: Decimal,
+    formatStyle: Decimal.FormatStyle.Currency,
+    roundingRule: Product.FormatStyle.RoundingRule = .down
+  ) -> String? {
+    priceFormatter.locale = formatStyle.locale
+    priceFormatter.roundingMode = roundingRule.toNumberFormatterRoundingMode
+
+    return priceFormatter.string(from: price)
   }
 
   public static func displayPrice(

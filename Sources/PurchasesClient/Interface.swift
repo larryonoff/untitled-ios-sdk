@@ -9,18 +9,23 @@ extension DependencyValues {
   }
 }
 
+@DependencyClient
 public struct PurchasesClient: Sendable {
   public var initialize: @Sendable () -> Void
 
+  @DependencyEndpoint(method: "paywall")
   public var paywallByID: @Sendable (
     _ by: Paywall.ID
-  ) -> AsyncThrowingStream<Paywall?, any Error>
+  ) -> AsyncThrowingStream<Paywall?, any Error> = { _ in .finished() }
 
-  public var purchase: @Sendable (PurchaseRequest) async throws -> PurchaseResult
+  public var purchase: @Sendable (
+    _ _: PurchaseRequest
+  ) async throws -> PurchaseResult = { _ in .success(.init()) }
+
   public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
 
-  public var purchases: @Sendable () -> Purchases
-  public var purchasesUpdates: @Sendable () -> AsyncStream<Purchases>
+  public var purchases: @Sendable () -> Purchases = { .init() }
+  public var purchasesUpdates: @Sendable () -> AsyncStream<Purchases> = { .finished }
 
   public var receipt: @Sendable () async throws -> Data?
 
@@ -32,6 +37,7 @@ public struct PurchasesClient: Sendable {
     _ fileURL: URL
   ) async throws -> Void
 
+  @DependencyEndpoint(method: "log")
   public var logPaywall: @Sendable (
     _ _: Paywall
   ) async throws -> Void
@@ -44,8 +50,8 @@ extension PurchasesClient {
   ) async -> Paywall? {
     do {
       var paywall: Paywall?
-      for try await response in paywallByID(id) {
-        paywall = response.paywall
+      for try await _paywall in paywallByID(id) {
+        paywall = _paywall
       }
       return paywall
     } catch {
@@ -73,12 +79,9 @@ public enum RestorePurchasesResult {
 
 public enum PurchaseResult {
   case success(Purchases)
+  case pending
   case userCancelled
 }
-
-extension FetchPaywallResponse: Equatable {}
-extension FetchPaywallResponse: Hashable {}
-extension FetchPaywallResponse: Sendable {}
 
 extension PurchaseRequest: Equatable {}
 extension PurchaseRequest: Hashable {}
