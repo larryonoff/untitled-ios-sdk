@@ -1,9 +1,9 @@
-import ComposableArchitecture
 import Dependencies
 import Foundation
 import DuckRemoteSettingsClient
+import Sharing
 
-extension PersistenceReaderKey {
+extension SharedReaderKey {
   /// Creates a persistence key that can read a boolean from remote settings.
   ///
   /// - Parameter key: The key to read the value from the remote setting.
@@ -137,10 +137,14 @@ extension PersistenceReaderKey {
 
 /// A type defining a remote settings persistence strategy.
 ///
-public struct RemoteSettingKey<Value> {
+public struct RemoteSettingKey<Value: Sendable>: SharedReaderKey {
   private let lookup: any Lookup<Value>
   private let key: String
   private let store: RemoteSettingsClient
+
+  public var id: RemoteSettingKeyID {
+    RemoteSettingKeyID(key: key)
+  }
 
   public init(_ key: String) where Value == Bool {
     @Dependency(\.remoteSettings) var store
@@ -239,12 +243,6 @@ public struct RemoteSettingKey<Value> {
     self.key = key
     self.store = store
   }
-}
-
-extension RemoteSettingKey: PersistenceReaderKey {
-  public var id: AnyHashable {
-    RemoteSettingKeyID(key: key)
-  }
 
   public func load(initialValue: Value?) -> Value? {
     self.lookup.loadValue(from: self.store, at: self.key, default: initialValue)
@@ -252,22 +250,22 @@ extension RemoteSettingKey: PersistenceReaderKey {
 
   public func subscribe(
     initialValue: Value?,
-    didSet: @Sendable @escaping (_ newValue: Value?) -> Void
-  ) -> Shared<Value>.Subscription {
+    didSet receiveValue: @escaping @Sendable (_ newValue: Value?) -> Void
+  ) -> SharedSubscription {
     @Dependency(\.remoteSettings) var store
 
     let task = Task {
       let value = load(initialValue: initialValue)
-      didSet(value)
+      receiveValue(value)
     }
 
-    return Shared.Subscription {
+    return SharedSubscription {
       task.cancel()
     }
   }
 }
 
-private struct RemoteSettingKeyID: Hashable {
+public struct RemoteSettingKeyID: Hashable {
   let key: String
 }
 

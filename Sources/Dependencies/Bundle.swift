@@ -1,6 +1,6 @@
-import ComposableArchitecture
-import Foundation
 import Dependencies
+import Foundation
+import Sharing
 
 extension DependencyValues {
   public var bundle: BundleInfo {
@@ -13,9 +13,9 @@ extension DependencyValues {
   }
 }
 
-extension PersistenceReaderKey where Self == PersistenceKeyDefault<InMemoryKey<BundleInfo>> {
+extension SharedReaderKey where Self == InMemoryKey<BundleInfo>.Default {
   public static var bundle: Self {
-    PersistenceKeyDefault(.inMemory("bundleInfo"), .main)
+    Self[.inMemory("bundleInfo"), default: .main]
   }
 }
 

@@ -4,37 +4,37 @@ import DuckRemoteSettingsComposable
 
 extension RemoteSettingsClient {
   public var isRateUsEnabled: Bool {
-    boolForKey(.rateUsEnabled) ?? Default.rateUsEnabled
+    boolForKey(.rateUsEnabled) ?? _Default.rateUsEnabled
   }
 
   public var rateUsSessionsDelay: Int {
-    integerForKey(.rateUsSessionsDelay) ?? Default.rateUsSessionsDelay
+    integerForKey(.rateUsSessionsDelay) ?? _Default.rateUsSessionsDelay
   }
 
   public var rateUsStartSession: Int {
-    integerForKey(.rateUsStartSession) ?? Default.rateUsStartSession
+    integerForKey(.rateUsStartSession) ?? _Default.rateUsStartSession
   }
 }
 
-extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSettingKey<Bool>> {
+extension SharedReaderKey where Self == RemoteSettingKey<Bool>.Default {
   public static var isRateUsEnabled: Self {
-    PersistenceKeyDefault(.remoteSetting(.rateUsEnabled), Default.rateUsEnabled)
+    Self[.remoteSetting(.rateUsEnabled), default: _Default.rateUsEnabled]
   }
 }
 
-extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSettingKey<Int>> {
+extension SharedReaderKey where Self == RemoteSettingKey<Int>.Default {
   public static var rateUsSessionsDelay: Self {
-    PersistenceKeyDefault(.remoteSetting(.rateUsSessionsDelay), Default.rateUsSessionsDelay)
+    Self[.remoteSetting(.rateUsSessionsDelay), default: _Default.rateUsSessionsDelay]
   }
 }
 
-extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSettingKey<Int>> {
+extension SharedReaderKey where Self == RemoteSettingKey<Int>.Default {
   public static var rateUsStartSession: Self {
-    PersistenceKeyDefault(.remoteSetting(.rateUsStartSession), Default.rateUsStartSession)
+    Self[.remoteSetting(.rateUsStartSession), default: _Default.rateUsStartSession]
   }
 }
 
-private enum Default {
+private enum _Default {
   static var rateUsEnabled: Bool { true }
   static var rateUsSessionsDelay: Int { 15 }
   static var rateUsStartSession: Int { 2 }
