@@ -1,27 +1,27 @@
-import ComposableArchitecture
 import DuckRemoteSettingsClient
 import DuckRemoteSettingsComposable
 import Model
+import Sharing
 
-extension PersistenceReaderKey where Self == PersistenceKeyDefault<RemoteSettingKey<Bool>> {
+extension SharedReaderKey where Self == RemoteSettingKey<Bool>.Default {
   public static var isPaywallProductHiddenPricesEnabled: Self {
-    PersistenceKeyDefault(
+    Self[
       .remoteSetting(RemoteSettingsClient.isPaywallProductHiddenPricesEnabledKey),
-      true
-    )
+      default: true
+    ]
   }
 
   public static var isPaywallOnboardingIntroOfferEnabled: Self {
-    PersistenceKeyDefault(
+    Self[
       .remoteSetting(RemoteSettingsClient.isPaywallOnboardingIntroOfferEnabledKey),
-      true
-    )
+      default: true
+    ]
   }
 
   public static var isPaywallOnboardingEnabled: Self {
-    PersistenceKeyDefault(
+    Self[
       .remoteSetting(RemoteSettingsClient.isPaywallOnboardingEnabledKey),
-      true
-    )
+      default: true
+    ]
   }
 }

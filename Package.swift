@@ -84,7 +84,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "11.5.0"
+      from: "11.6.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -96,7 +96,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.16.1"
+      from: "1.17.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -104,7 +104,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "1.6.0"
+      from: "1.6.2"
+    ),
+    .package(
+      url: "https://github.com/pointfreeco/swift-sharing",
+      from: "1.0.3"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -456,7 +460,7 @@ extension Target {
       name: .Composable.connectivity,
       dependencies: [
         .Client.connectivity,
-        .External.composableArchitecture
+        .External.sharing,
       ],
       path: "Sources/ConnectivityComposable"
     )
@@ -484,7 +488,7 @@ extension Target {
       name: .Composable.photos,
       dependencies: [
         .photosUI,
-        .External.composableArchitecture
+        .External.sharing,
       ],
       path: "Sources/PhotosComposable"
     )
@@ -494,7 +498,7 @@ extension Target {
       dependencies: [
         .photosUI,
         .Client.photosAuthorization,
-        .External.composableArchitecture
+        .External.sharing,
       ],
       path: "Sources/PhotosAuthorizationComposable"
     )
@@ -506,7 +510,7 @@ extension Target {
         .Client.purchases,
         .Client.purchasesOffers,
         .Composable.remoteSettings,
-        .External.composableArchitecture
+        .External.sharing,
       ],
       path: "Sources/PurchasesComposable"
     )
@@ -515,7 +519,7 @@ extension Target {
       name: .Composable.remoteSettings,
       dependencies: [
         .Client.remoteSettings,
-        .External.composableArchitecture
+        .External.sharing,
       ],
       path: "Sources/RemoteSettingsComposable"
     )
@@ -524,7 +528,7 @@ extension Target {
       name: .Composable.userSession,
       dependencies: [
         .Client.userSession,
-        .External.composableArchitecture
+        .External.sharing,
       ],
       path: "Sources/UserSessionComposable"
     )
@@ -798,14 +802,19 @@ extension Target.Dependency {
 
     static let keychainAccess = byName(name: "KeychainAccess")
 
-    static let tagged = product(
-      name: "Tagged",
-      package: "swift-tagged"
+    static let sharing = product(
+      name: "Sharing",
+      package: "swift-sharing"
     )
 
     static let swiftUINavigation = product(
       name: "SwiftUINavigation",
       package: "swift-navigation"
+    )
+
+    static let tagged = product(
+      name: "Tagged",
+      package: "swift-tagged"
     )
 
     enum AppMetrica {
