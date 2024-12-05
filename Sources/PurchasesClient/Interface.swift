@@ -1,4 +1,5 @@
 import Dependencies
+import DependenciesMacros
 import Foundation
 
 extension DependencyValues {
@@ -12,8 +13,8 @@ public struct PurchasesClient: Sendable {
   public var initialize: @Sendable () -> Void
 
   public var paywallByID: @Sendable (
-    _ _: Paywall.ID
-  ) -> AsyncThrowingStream<FetchPaywallResponse, any Error>
+    _ by: Paywall.ID
+  ) -> AsyncThrowingStream<Paywall?, any Error>
 
   public var purchase: @Sendable (PurchaseRequest) async throws -> PurchaseResult
   public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
@@ -51,10 +52,6 @@ extension PurchasesClient {
       return nil
     }
   }
-}
-
-public struct FetchPaywallResponse {
-  public let paywall: Paywall?
 }
 
 public struct PurchaseRequest {

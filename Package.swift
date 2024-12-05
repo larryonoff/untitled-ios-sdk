@@ -349,14 +349,15 @@ extension Target {
     static let purchases = target(
       name: .Client.purchases,
       dependencies: [
-        .Client.analytics,
-        .Client.remoteSettings,
         .foundation,
         .logging,
         .purchases,
+        .Client.analytics,
+        .Client.remoteSettings,
         .Client.userIdentifier,
         .External.adapty,
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.tagged
       ],
       path: "Sources/PurchasesClient",
