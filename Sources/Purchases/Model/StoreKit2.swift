@@ -17,7 +17,7 @@ extension Product {
 }
 
 extension Product.SubscriptionInfo {
-  init(
+  public init(
     _ subscription: StoreKit.Product.SubscriptionInfo
   ) {
     self.introductoryOffer = subscription.introductoryOffer

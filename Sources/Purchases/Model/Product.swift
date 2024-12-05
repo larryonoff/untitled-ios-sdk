@@ -70,6 +70,12 @@ public struct Product {
 
   public var price: Decimal
   public var priceLocale: Locale
+
+  public var priceFormatStyle: Decimal.FormatStyle.Currency {
+    .init(code: priceLocale.currencyCode ?? "USD", locale: priceLocale)
+    .rounded(rule: .down)
+  }
+
   public var displayPrice: String
 
   public var subscription: SubscriptionInfo?

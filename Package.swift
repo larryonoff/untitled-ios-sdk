@@ -64,7 +64,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      .upToNextMinor(from: "3.1.0")
+      from: "3.2.0"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
@@ -356,14 +356,15 @@ extension Target {
     static let purchases = target(
       name: .Client.purchases,
       dependencies: [
-        .Client.analytics,
-        .Client.remoteSettings,
         .foundation,
         .logging,
         .purchases,
+        .Client.analytics,
+        .Client.remoteSettings,
         .Client.userIdentifier,
         .External.adapty,
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.tagged
       ],
       path: "Sources/PurchasesClient",
