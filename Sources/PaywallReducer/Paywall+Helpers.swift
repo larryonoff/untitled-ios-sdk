@@ -1,4 +1,26 @@
 import ComposableArchitecture
+import DuckPurchasesComposable
+
+extension PaywallReducer.State {
+  mutating
+  func update(_ paywall: Paywall?) {
+    var products = (paywall?.products ?? [])
+
+    if
+      let filteredProductIDs = paywall?.filteredProductIDs,
+      !filteredProductIDs.isEmpty
+    {
+      products = products.filter { !filteredProductIDs.contains($0.id) }
+    }
+
+    self.paywall = paywall
+    self.products = IdentifiedArray(uncheckedUniqueElements: products)
+
+    self.productComparing = paywall?.productComparing
+    self.productSelectedID =
+      paywall?.productSelected?.id ?? products.first?.id
+  }
+}
 
 extension PaywallReducer.State {
   @inlinable
@@ -7,27 +29,22 @@ extension PaywallReducer.State {
   }
 
   public var isSelectedEligibleForTrial: Bool {
-    isEligibleForIntroductoryOffer &&
+    isEligibleForIntroOffer &&
     productSelected?.isEligibleForTrial == true
-  }
-
-  public var isSelectedEligibleForPromoOffer: Bool {
-    promoOfferType != nil &&
-    productSelected?.isEligibleForPromoOffer == true
   }
 }
 
 extension PaywallReducer {
   func presentPostDeclineIntroOfferIfNeeded(_ state: inout State) -> Bool {
-    guard remoteSettings.isPaywallOnboardingIntroOfferEnabled else { return false }
-    guard state.isEligibleForIntroductoryOffer else { return false }
+    guard state.isOnboardingIntroOfferEnabled else { return false }
+    guard state.isEligibleForIntroOffer else { return false }
 
     if let product = state.paywall?.introductoryOfferProduct {
       state.destination = .postDeclineIntroOffer(
         .init(
           paywallID: state.paywallID,
           product: product,
-          isEligibleForIntroductoryOffer: state.isEligibleForIntroductoryOffer
+          isEligibleForIntroductoryOffer: state.isEligibleForIntroOffer
         )
       )
 

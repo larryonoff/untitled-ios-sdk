@@ -1,11 +1,9 @@
 import Foundation
 
 extension Paywall {
-  public func eligibleOffers(
-    for purchases: Purchases
-  ) -> [Product.EligibleSubscriptionOffer] {
+  public var eligibleOffers: [Product.EligibleSubscriptionOffer] {
     products
-      .compactMap { $0.eligibleOffer(for: purchases) }
+      .compactMap { $0.eligibleOffer }
       .sorted { lhs, rhs in
         if lhs.offer.type == .introductory { return true }
         if rhs.offer.type == .introductory { return false }
@@ -24,14 +22,8 @@ extension Product {
     }
   }
 
-  public func eligibleOffer(for purchases: Purchases) -> EligibleSubscriptionOffer? {
-    if purchases.isEligibleForIntroductoryOffer {
-      return subscription
-        .flatMap { $0.introductoryOffer }
-        .flatMap { EligibleSubscriptionOffer(product: self, offer: $0) }
-    }
-
-    return promoOffer.flatMap {
+  public var eligibleOffer: EligibleSubscriptionOffer? {
+    subscriptionOffer.flatMap {
       EligibleSubscriptionOffer(product: self, offer: $0)
     }
   }

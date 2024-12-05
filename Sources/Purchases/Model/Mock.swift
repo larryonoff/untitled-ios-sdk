@@ -29,12 +29,13 @@ extension Product {
         id: "year-intro-offer",
         type: .introductory,
         price: 0,
-        priceLocale: .enUS,
         displayPrice: "0",
         period: .day(3),
+        periodCount: 1,
         paymentMode: .freeTrial
       ),
       promotionalOffers: [],
+      winBackOffers: [],
       subscriptionGroupID: "subscriptionGroupID",
       subscriptionPeriod: .year(1),
       isEligibleForIntroOffer: true
@@ -51,6 +52,7 @@ extension Product {
     subscription: .init(
       introductoryOffer: nil,
       promotionalOffers: [],
+      winBackOffers: [],
       subscriptionGroupID: "subscriptionGroupID",
       subscriptionPeriod: .month(1),
       isEligibleForIntroOffer: false
