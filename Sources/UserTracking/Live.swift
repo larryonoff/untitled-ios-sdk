@@ -143,10 +143,31 @@ final actor UserTrackingImpl {
     logger.info("send tracking data")
 
     do {
+      let intergrationIDs: [String: String] = [
+        "facebook_anonymous_id": AppEvents.shared.anonymousID,
+        "firebase_app_instance_id": FirebaseAnalytics.Analytics.appInstanceID()
+      ].compactMapValues { $0 }
+
+      for (key, value) in intergrationIDs {
+        do {
+          logger.info("send tracking key-value: \(key)-\(value)", dump: [
+            "target": "Adapty"
+          ])
+
+          try await Adapty.setIntegrationIdentifier(
+            key: key,
+            value: value
+          )
+        } catch {
+          logger.error("send tracking key-value: \(key):\(value) failed", dump: [
+            "target": "Adapty",
+            "error": error.localizedDescription
+          ])
+        }
+      }
+
       let params = AdaptyProfileParameters.Builder()
         .with(appTrackingTransparencyStatus: authStatus.atAuthorizationStatus)
-        .with(facebookAnonymousId: AppEvents.shared.anonymousID)
-        .with(firebaseAppInstanceId: FirebaseAnalytics.Analytics.appInstanceID())
         .build()
 
       try await Adapty.updateProfile(params: params)
