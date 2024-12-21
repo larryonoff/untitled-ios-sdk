@@ -1,5 +1,5 @@
 {
-  "originHash" : "3cbd404debadda7172c71bf7596836a6427df95c6034c171508dab34cf242658",
+  "originHash" : "7f7eda81ba69559d9da5d489d67fecd4c4a503ca1f0d1b6801c268e283be23f7",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adaptyteam/AdaptySDK-iOS",
       "state" : {
-        "revision" : "8fe544964b15b9fe94d0f730692ba7166ca5f4ec",
-        "version" : "3.2.0"
+        "revision" : "a9522e6d677daf2e9491c2713ca686eaa2ee8aea",
+        "version" : "3.3.0"
       }
     },
     {
@@ -222,8 +222,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-concurrency-extras",
       "state" : {
-        "revision" : "6054df64b55186f08b6d0fd87152081b8ad8d613",
-        "version" : "1.2.0"
+        "revision" : "82a4ae7170d98d8538ec77238b7eb8e7199ef2e8",
+        "version" : "1.3.1"
       }
     },
     {

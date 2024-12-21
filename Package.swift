@@ -100,6 +100,10 @@ let package = Package(
       from: "1.17.0"
     ),
     .package(
+      url: "https://github.com/pointfreeco/swift-concurrency-extras",
+      from: "1.3.1"
+    ),
+    .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
       from: "1.3.3"
     ),
