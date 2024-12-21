@@ -1,6 +1,5 @@
 import DuckRemoteSettingsClient
 import DuckRemoteSettingsComposable
-import Model
 import Sharing
 
 extension SharedReaderKey where Self == RemoteSettingKey<Bool>.Default {
