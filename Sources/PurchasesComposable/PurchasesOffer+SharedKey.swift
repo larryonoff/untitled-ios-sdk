@@ -9,29 +9,30 @@ extension SharedReaderKey where Self == PurchasesOfferKey {
 }
 
 public struct PurchasesOfferKey: SharedReaderKey, Sendable {
-  public typealias Value = PurchasesOffer?
-
   @Dependency(\.purchasesOffers) var purchasesOffers
 
   public init() {}
+
+  public typealias Value = PurchasesOffer?
 
   public var id: PurchasesOfferKeyID {
     PurchasesOfferKeyID()
   }
 
   public func load(
-    initialValue: Value?
-  ) -> Value? {
-    purchasesOffers.activeOffer()
+    context: LoadContext<Value>,
+    continuation: LoadContinuation<Value>
+  ) {
+    continuation.resume(with: .success(purchasesOffers.activeOffer()))
   }
 
   public func subscribe(
-    initialValue: Value?,
-    didSet receiveValue: @escaping @Sendable (_ newValue: Value?) -> Void
+    context: LoadContext<Value>,
+    subscriber: SharedSubscriber<Value>
   ) -> SharedSubscription {
     let task = Task {
-      for await offer in purchasesOffers.activeOfferUpdates() {
-        receiveValue(offer)
+      for await value in purchasesOffers.activeOfferUpdates() {
+        subscriber.yield(with: .success(value))
       }
     }
 

@@ -13,21 +13,26 @@ public struct PurchasesKey: SharedReaderKey, Sendable {
 
   public init() {}
 
+  public typealias Value = Purchases
+
   public var id: PurchasesKeyID {
     PurchasesKeyID()
   }
 
-  public func load(initialValue: Purchases?) -> Purchases? {
-    purchases.purchases()
+  public func load(
+    context: LoadContext<Value>,
+    continuation: LoadContinuation<Value>
+  ) {
+    continuation.resume(with: .success(purchases.purchases()))
   }
 
   public func subscribe(
-    initialValue: Value?,
-    didSet receiveValue: @escaping @Sendable (_ newValue: Value?) -> Void
+    context: LoadContext<Value>,
+    subscriber: SharedSubscriber<Value>
   ) -> SharedSubscription {
     let task = Task {
-      for await purchases in self.purchases.purchasesUpdates() {
-        receiveValue(purchases)
+      for await value in self.purchases.purchasesUpdates() {
+        subscriber.yield(with: .success(value))
       }
     }
 
