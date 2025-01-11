@@ -17,17 +17,22 @@ public struct UserSessionKey: SharedReaderKey, Sendable {
     UserSessionKeyID()
   }
 
-  public func load(initialValue: UserSessionMetrics?) -> UserSessionMetrics? {
-    userSession.metrics()
+  public typealias Value = UserSessionMetrics
+
+  public func load(
+    context: LoadContext<Value>,
+    continuation: LoadContinuation<Value>
+  ) {
+    continuation.resume(with: .success(userSession.metrics()))
   }
 
   public func subscribe(
-    initialValue: Value?,
-    didSet receiveValue: @escaping @Sendable (Value?) -> Void
+    context: LoadContext<Value>,
+    subscriber: SharedSubscriber<Value>
   ) -> SharedSubscription {
     let task = Task {
-      for await metrics in self.userSession.metricsChanges() {
-        receiveValue(metrics)
+      for await value in userSession.metricsChanges() {
+        subscriber.yield(with: .success(value))
       }
     }
 

@@ -244,24 +244,22 @@ public struct RemoteSettingKey<Value: Sendable>: SharedReaderKey {
     self.store = store
   }
 
-  public func load(initialValue: Value?) -> Value? {
-    self.lookup.loadValue(from: self.store, at: self.key, default: initialValue)
+  public func load(
+    context: LoadContext<Value>,
+    continuation: LoadContinuation<Value>
+  ) {
+    continuation.resume(with: .success(lookupValue(default: context.initialValue)))
   }
 
   public func subscribe(
-    initialValue: Value?,
-    didSet receiveValue: @escaping @Sendable (_ newValue: Value?) -> Void
+    context: LoadContext<Value>,
+    subscriber: SharedSubscriber<Value>
   ) -> SharedSubscription {
-    @Dependency(\.remoteSettings) var store
+    SharedSubscription {}
+  }
 
-    let task = Task {
-      let value = load(initialValue: initialValue)
-      receiveValue(value)
-    }
-
-    return SharedSubscription {
-      task.cancel()
-    }
+  private func lookupValue(default initialValue: Value?) -> Value? {
+    lookup.loadValue(from: store, at: key, default: initialValue)
   }
 }
 

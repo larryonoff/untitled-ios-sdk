@@ -13,17 +13,22 @@ public struct AppEnvKey: SharedReaderKey, Sendable {
 
   public init() {}
 
+  public typealias Value = AppEnv
+
   public var id: AppEnvKeyID {
     AppEnvKeyID()
   }
 
-  public func load(initialValue: AppEnv?) -> AppEnv? {
-    appEnv
+  public func load(
+    context: LoadContext<Value>,
+    continuation: LoadContinuation<Value>
+  ) {
+    continuation.resume(with: .success(appEnv))
   }
 
   public func subscribe(
-    initialValue: Value?,
-    didSet receiveValue: @escaping @Sendable (Value?) -> Void
+    context: LoadContext<Value>,
+    subscriber: SharedSubscriber<Value>
   ) -> SharedSubscription {
     SharedSubscription {}
   }

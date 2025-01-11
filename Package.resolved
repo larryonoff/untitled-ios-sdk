@@ -1,5 +1,5 @@
 {
-  "originHash" : "7f7eda81ba69559d9da5d489d67fecd4c4a503ca1f0d1b6801c268e283be23f7",
+  "originHash" : "40dddb3517a984e69214c9c3d84e14b7058a16dd7a0d08577d60304fe721522e",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adaptyteam/AdaptySDK-iOS",
       "state" : {
-        "revision" : "a9522e6d677daf2e9491c2713ca686eaa2ee8aea",
-        "version" : "3.3.0"
+        "revision" : "9ba06b92ab1adc1992e705b01d2cb01899b67dfa",
+        "version" : "3.3.1"
       }
     },
     {
@@ -213,8 +213,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
-        "revision" : "d602618c628e5123f66643437151079d3664970d",
-        "version" : "1.17.0"
+        "revision" : "2ebda6ae2b155a5c3d75aff5f6d25c024bc91311",
+        "version" : "1.17.1"
       }
     },
     {
@@ -285,8 +285,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-sharing",
       "state" : {
-        "revision" : "c56350a20c8294fcb90172dffb88641032e10cfe",
-        "version" : "1.0.3"
+        "revision" : "641edfa456fa6a927d12137c38fc71cbd9861be0",
+        "version" : "2.1.0"
       }
     },
     {
