@@ -65,11 +65,11 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "3.3.0"
+      from: "3.3.1"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "5.8.2"
+      from: "5.9.0"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -81,11 +81,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "17.4.0"
+      from: "18.0.0"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "11.6.0"
+      from: "11.7.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -121,7 +121,7 @@ let package = Package(
     ),
     .package(
       url:"https://github.com/pointfreeco/swift-navigation",
-      from: "2.2.2"
+      from: "2.2.3"
     )
   ],
   targets: [
