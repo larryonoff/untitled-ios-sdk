@@ -493,6 +493,7 @@ extension Target {
       name: .Composable.photos,
       dependencies: [
         .photosUI,
+        .External.composableArchitecture,
         .External.sharing,
       ],
       path: "Sources/PhotosComposable"
