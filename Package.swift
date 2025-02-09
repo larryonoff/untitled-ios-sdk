@@ -26,6 +26,7 @@ let package = Package(
     .library(name: .Client.purchases, targets: [.Client.purchases]),
     .library(name: .Client.purchasesOffers, targets: [.Client.purchasesOffers]),
     .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
+    .library(name: .Client.userAttribution, targets: [.Client.userAttribution]),
     .library(name: .Client.userIdentifier, targets: [.Client.userIdentifier]),
     .library(name: .Client.userSession, targets: [.Client.userSession]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
@@ -197,6 +198,7 @@ let package = Package(
     .Client.purchases,
     .Client.purchasesOffers,
     .Client.remoteSettings,
+    .Client.userAttribution,
     .Client.userIdentifier,
     .Client.userSession,
     .Client.userSettings,
@@ -409,6 +411,15 @@ extension Target {
       linkerSettings: [
         .linkedFramework("UIKit")
       ]
+    )
+
+    static let userAttribution = target(
+      name: .Client.userAttribution,
+      dependencies: [
+        .External.dependencies,
+        .External.Dependencies.macros
+      ],
+      path: "Sources/UserAttributionClient"
     )
 
     static let userIdentifier = target(
@@ -730,6 +741,7 @@ extension Target.Dependency {
     static let purchases = byName(name: .Client.purchases)
     static let purchasesOffers = byName(name: .Client.purchasesOffers)
     static let remoteSettings = byName(name: .Client.remoteSettings)
+    static let userAttribution = byName(name: .Client.userAttribution)
     static let userIdentifier = byName(name: .Client.userIdentifier)
     static let userSession = byName(name: .Client.userSession)
     static let userSettings = byName(name: .Client.userSettings)
@@ -888,6 +900,7 @@ extension String {
     static let purchases = "DuckPurchasesClient"
     static let purchasesOffers = "DuckPurchasesOffersClient"
     static let remoteSettings = "DuckRemoteSettingsClient"
+    static let userAttribution = "DuckUserAttributionClient"
     static let userIdentifier = "DuckUserIdentifierClient"
     static let userSession = "DuckUserSessionClient"
     static let userSettings = "DuckUserSettings"
