@@ -112,7 +112,12 @@ private struct _PresentationModifier<State, Action, Content: View>: UIViewRepres
   }
 }
 
-private final class _HostingController<Content: View>: UIHostingController<Content> {}
+private final class _HostingController<Content: View>: UIHostingController<Content> {
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    view.backgroundColor = .clear
+  }
+}
 
 private extension UIViewController {
   var presenter: UIViewController {
