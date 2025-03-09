@@ -50,7 +50,7 @@ public struct UserAttributionClient: Sendable {
 
   public var delegate: @Sendable () -> AsyncStream<DelegateEvent> = { .finished }
 
-  public var uid: @Sendable () -> String? = { nil }
+  public var uid: @Sendable () async -> String? = { nil }
 
   public var reset: @Sendable () -> Void
 }
