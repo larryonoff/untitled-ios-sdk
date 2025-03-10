@@ -78,25 +78,15 @@ extension Product.SubscriptionPeriod {
     _ price: Decimal,
     to period: Product.SubscriptionPeriod
   ) -> Decimal {
-    switch (unit, period.unit) {
-    case (.day, .month):
-      return price / Decimal(value) * 30.417 * Decimal(period.value)
-    case (.day, .year):
-      return price / Decimal(value) * 365.3 * Decimal(period.value)
-    case (.week, .month):
-      return price / Decimal(value) * 4.345 * Decimal(period.value)
-    case (.week, .year):
-      return price / Decimal(value) * 52.1786 * Decimal(period.value)
-    case (.month, .week):
-      return price / Decimal(value) / 4.345 * Decimal(period.value)
-    case (.month, .year):
-      return price / Decimal(value) * 12 * Decimal(period.value)
-    case (.year, .week):
-      return price / Decimal(value) / 52.1786 * Decimal(period.value)
-    case (.year, .month):
-      return price / Decimal(value) / 12 * Decimal(period.value)
-    default:
-      return price * Decimal(Double(period.numberOfDays) / Double(numberOfDays))
+    guard self != period else {
+      return price
     }
+
+    guard numberOfDays > 0 else {
+      return 0
+    }
+
+    let conversionRatio = Double(period.numberOfDays) / Double(numberOfDays)
+    return price * Decimal(conversionRatio)
   }
 }

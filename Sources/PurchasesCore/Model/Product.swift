@@ -110,12 +110,18 @@ public struct Product {
 }
 
 extension Product.SubscriptionPeriod {
-  public var numberOfDays: Int {
+  public var numberOfDays: Double {
     switch unit {
-    case .day: value
-    case .week: value * Product.SubscriptionPeriod.day(7).numberOfDays
-    case .month: value * Product.SubscriptionPeriod.week(4).numberOfDays
-    case .year: value * Product.SubscriptionPeriod.month(12).numberOfDays
+    case .day:
+      return Double(value)
+    case .week:
+      return Double(value) * 7
+    case .month:
+      // using average month length
+      return Double(value) * 30.44
+    case .year:
+      // using average year length accounting for leap years
+      return Double(value) * 365.25
     }
   }
 
