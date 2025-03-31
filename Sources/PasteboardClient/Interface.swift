@@ -1,4 +1,5 @@
 import Dependencies
+import DependenciesMacros
 import Foundation
 
 extension DependencyValues {
@@ -8,8 +9,9 @@ extension DependencyValues {
   }
 }
 
+@DependencyClient
 public struct PasteboardClient: Sendable {
-  public var changes: @Sendable () -> AsyncStream<Void>
+  public var changes: @Sendable () -> AsyncStream<Void> = { .finished }
 
   public var items: @Sendable () async throws -> [[String: Any]]?
   public var probableWebURL: @Sendable () async throws -> URL?
