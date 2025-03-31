@@ -1,9 +1,10 @@
 import Combine
 import ConcurrencyExtras
+import Dependencies
 import UIKit
 
-extension PasteboardClient {
-  public static let live: Self = {
+extension PasteboardClient: DependencyKey {
+  public static let liveValue: Self = {
     .init(
       changes: {
         UIPasteboard.general.changes

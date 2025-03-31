@@ -343,7 +343,8 @@ extension Target {
       name: .Client.pasteboard,
       dependencies: [
         .logging,
-        .External.dependencies
+        .External.dependencies,
+        .External.Dependencies.macros
       ],
       path: "Sources/PasteboardClient",
       linkerSettings: [
