@@ -1,13 +1,13 @@
 {
-  "originHash" : "ae3199f4bca2bd02b8cad39355c8fb7023f1c77944c653a5705b883c78f3d68c",
+  "originHash" : "de85d00334ccde6dcaf2955e971284c9d97e4efb7eb3e30844f6b13ac61eb121",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/abseil-cpp-binary.git",
       "state" : {
-        "revision" : "194a6706acbd25e4ef639bcaddea16e8758a3e27",
-        "version" : "1.2024011602.0"
+        "revision" : "bbe8b69694d7873315fd3a4ad41efe043e1c07c5",
+        "version" : "1.2024072200.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adaptyteam/AdaptySDK-iOS",
       "state" : {
-        "revision" : "9ba06b92ab1adc1992e705b01d2cb01899b67dfa",
-        "version" : "3.3.1"
+        "revision" : "6339d700949c44450a8b7d036102a8586cc8debe",
+        "version" : "3.4.1"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/devicekit/DeviceKit",
       "state" : {
-        "revision" : "7ff5331960151aec74fb422e1d45f54ef6cc086d",
-        "version" : "5.5.0"
+        "revision" : "513b9d7e7a1bd46504a1009bbab943b75ce2f195",
+        "version" : "5.6.0"
       }
     },
     {
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "0d885d28250fb1196b614bc9455079b75c531f72",
-        "version" : "11.7.0"
+        "revision" : "2e4a4daac9da51f79c131e76cb47e785dd7708c4",
+        "version" : "11.10.0"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "be0881ff728eca210ccb628092af400c086abda3",
-        "version" : "11.7.0"
+        "revision" : "defe1970a9099d47765592ebd7ac5f5e9fdb57c6",
+        "version" : "11.10.0"
       }
     },
     {
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/grpc-binary.git",
       "state" : {
-        "revision" : "f56d8fc3162de9a498377c7b6cea43431f4f5083",
-        "version" : "1.65.1"
+        "revision" : "cc0001a0cf963aa40501d9c2b181e7fc9fd8ec71",
+        "version" : "1.69.0"
       }
     },
     {
@@ -132,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/interop-ios-for-google-sdks.git",
       "state" : {
-        "revision" : "2d12673670417654f08f5f90fdd62926dc3a2648",
-        "version" : "100.0.0"
+        "revision" : "040d087ac2267d2ddd4cca36c757d1c6a05fdbfe",
+        "version" : "101.0.0"
       }
     },
     {
@@ -186,8 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-case-paths",
       "state" : {
-        "revision" : "71344dd930fde41e8f3adafe260adcbb2fc2a3dc",
-        "version" : "1.5.4"
+        "revision" : "19b7263bacb9751f151ec0c93ec816fe1ef67c7b",
+        "version" : "1.6.1"
       }
     },
     {
@@ -213,8 +213,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
-        "revision" : "2ebda6ae2b155a5c3d75aff5f6d25c024bc91311",
-        "version" : "1.17.1"
+        "revision" : "76c4411e02cc7768a3f27ca058bd2143c342e5b2",
+        "version" : "1.18.0"
       }
     },
     {
@@ -240,8 +240,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-dependencies",
       "state" : {
-        "revision" : "5526c8a27675dc7b18d6fa643abfb64bcb200b77",
-        "version" : "1.6.2"
+        "revision" : "ec2862d1364536fc22ec56a3094e7a034bbc7da8",
+        "version" : "1.8.1"
       }
     },
     {
@@ -258,8 +258,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-navigation",
       "state" : {
-        "revision" : "e28911721538fa0c2439e92320bad13e3200866f",
-        "version" : "2.2.3"
+        "revision" : "db6bc9dbfed001f21e6728fd36413d9342c235b4",
+        "version" : "2.3.0"
       }
     },
     {
@@ -285,8 +285,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-sharing",
       "state" : {
-        "revision" : "641edfa456fa6a927d12137c38fc71cbd9861be0",
-        "version" : "2.1.0"
+        "revision" : "2c840cf2ae0526ad6090e7796c4e13d9a2339f4a",
+        "version" : "2.3.3"
       }
     },
     {
