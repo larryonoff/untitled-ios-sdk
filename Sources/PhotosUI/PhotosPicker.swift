@@ -8,7 +8,7 @@ import SwiftUI
 @available(watchOS, deprecated: 9.0)
 public struct PhotosPicker<Label>: View where Label: View {
   private let maxSelectionCount: Int?
-  private let selection: Binding<[PhotosPickerItem]>
+  private let selection: Binding<[_PhotosPickerItem]>
   private let selectionBehavior: PhotosPickerSelectionBehavior
   private let filter: PHPickerFilter?
   private let preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy
@@ -16,7 +16,7 @@ public struct PhotosPicker<Label>: View where Label: View {
   private let label: Label
 
   public init(
-    selection: Binding<PhotosPickerItem?>,
+    selection: Binding<_PhotosPickerItem?>,
     matching filter: PHPickerFilter? = nil,
     preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
     @ViewBuilder label: () -> Label
@@ -38,7 +38,7 @@ public struct PhotosPicker<Label>: View where Label: View {
   }
 
   public init(
-    selection: Binding<[PhotosPickerItem]>,
+    selection: Binding<[_PhotosPickerItem]>,
     maxSelectionCount: Int? = nil,
     selectionBehavior: PhotosPickerSelectionBehavior = .default,
     matching filter: PHPickerFilter? = nil,
@@ -55,7 +55,7 @@ public struct PhotosPicker<Label>: View where Label: View {
   }
 
   public init(
-    selection: Binding<PhotosPickerItem?>,
+    selection: Binding<_PhotosPickerItem?>,
     matching filter: PHPickerFilter? = nil,
     preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic,
     photoLibrary: PHPhotoLibrary,
@@ -76,7 +76,7 @@ public struct PhotosPicker<Label>: View where Label: View {
   }
 
   public init(
-    selection: Binding<[PhotosPickerItem]>,
+    selection: Binding<[_PhotosPickerItem]>,
     maxSelectionCount: Int? = nil,
     selectionBehavior: PhotosPickerSelectionBehavior = .default,
     matching filter: PHPickerFilter? = nil,
@@ -109,7 +109,7 @@ public struct PhotosPicker<Label>: View where Label: View {
 
 private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable where Label: View {
   let maxSelectionCount: Int?
-  let selection: Binding<[PhotosPickerItem]>
+  let selection: Binding<[_PhotosPickerItem]>
   let selectionBehavior: PhotosPickerSelectionBehavior
   let filter: PHPickerFilter?
   let preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy
@@ -117,7 +117,7 @@ private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable w
   let label: Label
 
   init(
-    selection: Binding<[PhotosPickerItem]>,
+    selection: Binding<[_PhotosPickerItem]>,
     maxSelectionCount: Int? = nil,
     selectionBehavior: PhotosPickerSelectionBehavior = .default,
     matching filter: PHPickerFilter? = nil,
@@ -160,6 +160,10 @@ private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable w
 
     let controller = PHPickerViewController(configuration: configuration)
     controller.delegate = context.coordinator
+
+    context.coordinator.maxSelectionCount = maxSelectionCount
+    context.coordinator.photosPickerStyle = context.environment._photosPickerStyle
+
     return controller
   }
 
@@ -171,41 +175,53 @@ private struct PhotosPickerRepresentable<Label>: UIViewControllerRepresentable w
   // MARK: - Coordinator
 
   final class Coordinator: PHPickerViewControllerDelegate {
-    private var selection: Binding<[PhotosPickerItem]>
+    var selection: Binding<[_PhotosPickerItem]>
+    var maxSelectionCount: Int? = 0
+    var photosPickerStyle: _PhotosPickerStyle = .presentation
 
-    init(selection: Binding<[PhotosPickerItem]>) {
+    init(selection: Binding<[_PhotosPickerItem]>) {
       self.selection = selection
     }
 
-    public func picker(
+    func picker(
       _ picker: PHPickerViewController,
       didFinishPicking results: [PHPickerResult]
     ) {
       selection.wrappedValue = results
-        .map(PhotosPickerItem.init)
+        .map(_PhotosPickerItem.init)
+
+      if photosPickerStyle == .inline, maxSelectionCount == 1 {
+        picker.dismiss(animated: true)
+      }
     }
   }
 }
 
-@available(iOS, deprecated: 16.0)
-@available(tvOS, unavailable)
-@available(macOS, deprecated: 13.0)
-@available(watchOS, deprecated: 9.0)
-public enum PhotosPickerSelectionBehavior {
-  case `default`
-  case ordered
+package enum _PhotosPickerStyle: Equatable, Hashable, Sendable {
+  case presentation
+  case inline
+}
 
-  @available(iOS 15, *)
+package extension EnvironmentValues {
+  @Entry var _photosPickerStyle: _PhotosPickerStyle = .presentation
+}
+
+extension View {
+  nonisolated package func _photosPickerStyle(_ style: _PhotosPickerStyle) -> some View {
+    environment(\._photosPickerStyle, style)
+  }
+}
+
+private extension PhotosPickerSelectionBehavior {
   var phPickerConfigurationSelection: PHPickerConfiguration.Selection {
     switch self {
     case .default:
       return .default
     case .ordered:
       return .ordered
+    default:
+      assertionFailure()
+      return .default
     }
   }
 }
-
-extension PhotosPickerSelectionBehavior: Equatable {}
-extension PhotosPickerSelectionBehavior: Hashable {}
-extension PhotosPickerSelectionBehavior: Sendable {}
