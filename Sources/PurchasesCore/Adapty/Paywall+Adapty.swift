@@ -7,6 +7,9 @@ extension Paywall {
     products: [AdaptyPaywallProduct]?
   ) {
     self.id = .init(paywall.placementId)
+    self.abTestName = paywall.abTestName
+    self.audienceName = paywall.audienceName
+
     self.products = products?
       .compactMap { .init($0) } ?? []
 
