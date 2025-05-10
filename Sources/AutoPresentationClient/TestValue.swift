@@ -9,7 +9,7 @@ extension AutoPresentationClient: TestDependencyKey {
 extension AutoPresentationClient {
   public static let noop = Self(
     availableFeatures: { [] },
-    isEligibleForPresentation: { _, _, _ in false },
+    isEligibleForPresentation: { _, _, _, _ in false },
     increment: { _ in },
     logEvent: { _ in },
     reset: {}
