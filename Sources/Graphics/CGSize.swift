@@ -1,9 +1,24 @@
-import CoreGraphics
-import QuartzCore
+extension CGSize {
+  @inlinable
+  public var isEmpty: Bool {
+    height.isZero || width.isZero
+  }
+
+  @inlinable
+  public func rounded(
+    _ rule: FloatingPointRoundingRule
+  ) -> Self {
+    CGSize(
+      width: width.rounded(rule),
+      height: height.rounded(rule)
+    )
+  }
+}
 
 // MARK: - Operators
 
 extension CGSize {
+  @inlinable
   public static func * <Number: BinaryFloatingPoint> (
     size: CGSize,
     scale: Number
@@ -14,6 +29,7 @@ extension CGSize {
     )
   }
 
+  @inlinable
   public static func *= <Number: BinaryFloatingPoint> (
     size: inout CGSize,
     scale: Number
@@ -21,6 +37,7 @@ extension CGSize {
     size = size * CGFloat(scale)
   }
 
+  @inlinable
   public static func * (lhs: CGSize, rhs: CGSize) -> CGSize {
     .init(
       width: lhs.width * rhs.width,
@@ -28,20 +45,24 @@ extension CGSize {
     )
   }
 
+  @inlinable
   public static func *= (lhs: inout CGSize, rhs: CGSize) {
     lhs = lhs * rhs
   }
 
   /// Returns a size by applying a transform.
+  @inlinable
   public static func * (size: CGSize, transform: CGAffineTransform) -> CGSize {
     size.applying(transform)
   }
 
   /// Modifies all values by applying a transform.
+  @inlinable
   public static func *= (size: inout CGSize, transform: CGAffineTransform) {
     size = size.applying(transform)
   }
 
+  @inlinable
   public static func / (lhs: CGSize, rhs: CGSize) -> CGSize {
     .init(
       width: lhs.width / rhs.width,
@@ -49,10 +70,12 @@ extension CGSize {
     )
   }
 
+  @inlinable
   public static func /= (lhs: inout CGSize, rhs: CGSize) {
     lhs = lhs / rhs
   }
 
+  @inlinable
   public static func / <Number: BinaryFloatingPoint> (
     size: CGSize,
     scale: Number
@@ -63,6 +86,7 @@ extension CGSize {
     )
   }
 
+  @inlinable
   public static func /= <Number: BinaryFloatingPoint> (
     size: inout CGSize,
     scale: Number
@@ -74,6 +98,7 @@ extension CGSize {
 // MARK: - Hashable
 
 extension CGSize: Hashable {
+  @inlinable
   public func hash(into hasher: inout Hasher) {
     hasher.combine(width)
     hasher.combine(height)
