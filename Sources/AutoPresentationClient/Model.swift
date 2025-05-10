@@ -1,4 +1,3 @@
-import DuckCore
 @_exported import Tagged
 
 public enum AutoPresentation {
@@ -12,30 +11,9 @@ public enum AutoPresentation {
   public typealias UserInfoKey = Tagged<FeatureTag, String>
 
   public typealias UserInfo = [UserInfoKey: Any]
+}
 
-  public struct FeatureCondition: Sendable {
-    public var isEligibleForPresentation: @Sendable (
-      _ for: Placement?,
-      _ userInfo: UserInfo?
-    ) -> Bool
-
-    public var increment: @Sendable () async -> Void
-    public var logEvent: @Sendable (Event) async -> Void
-    public var reset: @Sendable () async -> Void
-
-    public init(
-      isEligibleForPresentation: @escaping @Sendable (
-        _ for: Placement?,
-        _ userInfo: UserInfo?
-      ) -> Bool,
-      increment: @escaping @Sendable () async -> Void,
-      logEvent: @escaping @Sendable (Event) async -> Void,
-      reset: @escaping @Sendable () async -> Void
-    ) {
-      self.isEligibleForPresentation = isEligibleForPresentation
-      self.increment = increment
-      self.logEvent = logEvent
-      self.reset = reset
-    }
-  }
+extension AutoPresentation.Event {
+  public static var newSession: Self { "start_session" }
+  public static var sceneDidBecomeActive: Self { "scene_become_active" }
 }

@@ -15,7 +15,7 @@ extension AutoPresentation.FeatureCondition {
 
     return AutoPresentation.FeatureCondition(
       isEligibleForPresentation: {
-        impl.isEligibleForPresentation(for: $0, userInfo: $1)
+        impl.isEligibleForPresentation(event: $0, placement: $1, userInfo: $2)
       },
       increment: {
         await impl.increment()
@@ -44,14 +44,15 @@ private final class RateUsConditionImpl {
   // MARK: - Conformance
 
   func isEligibleForPresentation(
-    for placement: Placement?,
+    event: AutoPresentation.Event?,
+    placement: Placement?,
     userInfo: AutoPresentation.UserInfo?
   ) -> Bool {
     guard remoteSettings.isRateUsEnabled else {
       return false
     }
 
-    if placement == .newSession {
+    if event == .newSession {
       return
         isEligibleNewSessionWhenNeverPresented ||
         isPresentationDelayExpired
