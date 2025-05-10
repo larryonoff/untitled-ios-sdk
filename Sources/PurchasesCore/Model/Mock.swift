@@ -3,11 +3,12 @@ import Foundation
 extension Paywall {
   static let mock = Paywall(
     id: .init("mock"),
+    abTestName: nil,
+    audienceName: nil,
     products: [
       .mockYear,
       .mockMonth
-    ],
-    remoteConfigString: nil
+    ]
   )
 }
 

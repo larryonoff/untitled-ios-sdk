@@ -9,6 +9,8 @@ public struct Paywall {
   public typealias VariantID = Tagged<(Self, variantID: ()), String>
 
   public let id: ID
+  public let abTestName: String?  
+  public let audienceName: String?
   public var products: [Product]
 
   let remoteConfigString: String?
@@ -17,6 +19,19 @@ public struct Paywall {
     remoteConfigString?.data(using: .utf8).flatMap {
       try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any]
     }
+  }
+
+  public init(
+    id: ID,
+    abTestName: String? = nil,
+    audienceName: String? = nil,
+    products: [Product]
+  ) {
+    self.id = id
+    self.abTestName = abTestName
+    self.audienceName = audienceName
+    self.products = products
+    self.remoteConfigString = nil
   }
 }
 
