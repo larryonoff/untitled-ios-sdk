@@ -19,7 +19,7 @@ extension AutoPresentationClient {
         impl.availableFeatures
       },
       isEligibleForPresentation: {
-        impl.isEligibleForPresentation($0, placement: $1, userInfo: $2)
+        impl.isEligibleForPresentation($0, event: $1, placement: $2, userInfo: $3)
       },
       increment: {
         await impl.increment($0)
@@ -55,6 +55,7 @@ private final class AutoPresentationClientImpl {
 
   func isEligibleForPresentation(
     _ feature: AutoPresentation.Feature,
+    event: AutoPresentation.Event?,
     placement: Placement?,
     userInfo: [AutoPresentation.UserInfoKey: Any]?
   ) -> Bool {
@@ -96,6 +97,7 @@ private final class AutoPresentationClientImpl {
     }
 
     let isEligibleForPresentation = condition.isEligibleForPresentation(
+      event,
       placement,
       userInfo
     )

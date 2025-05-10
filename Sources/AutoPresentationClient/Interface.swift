@@ -16,9 +16,10 @@ public struct AutoPresentationClient: Sendable {
 
   public var isEligibleForPresentation: @Sendable (
     _ _: AutoPresentation.Feature,
+    _ event: AutoPresentation.Event?,
     _ placement: Placement?,
     _ userInfo: AutoPresentation.UserInfo?
-  ) async -> Bool = { _, _, _ in false }
+  ) async -> Bool = { _, _, _, _ in false }
 
   public var increment: @Sendable (
     _ _: AutoPresentation.Feature
@@ -32,11 +33,12 @@ public struct AutoPresentationClient: Sendable {
   public var reset: @Sendable () async -> Void
 
   public func featureToPresent(
+    _ event: AutoPresentation.Event?,
     _ placement: Placement?,
     _ userInfo: AutoPresentation.UserInfo?
   ) async -> AutoPresentation.Feature? {
     for feature in availableFeatures() {
-      guard await isEligibleForPresentation(feature, placement, userInfo) else {
+      guard await isEligibleForPresentation(feature, event, placement, userInfo) else {
         continue
       }
       return feature
@@ -45,4 +47,3 @@ public struct AutoPresentationClient: Sendable {
     return nil
   }
 }
-
