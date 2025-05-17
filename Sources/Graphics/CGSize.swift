@@ -13,6 +13,18 @@ extension CGSize {
       height: height.rounded(rule)
     )
   }
+
+  @inlinable
+  public func toRect(
+    with origin: CGPoint = .zero
+  ) -> CGRect {
+    .init(
+      x: origin.x,
+      y: origin.y,
+      width: width,
+      height: height
+    )
+  }
 }
 
 // MARK: - Operators
