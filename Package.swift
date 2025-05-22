@@ -66,11 +66,11 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "3.6.1"
+      from: "3.8.0"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "5.9.0"
+      from: "5.11.0"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -86,7 +86,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "11.10.0"
+      from: "11.13.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
