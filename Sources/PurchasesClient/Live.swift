@@ -321,7 +321,7 @@ final class PurchasesClientImpl {
     do {
       logger.info("set fallback paywalls")
 
-      try await Adapty.setFallbackPaywalls(fileURL: fileURL)
+      try await Adapty.setFallback(fileURL: fileURL)
 
       logger.info("set fallback paywalls success")
     } catch {
