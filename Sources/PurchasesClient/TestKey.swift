@@ -3,19 +3,7 @@ import Dependencies
 extension PurchasesClient: TestDependencyKey {
   public static let previewValue = Self.noop
 
-  public static let testValue = Self(
-    initialize: unimplemented("\(Self.self).initialize"),
-    paywallByID: unimplemented("\(Self.self).paywalByID", placeholder: .finished()),
-    purchase: unimplemented("\(Self.self).purchase", placeholder: .userCancelled),
-    restorePurhases: unimplemented("\(Self.self).restorePurhases", placeholder: .userCancelled),
-    purchases: unimplemented("\(Self.self).purchases", placeholder: Purchases()),
-    purchasesUpdates: unimplemented("\(Self.self).purchasesUpdates", placeholder: .finished),
-    receipt: unimplemented("\(Self.self).receipt", placeholder: nil),
-    requestReview: unimplemented("\(Self.self).requestReview"),
-    reset: unimplemented("\(Self.self).reset"),
-    setFallbackPaywalls: unimplemented("\(Self.self).setFallbackPaywalls"),
-    logPaywall: unimplemented("\(Self.self).logPaywall")
-  )
+  public static let testValue = Self()
 }
 
 extension PurchasesClient {
