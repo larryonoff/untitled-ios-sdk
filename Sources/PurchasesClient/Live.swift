@@ -17,6 +17,15 @@ extension PurchasesClient {
     analytics: AnalyticsClient,
     userIdentifier: UserIdentifierGenerator
   ) -> Self {
+    guard
+      let apiKey = Bundle.main.adaptyAPIKey,
+      !apiKey.isEmpty
+    else {
+      logger.warning("Cannot find a valid Adapty settings")
+
+      return Self.noop
+    }
+
     let impl = PurchasesClientImpl(
       analytics: analytics,
       userIdentifier: userIdentifier
@@ -99,7 +108,7 @@ final class PurchasesClientImpl {
     }
 
     let bundle = Bundle.main
-    guard let apiKey = bundle.adaptyAPIKey else {
+    guard let apiKey = bundle.adaptyAPIKey, !apiKey.isEmpty else {
       assertionFailure("Cannot find a valid Adapty settings")
 
       logger.error("initialize", dump: [

@@ -10,21 +10,23 @@ extension AppMetricaClient: DependencyKey {
   public static let liveValue: Self = {
     @Dependency(\.userIdentifier) var userIdentifier
 
-    guard let apiKey = Bundle.main.appMetricaAPIKey else {
-      assertionFailure("Cannot find valid AppMetrica settings")
+    guard
+      let apiKey = Bundle.main.appMetricaAPIKey,
+      let config = AppMetricaConfiguration(apiKey: apiKey)
+    else {
+      logger.warning("Cannot find valid AppMetrica settings")
       return Self.noop
     }
 
-    let configuration = AppMetricaConfiguration(apiKey: apiKey)!
-    configuration.sessionTimeout = 5 * 60
-    configuration.sessionsAutoTracking = true
-    configuration.userProfileID = userIdentifier().uuidString
+    config.sessionTimeout = 5 * 60
+    config.sessionsAutoTracking = true
+    config.userProfileID = userIdentifier().uuidString
 
 //    #if DEBUG
 //    configuration.areLogsEnabled = true
 //    #endif
 
-    AppMetrica.activate(with: configuration)
+    AppMetrica.activate(with: config)
 
     return Self(
       deviceID: {
