@@ -2,7 +2,7 @@ import ComposableArchitecture
 import DuckPurchases
 
 @Reducer
-public struct PostDeclineIntroOffer {
+public struct PostDeclineIntroOffer: Sendable {
   public enum Action {
     public enum Delegate {
       case dismiss

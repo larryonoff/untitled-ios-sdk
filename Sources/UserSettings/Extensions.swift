@@ -2,6 +2,7 @@ import DuckCore
 import Foundation
 
 extension UserSettingsClient {
+  @Sendable
   public func set<Value: Encodable>(
     _ value: Value?,
     forKey key: String,
@@ -13,6 +14,7 @@ extension UserSettingsClient {
     await setData(data, key)
   }
 
+  @Sendable
   public func valueForKey<Value: Decodable>(
     _ key: String,
     decoder: JSONDecoder
@@ -22,6 +24,7 @@ extension UserSettingsClient {
     }
   }
 
+  @Sendable
   public func setOnboardingCompleted(
     _ newValue: Bool
   ) async {

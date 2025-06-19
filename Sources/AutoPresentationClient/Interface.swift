@@ -31,6 +31,7 @@ public struct AutoPresentationClient: Sendable {
 
   public var reset: @Sendable () async -> Void
 
+  @Sendable
   public func featureToPresent(
     _ placement: Placement?,
     _ userInfo: AutoPresentation.UserInfo?
