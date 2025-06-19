@@ -23,6 +23,7 @@ public struct AnalyticsClient: Sendable {
 
   // MARK: - Extension
 
+  @Sendable
   public func log(
     _ eventName: EventName,
     parameters: [EventParameterName: Any]? = nil

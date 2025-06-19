@@ -45,6 +45,7 @@ public struct PurchasesClient: Sendable {
 
 extension PurchasesClient {
   @discardableResult
+  @Sendable
   public func prefetch(
     paywallByID id: Paywall.ID
   ) async -> Paywall? {

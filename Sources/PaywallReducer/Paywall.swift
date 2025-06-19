@@ -6,7 +6,7 @@ import DuckPurchases
 import IdentifiedCollections
 
 @Reducer
-public struct PaywallReducer {
+public struct PaywallReducer: Sendable {
   public enum Action {
     public enum Delegate {
       case dismiss
