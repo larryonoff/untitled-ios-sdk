@@ -1,5 +1,6 @@
 import Dependencies
 import DependenciesMacros
+import DuckPurchasesCore
 import Foundation
 
 extension DependencyValues {
@@ -33,7 +34,7 @@ public struct PurchasesClient: Sendable {
 
   public var reset: @Sendable () async throws -> Void
 
-  public var setFallbackPaywalls: @Sendable (
+  public var setFallback: @Sendable (
     _ fileURL: URL
   ) async throws -> Void
 
@@ -41,6 +42,9 @@ public struct PurchasesClient: Sendable {
   public var logPaywall: @Sendable (
     _ _: Paywall
   ) async throws -> Void
+
+  public var transactionsUpdates: @Sendable (
+  ) -> AsyncStream<DuckTransaction> = { .finished }
 }
 
 extension PurchasesClient {

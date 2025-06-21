@@ -5,6 +5,7 @@ import DuckAnalyticsClient
 import DuckFoundation
 import DuckLogging
 import DuckUserIdentifierClient
+import DuckUserSettings
 import Foundation
 import OSLog
 import StoreKit
@@ -15,7 +16,8 @@ import UIKit
 extension PurchasesClient {
   public static func live(
     analytics: AnalyticsClient,
-    userIdentifier: UserIdentifierGenerator
+    userIdentifier: UserIdentifierGenerator,
+    userSettings: UserSettingsClient
   ) -> Self {
     guard
       let apiKey = Bundle.main.adaptyAPIKey,
@@ -26,8 +28,17 @@ extension PurchasesClient {
       return Self.noop
     }
 
+    let transactionStore = TransactionCache(
+      userSettings: userSettings
+    )
+
+    let transactionObserver = TransactionObserver(
+      store: transactionStore
+    )
+
     let impl = PurchasesClientImpl(
       analytics: analytics,
+      transactionObserver: transactionObserver,
       userIdentifier: userIdentifier
     )
 
@@ -59,11 +70,14 @@ extension PurchasesClient {
       reset: {
         try await impl.reset()
       },
-      setFallbackPaywalls: {
-        try await impl.setFallbackPaywalls(fileURL: $0)
+      setFallback: {
+        try await impl.setFallback(fileURL: $0)
       },
       logPaywall: {
         try await impl.log($0)
+      },
+      transactionsUpdates: {
+        transactionObserver.updates
       }
     )
   }
@@ -79,13 +93,16 @@ final class PurchasesClientImpl {
   private var _paywalls: LockIsolated<[Paywall.ID: Paywall]> = .init([:])
 
   private let analytics: AnalyticsClient
+  private let transactionObserver: TransactionObserver
   private let userIdentifier: UserIdentifierGenerator
 
   init(
     analytics: AnalyticsClient,
+    transactionObserver: TransactionObserver,
     userIdentifier: UserIdentifierGenerator
   ) {
     self.analytics = analytics
+    self.transactionObserver = transactionObserver
     self.userIdentifier = userIdentifier
   }
 
@@ -94,7 +111,13 @@ final class PurchasesClientImpl {
   }
 
   var purchasesUpdates: AsyncStream<Purchases> {
-    _purchases.removeDuplicates().values.eraseToStream()
+    UncheckedSendable(
+      _purchases
+        .dropFirst()
+        .removeDuplicates()
+        .values
+    )
+    .eraseToStream()
   }
 
   func initialize() {
@@ -133,11 +156,15 @@ final class PurchasesClientImpl {
           logger.info("purchases updated", dump: [
             "purchases": purchases
           ])
+
+          transactionObserver.handle(profile)
         }
       }
     }
 
-    let config = AdaptyConfiguration.builder(withAPIKey: apiKey)
+    let config = AdaptyConfiguration
+      .builder(withAPIKey: apiKey)
+      .with(callbackDispatchQueue: .init(label: "AdaptyQueue"))
       .with(customerUserId: userIdentifier().uuidString)
       .build()
 
@@ -156,7 +183,7 @@ final class PurchasesClientImpl {
           withExtension: "json"
         )
       {
-        try? await self?.setFallbackPaywalls(fileURL: fallbackURL)
+        try? await self?.setFallback(fileURL: fallbackURL)
       }
     }
 
@@ -326,7 +353,7 @@ final class PurchasesClientImpl {
     }
   }
 
-  func setFallbackPaywalls(fileURL: URL) async throws {
+  func setFallback(fileURL: URL) async throws {
     do {
       logger.info("set fallback paywalls")
 
