@@ -375,6 +375,7 @@ extension Target {
         .Client.analytics,
         .Client.remoteSettings,
         .Client.userIdentifier,
+        .Client.userSettings,
         .External.adapty,
         .External.dependencies,
         .External.Dependencies.macros,
