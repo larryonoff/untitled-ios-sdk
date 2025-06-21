@@ -13,10 +13,12 @@ extension UserSettingsClient {
     dataForKey: { _ in nil },
     doubleForKey: { _ in 0 },
     integerForKey: { _ in 0 },
+    objectForKey: { _ in nil },
     removeValueForKey: { _ in },
     setBool: { _, _ in },
     setData: { _, _ in },
     setDouble: { _, _ in },
-    setInteger: { _, _ in }
+    setInteger: { _, _ in },
+    setObject: { _, _ in }
   )
 }
