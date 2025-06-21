@@ -10,6 +10,7 @@ extension UserAttributionClient {
   public static let noop = Self(
     initialize: { _ in },
     delegate: { .finished },
+    logTransaction: { _ in },
     uid: { nil },
     reset: {}
   )
