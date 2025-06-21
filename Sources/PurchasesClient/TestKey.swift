@@ -17,8 +17,9 @@ extension PurchasesClient {
     receipt: { nil },
     requestReview: {},
     reset: {},
-    setFallbackPaywalls: { _ in try await Task.never() },
-    logPaywall: { _ in try await Task.never() }
+    setFallback: { _ in try await Task.never() },
+    logPaywall: { _ in try await Task.never() },
+    transactionsUpdates: { AsyncStream { _ in } }
   )
 }
 
@@ -33,7 +34,8 @@ extension PurchasesClient {
     receipt: { nil },
     requestReview: {},
     reset: {},
-    setFallbackPaywalls: { _ in },
-    logPaywall: { _ in }
+    setFallback: { _ in },
+    logPaywall: { _ in },
+    transactionsUpdates: { AsyncStream { _ in } }
   )
 }

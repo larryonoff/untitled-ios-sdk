@@ -7,6 +7,7 @@ extension Paywall {
     products: [AdaptyPaywallProduct]?
   ) {
     self.id = .init(paywall.placementId)
+
     self.abTestName = paywall.abTestName
     self.audienceName = paywall.audienceName
 
@@ -29,15 +30,13 @@ extension Product {
     self.displayName = product.localizedTitle
     self.description = product.localizedDescription
     self.price = product.price
+    self.priceLocale = skProduct.priceFormatStyle.locale
     self.displayPrice = Product.displayPrice(
       product.price,
       formatStyle: skProduct.priceFormatStyle
     ) ?? ""
 
     self.subscription = .init(product)
-
-    self.priceLocale = skProduct.priceFormatStyle.locale
-
     self.subscriptionOffer = paywallProduct?.subscriptionOffer.flatMap {
       .init($0, product: product)
     }
