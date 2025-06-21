@@ -36,7 +36,7 @@ extension UserTrackingClient {
         await impl.requestAuthorization(delayFor: dueTime)
       },
       sendTrackingData: {
-        await impl.sendTrackingData()
+        await impl.sendTrackingData($0)
       },
       attributionToken: {
         try await Attribution.attributionToken()
@@ -112,7 +112,7 @@ final actor UserTrackingImpl {
       analytics.log(.idfaRequest)
 
       if interval > 0 {
-        try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+        try? await Task.sleep(for: .seconds(interval))
       }
 
       let attStatus = await ATTrackingManager.requestTrackingAuthorization()
@@ -139,13 +139,17 @@ final actor UserTrackingImpl {
     return .authorized
   }
 
-  func sendTrackingData() async {
+  func sendTrackingData(
+    _ request: SendTrackingDataRequest
+  ) async {
     logger.info("send tracking data")
 
     do {
       let intergrationIDs: [String: String] = [
+        "appmetrica_device_id": request.appMetricaDeviceID,
+        "appmetrica_profile_id": request.appMetricaProfileID,
         "facebook_anonymous_id": AppEvents.shared.anonymousID,
-        "firebase_app_instance_id": FirebaseAnalytics.Analytics.appInstanceID()
+        "firebase_app_instance_id": request.firebaseAppInstanceID
       ].compactMapValues { $0 }
 
       for (key, value) in intergrationIDs {

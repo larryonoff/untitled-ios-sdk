@@ -461,6 +461,7 @@ extension Target {
         .Client.analytics,
         .External.adapty,
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.Firebase.analytics,
         .External.Facebook.core
       ],

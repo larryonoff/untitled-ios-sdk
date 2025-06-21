@@ -29,9 +29,7 @@ extension AuthorizationStatus: CustomStringConvertible {
 }
 
 extension AuthorizationStatus: Equatable {}
-
 extension AuthorizationStatus: Hashable {}
-
 extension AuthorizationStatus: Sendable {}
 
 // MARK: - AppTrackingTransparency
