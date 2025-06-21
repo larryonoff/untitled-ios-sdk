@@ -32,11 +32,31 @@ extension AppMetricaClient: DependencyKey {
       deviceID: {
         AppMetrica.deviceID
       },
+      profileID: {
+        AppMetrica.userProfileID
+      },
+      reportError: {
+        AppMetricaCrashes.crashes().report(nserror: $0)
+      },
+      reportExternalAttribution: { attribution, attributionSource in
+        AppMetrica.reportExternalAttribution(
+          attribution,
+          from: attributionSource._attributionSource
+        )
+      },
       reset: { [userIdentifier] in
         AppMetrica.userProfileID = userIdentifier().uuidString
       }
     )
   }()
+}
+
+extension AppMetricaClient.AttributionSource {
+  var _attributionSource: AppMetricaCore.AttributionSource {
+    switch self {
+    case .appsFlyer: .appsflyer
+    }
+  }
 }
 
 extension Bundle {

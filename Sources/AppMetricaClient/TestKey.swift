@@ -1,5 +1,4 @@
 import Dependencies
-import XCTestDynamicOverlay
 
 extension AppMetricaClient: TestDependencyKey {
   public static let previewValue = Self.noop
@@ -10,6 +9,9 @@ extension AppMetricaClient: TestDependencyKey {
 extension AppMetricaClient {
   public static let noop = Self(
     deviceID: { nil },
+    profileID: { nil },
+    reportError: { _ in },
+    reportExternalAttribution: { _, _ in },
     reset: {}
   )
 }
