@@ -66,7 +66,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "3.9.0"
+      from: "3.10.2"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",

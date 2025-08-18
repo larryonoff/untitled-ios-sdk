@@ -162,10 +162,12 @@ final class PurchasesClientImpl {
       }
     }
 
+    let userID = userIdentifier()
+
     let config = AdaptyConfiguration
       .builder(withAPIKey: apiKey)
       .with(callbackDispatchQueue: .init(label: "AdaptyQueue"))
-      .with(customerUserId: userIdentifier().uuidString)
+      .with(customerUserId: userID.uuidString, withAppAccountToken: userID.rawValue)
       .build()
 
     Adapty.activate(with: config) { error in
@@ -441,8 +443,11 @@ final class PurchasesClientImpl {
       logger.info("reset")
 
       try await Adapty.logout()
+
+      let userID = userIdentifier()
       try await Adapty.identify(
-        userIdentifier().uuidString
+        userID.uuidString,
+        withAppAccountToken: userID.rawValue
       )
 
       _purchases.value = Purchases()
