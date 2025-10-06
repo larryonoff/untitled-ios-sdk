@@ -64,6 +64,10 @@ struct _WebView: UIViewRepresentable {
     webView.scrollView.showsHorizontalScrollIndicator = false
     webView.scrollView.showsVerticalScrollIndicator = false
 
+    if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
+      webView.scrollView.topEdgeEffect.isHidden = true
+    }
+
     webView.navigationDelegate = context.coordinator
 
     // WKWebView doesn't work well with HTTPCookieStorage
