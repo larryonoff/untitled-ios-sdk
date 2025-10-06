@@ -1,5 +1,5 @@
 {
-  "originHash" : "e493a417ab046b273d96bdcd0bbc0a98813e2984beb150eb8e708a8c568ffcd9",
+  "originHash" : "33df7518d7c85a254ed5621fd26f10e577f5e9e982575594da7a300d7688d123",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -249,8 +249,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-dependencies",
       "state" : {
-        "revision" : "a501eebe552fd23691c560adf474fca2169ad8aa",
-        "version" : "1.9.4"
+        "revision" : "a10f9feeb214bc72b5337b6ef6d5a029360db4cc",
+        "version" : "1.10.0"
       }
     },
     {
@@ -267,8 +267,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-navigation",
       "state" : {
-        "revision" : "6b7f44d218e776bb7a5246efb940440d57c8b2cf",
-        "version" : "2.4.2"
+        "revision" : "91415670c91d41e8e1872ef6fe1bf118e20dee37",
+        "version" : "2.5.1"
       }
     },
     {
