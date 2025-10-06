@@ -44,6 +44,11 @@ extension Product {
 }
 
 extension Product.SubscriptionInfo {
+  // Workaround for Swift 6.2 compiler crash in CopyPropagation optimization pass
+  // Error: "While running pass #53356 SILFunctionTransform "CopyPropagation""
+  #if swift(>=6.2)
+  @_optimize(none)
+  #endif
   package init?(_ product: AdaptyProduct) {
     let paywallProduct = product as? AdaptyPaywallProduct
 
