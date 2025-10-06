@@ -9,15 +9,17 @@ extension View {
     self.sheet(item: item) { store in
       RateUsView(store: store)
         .presentationDetents([.height(272)])
-        ._presentationCornerRadius(24)
+        ._presentationCornerRadius()
     }
   }
 }
 
 private extension View {
-  func _presentationCornerRadius(_ cornerRadius: CGFloat) -> some View {
-    if #available(iOS 16.4, *) {
-      return self.presentationCornerRadius(cornerRadius)
+  func _presentationCornerRadius() -> some View {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
+      return self
+    } else if #available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *) {
+      return self.presentationCornerRadius(24)
     } else {
       return self
     }
