@@ -20,6 +20,8 @@ public struct Product {
       case introductory
       case promotional
       case winBack
+
+      case code
     }
 
     public enum PaymentMode: String {

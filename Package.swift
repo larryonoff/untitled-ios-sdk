@@ -66,11 +66,11 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "3.11.0"
+      from: "3.12.0"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "5.12.1"
+      from: "5.14.0"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -86,7 +86,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "12.3.0"
+      from: "12.4.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -98,11 +98,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.22.2"
+      from: "1.23.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-concurrency-extras",
-      from: "1.3.1"
+      from: "1.3.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -122,7 +122,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-navigation",
-      from: "2.5.1"
+      from: "2.6.0"
     )
   ],
   targets: [

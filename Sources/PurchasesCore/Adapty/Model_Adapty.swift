@@ -116,9 +116,8 @@ extension Product.SubscriptionOffer {
   }
 }
 
-
 extension Product.SubscriptionOffer.OfferType {
-  package init(_ offerType: AdaptySubscriptionOffer.OfferType) {
+  package init(_ offerType: AdaptySubscriptionOfferType) {
     switch offerType {
     case .introductory:
       self = .introductory
@@ -126,6 +125,8 @@ extension Product.SubscriptionOffer.OfferType {
       self = .promotional
     case .winBack:
       self = .winBack
+    case .code:
+      self = .code
     }
   }
 }
