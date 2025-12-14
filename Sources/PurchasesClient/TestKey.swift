@@ -7,20 +7,7 @@ extension PurchasesClient: TestDependencyKey {
 }
 
 extension PurchasesClient {
-  public static let noop = Self(
-    initialize: {},
-    paywallByID: { _ in .finished() },
-    purchase: { _ in try await Task.never() },
-    restorePurhases: { try await Task.never() },
-    purchases: { Purchases() },
-    purchasesUpdates: { AsyncStream { _ in } },
-    receipt: { nil },
-    requestReview: {},
-    reset: {},
-    setFallback: { _ in try await Task.never() },
-    logPaywall: { _ in try await Task.never() },
-    transactionsUpdates: { AsyncStream { _ in } }
-  )
+  public static let noop = Self()
 }
 
 extension PurchasesClient {
@@ -28,7 +15,7 @@ extension PurchasesClient {
     initialize: { },
     paywallByID: { _ in .finished() },
     purchase: { _ in .success(.init(isPremium: true)) },
-    restorePurhases: { .success(.init(isPremium: true)) },
+    restorePurchases: { .success(.init(isPremium: true)) },
     purchases: { Purchases(isPremium: true) },
     purchasesUpdates: { AsyncStream { _ in } },
     receipt: { nil },
