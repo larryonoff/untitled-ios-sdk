@@ -330,7 +330,7 @@ public struct PaywallReducer: Sendable {
 
     return .run { send in
       let result = await Result {
-        try await purchases.restorePurhases()
+        try await purchases.restorePurchases()
       }
 
       await send(.restorePurchasesResponse(result))

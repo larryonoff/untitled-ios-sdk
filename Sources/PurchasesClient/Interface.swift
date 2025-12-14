@@ -23,7 +23,7 @@ public struct PurchasesClient: Sendable {
     _ _: PurchaseRequest
   ) async throws -> PurchaseResult = { _ in .success(.init()) }
 
-  public var restorePurhases: @Sendable () async throws -> RestorePurchasesResult
+  public var restorePurchases: @Sendable () async throws -> RestorePurchasesResult
 
   public var purchases: @Sendable () -> Purchases = { .init() }
   public var purchasesUpdates: @Sendable () -> AsyncStream<Purchases> = { .finished }

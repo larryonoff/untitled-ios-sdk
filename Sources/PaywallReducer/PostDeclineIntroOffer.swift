@@ -162,7 +162,7 @@ public struct PostDeclineIntroOffer: Sendable {
       await send(
         .restorePurchasesResponse(
           await Result {
-            try await purchases.restorePurhases()
+            try await purchases.restorePurchases()
           }
         )
       )

@@ -52,7 +52,7 @@ extension PurchasesClient {
       purchase: {
         try await impl.purchase($0)
       },
-      restorePurhases: {
+      restorePurchases: {
         try await impl.restorePurchases()
       },
       purchases: {
