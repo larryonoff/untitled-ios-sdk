@@ -21,7 +21,7 @@ extension PhotosAuthorizationClient: DependencyKey {
   }()
 }
 
-private final actor PhotosAuthorizationClientImpl {
+private final class PhotosAuthorizationClientImpl: Sendable {
   init() {}
 
   private let authorizationSubject =
@@ -30,7 +30,7 @@ private final actor PhotosAuthorizationClientImpl {
       Never
     >()
 
-  nonisolated func authorizationStatus(
+  func authorizationStatus(
     for acl: PhotosAuthorization.AccessLevel
   ) -> PhotosAuthorization.AuthorizationStatus {
     let status = PHPhotoLibrary.authorizationStatus(
@@ -39,7 +39,7 @@ private final actor PhotosAuthorizationClientImpl {
     return PhotosAuthorization.AuthorizationStatus(status)
   }
 
-  nonisolated func authorizationStatusUpdates(
+  func authorizationStatusUpdates(
     for acl: PhotosAuthorization.AccessLevel
   ) -> AsyncStream<PhotosAuthorization.AuthorizationStatus> {
     authorizationSubject.values
@@ -48,7 +48,6 @@ private final actor PhotosAuthorizationClientImpl {
       .eraseToStream()
   }
 
-  @MainActor
   func requestAuthorizationIfNeeded(
     for acl: PhotosAuthorization.AccessLevel
   ) async -> PhotosAuthorization.AuthorizationStatus {
