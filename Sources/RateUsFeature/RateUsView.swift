@@ -148,18 +148,16 @@ extension ButtonStyle where Self == SecondaryButtonStyle {
 
 private struct PrimaryButtonStyle: ButtonStyle {
   func makeBody(configuration: Configuration) -> some View {
+    let shape = Capsule()
+
     configuration.label
       .font(.system(size: 17, weight: .bold))
-      .foregroundStyle(.background)
+      .foregroundStyle(.black)
       .padding(.vertical, 14)
       .padding(.horizontal, 20)
       .frame(minWidth: 174, minHeight: 50)
       .background(.tint, in: shape)
       .clipShape(shape)
-  }
-
-  private var shape: Capsule {
-    Capsule()
   }
 }
 
