@@ -7,7 +7,7 @@ let package = Package(
   defaultLocalization: "en",
   platforms: [
     .iOS(.v16),
-    .macOS(.v13)
+    .macOS(.v14)
   ],
   products: [
     .library(name: .AutoPresentation.rateUs, targets: [.AutoPresentation.rateUs]),
