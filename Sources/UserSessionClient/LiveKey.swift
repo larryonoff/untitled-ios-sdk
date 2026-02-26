@@ -31,7 +31,7 @@ extension UserSessionClient: DependencyKey {
   }()
 }
 
-final class UserSessionClientImpl {
+final class UserSessionClientImpl: @unchecked Sendable {
   @Dependency(\.bundle) private var bundle
   @Dependency(\.date) private var date
 
@@ -39,6 +39,8 @@ final class UserSessionClientImpl {
   let minSessionDuration: TimeInterval
 
   private let metricsSubject = PassthroughSubject<UserSessionMetrics, Never>()
+  private let lock = NSRecursiveLock()
+
   private var _metrics: UserSessionMetrics {
     willSet {
       metricsSubject.send(newValue)
@@ -52,7 +54,6 @@ final class UserSessionClientImpl {
     set {
       lock.withLock {
         _metrics = newValue
-
         storage.save(newValue)
       }
     }
@@ -61,8 +62,6 @@ final class UserSessionClientImpl {
   var metricsChanges: AsyncStream<UserSessionMetrics> {
     AsyncStream(metricsSubject.values)
   }
-
-  private let lock = NSRecursiveLock()
 
   private var isActive = false
   private var isSuspended = false
