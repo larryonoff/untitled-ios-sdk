@@ -57,8 +57,9 @@ extension UserTrackingClient {
   }
 }
 
-final actor UserTrackingImpl {
+final class UserTrackingImpl: Sendable {
   private let analytics: AnalyticsClient
+  private let _authStatus = CurrentValueSubject<AuthorizationStatus, Never>(.authorized)
 
   init(
     analytics: AnalyticsClient
@@ -66,17 +67,14 @@ final actor UserTrackingImpl {
     self.analytics = analytics
   }
 
-  private let _authStatus = CurrentValueSubject<AuthorizationStatus, Never>(.authorized)
-
-  nonisolated var authStatus: AuthorizationStatus {
+  var authStatus: AuthorizationStatus {
     _authStatus.value
   }
 
-  nonisolated var authStatusUpdates: AsyncStream<AuthorizationStatus> {
+  var authStatusUpdates: AsyncStream<AuthorizationStatus> {
     _authStatus.removeDuplicates().values.eraseToStream()
   }
 
-  nonisolated
   func initialize() {
     updateAuthStatus(
       ATTrackingManager.trackingAuthorizationStatus
@@ -85,7 +83,7 @@ final actor UserTrackingImpl {
     logger.info("initialize success")
   }
 
-  nonisolated func isAuthRequestNeeded() -> Bool {
+  func isAuthRequestNeeded() -> Bool {
     if #available(iOS 14.5, *) {
       return ATTrackingManager.trackingAuthorizationStatus == .notDetermined
     }
@@ -184,7 +182,6 @@ final actor UserTrackingImpl {
     }
   }
 
-  nonisolated
   private func updateAuthStatus(
     _ status: ATTrackingManager.AuthorizationStatus
   ) {
