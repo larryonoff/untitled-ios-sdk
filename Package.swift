@@ -66,11 +66,11 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "3.15.0"
+      from: "3.17.0"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "5.15.0"
+      from: "6.3.0"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -78,15 +78,15 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
-      from: "5.7.0"
+      from: "5.8.0"
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "18.0.1"
+      from: "18.0.3"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "12.7.0"
+      from: "12.13.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -94,11 +94,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/apple/swift-collections",
-      from: "1.3.0"
+      from: "1.5.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.23.1"
+      from: "1.25.5"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-concurrency-extras",
@@ -106,15 +106,15 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "1.3.3"
+      from: "1.5.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "1.10.0"
+      from: "1.12.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-sharing",
-      from: "2.7.4"
+      from: "2.8.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -122,7 +122,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-navigation",
-      from: "2.6.0"
+      from: "2.8.0"
     )
   ],
   targets: [
