@@ -642,7 +642,8 @@ extension Target {
       .External.dependencies,
       .External.deviceKit
     ],
-    path: "Sources/Dependencies"
+    path: "Sources/Dependencies",
+    swiftSettings: .upcomingFeatures
   )
 
   static let foundation = target(
@@ -674,6 +675,7 @@ extension Target {
       .External.tagged
     ],
     path: "Sources/Photos",
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("Photos")
     ]
@@ -720,6 +722,7 @@ extension Target {
       .External.tagged
     ],
     path: "Sources/PhotosUI",
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("Photos"),
       .linkedFramework("PhotosUI")
@@ -734,7 +737,8 @@ extension Target {
       .External.composableArchitecture,
       .External.swiftUINavigation
     ],
-    path: "Sources/SwiftUI"
+    path: "Sources/SwiftUI",
+    swiftSettings: .upcomingFeatures
   )
 
   static let uiKit = target(
