@@ -144,6 +144,7 @@ let package = Package(
     .target(
       name: .avFoundation,
       path: "Sources/AVFoundation",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("AVFoundation")
       ]
