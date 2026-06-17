@@ -5,6 +5,7 @@ import Firebase
 import FirebaseAnalytics
 import FirebaseCrashlytics
 import OSLog
+import Tagged
 
 extension FirebaseClient: DependencyKey {
   public static let liveValue: Self = {
@@ -38,7 +39,7 @@ extension FirebaseClient: DependencyKey {
   }()
 }
 
-final class FirebaseClientImpl {
+final class FirebaseClientImpl: Sendable {
   private let userIdentifier: UserIdentifierGenerator
 
   init(

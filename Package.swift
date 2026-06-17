@@ -254,7 +254,8 @@ extension Target {
         .External.Dependencies.macros,
         .External.tagged
       ],
-      path: "Sources/AnalyticsClient"
+      path: "Sources/AnalyticsClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let application = target(
@@ -263,7 +264,8 @@ extension Target {
         .logging,
         .External.dependencies
       ],
-      path: "Sources/ApplicationClient"
+      path: "Sources/ApplicationClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let appMetrica = target(
@@ -279,7 +281,8 @@ extension Target {
         .External.AppMetrica.core,
         .External.AppMetrica.crashes
       ],
-      path: "Sources/AppMetricaClient"
+      path: "Sources/AppMetricaClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let autoPresentation = target(
@@ -340,7 +343,8 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros
       ],
-      path: "Sources/FirebaseClient"
+      path: "Sources/FirebaseClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let instagramSharing = target(
@@ -426,6 +430,7 @@ extension Target {
         .External.Firebase.remoteConfig
       ],
       path: "Sources/RemoteSettingsClient",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("UIKit")
       ]
@@ -489,6 +494,7 @@ extension Target {
         .External.Facebook.core
       ],
       path: "Sources/UserTracking",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("AdServices"),
         .linkedFramework("AdSupport"),
@@ -679,6 +685,7 @@ extension Target {
     resources: [
       .process("Resources")
     ],
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("StoreKit")
     ]
