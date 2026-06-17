@@ -18,7 +18,7 @@ extension DependencyValues {
 extension Device: @retroactive @unchecked Sendable {}
 
 extension SharedReaderKey where Self == InMemoryKey<Device>.Default {
-  public static var bundle: Self {
+  public static var device: Self {
     Self[.inMemory("device"), default: .current]
   }
 }
