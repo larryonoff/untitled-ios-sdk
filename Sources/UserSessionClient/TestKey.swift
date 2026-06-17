@@ -1,5 +1,6 @@
-import Foundation
 import Dependencies
+import DuckDependencies
+import Foundation
 
 extension UserSessionClient: TestDependencyKey {
   public static let previewValue = Self.noop

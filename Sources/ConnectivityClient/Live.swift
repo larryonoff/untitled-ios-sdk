@@ -8,7 +8,9 @@ extension ConnectivityClient {
   ) -> Self {
     Self(
       connectivityInfo: {
-        let connectivity = Connectivity(
+        // SAFETY: `Connectivity` is confined to this call — created here and
+        // only touched by its own completion/cancel callbacks, never shared.
+        nonisolated(unsafe) let connectivity = Connectivity(
           connectivityURLs: connectivityURLs
         )
 
@@ -24,7 +26,9 @@ extension ConnectivityClient {
       },
       updates: {
         AsyncStream { continuation in
-          let connectivity = Connectivity(
+          // SAFETY: `Connectivity` is confined to this stream — created here
+          // and only touched by its own notifier callbacks, never shared.
+          nonisolated(unsafe) let connectivity = Connectivity(
             connectivityURLs: connectivityURLs
           )
 

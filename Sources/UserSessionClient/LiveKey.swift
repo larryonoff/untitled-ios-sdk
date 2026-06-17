@@ -1,5 +1,6 @@
 import Combine
 import ComposableArchitecture
+import ConcurrencyExtras
 import Dependencies
 import DuckDependencies
 import DuckLogging
@@ -60,7 +61,7 @@ final class UserSessionClientImpl: @unchecked Sendable {
   }
 
   var metricsChanges: AsyncStream<UserSessionMetrics> {
-    AsyncStream(metricsSubject.values)
+    AsyncStream(UncheckedSendable(metricsSubject.values))
   }
 
   private var isActive = false
