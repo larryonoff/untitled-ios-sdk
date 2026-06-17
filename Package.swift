@@ -218,6 +218,17 @@ let package = Package(
   ]
 )
 
+extension [SwiftSetting] {
+  static let upcomingFeatures: [SwiftSetting] = [
+    .enableUpcomingFeature("StrictConcurrency"),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InferSendableFromCaptures"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("MemberImportVisibility")
+  ]
+}
+
 extension Target {
   enum AutoPresentation {
     static let rateUs = target(
@@ -361,6 +372,7 @@ extension Target {
         .External.tagged
       ],
       path: "Sources/PhotosAuthorizationClient",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("Photos")
       ]
