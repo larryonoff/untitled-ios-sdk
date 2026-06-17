@@ -324,7 +324,8 @@ extension Target {
       dependencies: [
         .External.dependencies
       ],
-      path: "Sources/FeedbackClient"
+      path: "Sources/FeedbackClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let firebase = target(
@@ -358,6 +359,7 @@ extension Target {
         .External.Dependencies.macros
       ],
       path: "Sources/PasteboardClient",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("UIKit")
       ]
@@ -433,17 +435,21 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros
       ],
-      path: "Sources/UserAttributionClient"
+      path: "Sources/UserAttributionClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userIdentifier = target(
       name: .Client.userIdentifier,
       dependencies: [
+        .foundation,
+        .logging,
         .External.dependencies,
         .External.keychainAccess,
         .External.tagged
       ],
-      path: "Sources/UserIdentifier"
+      path: "Sources/UserIdentifier",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userSession = target(
