@@ -60,6 +60,7 @@ struct _MailComposeView: UIViewControllerRepresentable {
     MFMailComposeViewController.canSendMail()
   }
 
+  @MainActor
   final class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
     var parent: _MailComposeView
 
