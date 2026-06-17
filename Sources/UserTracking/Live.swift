@@ -3,6 +3,7 @@ import AdServices
 import AdSupport
 import AppTrackingTransparency
 import Combine
+import ConcurrencyExtras
 import DuckAnalyticsClient
 import DuckLogging
 import FacebookCore
@@ -59,7 +60,8 @@ extension UserTrackingClient {
 
 final class UserTrackingImpl: Sendable {
   private let analytics: AnalyticsClient
-  private let _authStatus = CurrentValueSubject<AuthorizationStatus, Never>(.authorized)
+  // SAFETY: `CurrentValueSubject` is internally thread-safe; Combine just doesn't annotate it `Sendable`.
+  private nonisolated(unsafe) let _authStatus = CurrentValueSubject<AuthorizationStatus, Never>(.authorized)
 
   init(
     analytics: AnalyticsClient
@@ -72,7 +74,7 @@ final class UserTrackingImpl: Sendable {
   }
 
   var authStatusUpdates: AsyncStream<AuthorizationStatus> {
-    _authStatus.removeDuplicates().values.eraseToStream()
+    AsyncStream(UncheckedSendable(_authStatus.removeDuplicates().values))
   }
 
   func initialize() {

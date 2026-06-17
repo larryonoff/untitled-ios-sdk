@@ -1,11 +1,14 @@
 import DuckFoundation
 import Foundation
 
-final class PriceFormatter {
-  private static var cache: [AnyHashable: NumberFormatter] = [:]
+final class PriceFormatter: Sendable {
+  // SAFETY: every access to `cache` goes through `lock`.
+  private nonisolated(unsafe) static var cache: [AnyHashable: NumberFormatter] = [:]
   private static let lock = NSRecursiveLock()
 
-  private var _locale: Locale = .autoupdatingCurrent
+  // SAFETY: every access to `_locale`/`_roundingMode` goes through `lock`.
+  private nonisolated(unsafe) var _locale: Locale = .autoupdatingCurrent
+  private nonisolated(unsafe) var _roundingMode: NumberFormatter.RoundingMode = .down
 
   var locale: Locale {
     get {
@@ -20,7 +23,18 @@ final class PriceFormatter {
     }
   }
 
-  var roundingMode: NumberFormatter.RoundingMode = .down
+  var roundingMode: NumberFormatter.RoundingMode {
+    get {
+      Self.lock.sync {
+        self._roundingMode
+      }
+    }
+    set {
+      Self.lock.sync {
+        self._roundingMode = newValue
+      }
+    }
+  }
 
   init() {}
 

@@ -1,5 +1,6 @@
 import Adapty
 import Foundation
+import StoreKit
 
 extension Paywall {
   package init(
