@@ -738,7 +738,8 @@ extension Target {
 
   static let uiKit = target(
     name: .uiKit,
-    path: "Sources/UIKit"
+    path: "Sources/UIKit",
+    swiftSettings: .upcomingFeatures
   )
 
   static let webView = target(
