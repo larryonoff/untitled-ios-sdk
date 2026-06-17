@@ -1,3 +1,4 @@
+import ConcurrencyExtras
 import Photos
 @_exported import Tagged
 
@@ -23,24 +24,26 @@ extension PHAsset {
   public func requestContentEditingInput(
     with options: PHContentEditingInputRequestOptions?
   ) async -> (PHContentEditingInput?, [AnyHashable: Any]) {
-    var requestID: PHContentEditingInputRequestID?
+    // SAFETY: `requestID` is written once by the request call and only read by
+    // the cancellation handler; PhotoKit serializes these on its own queue.
+    nonisolated(unsafe) var requestID: PHContentEditingInputRequestID?
 
-    let _onCancel = {
-      guard let requestID else { return }
-      self.cancelContentEditingInputRequest(requestID)
-    }
-
-    return await withTaskCancellationHandler {
+    let result = await withTaskCancellationHandler {
       await withCheckedContinuation { continuation in
         requestID = self.requestContentEditingInput(
           with: options,
           completionHandler: { contentEditingInput, info in
-            continuation.resume(returning: (contentEditingInput, info))
+            // SAFETY: the result is consumed by a single awaiting caller; the
+            // PhotoKit value types are not annotated `Sendable`.
+            continuation.resume(returning: UncheckedSendable((contentEditingInput, info)))
           }
         )
       }
     } onCancel: {
-      _onCancel()
+      guard let requestID else { return }
+      self.cancelContentEditingInputRequest(requestID)
     }
+
+    return result.value
   }
 }
