@@ -1,3 +1,4 @@
+import ConcurrencyExtras
 import Dependencies
 import Photos
 import UIKit
@@ -11,7 +12,7 @@ extension DependencyValues {
 
 private enum PHImageManagerKey: DependencyKey {
   static let liveValue = PHImageManager.default()
-  static var testValue = PHImageManager.default()
+  static let testValue = PHImageManager.default()
 }
 
 extension PHImageManager {
@@ -21,7 +22,11 @@ extension PHImageManager {
     contentMode: PHImageContentMode,
     options: PHImageRequestOptions?
   ) -> AsyncThrowingStream<(UIImage?, info: [AnyHashable: Any]?), any Error> {
-    AsyncThrowingStream { continuation in
+    // SAFETY: PhotoKit confines the request to its own queue; the options value
+    // is not annotated `Sendable` by Photos.
+    nonisolated(unsafe) let options = options
+
+    return AsyncThrowingStream { continuation in
       let requestID = requestImage(
         for: asset,
         targetSize: targetSize,
@@ -38,7 +43,11 @@ extension PHImageManager {
             return continuation.finish(throwing: CancellationError())
           }
 
-          continuation.yield((image, info))
+          // SAFETY: PhotoKit delivers the result on its own queue and the value
+          // is handed to a single stream consumer; the value types are not
+          // annotated `Sendable` by Photos.
+          nonisolated(unsafe) let value = (image, info)
+          continuation.yield(value)
 
           // when degraded image is provided,
           // the completion handler will be called again.
@@ -61,9 +70,12 @@ extension PHImageManager {
     options: PHImageRequestOptions?
   ) async throws -> (UIImage?, info: [AnyHashable: Any]?) {
     let requestID = LockIsolated<PHImageRequestID?>(nil)
+    // SAFETY: PhotoKit confines the request to its own queue; the options value
+    // is not annotated `Sendable` by Photos.
+    nonisolated(unsafe) let options = options
 
-    return try await withTaskCancellationHandler {
-      try await withCheckedThrowingContinuation { continuation in
+    let result = try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<UncheckedSendable<(UIImage?, [AnyHashable: Any]?)>, any Error>) in
         requestID.setValue(
           requestImage(
             for: asset,
@@ -87,7 +99,9 @@ extension PHImageManager {
                 return
               }
 
-              continuation.resume(returning: (image, info))
+              // SAFETY: the result is consumed by a single awaiting caller; the
+              // PhotoKit value types are not annotated `Sendable`.
+              continuation.resume(returning: UncheckedSendable((image, info)))
             }
           )
         )
@@ -95,6 +109,8 @@ extension PHImageManager {
     } onCancel: {
       requestID.value.flatMap { self.cancelImageRequest($0) }
     }
+
+    return result.value
   }
 
   public func requestAVAsset(
@@ -102,9 +118,12 @@ extension PHImageManager {
     options: PHVideoRequestOptions?
   ) async throws -> (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) {
     let requestID = LockIsolated<PHImageRequestID?>(nil)
+    // SAFETY: PhotoKit confines the request to its own queue; the options value
+    // is not annotated `Sendable` by Photos.
+    nonisolated(unsafe) let options = options
 
-    return try await withTaskCancellationHandler {
-      try await withCheckedThrowingContinuation { continuation in
+    let result = try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<UncheckedSendable<(AVAsset?, AVAudioMix?, [AnyHashable: Any]?)>, any Error>) in
         requestID.setValue(
           requestAVAsset(
             forVideo: asset,
@@ -126,7 +145,9 @@ extension PHImageManager {
                 return
               }
 
-              continuation.resume(returning: (avAsset, audioMix, info))
+              // SAFETY: the result is consumed by a single awaiting caller; the
+              // PhotoKit value types are not annotated `Sendable`.
+              continuation.resume(returning: UncheckedSendable((avAsset, audioMix, info)))
             }
           )
         )
@@ -134,6 +155,8 @@ extension PHImageManager {
     } onCancel: {
       requestID.value.flatMap { self.cancelImageRequest($0) }
     }
+
+    return result.value
   }
 }
 
