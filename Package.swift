@@ -556,7 +556,8 @@ extension Target {
         .Client.photosAuthorization,
         .External.sharing,
       ],
-      path: "Sources/PhotosAuthorizationComposable"
+      path: "Sources/PhotosAuthorizationComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let purchases = target(
