@@ -1,64 +1,137 @@
 import Dependencies
+import DuckFoundation
+import DuckLogging
 import Foundation
 import KeychainAccess
+import Tagged
 
-extension UserIdentifierGenerator {
+extension UserIdentifierClient {
   public static let liveValue: Self = {
-    let keychain = Keychain.userIdentifier
-    let lock = NSRecursiveLock()
+    let impl = UserIdentifierImpl()
 
-    return UserIdentifierGenerator(
-      generate: {
-        lock.lock(); defer { lock.unlock() }
-
-        if let identifier = keychain.userIdentifier {
-          return .init(identifier)
-        }
-
-        let identifier = UUID()
-
-        keychain.userIdentifier = identifier
-
-        return .init(identifier)
+    return UserIdentifierClient(
+      identifier: {
+        UserIdentifier(impl.identifier)
+      },
+      identifierAtLaunch: {
+        impl.identifierAtLaunch.map { UserIdentifier($0) }
       },
       reset: {
-        lock.lock(); defer { lock.unlock() }
-
-        keychain.userIdentifier = UUID()
+        impl.reset()
       }
     )
   }()
 }
 
-private extension String {
-  static let userIdentifierKey = "user-identifier"
-}
+private final class UserIdentifierImpl: Sendable {
+  private struct State {
+    let keychain: Keychain
+    let keychainKey: String
+    // The keychain item has no writers besides reset(), so once read the
+    // identifier is cached for the lifetime of the process; a nil cache
+    // means the launch read found nothing and identifier() re-reads
+    // before minting.
+    var cachedIdentifier: UUID?
 
-private extension Keychain {
-  static let userIdentifier: Keychain = {
-    let service = [
+    var persistedIdentifier: UUID? {
+      get {
+        keychain[string: keychainKey]
+          .flatMap(UUID.init(uuidString:))
+      }
+      nonmutating set {
+        keychain[string: keychainKey] = newValue?.uuidString
+      }
+    }
+  }
+
+  /// The identifier persisted before any `identifier()` call: one present
+  /// here survived app deletion, as opposed to one minted by this install.
+  let identifierAtLaunch: UUID?
+
+  private let state: Mutex<State>
+
+  init() {
+    let keychainKey = "user-identifier"
+    let keychainService = [
       Bundle.main.bundleIdentifier,
       "user-identifier"
     ]
     .compactMap { $0 }
     .joined(separator: ".")
 
-    return Keychain(service: service)
-  }()
+    var state = State(
+      keychain: Keychain(service: keychainService),
+      keychainKey: keychainKey,
+      cachedIdentifier: nil
+    )
 
-  var userIdentifier: UUID? {
-    get {
-      self[string: .userIdentifierKey]
-        .flatMap(UUID.init(uuidString:))
+    let identifierAtLaunch = state.persistedIdentifier
+    state.cachedIdentifier = identifierAtLaunch
+
+    if let identifierAtLaunch {
+      logger.info(
+        """
+        identifier.restore success | \
+        identifier: \(identifierAtLaunch.uuidString, privacy: .public)
+        """
+      )
     }
-    set {
-      self[string: .userIdentifierKey] = newValue?.uuidString
+
+    self.identifierAtLaunch = identifierAtLaunch
+    self.state = Mutex(state)
+  }
+
+  var identifier: UUID {
+    state.withLock { state in
+      if let identifier = state.cachedIdentifier {
+        return identifier
+      }
+
+      if let identifier = state.persistedIdentifier {
+        logger.info(
+          """
+          identifier.restore success | \
+          identifier: \(identifier.uuidString, privacy: .public)
+          """
+        )
+
+        state.cachedIdentifier = identifier
+        return identifier
+      }
+
+      let identifier = UUID()
+      logger.info(
+        """
+        identifier.generate success | \
+        identifier: \(identifier.uuidString, privacy: .public)
+        """
+      )
+
+      state.persistedIdentifier = identifier
+      state.cachedIdentifier = identifier
+      return identifier
+    }
+  }
+
+  func reset() {
+    state.withLock { state in
+      let oldIdentifier = state.cachedIdentifier ?? state.persistedIdentifier
+      let newIdentifier = UUID()
+
+      logger.info(
+        """
+        identifier.reset success | \
+        old_identifier: \(oldIdentifier?.uuidString ?? "none", privacy: .public) \
+        new_identifier: \(newIdentifier.uuidString, privacy: .public)
+        """
+      )
+
+      state.persistedIdentifier = newIdentifier
+      state.cachedIdentifier = newIdentifier
     }
   }
 }
 
 extension UserIdentifier {
-  static var zero: Self {
-    .init(UUID(uuidString: "00000000-0000-0000-0000-000000000000")!)
-  }
+  static let zero = Self(UUID(uuidString: "00000000-0000-0000-0000-000000000000")!)
 }

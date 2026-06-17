@@ -2,18 +2,20 @@ import Dependencies
 import Foundation
 import XCTestDynamicOverlay
 
-extension UserIdentifierGenerator {
-  static let previewValue = Self.noop
+extension UserIdentifierClient {
+  public static let previewValue = Self.noop
 
-  static let testValue = Self(
-    generate: unimplemented("\(Self.self).generate", placeholder: .zero),
+  public static let testValue = Self(
+    identifier: unimplemented("\(Self.self).identifier", placeholder: .zero),
+    identifierAtLaunch: unimplemented("\(Self.self).identifierAtLaunch", placeholder: nil),
     reset: unimplemented("\(Self.self).reset")
   )
 }
 
-extension UserIdentifierGenerator {
+extension UserIdentifierClient {
   public static let noop = Self(
-    generate: { .zero },
+    identifier: { .zero },
+    identifierAtLaunch: { nil },
     reset: {}
   )
 }

@@ -1,38 +1,41 @@
 import Dependencies
 import Foundation
-import Tagged
-import XCTestDynamicOverlay
+public import Tagged
 
 extension DependencyValues {
-  public var userIdentifier: UserIdentifierGenerator {
-    get { self[UserIdentifierGeneratorKey.self] }
-    set { self[UserIdentifierGeneratorKey.self] = newValue }
-  }
-
-  private enum UserIdentifierGeneratorKey: DependencyKey {
-    static let liveValue = UserIdentifierGenerator.liveValue
-    static let previewValue = UserIdentifierGenerator.noop
-    static let testValue = UserIdentifierGenerator.testValue
+  public var userIdentifier: UserIdentifierClient {
+    get { self[UserIdentifierClient.self] }
+    set { self[UserIdentifierClient.self] = newValue }
   }
 }
+
+extension UserIdentifierClient: DependencyKey {}
 
 public enum UserIdentifierTag {}
 public typealias UserIdentifier = Tagged<UserIdentifierTag, UUID>
 
-public struct UserIdentifierGenerator: Sendable {
-  private let generate: @Sendable () -> UserIdentifier
-
+public struct UserIdentifierClient: Sendable {
+  /// The user identifier: restores the persisted one, minting and
+  /// persisting a new identifier on first access of a fresh install.
+  public var identifier: @Sendable () -> UserIdentifier
+  /// The identifier that was already persisted when this client was
+  /// created — i.e. it survived from a previous install. `nil` on a fresh
+  /// install for the whole process lifetime, even after `identifier()`
+  /// mints one.
+  public var identifierAtLaunch: @Sendable () -> UserIdentifier?
   public var reset: @Sendable () -> Void
 
-  init(
-    generate: @escaping @Sendable () -> UserIdentifier,
+  public init(
+    identifier: @escaping @Sendable () -> UserIdentifier,
+    identifierAtLaunch: @escaping @Sendable () -> UserIdentifier?,
     reset: @escaping @Sendable () -> Void
   ) {
-    self.generate = generate
+    self.identifier = identifier
+    self.identifierAtLaunch = identifierAtLaunch
     self.reset = reset
   }
 
   public func callAsFunction() -> UserIdentifier {
-    self.generate()
+    self.identifier()
   }
 }
