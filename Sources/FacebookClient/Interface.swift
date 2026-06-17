@@ -12,16 +12,16 @@ extension DependencyValues {
 
 @DependencyClient
 public struct FacebookClient: Sendable {
-  public var continueUserActivity: (
+  public var continueUserActivity: @MainActor @Sendable (
     _ _: NSUserActivity
   ) -> Bool = { _ in false }
 
-  public var didFinishLaunching: (
+  public var didFinishLaunching: @MainActor @Sendable (
     _ options: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool = { _ in false }
 
   @DependencyEndpoint(method: "open")
-  public var openURL: (
+  public var openURL: @MainActor @Sendable (
     _ _: URL,
     _ options: [UIApplication.OpenURLOptionsKey: Any]
   ) -> Bool = { _, _ in false }

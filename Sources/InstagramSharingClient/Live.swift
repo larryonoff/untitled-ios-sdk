@@ -3,8 +3,6 @@ import Foundation
 import OSLog
 import UIKit
 
-private var _documentController: UIDocumentInteractionController?
-
 extension InstagramSharingClient: DependencyKey {
   public static let liveValue = Self.live()
 }
