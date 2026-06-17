@@ -95,9 +95,11 @@ private struct _PresentationModifier<State, Action, Content: View>: UIViewRepres
         viewController.modalPresentationStyle = .custom
         viewController.modalTransitionStyle = .crossDissolve
 
+        let presenter = parent.presenter
+
         UIViewController.presentInQueue(
           viewController,
-          presentingViewController: parent.presenter,
+          presentingViewController: presenter,
           animated: true
         )
 

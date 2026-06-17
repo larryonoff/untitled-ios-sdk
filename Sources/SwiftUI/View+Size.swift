@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension View {
-  public func onSizeChange(perform: @escaping (CGSize) -> Void) -> some View {
+  public func onSizeChange(perform: @escaping @Sendable (CGSize) -> Void) -> some View {
     background(
       GeometryReader { geometry in
         Color.clear
@@ -13,6 +13,6 @@ extension View {
 }
 
 private struct SizePreferenceChangeKey: PreferenceKey {
-  static var defaultValue: CGSize = .zero
+  static var defaultValue: CGSize { .zero }
   static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
 }
