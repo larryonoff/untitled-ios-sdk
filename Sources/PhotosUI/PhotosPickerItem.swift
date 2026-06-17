@@ -15,7 +15,9 @@ public struct _PhotosPickerItem {
     }
   }
 
-  private enum Value: Equatable, Hashable, Sendable {
+  // SAFETY: only the immutable identifiers / item providers of the wrapped
+  // values are read; PHPickerResult is not annotated `Sendable` by PhotosUI.
+  private enum Value: Equatable, Hashable, @unchecked Sendable {
     case pickerItem(PhotosPickerItem)
     case pickerResult(PHPickerResult)
   }
