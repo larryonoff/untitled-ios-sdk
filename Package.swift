@@ -138,7 +138,8 @@ let package = Package(
     .target(
       name: .coreImage,
       dependencies: [],
-      path: "Sources/CoreImage"
+      path: "Sources/CoreImage",
+      swiftSettings: .upcomingFeatures
     ),
     .target(
       name: .avFoundation,
@@ -156,7 +157,8 @@ let package = Package(
     ),
     .target(
       name: .graphics,
-      path: "Sources/Graphics"
+      path: "Sources/Graphics",
+      swiftSettings: .upcomingFeatures
     ),
     .target(name: .sfSymbol),
     .target(
@@ -634,7 +636,8 @@ extension Target {
   static let foundation = target(
     name: .foundation,
     dependencies: [],
-    path: "Sources/Foundation"
+    path: "Sources/Foundation",
+    swiftSettings: .upcomingFeatures
   )
 
   static let logging = target(
@@ -643,6 +646,7 @@ extension Target {
       .External.customDump
     ],
     path: "Sources/Logging",
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("OSLog")
     ]
