@@ -1,4 +1,5 @@
 import DuckUserSettings
+import Foundation
 
 extension UserSettingsClient {
   var autoPresentationSessionID: Int? {

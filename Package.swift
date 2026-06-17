@@ -242,7 +242,8 @@ extension Target {
         .Client.userSettings,
         .Composable.remoteSettings,
       ],
-      path: "Sources/AutoPresentationRateUs"
+      path: "Sources/AutoPresentationRateUs",
+      swiftSettings: .upcomingFeatures
     )
   }
 
@@ -301,7 +302,8 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros,
       ],
-      path: "Sources/AutoPresentationClient"
+      path: "Sources/AutoPresentationClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let connectivity = target(
@@ -514,7 +516,8 @@ extension Target {
         .Client.connectivity,
         .External.sharing,
       ],
-      path: "Sources/ConnectivityComposable"
+      path: "Sources/ConnectivityComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let paywall = target(
@@ -542,7 +545,8 @@ extension Target {
         .External.composableArchitecture,
         .External.sharing,
       ],
-      path: "Sources/PhotosComposable"
+      path: "Sources/PhotosComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let photosAuthorization = target(
@@ -563,7 +567,8 @@ extension Target {
         .Composable.remoteSettings,
         .External.sharing,
       ],
-      path: "Sources/PurchasesComposable"
+      path: "Sources/PurchasesComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let remoteSettings = target(
@@ -572,7 +577,8 @@ extension Target {
         .Client.remoteSettings,
         .External.sharing,
       ],
-      path: "Sources/RemoteSettingsComposable"
+      path: "Sources/RemoteSettingsComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userSession = target(
@@ -581,7 +587,8 @@ extension Target {
         .Client.userSession,
         .External.sharing,
       ],
-      path: "Sources/UserSessionComposable"
+      path: "Sources/UserSessionComposable",
+      swiftSettings: .upcomingFeatures
     )
   }
 
@@ -593,7 +600,8 @@ extension Target {
         .purchasesCore,
         .External.dependencies,
       ],
-      path: "Sources/PaywallDependencies"
+      path: "Sources/PaywallDependencies",
+      swiftSettings: .upcomingFeatures
     )
   }
 
@@ -608,7 +616,8 @@ extension Target {
         .External.composableArchitecture,
         .Client.analytics,
       ],
-      path: "Sources/RateUsFeature"
+      path: "Sources/RateUsFeature",
+      swiftSettings: .upcomingFeatures
     )
   }
 

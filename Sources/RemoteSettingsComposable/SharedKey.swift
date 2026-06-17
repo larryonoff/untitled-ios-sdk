@@ -267,7 +267,7 @@ public struct RemoteSettingKeyID: Hashable {
   let key: String
 }
 
-private protocol Lookup<Value> {
+private protocol Lookup<Value>: Sendable {
   associatedtype Value
   func loadValue(from store: RemoteSettingsClient, at key: String, default defaultValue: Value?) -> Value?
 }
