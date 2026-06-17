@@ -306,7 +306,8 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros
       ],
-      path: "Sources/ConnectivityClient"
+      path: "Sources/ConnectivityClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let facebook = target(
@@ -461,7 +462,8 @@ extension Target {
         .External.Dependencies.macros,
         .External.keychainAccess
       ],
-      path: "Sources/UserSessionClient"
+      path: "Sources/UserSessionClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userSettings = target(
@@ -471,7 +473,8 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros
       ],
-      path: "Sources/UserSettings"
+      path: "Sources/UserSettings",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userTracking = target(
