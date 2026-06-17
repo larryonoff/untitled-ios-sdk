@@ -426,7 +426,8 @@ extension Target {
         .Client.remoteSettings,
         .Dependencies.paywall
       ],
-      path: "Sources/PurchasesOffersClient"
+      path: "Sources/PurchasesOffersClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let remoteSettings = target(
