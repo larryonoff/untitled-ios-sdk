@@ -167,6 +167,7 @@ let package = Package(
         .swiftUI
       ],
       path: "Sources/VideoPlayer",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("AVKit")
       ]
@@ -617,7 +618,8 @@ extension Target {
       .External.composableArchitecture,
       .External.tagged
     ],
-    path: "Sources/Core"
+    path: "Sources/Core",
+    swiftSettings: .upcomingFeatures
   )
 
   static let dependencies = target(
@@ -732,6 +734,7 @@ extension Target {
   static let webView = target(
     name: .webView,
     path: "Sources/WebView",
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("WebKit")
     ]
