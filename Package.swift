@@ -322,8 +322,7 @@ extension Target {
         .External.Dependencies.macros,
         .External.Facebook.core
       ],
-      path: "Sources/FacebookClient",
-      swiftSettings: .upcomingFeatures
+      path: "Sources/FacebookClient"
     )
 
     static let feedback = target(
