@@ -169,7 +169,9 @@ extension Image {
   }
 }
 
-private let imageRequestOptions: PHImageRequestOptions = {
+// SAFETY: configured once at startup and only read afterwards; PHImageRequestOptions
+// is not annotated `Sendable` by Photos.
+private nonisolated(unsafe) let imageRequestOptions: PHImageRequestOptions = {
   let options = PHImageRequestOptions()
   options.deliveryMode = .opportunistic
   options.isNetworkAccessAllowed = true
