@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import Foundation
 
 extension AlertState {
   public static func failure(
