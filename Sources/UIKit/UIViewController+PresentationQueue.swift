@@ -4,28 +4,31 @@ import UIKit
 extension UIViewController {
   public static func presentInQueue(
     _ viewControllerToPresent: UIViewController,
-    presentingViewController: @autoclosure @escaping () -> UIViewController?,
+    presentingViewController: @autoclosure @escaping @Sendable () -> UIViewController?,
     animated: Bool = true,
-    completion: ((Bool) -> Void)? = nil
+    completion: (@Sendable (Bool) -> Void)? = nil
   ) {
     let presentOperation = BlockOperation {
       let semaphore = DispatchSemaphore(value: 0)
 
       OperationQueue.main.addOperation {
-        guard let parent = presentingViewController() else {
-          semaphore.signal()
-          completion?(false)
-          return
-        }
-
-        parent.present(
-          viewControllerToPresent,
-          animated: animated,
-          completion: {
+        // SAFETY: OperationQueue.main runs this block on the main thread.
+        MainActor.assumeIsolated {
+          guard let parent = presentingViewController() else {
             semaphore.signal()
-            completion?(true)
+            completion?(false)
+            return
           }
-        )
+
+          parent.present(
+            viewControllerToPresent,
+            animated: animated,
+            completion: {
+              semaphore.signal()
+              completion?(true)
+            }
+          )
+        }
       }
 
       _ = semaphore.wait(timeout: .distantFuture)
@@ -44,15 +47,18 @@ extension UIViewController {
 
   public func dismissInQueue(
     animated: Bool = true,
-    completion: (() -> Void)? = nil
+    completion: (@Sendable () -> Void)? = nil
   ) {
     let dismissOperation = BlockOperation {
       let semaphore = DispatchSemaphore(value: 0)
 
       OperationQueue.main.addOperation {
-        self.dismiss(animated: animated) {
-          semaphore.signal()
-          completion?()
+        // SAFETY: OperationQueue.main runs this block on the main thread.
+        MainActor.assumeIsolated {
+          self.dismiss(animated: animated) {
+            semaphore.signal()
+            completion?()
+          }
         }
       }
 

@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 extension UIApplication {
   public var activeScene: UIWindowScene? {
     for scene in connectedScenes {
@@ -39,6 +40,7 @@ extension UIApplication {
 }
 
 private extension Optional where Wrapped == UIWindow {
+  @MainActor
   var windowLevel: UIWindow.Level {
     self?.windowLevel ?? UIWindow.Level(-1000)
   }
