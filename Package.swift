@@ -320,7 +320,8 @@ extension Target {
         .External.Dependencies.macros,
         .External.Facebook.core
       ],
-      path: "Sources/FacebookClient"
+      path: "Sources/FacebookClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let feedback = target(
@@ -353,7 +354,8 @@ extension Target {
         .External.customDump,
         .External.dependencies
       ],
-      path: "Sources/InstagramSharingClient"
+      path: "Sources/InstagramSharingClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let pasteboard = target(

@@ -4,10 +4,10 @@ import UIKit
 
 extension FacebookClient: DependencyKey {
   public static let liveValue = FacebookClient(
-    continueUserActivity: {
+    continueUserActivity: { userActivity in
       ApplicationDelegate.shared.application(
         UIApplication.shared,
-        continue: $0
+        continue: userActivity
       )
     },
     didFinishLaunching: { options in
