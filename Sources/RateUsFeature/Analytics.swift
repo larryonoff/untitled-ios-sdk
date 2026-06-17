@@ -6,9 +6,9 @@ extension RateUs {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return .run { _ in analytics.log(.rateUsView) }
+        return .run { [analytics] _ in analytics.log(.rateUsView) }
       case .contactUsTapped:
-        return .run { [placement = state.placement] _ in
+        return .run { [analytics, placement = state.placement] _ in
           analytics.log(
             .rateUsDoNotLoveAction,
             parameters: [
@@ -18,7 +18,7 @@ extension RateUs {
           )
         }
       case .dismissTapped:
-        return .run { [placement = state.placement] send in
+        return .run { [analytics, placement = state.placement] send in
           analytics.log(
             .rateUsDoNotLoveAction,
             parameters: [
@@ -28,7 +28,7 @@ extension RateUs {
           )
         }
       case .doNotLoveTapped:
-        return .run { [placement = state.placement] _ in
+        return .run { [analytics, placement = state.placement] _ in
           analytics.log(
             .rateUsAction,
             parameters: [
@@ -38,7 +38,7 @@ extension RateUs {
           )
         }
       case .loveTapped:
-        return .run { [placement = state.placement] _ in
+        return .run { [analytics, placement = state.placement] _ in
           analytics.log(
             .rateUsAction,
             parameters: [
