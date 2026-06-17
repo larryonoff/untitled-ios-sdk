@@ -48,7 +48,7 @@ public struct ComposablePhotosPicker: View {
     WithPerceptionTracking {
       if #available(iOS 17.0, macOS 14.0, *) {
         PhotosUI.PhotosPicker(
-          selection: $store._rawSelection.sending(\._setRawSelection),
+          selection: $store._rawSelection,
           maxSelectionCount: store.maxSelectionCount,
           selectionBehavior: store.selectionBehavior,
           matching: store.filter,
@@ -73,22 +73,10 @@ public struct ComposablePhotosPicker: View {
   }
 }
 
-private extension PhotosPickerReducer.State {
+private extension StoreOf<PhotosPickerReducer> {
   var _rawSelection: [PhotosPickerItem] {
-    selection.compactMap(\.pickerItem)
+    get { state.selection.compactMap(\.pickerItem) }
+    set { send(.setSelection(newValue.map(_PhotosPickerItem.init))) }
   }
 }
 
-private extension PhotosPickerReducer.Action.AllCasePaths {
-  var _setRawSelection: AnyCasePath<PhotosPickerReducer.Action, [PhotosPickerItem]> {
-    AnyCasePath(
-      embed: {
-        .setSelection($0.map(_PhotosPickerItem.init))
-      },
-      extract: {
-        guard case let .setSelection(value) = $0 else { return nil }
-        return value.compactMap(\.pickerItem)
-      }
-    )
-  }
-}
