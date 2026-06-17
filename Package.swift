@@ -384,6 +384,7 @@ extension Target {
     static let purchases = target(
       name: .Client.purchases,
       dependencies: [
+        .concurrency,
         .foundation,
         .logging,
         .purchasesCore,
