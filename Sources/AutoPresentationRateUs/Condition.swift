@@ -9,8 +9,15 @@ extension AutoPresentation.FeatureCondition {
   public static func rateUs(
     impressionCount: Int? = 1
   ) -> Self {
+    @Dependency(\.remoteSettings) var remoteSettings
+    @Dependency(\.userSession) var userSession
+    @Dependency(\.userSettings) var userSettings
+
     let impl = RateUsConditionImpl(
-      impressionCount: impressionCount
+      impressionCount: impressionCount,
+      remoteSettings: remoteSettings,
+      userSession: userSession,
+      userSettings: userSettings
     )
 
     return AutoPresentation.FeatureCondition(
@@ -30,15 +37,23 @@ extension AutoPresentation.FeatureCondition {
   }
 }
 
-private final class RateUsConditionImpl {
-  @Dependency(\.remoteSettings) var remoteSettings
-  @Dependency(\.userSession) var userSession
-  @Dependency(\.userSettings) var userSettings
-
+private final class RateUsConditionImpl: Sendable {
   let impressionCount: Int?
 
-  init(impressionCount: Int?) {
+  private let remoteSettings: RemoteSettingsClient
+  private let userSession: UserSessionClient
+  private let userSettings: UserSettingsClient
+
+  init(
+    impressionCount: Int?,
+    remoteSettings: RemoteSettingsClient,
+    userSession: UserSessionClient,
+    userSettings: UserSettingsClient
+  ) {
     self.impressionCount = impressionCount
+    self.remoteSettings = remoteSettings
+    self.userSession = userSession
+    self.userSettings = userSettings
   }
 
   // MARK: - Conformance
@@ -182,7 +197,7 @@ private final class RateUsConditionImpl {
   }
 
   private var isNeverPresented: Bool {
-    userSettings.rateUsPresentationSession == nil
+    return userSettings.rateUsPresentationSession == nil
   }
 
   private var isPresentationDelayExpired: Bool {

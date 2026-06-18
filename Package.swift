@@ -138,11 +138,13 @@ let package = Package(
     .target(
       name: .coreImage,
       dependencies: [],
-      path: "Sources/CoreImage"
+      path: "Sources/CoreImage",
+      swiftSettings: .upcomingFeatures
     ),
     .target(
       name: .avFoundation,
       path: "Sources/AVFoundation",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("AVFoundation")
       ]
@@ -156,7 +158,8 @@ let package = Package(
     ),
     .target(
       name: .graphics,
-      path: "Sources/Graphics"
+      path: "Sources/Graphics",
+      swiftSettings: .upcomingFeatures
     ),
     .target(name: .sfSymbol),
     .target(
@@ -165,6 +168,7 @@ let package = Package(
         .swiftUI
       ],
       path: "Sources/VideoPlayer",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("AVKit")
       ]
@@ -218,6 +222,17 @@ let package = Package(
   ]
 )
 
+extension [SwiftSetting] {
+  static let upcomingFeatures: [SwiftSetting] = [
+    .enableUpcomingFeature("StrictConcurrency"),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InferSendableFromCaptures"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("MemberImportVisibility")
+  ]
+}
+
 extension Target {
   enum AutoPresentation {
     static let rateUs = target(
@@ -228,7 +243,8 @@ extension Target {
         .Client.userSettings,
         .Composable.remoteSettings,
       ],
-      path: "Sources/AutoPresentationRateUs"
+      path: "Sources/AutoPresentationRateUs",
+      swiftSettings: .upcomingFeatures
     )
   }
 
@@ -243,7 +259,8 @@ extension Target {
         .External.Dependencies.macros,
         .External.tagged
       ],
-      path: "Sources/AnalyticsClient"
+      path: "Sources/AnalyticsClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let application = target(
@@ -252,7 +269,8 @@ extension Target {
         .logging,
         .External.dependencies
       ],
-      path: "Sources/ApplicationClient"
+      path: "Sources/ApplicationClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let appMetrica = target(
@@ -268,7 +286,8 @@ extension Target {
         .External.AppMetrica.core,
         .External.AppMetrica.crashes
       ],
-      path: "Sources/AppMetricaClient"
+      path: "Sources/AppMetricaClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let autoPresentation = target(
@@ -284,7 +303,8 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros,
       ],
-      path: "Sources/AutoPresentationClient"
+      path: "Sources/AutoPresentationClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let connectivity = target(
@@ -295,7 +315,8 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros
       ],
-      path: "Sources/ConnectivityClient"
+      path: "Sources/ConnectivityClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let facebook = target(
@@ -313,7 +334,8 @@ extension Target {
       dependencies: [
         .External.dependencies
       ],
-      path: "Sources/FeedbackClient"
+      path: "Sources/FeedbackClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let firebase = target(
@@ -327,7 +349,8 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros
       ],
-      path: "Sources/FirebaseClient"
+      path: "Sources/FirebaseClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let instagramSharing = target(
@@ -336,7 +359,8 @@ extension Target {
         .External.customDump,
         .External.dependencies
       ],
-      path: "Sources/InstagramSharingClient"
+      path: "Sources/InstagramSharingClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let pasteboard = target(
@@ -347,6 +371,7 @@ extension Target {
         .External.Dependencies.macros
       ],
       path: "Sources/PasteboardClient",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("UIKit")
       ]
@@ -361,6 +386,7 @@ extension Target {
         .External.tagged
       ],
       path: "Sources/PhotosAuthorizationClient",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("Photos")
       ]
@@ -369,6 +395,7 @@ extension Target {
     static let purchases = target(
       name: .Client.purchases,
       dependencies: [
+        .concurrency,
         .foundation,
         .logging,
         .purchasesCore,
@@ -399,7 +426,8 @@ extension Target {
         .Client.remoteSettings,
         .Dependencies.paywall
       ],
-      path: "Sources/PurchasesOffersClient"
+      path: "Sources/PurchasesOffersClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let remoteSettings = target(
@@ -410,6 +438,7 @@ extension Target {
         .External.Firebase.remoteConfig
       ],
       path: "Sources/RemoteSettingsClient",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("UIKit")
       ]
@@ -421,17 +450,21 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros
       ],
-      path: "Sources/UserAttributionClient"
+      path: "Sources/UserAttributionClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userIdentifier = target(
       name: .Client.userIdentifier,
       dependencies: [
+        .foundation,
+        .logging,
         .External.dependencies,
         .External.keychainAccess,
         .External.tagged
       ],
-      path: "Sources/UserIdentifier"
+      path: "Sources/UserIdentifier",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userSession = target(
@@ -443,7 +476,8 @@ extension Target {
         .External.Dependencies.macros,
         .External.keychainAccess
       ],
-      path: "Sources/UserSessionClient"
+      path: "Sources/UserSessionClient",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userSettings = target(
@@ -453,7 +487,8 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros
       ],
-      path: "Sources/UserSettings"
+      path: "Sources/UserSettings",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userTracking = target(
@@ -467,6 +502,7 @@ extension Target {
         .External.Facebook.core
       ],
       path: "Sources/UserTracking",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("AdServices"),
         .linkedFramework("AdSupport"),
@@ -482,7 +518,8 @@ extension Target {
         .Client.connectivity,
         .External.sharing,
       ],
-      path: "Sources/ConnectivityComposable"
+      path: "Sources/ConnectivityComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let paywall = target(
@@ -510,7 +547,8 @@ extension Target {
         .External.composableArchitecture,
         .External.sharing,
       ],
-      path: "Sources/PhotosComposable"
+      path: "Sources/PhotosComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let photosAuthorization = target(
@@ -520,7 +558,8 @@ extension Target {
         .Client.photosAuthorization,
         .External.sharing,
       ],
-      path: "Sources/PhotosAuthorizationComposable"
+      path: "Sources/PhotosAuthorizationComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let purchases = target(
@@ -531,7 +570,8 @@ extension Target {
         .Composable.remoteSettings,
         .External.sharing,
       ],
-      path: "Sources/PurchasesComposable"
+      path: "Sources/PurchasesComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let remoteSettings = target(
@@ -540,7 +580,8 @@ extension Target {
         .Client.remoteSettings,
         .External.sharing,
       ],
-      path: "Sources/RemoteSettingsComposable"
+      path: "Sources/RemoteSettingsComposable",
+      swiftSettings: .upcomingFeatures
     )
 
     static let userSession = target(
@@ -549,7 +590,8 @@ extension Target {
         .Client.userSession,
         .External.sharing,
       ],
-      path: "Sources/UserSessionComposable"
+      path: "Sources/UserSessionComposable",
+      swiftSettings: .upcomingFeatures
     )
   }
 
@@ -561,7 +603,8 @@ extension Target {
         .purchasesCore,
         .External.dependencies,
       ],
-      path: "Sources/PaywallDependencies"
+      path: "Sources/PaywallDependencies",
+      swiftSettings: .upcomingFeatures
     )
   }
 
@@ -576,7 +619,8 @@ extension Target {
         .External.composableArchitecture,
         .Client.analytics,
       ],
-      path: "Sources/RateUsFeature"
+      path: "Sources/RateUsFeature",
+      swiftSettings: .upcomingFeatures
     )
   }
 
@@ -586,7 +630,8 @@ extension Target {
       .External.composableArchitecture,
       .External.tagged
     ],
-    path: "Sources/Core"
+    path: "Sources/Core",
+    swiftSettings: .upcomingFeatures
   )
 
   static let dependencies = target(
@@ -598,13 +643,15 @@ extension Target {
       .External.dependencies,
       .External.deviceKit
     ],
-    path: "Sources/Dependencies"
+    path: "Sources/Dependencies",
+    swiftSettings: .upcomingFeatures
   )
 
   static let foundation = target(
     name: .foundation,
     dependencies: [],
-    path: "Sources/Foundation"
+    path: "Sources/Foundation",
+    swiftSettings: .upcomingFeatures
   )
 
   static let logging = target(
@@ -613,6 +660,7 @@ extension Target {
       .External.customDump
     ],
     path: "Sources/Logging",
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("OSLog")
     ]
@@ -628,6 +676,7 @@ extension Target {
       .External.tagged
     ],
     path: "Sources/Photos",
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("Photos")
     ]
@@ -657,6 +706,7 @@ extension Target {
     resources: [
       .process("Resources")
     ],
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("StoreKit")
     ]
@@ -673,6 +723,7 @@ extension Target {
       .External.tagged
     ],
     path: "Sources/PhotosUI",
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("Photos"),
       .linkedFramework("PhotosUI")
@@ -687,17 +738,20 @@ extension Target {
       .External.composableArchitecture,
       .External.swiftUINavigation
     ],
-    path: "Sources/SwiftUI"
+    path: "Sources/SwiftUI",
+    swiftSettings: .upcomingFeatures
   )
 
   static let uiKit = target(
     name: .uiKit,
-    path: "Sources/UIKit"
+    path: "Sources/UIKit",
+    swiftSettings: .upcomingFeatures
   )
 
   static let webView = target(
     name: .webView,
     path: "Sources/WebView",
+    swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("WebKit")
     ]

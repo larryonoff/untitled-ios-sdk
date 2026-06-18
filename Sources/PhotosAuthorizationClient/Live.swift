@@ -24,7 +24,8 @@ extension PhotosAuthorizationClient: DependencyKey {
 private final class PhotosAuthorizationClientImpl: Sendable {
   init() {}
 
-  private let authorizationSubject =
+  // SAFETY: `PassthroughSubject` is internally thread-safe; Combine just doesn't annotate it `Sendable`.
+  private nonisolated(unsafe) let authorizationSubject =
     PassthroughSubject<
       (PhotosAuthorization.AccessLevel, PhotosAuthorization.AuthorizationStatus),
       Never
@@ -42,10 +43,13 @@ private final class PhotosAuthorizationClientImpl: Sendable {
   func authorizationStatusUpdates(
     for acl: PhotosAuthorization.AccessLevel
   ) -> AsyncStream<PhotosAuthorization.AuthorizationStatus> {
-    authorizationSubject.values
-      .filter { $0.0 == acl }
-      .map { $0.1 }
-      .eraseToStream()
+    AsyncStream(
+      UncheckedSendable(
+        authorizationSubject.values
+          .filter { $0.0 == acl }
+          .map { $0.1 }
+      )
+    )
   }
 
   func requestAuthorizationIfNeeded(

@@ -5,6 +5,7 @@ import DuckLogging
 import DuckUserIdentifierClient
 import Foundation
 import OSLog
+import Tagged
 
 extension AppMetricaClient: DependencyKey {
   public static let liveValue: Self = {

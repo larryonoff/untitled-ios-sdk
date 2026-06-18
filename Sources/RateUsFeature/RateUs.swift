@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckDependencies
+import DuckFoundation
 import DuckPurchases
 import Foundation
 
@@ -61,7 +62,7 @@ public struct RateUs {
         return .none
 
       case .contactUsTapped:
-        return .run { [contactURL = state.contactURL] send in
+        return .run { [openURL, dismiss, contactURL = state.contactURL] send in
           if let contactURL {
             await openURL(contactURL)
           }
@@ -69,13 +70,13 @@ public struct RateUs {
           await dismiss()
         }
       case .dismissTapped:
-        return .run { _ in await dismiss() }
+        return .run { [dismiss] _ in await dismiss() }
       case .doNotLoveTapped:
         state.mode = .doNotLove
 
         return .none
       case .loveTapped:
-        return .run { [placement = state.placement] _ in
+        return .run { [requestReview, dismiss] _ in
           await requestReview()
           await dismiss()
         }

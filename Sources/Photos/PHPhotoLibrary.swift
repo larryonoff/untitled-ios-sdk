@@ -24,8 +24,10 @@ extension PHPhotoLibrary {
 }
 
 
-private final class PhotoLibraryChangeObserverSink: NSObject {
-  fileprivate let pipe = AsyncStream.streamWithContinuation(PHChange.self)
+// SAFETY: the sink only forwards change notifications into a thread-safe
+// AsyncStream continuation; it holds no other mutable state.
+private final class PhotoLibraryChangeObserverSink: NSObject, @unchecked Sendable {
+  fileprivate let pipe = AsyncStream.makeStream(of: PHChange.self)
 }
 
 extension PhotoLibraryChangeObserverSink: PHPhotoLibraryChangeObserver {

@@ -13,8 +13,12 @@ extension DependencyValues {
   }
 }
 
+// SAFETY: `Device` is an immutable value type; DeviceKit doesn't annotate it
+// `Sendable`. Treated as such here so it can flow through dependencies/sharing.
+extension Device: @retroactive @unchecked Sendable {}
+
 extension SharedReaderKey where Self == InMemoryKey<Device>.Default {
-  public static var bundle: Self {
+  public static var device: Self {
     Self[.inMemory("device"), default: .current]
   }
 }
