@@ -1,7 +1,7 @@
 import ComposableArchitecture
 @_exported import DuckPhotosAuthorizationClient
 
-extension PersistenceReaderKey where Self == PhotosAuthorizationPersistenceKey {
+extension SharedReaderKey where Self == PhotosAuthorizationPersistenceKey {
   public static func photosAuthorization(
     _ accessLevel: PhotosAuthorization.AccessLevel
   ) -> Self {
@@ -13,7 +13,7 @@ extension PersistenceReaderKey where Self == PhotosAuthorizationPersistenceKey {
   }
 }
 
-public struct PhotosAuthorizationPersistenceKey: PersistenceReaderKey, Sendable {
+public struct PhotosAuthorizationPersistenceKey: SharedReaderKey, Sendable {
   @Dependency(\.photosAuthorization) var photosAuthorization
 
   let accessLevel: PhotosAuthorization.AccessLevel
@@ -24,32 +24,35 @@ public struct PhotosAuthorizationPersistenceKey: PersistenceReaderKey, Sendable 
     self.accessLevel = accessLevel
   }
 
-  public var id: AnyHashable {
+  public var id: PhotosAuthorizationPersistenceKeyID {
     PhotosAuthorizationPersistenceKeyID(accessLevel: accessLevel)
   }
 
   public func load(
-    initialValue: PhotosAuthorization.AuthorizationStatus?
-  ) -> PhotosAuthorization.AuthorizationStatus? {
-    photosAuthorization.authorizationStatus(accessLevel)
+    context: LoadContext<PhotosAuthorization.AuthorizationStatus>,
+    continuation: LoadContinuation<PhotosAuthorization.AuthorizationStatus>
+  ) {
+    continuation.resume(
+      with: .success(photosAuthorization.authorizationStatus(accessLevel))
+    )
   }
 
   public func subscribe(
-    initialValue: PhotosAuthorization.AuthorizationStatus?,
-    didSet: @escaping (PhotosAuthorization.AuthorizationStatus?) -> Void
-  ) -> Shared<PhotosAuthorization.AuthorizationStatus>.Subscription {
+    context: LoadContext<PhotosAuthorization.AuthorizationStatus>,
+    subscriber: SharedSubscriber<PhotosAuthorization.AuthorizationStatus>
+  ) -> SharedSubscription {
     let task = Task {
-      for await purchases in self.photosAuthorization.authorizationStatusUpdates(accessLevel) {
-        didSet(purchases)
+      for await status in self.photosAuthorization.authorizationStatusUpdates(accessLevel) {
+        subscriber.yield(status)
       }
     }
 
-    return Shared.Subscription {
+    return SharedSubscription {
       task.cancel()
     }
   }
 }
 
-private struct PhotosAuthorizationPersistenceKeyID: Hashable {
+public struct PhotosAuthorizationPersistenceKeyID: Hashable {
   let accessLevel: PhotosAuthorization.AccessLevel
 }

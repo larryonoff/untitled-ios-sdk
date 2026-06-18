@@ -27,7 +27,9 @@ extension AVPlayer {
     forInterval interval: CMTime
   ) -> AsyncStream<CMTime> {
     AsyncStream { continuation in
-      let observer = addPeriodicTimeObserver(
+      // SAFETY: the observer is an opaque token only used to remove itself; the
+      // player and observer APIs are thread-safe.
+      nonisolated(unsafe) let observer = addPeriodicTimeObserver(
         forInterval: interval,
         queue: nil,
         using: { continuation.yield($0) }
@@ -57,7 +59,9 @@ extension AVPlayer {
     }
 
     return AsyncStream { continuation in
-      let observer = addBoundaryTimeObserver(
+      // SAFETY: the observer is an opaque token only used to remove itself; the
+      // player and observer APIs are thread-safe.
+      nonisolated(unsafe) let observer = addBoundaryTimeObserver(
         forTimes: times.map(NSValue.init(time:)),
         queue: nil,
         using: { continuation.yield(()) }

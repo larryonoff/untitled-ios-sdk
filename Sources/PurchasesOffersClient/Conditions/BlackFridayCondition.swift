@@ -1,8 +1,10 @@
 import Dependencies
+import DuckLogging
 import DuckPaywallDependencies
 import DuckPurchasesClient
 import DuckRemoteSettingsClient
 import Foundation
+import OSLog
 
 extension PurchasesOfferCondition {
   static func blackFriday(
@@ -11,7 +13,10 @@ extension PurchasesOfferCondition {
     purchases: PurchasesClient,
     remoteSettings: RemoteSettingsClient
   ) -> Self {
-    Self(
+    // SAFETY: UserDefaults is thread-safe; it just isn't annotated `Sendable`.
+    nonisolated(unsafe) let appStorage = appStorage
+
+    return Self(
       calculateOffer: { date, paywallType -> PurchasesOffer? in
         logger.info("calculate black friday")
 

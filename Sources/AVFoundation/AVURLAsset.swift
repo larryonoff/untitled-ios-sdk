@@ -15,11 +15,13 @@ extension AVURLAsset {
   }
 }
 
-private final class AVCustomURLAsset: AVURLAsset {
-  var resourceLoaderDelegate: AVAssetCustomURLResourceLoader?
+// SAFETY: `resourceLoaderDelegate` is assigned once in `custom(url:)` before the
+// asset escapes, then only read; AVURLAsset itself is `@unchecked Sendable`.
+private final class AVCustomURLAsset: AVURLAsset, @unchecked Sendable {
+  nonisolated(unsafe) var resourceLoaderDelegate: AVAssetCustomURLResourceLoader?
 }
 
-private final class AVAssetCustomURLResourceLoader: NSObject {
+private final class AVAssetCustomURLResourceLoader: NSObject, @unchecked Sendable {
   private let url: URL
 
   init(url: URL) {

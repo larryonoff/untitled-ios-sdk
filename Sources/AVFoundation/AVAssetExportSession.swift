@@ -2,7 +2,12 @@ import AVFoundation
 
 extension AVFoundation.AVAssetExportSession {
   public var progressStream: AsyncStream<Float> {
-    AsyncStream { continuation in
+    // SAFETY: the export session is driven by a single export sequence; its
+    // status/progress are only read here. AVAssetExportSession is not annotated
+    // Sendable by AVFoundation.
+    nonisolated(unsafe) let session = self
+
+    return AsyncStream { continuation in
       let task = Task {
         do {
           var progress: Float = 0
@@ -11,10 +16,10 @@ extension AVFoundation.AVAssetExportSession {
             try await Task.sleep(nanoseconds: 1 * 1_000_000_00) // 0.1 seconds
             try Task.checkCancellation()
 
-            switch self.status {
+            switch session.status {
             case .exporting:
-              if progress != self.progress {
-                progress = self.progress
+              if progress != session.progress {
+                progress = session.progress
                 continuation.yield(progress)
               }
             case .completed:
@@ -26,7 +31,7 @@ extension AVFoundation.AVAssetExportSession {
             }
 
             await Task.yield()
-          } while !self.status.isFinished
+          } while !session.status.isFinished
 
           continuation.finish()
         } catch {
@@ -39,15 +44,19 @@ extension AVFoundation.AVAssetExportSession {
   }
 
   public func export(
-    progress progressHandler: ((Float) -> Void)?
+    progress progressHandler: (@Sendable (Float) -> Void)?
   ) async throws {
+    // SAFETY: the export session is driven by this single export sequence.
+    // AVAssetExportSession is not annotated Sendable by AVFoundation.
+    nonisolated(unsafe) let session = self
+
     try await withThrowingTaskGroup(of: Void.self) { group in
       // export task
       group.addTask {
         try Task.checkCancellation()
-        await self.export()
+        await session.export()
 
-        if let error = self.error {
+        if let error = session.error {
           throw error
         }
 
@@ -56,7 +65,7 @@ extension AVFoundation.AVAssetExportSession {
 
       // progress task
       group.addTask {
-        for await progress in self.progressStream {
+        for await progress in session.progressStream {
           progressHandler?(progress)
         }
       }

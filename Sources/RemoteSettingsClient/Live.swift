@@ -70,7 +70,7 @@ extension RemoteSettingsClient: DependencyKey {
   }()
 }
 
-private final class RemoteSettingsImpl {
+private actor RemoteSettingsImpl {
   private var fetchTask: Task<Void, Error>?
 
   init() {}

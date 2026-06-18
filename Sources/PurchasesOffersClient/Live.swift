@@ -1,7 +1,9 @@
+import CasePathsCore
 import Combine
 import Dependencies
 import Foundation
 import DuckDependencies
+import DuckFoundation
 import DuckLogging
 import DuckPaywallDependencies
 import DuckPurchasesClient
@@ -52,20 +54,25 @@ extension PurchasesOffersClient {
   }
 }
 
-final class PurchasesOffersClientImpl {
+final class PurchasesOffersClientImpl: @unchecked Sendable {
   private let offersConditions: [PurchasesOfferCondition]
-  private let appStorage: UserDefaults
+  // SAFETY: UserDefaults is thread-safe; it just isn't annotated `Sendable`.
+  private nonisolated(unsafe) let appStorage: UserDefaults
   private let paywallID: PaywallIDGenerator
   private let purchases: PurchasesClient
   private let remoteSettings: RemoteSettingsClient
+  private let date: DateGenerator
 
-  @Dependency(\.date) private var date
+  // SAFETY: CurrentValueSubject is internally thread-safe; Combine doesn't
+  // annotate it `Sendable`.
+  nonisolated(unsafe) let activeOffer = CurrentValueSubject<PurchasesOffer?, Never>(nil)
 
-  let activeOffer = CurrentValueSubject<PurchasesOffer?, Never>(nil)
-
-  private var timerHandle: Task<Void, Never>?
-  private var purchasesHandle: Task<Void, Never>?
-  private var appLifecycleHandle: Task<Void, Never>?
+  private struct Handles {
+    var timer: Task<Void, Never>?
+    var purchases: Task<Void, Never>?
+    var appLifecycle: Task<Void, Never>?
+  }
+  private let handles = Mutex(Handles())
 
   init(
     offers: Set<PurchasesOfferType>,
@@ -74,6 +81,9 @@ final class PurchasesOffersClientImpl {
     purchases: PurchasesClient,
     remoteSettings: RemoteSettingsClient
   ) {
+    @Dependency(\.date) var date
+    self.date = date
+
     self.offersConditions = [
       offers.contains(.blackFriday) ? PurchasesOfferCondition.blackFriday(
         appStorage: appStorage,
@@ -115,33 +125,37 @@ final class PurchasesOffersClientImpl {
   }
 
   private func subscribePurchases() {
-    purchasesHandle?.cancel()
-    purchasesHandle = Task.detached(priority: .low) { [weak self] in
-      guard let purchasesUpdates = self?.purchases.purchasesUpdates() else {
-        return
-      }
+    handles.withLock { handles in
+      handles.purchases?.cancel()
+      handles.purchases = Task.detached(priority: .low) { [weak self] in
+        guard let purchasesUpdates = self?.purchases.purchasesUpdates() else {
+          return
+        }
 
-      for await purchases in purchasesUpdates {
-        guard let self else { return }
+        for await purchases in purchasesUpdates {
+          guard let self else { return }
 
-        await self.updateOffer(for: purchases)
+          await self.updateOffer(for: purchases)
+        }
       }
     }
   }
 
   private func subscribeAppLifecycle() {
-    appLifecycleHandle?.cancel()
-    appLifecycleHandle = Task.detached(priority: .low) { [weak self] in
-      let notifications = NotificationCenter.default
-        .notifications(named: UIApplication.didBecomeActiveNotification)
-        .map { _ in }
+    handles.withLock { handles in
+      handles.appLifecycle?.cancel()
+      handles.appLifecycle = Task.detached(priority: .low) { [weak self] in
+        let notifications = NotificationCenter.default
+          .notifications(named: UIApplication.didBecomeActiveNotification)
+          .map { _ in }
 
-      for await _ in notifications {
-        guard let self else { return }
+        for await _ in notifications {
+          guard let self else { return }
 
-        await self.updateOffer(
-          for: self.purchases.purchases()
-        )
+          await self.updateOffer(
+            for: self.purchases.purchases()
+          )
+        }
       }
     }
   }
@@ -176,8 +190,10 @@ final class PurchasesOffersClientImpl {
   func reset() async {
     cancelTimer()
 
-    purchasesHandle?.cancel()
-    purchasesHandle = nil
+    handles.withLock { handles in
+      handles.purchases?.cancel()
+      handles.purchases = nil
+    }
 
     appStorage.wasMainPaywallDismissed = false
     appStorage.wasLimitedTimeOfferActive = false
@@ -281,26 +297,30 @@ final class PurchasesOffersClientImpl {
   }
 
   private func runTimerIfNeeded(endDate: Date) {
-    guard timerHandle == nil else { return }
-
     let now = date()
     let timerDuration = endDate.timeIntervalSince(now)
 
-    timerHandle = Task(priority: .low) { [weak self] in
-      try? await Task.sleep(for: .seconds(timerDuration))
+    handles.withLock { handles in
+      guard handles.timer == nil else { return }
 
-      guard !Task.isCancelled else { return }
+      handles.timer = Task(priority: .low) { [weak self] in
+        try? await Task.sleep(for: .seconds(timerDuration))
 
-      if let self {
-        await self.updateOffer(
-          for: self.purchases.purchases()
-        )
+        guard !Task.isCancelled else { return }
+
+        if let self {
+          await self.updateOffer(
+            for: self.purchases.purchases()
+          )
+        }
       }
     }
   }
 
   private func cancelTimer() {
-    timerHandle?.cancel()
-    timerHandle = nil
+    handles.withLock { handles in
+      handles.timer?.cancel()
+      handles.timer = nil
+    }
   }
 }

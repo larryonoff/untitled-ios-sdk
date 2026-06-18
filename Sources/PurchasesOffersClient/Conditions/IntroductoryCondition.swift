@@ -1,7 +1,9 @@
+import DuckLogging
 import DuckPaywallDependencies
 import DuckPurchasesClient
 import DuckRemoteSettingsClient
 import Foundation
+import OSLog
 
 extension PurchasesOfferCondition {
   static func introductory(

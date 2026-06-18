@@ -47,17 +47,20 @@ extension PasteboardClient: DependencyKey {
 
 extension UIPasteboard {
   var changes: AsyncStream<Void> {
-    Publishers.Merge(
-      NotificationCenter.default
-        .publisher(for: UIPasteboard.changedNotification)
-        .compactMap { [weak self] _ in self?.changeCount },
-      NotificationCenter.default
-        .publisher(for: UIApplication.didBecomeActiveNotification)
-        .compactMap { [weak self] _ in self?.changeCount }
+    AsyncStream(
+      UncheckedSendable(
+        Publishers.Merge(
+          NotificationCenter.default
+            .publisher(for: UIPasteboard.changedNotification)
+            .compactMap { [weak self] _ in self?.changeCount },
+          NotificationCenter.default
+            .publisher(for: UIApplication.didBecomeActiveNotification)
+            .compactMap { [weak self] _ in self?.changeCount }
+        )
+        .removeDuplicates()
+        .map { _ in }
+        .values
+      )
     )
-    .removeDuplicates()
-    .map { _ in }
-    .values
-    .eraseToStream()
   }
 }
