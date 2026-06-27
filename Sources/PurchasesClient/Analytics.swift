@@ -5,10 +5,10 @@ extension AnalyticsClient.UserPropertyName {
   public static var isPremium: Self { "is_premium" }
 }
 
-extension Dictionary<AnalyticsClient.EventParameterName, Any> {
+extension Dictionary<AnalyticsClient.EventParameterName, any Sendable> {
   mutating
   public func insertOrUpdate(_ product: Product) {
-    var params: [AnalyticsClient.EventParameterName: Any] = [:]
+    var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
     params[.contentID] = product.id
 
     if

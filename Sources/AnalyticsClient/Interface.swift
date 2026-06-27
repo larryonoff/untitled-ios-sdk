@@ -12,12 +12,12 @@ extension DependencyValues {
 public struct AnalyticsClient: Sendable {
   public var logEvent: @Sendable (
     _ _: EventName,
-    _ parameters: [EventParameterName: Any]?
+    _ parameters: [EventParameterName: any Sendable]?
   ) -> Void
 
   @DependencyEndpoint(method: "set")
   public var setUserProperty: @Sendable (
-    _ _ : Any?,
+    _ _ : (any Sendable)?,
     _ for: UserPropertyName
   ) -> Void
 
@@ -26,7 +26,7 @@ public struct AnalyticsClient: Sendable {
   @Sendable
   public func log(
     _ eventName: EventName,
-    parameters: [EventParameterName: Any]? = nil
+    parameters: [EventParameterName: any Sendable]? = nil
   ) {
     self.logEvent(eventName, parameters: parameters)
   }

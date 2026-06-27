@@ -9,19 +9,7 @@ extension View {
     self.sheet(item: item) { store in
       RateUsView(store: store)
         .presentationDetents([.height(272)])
-        ._presentationCornerRadius()
-    }
-  }
-}
-
-private extension View {
-  func _presentationCornerRadius() -> some View {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *) {
-      return self
-    } else if #available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *) {
-      return self.presentationCornerRadius(24)
-    } else {
-      return self
+        .presentationCornerRadius(24)
     }
   }
 }
@@ -34,26 +22,24 @@ public struct RateUsView: View {
   }
 
   public var body: some View {
-    WithPerceptionTracking {
-      ZStack {
-        Rectangle().fill(.background)
-          .ignoresSafeArea()
+    ZStack {
+      Rectangle().fill(.background)
+        .ignoresSafeArea()
 
-        switch store.mode {
-        case .default:
-          DefaultRateUsView(store: store)
-            .transition(.rateUsMode)
-        case .doNotLove:
-          DoNotLoveRateUsView(store: store)
-            .transition(.rateUsMode)
-        }
+      switch store.mode {
+      case .default:
+        DefaultRateUsView(store: store)
+          .transition(.rateUsMode)
+      case .doNotLove:
+        DoNotLoveRateUsView(store: store)
+          .transition(.rateUsMode)
       }
-      .animation(.default, value: store.mode)
-      .onAppear {
-        store.send(.onAppear)
-      }
-      .statusBarHidden()
     }
+    .animation(.default, value: store.mode)
+    .onAppear {
+      store.send(.onAppear)
+    }
+    .statusBarHidden()
   }
 }
 
@@ -61,31 +47,29 @@ private struct DefaultRateUsView: View {
   let store: StoreOf<RateUs>
 
   var body: some View {
-    WithPerceptionTracking {
-      VStack(spacing: 0) {
-        Text(L10n.RateUs.title)
-          .font(.system(size: 22, weight: .semibold))
-          .foregroundStyle(.primary)
-          .multilineTextAlignment(.center)
+    VStack(spacing: 0) {
+      Text(L10n.RateUs.title)
+        .font(.system(size: 22, weight: .semibold))
+        .foregroundStyle(.primary)
+        .multilineTextAlignment(.center)
 
-        Button {
-          store.send(.loveTapped)
-        } label: {
-          Text(L10n.RateUs.loveAction)
-        }
-        .buttonStyle(.rateUsPrimary)
-        .padding(.top, 37)
-
-        Button {
-          store.send(.doNotLoveTapped)
-        } label: {
-          Text(L10n.RateUs.doNotLoveAction)
-        }
-        .buttonStyle(.rateUsSecondary)
-        .padding(.top, 17)
+      Button {
+        store.send(.loveTapped)
+      } label: {
+        Text(L10n.RateUs.loveAction)
       }
-      .padding()
+      .buttonStyle(.rateUsPrimary)
+      .padding(.top, 37)
+
+      Button {
+        store.send(.doNotLoveTapped)
+      } label: {
+        Text(L10n.RateUs.doNotLoveAction)
+      }
+      .buttonStyle(.rateUsSecondary)
+      .padding(.top, 17)
     }
+    .padding()
   }
 }
 
@@ -93,37 +77,35 @@ private struct DoNotLoveRateUsView: View {
   let store: StoreOf<RateUs>
 
   var body: some View {
-    WithPerceptionTracking {
-      VStack(spacing: 0) {
-        Text(L10n.RateUs.DoNotLove.title)
-          .font(.system(size: 22, weight: .semibold))
-          .foregroundStyle(.primary)
-          .multilineTextAlignment(.center)
+    VStack(spacing: 0) {
+      Text(L10n.RateUs.DoNotLove.title)
+        .font(.system(size: 22, weight: .semibold))
+        .foregroundStyle(.primary)
+        .multilineTextAlignment(.center)
 
-        Text(L10n.RateUs.DoNotLove.subtitle)
-          .font(.system(size: 16, weight: .regular))
-          .foregroundStyle(.secondary)
-          .multilineTextAlignment(.center)
-          .padding(.top, 6)
+      Text(L10n.RateUs.DoNotLove.subtitle)
+        .font(.system(size: 16, weight: .regular))
+        .foregroundStyle(.secondary)
+        .multilineTextAlignment(.center)
+        .padding(.top, 6)
 
-        Button {
-          store.send(.contactUsTapped)
-        } label: {
-          Text(L10n.RateUs.shareAction)
-        }
-        .buttonStyle(.rateUsPrimary)
-        .padding(.top, 27)
-
-        Button {
-          store.send(.dismissTapped)
-        } label: {
-          Text(L10n.RateUs.dismissAction)
-        }
-        .buttonStyle(.rateUsSecondary)
-        .padding(.top, 17)
+      Button {
+        store.send(.contactUsTapped)
+      } label: {
+        Text(L10n.RateUs.shareAction)
       }
-      .padding()
+      .buttonStyle(.rateUsPrimary)
+      .padding(.top, 27)
+
+      Button {
+        store.send(.dismissTapped)
+      } label: {
+        Text(L10n.RateUs.dismissAction)
+      }
+      .buttonStyle(.rateUsSecondary)
+      .padding(.top, 17)
     }
+    .padding()
   }
 }
 

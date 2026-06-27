@@ -1,40 +1,14 @@
 import Combine
 
 extension Publisher {
+  /// The first element of the publisher, or `nil` if it completes without emitting one.
+  ///
+  /// Cancellation is handled by the underlying `AsyncThrowingPublisher`, which
+  /// tears down its subscription when the awaiting task is cancelled.
   public func first() async throws -> Output? {
-    var resumed: Bool = false
-    var cancellable: AnyCancellable?
-    let _onCancel = {
-      cancellable?.cancel()
-      cancellable = nil
+    for try await output in values {
+      return output
     }
-
-    return try await withTaskCancellationHandler {
-        _onCancel()
-      }
-      operation: {
-        try await withCheckedThrowingContinuation { continuation in
-          cancellable = sink(
-            receiveCompletion: { completion in
-              guard !resumed else { return }
-              guard cancellable != nil else { return }
-
-              switch completion {
-              case .finished:
-                continuation.resume(returning: nil)
-              case let .failure(error):
-                continuation.resume(throwing: error)
-              }
-
-              resumed = true
-            },
-            receiveValue: { value in
-              guard !resumed else { return }
-              continuation.resume(with: .success(value))
-              resumed = true
-            }
-          )
-        }
-    }
+    return nil
   }
 }

@@ -1,3 +1,4 @@
+import IssueReporting
 import StoreKit
 
 extension Product {
@@ -108,6 +109,9 @@ extension Product.SubscriptionPeriod.Unit {
       self = .month
     case .year:
       self = .year
+    @unknown default:
+      reportIssue("Unknown StoreKit subscription period unit: \(value)")
+      self = .month
     }
   }
 }
