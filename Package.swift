@@ -70,7 +70,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "6.3.0"
+      from: "6.4.0"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -82,7 +82,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "18.0.3"
+      from: "18.1.0"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
@@ -106,15 +106,15 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "1.6.0"
+      from: "1.6.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "1.12.0"
+      from: "1.14.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-sharing",
-      from: "2.8.0"
+      from: "2.9.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -122,7 +122,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-navigation",
-      from: "2.8.0"
+      from: "2.10.2"
     )
   ],
   targets: [
