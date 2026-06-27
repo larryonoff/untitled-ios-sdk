@@ -1,4 +1,5 @@
-import ComposableArchitecture
+import Dependencies
+import Sharing
 @_exported import DuckPhotosAuthorizationClient
 
 extension SharedReaderKey where Self == PhotosAuthorizationPersistenceKey {

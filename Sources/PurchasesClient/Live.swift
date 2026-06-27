@@ -202,7 +202,7 @@ final class PurchasesClientImpl: @unchecked Sendable {
           if let prevPaywall {
             logger.info("get paywall success", dump: [
               "id": id,
-              "paywall": paywall,
+              "paywall": prevPaywall,
               "isFromCache": true
             ])
 
@@ -492,7 +492,7 @@ enum AdaptyDelegateEvent: Equatable {
 }
 
 final class _AdaptyDelegate: AdaptyDelegate {
-  private lazy var pipe = AsyncStream<AdaptyDelegateEvent>.makeStream()
+  private let pipe = AsyncStream<AdaptyDelegateEvent>.makeStream()
 
   init() {}
 

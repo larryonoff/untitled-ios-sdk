@@ -5,10 +5,12 @@ import DuckConcurrency
 import DuckLogging
 import StoreKit
 
-final class TransactionObserver {
+final class TransactionObserver: Sendable {
   private let store: TransactionCache
 
-  private let subject = PassthroughSubject<DuckTransaction, Never>()
+  // SAFETY: PassthroughSubject is internally thread-safe for send/subscribe;
+  // it is never reassigned, only used to publish values.
+  private nonisolated(unsafe) let subject = PassthroughSubject<DuckTransaction, Never>()
 
   init(
     store: TransactionCache

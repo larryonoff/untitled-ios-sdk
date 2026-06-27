@@ -47,7 +47,6 @@ public struct Transaction {
     transaction.currency
   }
 
-  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
   public var storefront: Storefront {
     transaction.storefront
   }
@@ -62,21 +61,3 @@ extension Transaction: Hashable {}
 
 extension Transaction.Event: Equatable {}
 extension Transaction.Event: Hashable {}
-
-
-// deprecations
-
-extension Transaction {
-  @available(iOS, introduced: 15.0, deprecated: 17.0, message: "Use the storefront property instead")
-  @available(macOS, introduced: 12.0, deprecated: 14.0, message: "Use the storefront property instead")
-  @available(tvOS, introduced: 15.0, deprecated: 17.0, message: "Use the storefront property instead")
-  @available(watchOS, introduced: 8.0, deprecated: 10.0, message: "Use the storefront property instead")
-  @available(macCatalyst, introduced: 15.0, deprecated: 17.0, message: "Use the storefront property instead")
-  public var storefrontCountryCode: String {
-    if #available(iOS 17.0, *) {
-      transaction.storefront.countryCode
-    } else {
-      transaction.storefrontCountryCode
-    }
-  }
-}

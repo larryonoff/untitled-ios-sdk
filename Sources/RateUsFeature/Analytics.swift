@@ -12,7 +12,7 @@ extension RateUs {
           analytics.log(
             .rateUsDoNotLoveAction,
             parameters: [
-              .action: AnalyticsClient.RateUsAction.contact as Any,
+              .action: AnalyticsClient.RateUsAction.contact as any Sendable,
               .placement: placement?.rawValue
             ].compactMapValues { $0 }
           )
@@ -22,7 +22,7 @@ extension RateUs {
           analytics.log(
             .rateUsDoNotLoveAction,
             parameters: [
-              .action: AnalyticsClient.RateUsAction.dismiss as Any,
+              .action: AnalyticsClient.RateUsAction.dismiss as any Sendable,
               .placement: placement?.rawValue
             ].compactMapValues { $0 }
           )
@@ -32,7 +32,7 @@ extension RateUs {
           analytics.log(
             .rateUsAction,
             parameters: [
-              .action: AnalyticsClient.RateUsAction.doNotLove as Any,
+              .action: AnalyticsClient.RateUsAction.doNotLove as any Sendable,
               .placement: placement?.rawValue
             ].compactMapValues { $0 }
           )
@@ -42,7 +42,7 @@ extension RateUs {
           analytics.log(
             .rateUsAction,
             parameters: [
-              .action: AnalyticsClient.RateUsAction.love as Any,
+              .action: AnalyticsClient.RateUsAction.love as any Sendable,
               .placement: placement?.rawValue
             ].compactMapValues { $0 }
           )

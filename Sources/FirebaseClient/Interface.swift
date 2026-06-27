@@ -22,7 +22,7 @@ public struct FirebaseClient: Sendable {
   ///   - parameters: Event parameters to log
   public var logEvent: @Sendable (
     _ _: AnalyticsClient.EventName,
-    _ parameters: [AnalyticsClient.EventParameterName: Any]?
+    _ parameters: [AnalyticsClient.EventParameterName: any Sendable]?
   ) async -> Void
 
   /// Adds logging that is sent with your crash data. The logging does not appear in app

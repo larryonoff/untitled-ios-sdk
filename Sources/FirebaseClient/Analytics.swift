@@ -21,7 +21,7 @@ extension AnalyticsClient {
 extension FirebaseAnalytics.Analytics {
   static func log(
     _ eventName: AnalyticsClient.EventName,
-    parameters: [AnalyticsClient.EventParameterName: Any]?
+    parameters: [AnalyticsClient.EventParameterName: any Sendable]?
   ) {
     let _parameters = parameters?
       .mapKeys(\.rawValue)
@@ -39,7 +39,7 @@ extension FirebaseAnalytics.Analytics {
   }
 
   static func set(
-    _ value: Any?,
+    _ value: (any Sendable)?,
     for name: AnalyticsClient.UserPropertyName
   ) {
     setUserProperty(

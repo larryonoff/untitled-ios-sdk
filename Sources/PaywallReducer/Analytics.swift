@@ -7,7 +7,7 @@ extension AnalyticsClient {
   func logView(
     state: PaywallReducer.State
   ) -> Effect<PaywallReducer.Action> {
-    var params: [AnalyticsClient.EventParameterName: Any] = [:]
+    var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
     params[.contentID] = state.paywallID
     params[.placement] = state.placement
 
@@ -22,7 +22,7 @@ extension AnalyticsClient {
     _ product: Product,
     state: PaywallReducer.State
   ) -> Effect<PaywallReducer.Action> {
-    var params: [AnalyticsClient.EventParameterName: Any] = [:]
+    var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
     params[.action] = "attempt"
     params[.contentID] = state.paywallID
     params["paywall_id"] = state.paywallID
@@ -42,7 +42,7 @@ extension AnalyticsClient {
     result: Result<Success, any Error>,
     state: PaywallReducer.State
   ) -> Effect<PaywallReducer.Action> {
-    var params: [AnalyticsClient.EventParameterName: Any] = [:]
+    var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
     params["paywall_id"] = state.paywallID
     params[.placement] = state.placement
 

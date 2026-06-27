@@ -1,11 +1,14 @@
 import Foundation
+import IssueReporting
 import PhotosUI
 import SwiftUI
 
-@available(iOS, deprecated: 16.0)
+/// An inline-capable photo picker.
+///
+/// Prefer the native `PhotosUI.PhotosPicker` with `.photosPickerStyle(.inline)`.
+/// This type remains for callers that need the raw `PHPickerResult`-backed
+/// ``_PhotosPickerItem`` selection.
 @available(tvOS, unavailable)
-@available(macOS, deprecated: 13.0)
-@available(watchOS, deprecated: 9.0)
 public struct PhotosPicker<Label>: View where Label: View {
   private let maxSelectionCount: Int?
   private let selection: Binding<[_PhotosPickerItem]>
@@ -103,7 +106,7 @@ public struct PhotosPicker<Label>: View where Label: View {
       photoLibrary: photoLibrary,
       label: label
     )
-    .edgesIgnoringSafeArea(.all)
+    .ignoresSafeArea()
   }
 }
 
@@ -219,8 +222,12 @@ private extension PhotosPickerSelectionBehavior {
       return .default
     case .ordered:
       return .ordered
+    case .continuous:
+      return .continuous
+    case .continuousAndOrdered:
+      return .continuousAndOrdered
     default:
-      assertionFailure()
+      reportIssue("Unhandled PhotosPickerSelectionBehavior: \(self)")
       return .default
     }
   }

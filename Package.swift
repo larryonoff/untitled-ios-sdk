@@ -1,4 +1,4 @@
-// swift-tools-version:5.10
+// swift-tools-version:6.3
 
 import PackageDescription
 
@@ -6,8 +6,8 @@ let package = Package(
   name: "Untitled",
   defaultLocalization: "en",
   platforms: [
-    .iOS(.v16),
-    .macOS(.v14)
+    .iOS(.v17),
+    .macOS(.v15)
   ],
   products: [
     .library(name: .AutoPresentation.rateUs, targets: [.AutoPresentation.rateUs]),
@@ -235,7 +235,7 @@ extension [SwiftSetting] {
 
 extension Target {
   enum AutoPresentation {
-    static let rateUs = target(
+    static var rateUs: Target { target(
       name: .AutoPresentation.rateUs,
       dependencies: [
         .Client.autoPresentation,
@@ -245,11 +245,11 @@ extension Target {
       ],
       path: "Sources/AutoPresentationRateUs",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
   }
 
   enum Client {
-    static let analytics = target(
+    static var analytics: Target { target(
       name: .Client.analytics,
       dependencies: [
         .core,
@@ -261,9 +261,9 @@ extension Target {
       ],
       path: "Sources/AnalyticsClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let application = target(
+    static var application: Target { target(
       name: .Client.application,
       dependencies: [
         .logging,
@@ -271,9 +271,9 @@ extension Target {
       ],
       path: "Sources/ApplicationClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let appMetrica = target(
+    static var appMetrica: Target { target(
       name: .Client.appMetrica,
       dependencies: [
         .concurrency,
@@ -288,9 +288,9 @@ extension Target {
       ],
       path: "Sources/AppMetricaClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let autoPresentation = target(
+    static var autoPresentation: Target { target(
       name: .Client.autoPresentation,
       dependencies: [
         .core,
@@ -305,9 +305,9 @@ extension Target {
       ],
       path: "Sources/AutoPresentationClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let connectivity = target(
+    static var connectivity: Target { target(
       name: .Client.connectivity,
       dependencies: [
         .logging,
@@ -317,9 +317,9 @@ extension Target {
       ],
       path: "Sources/ConnectivityClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let facebook = target(
+    static var facebook: Target { target(
       name: .Client.facebook,
       dependencies: [
         .External.dependencies,
@@ -327,18 +327,18 @@ extension Target {
         .External.Facebook.core
       ],
       path: "Sources/FacebookClient"
-    )
+    ) }
 
-    static let feedback = target(
+    static var feedback: Target { target(
       name: .Client.feedback,
       dependencies: [
         .External.dependencies
       ],
       path: "Sources/FeedbackClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let firebase = target(
+    static var firebase: Target { target(
       name: .Client.firebase,
       dependencies: [
         .logging,
@@ -351,9 +351,9 @@ extension Target {
       ],
       path: "Sources/FirebaseClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let instagramSharing = target(
+    static var instagramSharing: Target { target(
       name: .Client.instagramSharing,
       dependencies: [
         .External.customDump,
@@ -361,9 +361,9 @@ extension Target {
       ],
       path: "Sources/InstagramSharingClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let pasteboard = target(
+    static var pasteboard: Target { target(
       name: .Client.pasteboard,
       dependencies: [
         .logging,
@@ -375,9 +375,9 @@ extension Target {
       linkerSettings: [
         .linkedFramework("UIKit")
       ]
-    )
+    ) }
 
-    static let photosAuthorization = target(
+    static var photosAuthorization: Target { target(
       name: .Client.photosAuthorization,
       dependencies: [
         .logging,
@@ -390,9 +390,9 @@ extension Target {
       linkerSettings: [
         .linkedFramework("Photos")
       ]
-    )
+    ) }
 
-    static let purchases = target(
+    static var purchases: Target { target(
       name: .Client.purchases,
       dependencies: [
         .concurrency,
@@ -413,9 +413,9 @@ extension Target {
         .linkedFramework("Combine"),
         .linkedFramework("StoreKit")
       ]
-    )
+    ) }
 
-    static let purchasesOffers = target(
+    static var purchasesOffers: Target { target(
       name: .Client.purchasesOffers,
       dependencies: [
         .External.dependencies,
@@ -428,9 +428,9 @@ extension Target {
       ],
       path: "Sources/PurchasesOffersClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let remoteSettings = target(
+    static var remoteSettings: Target { target(
       name: .Client.remoteSettings,
       dependencies: [
         .logging,
@@ -442,9 +442,9 @@ extension Target {
       linkerSettings: [
         .linkedFramework("UIKit")
       ]
-    )
+    ) }
 
-    static let userAttribution = target(
+    static var userAttribution: Target { target(
       name: .Client.userAttribution,
       dependencies: [
         .External.dependencies,
@@ -452,9 +452,9 @@ extension Target {
       ],
       path: "Sources/UserAttributionClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let userIdentifier = target(
+    static var userIdentifier: Target { target(
       name: .Client.userIdentifier,
       dependencies: [
         .foundation,
@@ -465,9 +465,9 @@ extension Target {
       ],
       path: "Sources/UserIdentifier",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let userSession = target(
+    static var userSession: Target { target(
       name: .Client.userSession,
       dependencies: [
         .core,
@@ -478,9 +478,9 @@ extension Target {
       ],
       path: "Sources/UserSessionClient",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let userSettings = target(
+    static var userSettings: Target { target(
       name: .Client.userSettings,
       dependencies: [
         .core,
@@ -489,9 +489,9 @@ extension Target {
       ],
       path: "Sources/UserSettings",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let userTracking = target(
+    static var userTracking: Target { target(
       name: .Client.userTracking,
       dependencies: [
         .Client.analytics,
@@ -508,11 +508,11 @@ extension Target {
         .linkedFramework("AdSupport"),
         .linkedFramework("AppTrackingTransparency")
       ]
-    )
+    ) }
   }
 
   enum Composable {
-    static let connectivity = target(
+    static var connectivity: Target { target(
       name: .Composable.connectivity,
       dependencies: [
         .Client.connectivity,
@@ -520,9 +520,9 @@ extension Target {
       ],
       path: "Sources/ConnectivityComposable",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let paywall = target(
+    static var paywall: Target { target(
       name: .Composable.paywall,
       dependencies: [
         .composableArchitecture,
@@ -538,9 +538,9 @@ extension Target {
       resources: [
         .process("Resources")
       ]
-    )
+    ) }
 
-    static let photos = target(
+    static var photos: Target { target(
       name: .Composable.photos,
       dependencies: [
         .photosUI,
@@ -549,20 +549,21 @@ extension Target {
       ],
       path: "Sources/PhotosComposable",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let photosAuthorization = target(
+    static var photosAuthorization: Target { target(
       name: .Composable.photosAuthorization,
       dependencies: [
         .photosUI,
         .Client.photosAuthorization,
+        .External.dependencies,
         .External.sharing,
       ],
       path: "Sources/PhotosAuthorizationComposable",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let purchases = target(
+    static var purchases: Target { target(
       name: .Composable.purchases,
       dependencies: [
         .Client.purchases,
@@ -572,9 +573,9 @@ extension Target {
       ],
       path: "Sources/PurchasesComposable",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let remoteSettings = target(
+    static var remoteSettings: Target { target(
       name: .Composable.remoteSettings,
       dependencies: [
         .Client.remoteSettings,
@@ -582,9 +583,9 @@ extension Target {
       ],
       path: "Sources/RemoteSettingsComposable",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
 
-    static let userSession = target(
+    static var userSession: Target { target(
       name: .Composable.userSession,
       dependencies: [
         .Client.userSession,
@@ -592,11 +593,11 @@ extension Target {
       ],
       path: "Sources/UserSessionComposable",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
   }
 
   enum Dependencies {
-    static let paywall = target(
+    static var paywall: Target { target(
       name: .Dependencies.paywall,
       dependencies: [
         .core,
@@ -605,11 +606,11 @@ extension Target {
       ],
       path: "Sources/PaywallDependencies",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
   }
 
   enum Feature {
-    static let rateUs = target(
+    static var rateUs: Target { target(
       name: .Feature.rateUs,
       dependencies: [
         .dependencies,
@@ -621,10 +622,10 @@ extension Target {
       ],
       path: "Sources/RateUsFeature",
       swiftSettings: .upcomingFeatures
-    )
+    ) }
   }
 
-  static let core = target(
+  static var core: Target { target(
     name: .core,
     dependencies: [
       .External.composableArchitecture,
@@ -632,9 +633,9 @@ extension Target {
     ],
     path: "Sources/Core",
     swiftSettings: .upcomingFeatures
-  )
+  ) }
 
-  static let dependencies = target(
+  static var dependencies: Target { target(
     name: .dependencies,
     dependencies: [
       .core,
@@ -645,16 +646,16 @@ extension Target {
     ],
     path: "Sources/Dependencies",
     swiftSettings: .upcomingFeatures
-  )
+  ) }
 
-  static let foundation = target(
+  static var foundation: Target { target(
     name: .foundation,
     dependencies: [],
     path: "Sources/Foundation",
     swiftSettings: .upcomingFeatures
-  )
+  ) }
 
-  static let logging = target(
+  static var logging: Target { target(
     name: .logging,
     dependencies: [
       .External.customDump
@@ -664,9 +665,9 @@ extension Target {
     linkerSettings: [
       .linkedFramework("OSLog")
     ]
-  )
+  ) }
 
-  static let photos = target(
+  static var photos: Target { target(
     name: .photos,
     dependencies: [
       .graphics,
@@ -680,9 +681,9 @@ extension Target {
     linkerSettings: [
       .linkedFramework("Photos")
     ]
-  )
+  ) }
 
-  static let purchases = target(
+  static var purchases: Target { target(
     name: .purchases,
     dependencies: [
       .purchasesCore,
@@ -691,9 +692,9 @@ extension Target {
       .Composable.purchases,
     ],
     path: "Sources/Purchases"
-  )
+  ) }
 
-  static let purchasesCore = target(
+  static var purchasesCore: Target { target(
     name: .purchasesCore,
     dependencies: [
       .foundation,
@@ -710,9 +711,9 @@ extension Target {
     linkerSettings: [
       .linkedFramework("StoreKit")
     ]
-  )
+  ) }
 
-  static let photosUI = target(
+  static var photosUI: Target { target(
     name: .photosUI,
     dependencies: [
       .graphics,
@@ -728,9 +729,9 @@ extension Target {
       .linkedFramework("Photos"),
       .linkedFramework("PhotosUI")
     ]
-  )
+  ) }
 
-  static let swiftUI = target(
+  static var swiftUI: Target { target(
     name: .swiftUI,
     dependencies: [
       .graphics,
@@ -740,22 +741,22 @@ extension Target {
     ],
     path: "Sources/SwiftUI",
     swiftSettings: .upcomingFeatures
-  )
+  ) }
 
-  static let uiKit = target(
+  static var uiKit: Target { target(
     name: .uiKit,
     path: "Sources/UIKit",
     swiftSettings: .upcomingFeatures
-  )
+  ) }
 
-  static let webView = target(
+  static var webView: Target { target(
     name: .webView,
     path: "Sources/WebView",
     swiftSettings: .upcomingFeatures,
     linkerSettings: [
       .linkedFramework("WebKit")
     ]
-  )
+  ) }
 }
 
 extension Target.Dependency {

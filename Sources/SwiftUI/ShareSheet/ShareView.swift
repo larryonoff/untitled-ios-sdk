@@ -43,7 +43,7 @@ struct ShareView<Data: RandomAccessCollection>: View {
       onCompletion: onCompletion,
       onCancellation: onCancellation
     )
-    .edgesIgnoringSafeArea(.all)
+    .ignoresSafeArea()
     .presentationDetents([.medium, .large])
   }
 }
