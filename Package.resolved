@@ -1,5 +1,5 @@
 {
-  "originHash" : "291f84af9870f02f23f3358b80f4116b13660f8ca393d0001e2bc34211c61896",
+  "originHash" : "06e2c422f6fca87238ffbc4623f49bf25c684a05833a302cb224ee4823c246cb",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/appmetrica/appmetrica-sdk-ios",
       "state" : {
-        "revision" : "a00b57ca0ceadd8a838b1d78584999308fcbded0",
-        "version" : "6.3.0"
+        "revision" : "85924aa4398bfa564baf963f0aaf1a9d6eb81207",
+        "version" : "6.4.0"
       }
     },
     {
