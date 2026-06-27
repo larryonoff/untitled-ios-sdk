@@ -27,6 +27,20 @@ public struct ShareSheet<Data: RandomAccessCollection> {
   public init() {}
 }
 
+extension ShareSheet.State where Data == [URL] {
+  /// Shares a single file `url`. Convenience over wrapping it in an array.
+  public init(url: URL) {
+    self.init(data: [url])
+  }
+}
+
+extension ShareSheet.State where Data == [String] {
+  /// Shares a single text `item`. Convenience over wrapping it in an array.
+  public init(item: String) {
+    self.init(data: [item])
+  }
+}
+
 extension View {
   /// Presents a share sheet when a piece of optional state held in a store becomes non-`nil`.
   public func shareSheet<Data: RandomAccessCollection>(
