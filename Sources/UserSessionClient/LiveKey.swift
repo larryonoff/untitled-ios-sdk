@@ -38,40 +38,37 @@ extension UserSessionClient: DependencyKey {
   }()
 }
 
-final class UserSessionClientImpl: @unchecked Sendable {
-  @Dependency(\.bundle) private var bundle
-  @Dependency(\.date) private var date
+final class UserSessionClientImpl: Sendable {
+  private let bundle: BundleInfo
+  private let date: DateGenerator
 
   let storage: KeychainStorage
   let minSessionDuration: TimeInterval
 
-  private let metricsSubject = PassthroughSubject<UserSessionMetrics, Never>()
-  private let lock = NSRecursiveLock()
+  // SAFETY: PassthroughSubject is internally thread-safe for send/subscribe;
+  // it is never reassigned, only used to publish values.
+  private nonisolated(unsafe) let metricsSubject = PassthroughSubject<UserSessionMetrics, Never>()
 
-  private var _metrics: UserSessionMetrics {
-    willSet {
-      metricsSubject.send(newValue)
-    }
+  private struct State {
+    var metrics: UserSessionMetrics
+    var isActive = false
+    var isSuspended = false
   }
 
+  // SAFETY: written once from `subscribe()`, which the `isActive` check in
+  // `activate()` guarantees runs at most once, and read only in `deinit` after
+  // every other reference is gone. The tokens are opaque and never mutated.
+  private nonisolated(unsafe) var observers: [any NSObjectProtocol] = []
+
+  private let state: Mutex<State>
+
   var metrics: UserSessionMetrics {
-    get {
-      lock.withLock { _metrics }
-    }
-    set {
-      lock.withLock {
-        _metrics = newValue
-        storage.save(newValue)
-      }
-    }
+    state.withLock { $0.metrics }
   }
 
   var metricsChanges: AsyncStream<UserSessionMetrics> {
     AsyncStream(UncheckedSendable(metricsSubject.values))
   }
-
-  private var isActive = false
-  private var isSuspended = false
 
   init(
     storage: KeychainStorage,
@@ -80,28 +77,55 @@ final class UserSessionClientImpl: @unchecked Sendable {
     @Dependency(\.bundle) var bundle
     @Dependency(\.date) var date
 
+    self.bundle = bundle
+    self.date = date
     self.minSessionDuration = minSessionDuration
     self.storage = storage
 
-    self._metrics = storage.loadMetrics() ?? .init(
-      date: date(),
-      version: bundle.version
+    self.state = Mutex(
+      State(
+        metrics: storage.loadMetrics() ?? .init(
+          date: date(),
+          version: bundle.version
+        )
+      )
     )
+  }
+
+  /// Applies a mutation to the stored metrics, then persists and publishes the
+  /// result. The mutation runs inside the lock; the side effects run outside it,
+  /// so `storage.save` and subscriber callbacks never re-enter the lock.
+  private func withMetrics(_ body: (inout UserSessionMetrics) -> Void) {
+    let newValue = state.withLock { state -> UserSessionMetrics in
+      body(&state.metrics)
+      return state.metrics
+    }
+
+    storage.save(newValue)
+    metricsSubject.send(newValue)
   }
 
   func activate() {
     log.info("\(#function)")
 
-    lock.withLock {
-      guard !isActive else { return }
-      defer { isActive = true }
+    let shouldActivate = state.withLock { state -> Bool in
+      guard !state.isActive else { return false }
+      state.isActive = true
+      return true
+    }
 
-      subscribe()
+    guard shouldActivate else { return }
 
-      metrics.activate(
-        at: date(),
+    subscribe()
+
+    let date = date()
+    let version = bundle.version
+
+    withMetrics {
+      $0.activate(
+        at: date,
         minSessionDuration: minSessionDuration,
-        version: bundle.version
+        version: version
       )
     }
   }
@@ -109,26 +133,35 @@ final class UserSessionClientImpl: @unchecked Sendable {
   func reset() {
     log.info("\(#function)")
 
-    metrics = .init(
-      date: date(),
-      version: bundle.version
-    )
+    let date = date()
+    let version = bundle.version
+
+    withMetrics {
+      $0 = UserSessionMetrics(date: date, version: version)
+    }
   }
 
   private func restore() {
     log.info("\(#function)")
 
-    lock.withLock {
-      guard isSuspended else {
-        log.info("\(#function) skipped", dump: [
-          "reason": "suspended is false"
-        ])
-        return
-      }
-      defer { isSuspended = false }
+    let wasSuspended = state.withLock { state -> Bool in
+      guard state.isSuspended else { return false }
+      state.isSuspended = false
+      return true
+    }
 
-      metrics.restore(
-        at: date(),
+    guard wasSuspended else {
+      log.info("\(#function) skipped", dump: [
+        "reason": "suspended is false"
+      ])
+      return
+    }
+
+    let date = date()
+
+    withMetrics {
+      $0.restore(
+        at: date,
         minSessionDuration: minSessionDuration
       )
     }
@@ -137,47 +170,58 @@ final class UserSessionClientImpl: @unchecked Sendable {
   private func suspend() {
     log.info("\(#function)")
 
-    lock.withLock {
-      defer { isSuspended = true }
+    state.withLock { $0.isSuspended = true }
 
-      metrics.suspend(at: date())
-    }
+    let date = date()
+    withMetrics { $0.suspend(at: date) }
   }
 
   private func terminate() {
     log.info("\(#function)")
 
-    metrics.suspend(at: date())
+    let date = date()
+    withMetrics { $0.suspend(at: date) }
   }
 
   private func subscribe() {
-    let didBecomeActive = NotificationCenter.default.addObserver(
-      forName: .applicationDidBecomeActive,
-      object: nil,
-      queue: nil
-    ) { [weak self] _ in
-      self?.restore()
-    }
+    // Observer tokens were previously dropped on the floor, leaving no way to
+    // unregister; keep them so `deinit` can remove the observations.
+    observers = [
+      NotificationCenter.default.addObserver(
+        forName: .applicationDidBecomeActive,
+        object: nil,
+        queue: nil
+      ) { [weak self] _ in
+        self?.restore()
+      },
+      NotificationCenter.default.addObserver(
+        forName: .applicationWillResignActive,
+        object: nil,
+        queue: nil
+      ) { [weak self] _ in
+        self?.suspend()
+      },
+      NotificationCenter.default.addObserver(
+        forName: .applicationWillTerminate,
+        object: nil,
+        queue: nil
+      ) { [weak self] _ in
+        self?.terminate()
+      }
+    ]
+  }
 
-    let willResignActive = NotificationCenter.default.addObserver(
-      forName: .applicationWillResignActive,
-      object: nil,
-      queue: nil
-    ) { [weak self] _ in
-      self?.suspend()
-    }
-
-    let willTerminate = NotificationCenter.default.addObserver(
-      forName: .applicationWillTerminate,
-      object: nil,
-      queue: nil
-    ) { [weak self] _ in
-      self?.terminate()
-    }
+  deinit {
+    observers.forEach(NotificationCenter.default.removeObserver)
   }
 }
 
-struct KeychainStorage {
+/// - Isolation: none; safe to use from any isolation domain.
+// SAFETY: every stored property is a `let`. `Keychain` wraps the Keychain
+// Services C API, which is thread-safe, and exposes only computed properties
+// over its immutable options. `JSONDecoder`/`JSONEncoder` are classes but hold
+// no mutable state once configured, and neither is reconfigured here.
+struct KeychainStorage: @unchecked Sendable {
   private let keychain: Keychain = {
     let prefix = Bundle.main.bundleIdentifier ?? ""
     return Keychain(service: "\(prefix).user-session")
@@ -217,7 +261,7 @@ struct KeychainStorage {
       log.error("saveValue failure", dump: [
         "error": error,
         "key": key,
-        "value": newValue
+        "value": newValue as Any
       ])
     }
   }

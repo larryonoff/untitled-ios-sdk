@@ -7,6 +7,7 @@ import DuckLogging
 import DuckUserIdentifierClient
 import DuckUserSettings
 import Foundation
+import IssueReporting
 import OSLog
 import StoreKit
 #if canImport(UIKit)
@@ -83,12 +84,20 @@ extension PurchasesClient {
   }
 }
 
-final class PurchasesClientImpl: @unchecked Sendable {
-  private let lock = NSRecursiveLock()
-  private var adaptyDelegate: _AdaptyDelegate?
-  private var _paywalls: LockIsolated<[Paywall.ID: Paywall]> = .init([:])
+final class PurchasesClientImpl: Sendable {
+  private struct State {
+    var adaptyDelegate: _AdaptyDelegate?
+    var paywalls: [Paywall.ID: Paywall] = [:]
+    /// In-flight paywall fetches, keyed by ID, so concurrent callers for the
+    /// same paywall share one network request instead of issuing N.
+    var paywallFetchTasks: [Paywall.ID: Task<Paywall?, any Error>] = [:]
+  }
 
-  private let _purchases = CurrentValueSubject<Purchases, Never>(.load())
+  private let state = Mutex(State())
+
+  // SAFETY: CurrentValueSubject is internally thread-safe; Combine doesn't
+  // annotate it `Sendable`.
+  private nonisolated(unsafe) let _purchases = CurrentValueSubject<Purchases, Never>(.load())
   private let analytics: AnalyticsClient
   private let transactionObserver: TransactionObserver
   private let userIdentifier: UserIdentifierGenerator
@@ -118,73 +127,76 @@ final class PurchasesClientImpl: @unchecked Sendable {
   func initialize() {
     logger.info("initialize")
 
-    lock.withLock {
-      guard self.adaptyDelegate == nil else {
-        logger.info("Adapty already configured")
-        return
-      }
+    let bundle = Bundle.main
+    guard let apiKey = bundle.adaptyAPIKey, !apiKey.isEmpty else {
+      reportIssue("Cannot find a valid Adapty settings")
 
-      let bundle = Bundle.main
-      guard let apiKey = bundle.adaptyAPIKey, !apiKey.isEmpty else {
-        assertionFailure("Cannot find a valid Adapty settings")
+      logger.error("initialize", dump: [
+        "error": "Cannot find a valid Adapty settings"
+      ])
 
-        logger.error("initialize", dump: [
-          "error": "Cannot find a valid Adapty settings"
-        ])
-
-        return
-      }
-
-      let adaptyDelegate = _AdaptyDelegate()
-      self.adaptyDelegate = adaptyDelegate
-      Adapty.delegate = adaptyDelegate
-
-      _ = Task.detached(priority: .high) { [weak self] in
-        for await event in adaptyDelegate.stream {
-          switch event {
-          case let .didLoadLatestProfile(profile):
-            guard let self else { break }
-
-            let purchases = self.updatePurchases(profile)
-
-            logger.info("purchases updated", dump: [
-              "purchases": purchases
-            ])
-
-            transactionObserver.handle(profile)
-          }
-        }
-      }
-
-      let userID = userIdentifier()
-
-      let config = AdaptyConfiguration
-        .builder(withAPIKey: apiKey)
-        .with(callbackDispatchQueue: .init(label: "AdaptyQueue"))
-        .with(customerUserId: userID.uuidString, withAppAccountToken: userID.rawValue)
-        .build()
-
-      Adapty.activate(with: config) { error in
-        if let error {
-          logger.info("initialize failure", dump: [
-            "error": error
-          ])
-        }
-      }
-
-      Task { [weak self] in
-        if
-          let fallbackURL = Bundle.main.url(
-            forResource: "fallback_paywalls",
-            withExtension: "json"
-          )
-        {
-          try? await self?.setFallback(fileURL: fallbackURL)
-        }
-      }
-
-      logger.info("initialize success")
+      return
     }
+
+    let adaptyDelegate: _AdaptyDelegate? = state.withLock { state in
+      guard state.adaptyDelegate == nil else { return nil }
+      let delegate = _AdaptyDelegate()
+      state.adaptyDelegate = delegate
+      return delegate
+    }
+
+    guard let adaptyDelegate else {
+      logger.info("Adapty already configured")
+      return
+    }
+
+    Adapty.delegate = adaptyDelegate
+
+    _ = Task.detached(priority: .high) { [weak self] in
+      for await event in adaptyDelegate.stream {
+        switch event {
+        case let .didLoadLatestProfile(profile):
+          guard let self else { break }
+
+          let purchases = self.updatePurchases(profile)
+
+          logger.info("purchases updated", dump: [
+            "purchases": purchases
+          ])
+
+          transactionObserver.handle(profile)
+        }
+      }
+    }
+
+    let userID = userIdentifier()
+
+    let config = AdaptyConfiguration
+      .builder(withAPIKey: apiKey)
+      .with(callbackDispatchQueue: .init(label: "AdaptyQueue"))
+      .with(customerUserId: userID.uuidString, withAppAccountToken: userID.rawValue)
+      .build()
+
+    Adapty.activate(with: config) { error in
+      if let error {
+        logger.info("initialize failure", dump: [
+          "error": error
+        ])
+      }
+    }
+
+    Task { [weak self] in
+      if
+        let fallbackURL = Bundle.main.url(
+          forResource: "fallback_paywalls",
+          withExtension: "json"
+        )
+      {
+        try? await self?.setFallback(fileURL: fallbackURL)
+      }
+    }
+
+    logger.info("initialize success")
   }
 
   func paywall(
@@ -192,60 +204,39 @@ final class PurchasesClientImpl: @unchecked Sendable {
   ) -> AsyncThrowingStream<Paywall?, any Error> {
     AsyncThrowingStream { [weak self] continuation in
       let task = Task { [weak self] in
+        guard let self else {
+          continuation.finish()
+          return
+        }
+
         do {
           logger.info("get paywall", dump: [
             "id": id
           ])
 
-          var prevPaywall = self?._paywalls.withValue { $0[id] }
+          let cached = state.withLock { $0.paywalls[id] }
 
-          if let prevPaywall {
+          if let cached {
             logger.info("get paywall success", dump: [
               "id": id,
-              "paywall": prevPaywall,
+              "paywall": cached,
               "isFromCache": true
             ])
 
-            continuation.yield(prevPaywall)
+            continuation.yield(cached)
           }
 
-          guard let _flow = try await Self.adaptyFlow(by: id) else {
-            logger.info("get paywall success", dump: [
-              "id": id,
-              "paywall": "nil",
-              "isFromCache": false
-            ])
+          let paywall = try await fetchPaywall(by: id)
 
-            continuation.yield(nil)
-            continuation.finish()
-
-            return
-          }
-
-          var paywall = Paywall(_flow, products: nil)
-
-          let adaptyProducts = try await Self.adaptyProducts(for: _flow)
-
-          if let adaptyProducts {
-            paywall.products = (_flow.paywalls.first?.vendorProductIds ?? [])
-              .compactMap { vendorProductId in
-                adaptyProducts
-                  .first { $0.vendorProductId == vendorProductId }
-                  .flatMap { .init($0) }
-              }
-          }
-
-          if prevPaywall != paywall {
-            prevPaywall = paywall
+          if paywall != cached {
             continuation.yield(paywall)
-            await self?.cache(paywall)
           }
 
           continuation.finish()
 
           logger.info("get paywall success", dump: [
             "id": id,
-            "paywall": paywall,
+            "paywall": paywall as Any,
             "isFromCache": false
           ])
         } catch {
@@ -262,6 +253,52 @@ final class PurchasesClientImpl: @unchecked Sendable {
     }
   }
 
+  /// Fetches a paywall from Adapty, deduplicating concurrent callers for the
+  /// same ID so N simultaneous subscribers share a single network request.
+  private func fetchPaywall(by id: Paywall.ID) async throws -> Paywall? {
+    let task = state.withLock { state -> Task<Paywall?, any Error> in
+      if let existing = state.paywallFetchTasks[id] {
+        logger.info("get paywall deduplicated", dump: [
+          "id": id
+        ])
+        return existing
+      }
+
+      let task = Task<Paywall?, any Error> { [weak self] in
+        defer {
+          self?.state.withLock { $0.paywallFetchTasks.removeValue(forKey: id) }
+        }
+
+        guard let flow = try await Self.adaptyFlow(by: id) else {
+          return nil
+        }
+
+        var paywall = Paywall(flow, products: nil)
+
+        if let adaptyProducts = try await Self.adaptyProducts(for: flow) {
+          let productsByID = Dictionary(
+            adaptyProducts.map { ($0.vendorProductId, $0) },
+            uniquingKeysWith: { first, _ in first }
+          )
+
+          paywall.products = (flow.paywalls.first?.vendorProductIds ?? [])
+            .compactMap { productsByID[$0].flatMap { .init($0) } }
+        }
+
+        // Cache write is co-located with assembly (no `await` in between), so a
+        // subscriber's cancellation cannot strand a successfully fetched paywall.
+        self?.state.withLock { $0.paywalls[id] = paywall }
+
+        return paywall
+      }
+
+      state.paywallFetchTasks[id] = task
+      return task
+    }
+
+    return try await task.value
+  }
+
   func purchase(
     _ request: PurchaseRequest
   ) async throws -> PurchaseResult {
@@ -276,7 +313,8 @@ final class PurchasesClientImpl: @unchecked Sendable {
         let product = products
           .first(where: { $0.vendorProductId == request.product.id.rawValue })
       else {
-        assertionFailure()
+        // Not a programmer error: the product can legitimately be unavailable
+        // (no network, not approved yet), so this must not trap in debug.
         throw PurchasesError.productUnavailable
       }
 
@@ -469,10 +507,6 @@ final class PurchasesClientImpl: @unchecked Sendable {
   ) async throws -> [AdaptyPaywallProduct]? {
     try await Adapty
       .getPaywallProducts(flow: flow)
-  }
-
-  private func cache(_ paywall: Paywall) async {
-    _paywalls.withValue { $0[paywall.id] = paywall }
   }
 
   @discardableResult

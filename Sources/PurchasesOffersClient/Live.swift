@@ -53,7 +53,7 @@ extension PurchasesOffersClient {
   }
 }
 
-final class PurchasesOffersClientImpl: @unchecked Sendable {
+final class PurchasesOffersClientImpl: Sendable {
   private let offersConditions: [PurchasesOfferCondition]
   // SAFETY: UserDefaults is thread-safe; it just isn't annotated `Sendable`.
   private nonisolated(unsafe) let appStorage: UserDefaults

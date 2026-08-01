@@ -11,6 +11,10 @@ extension DependencyValues {
 
 @DependencyClient
 public struct UserAttributionClient: Sendable {
+  // SAFETY: the wrapped dictionary is a `let` and is never mutated after init.
+  // Attribution payloads come from ad-network SDKs as untyped
+  // `[AnyHashable: Any]`, which cannot be expressed as `Sendable`; callers only
+  // read the values out.
   public struct Attribution: @unchecked Sendable {
     private let _dictionary: [AnyHashable: Any]?
 
