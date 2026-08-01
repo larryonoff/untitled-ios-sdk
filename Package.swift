@@ -63,6 +63,19 @@ let package = Package(
     .library(name: .videoPlayer, targets: [.videoPlayer]),
     .library(name: .webView, targets: [.webView])
   ],
+  traits: [
+    // AppMetrica declares no macOS platform, so SPM defaults its libraries to
+    // macOS 10.13 while its own KSCrash dependency requires 10.14 — an
+    // unsatisfiable constraint that fails the whole package graph on macOS.
+    // `.when(platforms:)` cannot help: it gates linking, not resolution
+    // (SR-15836). A trait gates the dependency out of resolution entirely, so
+    // the package resolves on macOS. iOS consumers enable it explicitly.
+    .trait(
+      name: "AppMetrica",
+      description: "Enables the AppMetrica analytics client (iOS only)."
+    ),
+    .default(enabledTraits: [])
+  ],
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
@@ -123,6 +136,10 @@ let package = Package(
     .package(
       url: "https://github.com/pointfreeco/swift-navigation",
       from: "2.11.0"
+    ),
+    .package(
+      url: "https://github.com/pointfreeco/xctest-dynamic-overlay",
+      from: "1.9.0"
     )
   ],
   targets: [
@@ -133,7 +150,8 @@ let package = Package(
         .swiftUI,
         .External.composableArchitecture,
       ],
-      path: "Sources/ComposableArchitecture"
+      path: "Sources/ComposableArchitecture",
+      swiftSettings: .upcomingFeatures
     ),
     .target(
       name: .coreImage,
@@ -143,6 +161,9 @@ let package = Package(
     ),
     .target(
       name: .avFoundation,
+      dependencies: [
+        .External.issueReporting
+      ],
       path: "Sources/AVFoundation",
       swiftSettings: .upcomingFeatures,
       linkerSettings: [
@@ -152,12 +173,16 @@ let package = Package(
     .target(
       name: .concurrency,
       path: "Sources/Concurrency",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("Combine")
       ]
     ),
     .target(
       name: .graphics,
+      dependencies: [
+        .External.issueReporting
+      ],
       path: "Sources/Graphics",
       swiftSettings: .upcomingFeatures
     ),
@@ -226,7 +251,7 @@ extension [SwiftSetting] {
   static let upcomingFeatures: [SwiftSetting] = [
     .enableUpcomingFeature("StrictConcurrency"),
     .enableUpcomingFeature("ExistentialAny"),
-    .enableUpcomingFeature("InferSendableFromCaptures"),
+    // `InferSendableFromCaptures` is already enabled by Swift 6 language mode.
     .enableUpcomingFeature("ImmutableWeakCaptures"),
     .enableUpcomingFeature("InferIsolatedConformances"),
     .enableUpcomingFeature("MemberImportVisibility")
@@ -283,6 +308,7 @@ extension Target {
         .Client.userIdentifier,
         .External.dependencies,
         .External.Dependencies.macros,
+        .External.issueReporting,
         .External.AppMetrica.core,
         .External.AppMetrica.crashes
       ],
@@ -326,7 +352,8 @@ extension Target {
         .External.Dependencies.macros,
         .External.Facebook.core
       ],
-      path: "Sources/FacebookClient"
+      path: "Sources/FacebookClient",
+      swiftSettings: .upcomingFeatures
     ) }
 
     static var feedback: Target { target(
@@ -357,7 +384,8 @@ extension Target {
       name: .Client.instagramSharing,
       dependencies: [
         .External.customDump,
-        .External.dependencies
+        .External.dependencies,
+        .External.issueReporting
       ],
       path: "Sources/InstagramSharingClient",
       swiftSettings: .upcomingFeatures
@@ -367,6 +395,7 @@ extension Target {
       name: .Client.pasteboard,
       dependencies: [
         .logging,
+        .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros
       ],
@@ -380,6 +409,7 @@ extension Target {
         .logging,
         .External.dependencies,
         .External.Dependencies.macros,
+        .External.issueReporting,
         .External.tagged
       ],
       path: "Sources/PhotosAuthorizationClient",
@@ -401,11 +431,14 @@ extension Target {
         .Client.userIdentifier,
         .Client.userSettings,
         .External.adapty,
+        .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros,
+        .External.issueReporting,
         .External.tagged
       ],
       path: "Sources/PurchasesClient",
+      swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("Combine"),
         .linkedFramework("StoreKit")
@@ -467,6 +500,7 @@ extension Target {
         .core,
         .dependencies,
         .foundation,
+        .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros,
         .External.keychainAccess
@@ -479,6 +513,7 @@ extension Target {
       name: .Client.userSettings,
       dependencies: [
         .core,
+        .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros
       ],
@@ -491,10 +526,12 @@ extension Target {
       dependencies: [
         .Client.analytics,
         .External.adapty,
+        .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros,
         .External.Firebase.analytics,
-        .External.Facebook.core
+        .External.Facebook.core,
+        .External.issueReporting
       ],
       path: "Sources/UserTracking",
       swiftSettings: .upcomingFeatures,
@@ -532,7 +569,8 @@ extension Target {
       exclude: ["swiftgen.yml"],
       resources: [
         .process("Resources")
-      ]
+      ],
+      swiftSettings: .upcomingFeatures
     ) }
 
     static var photos: Target { target(
@@ -598,6 +636,7 @@ extension Target {
         .core,
         .purchasesCore,
         .External.dependencies,
+        .External.issueReporting
       ],
       path: "Sources/PaywallDependencies",
       swiftSettings: .upcomingFeatures
@@ -645,7 +684,9 @@ extension Target {
 
   static var foundation: Target { target(
     name: .foundation,
-    dependencies: [],
+    dependencies: [
+      .External.issueReporting
+    ],
     path: "Sources/Foundation",
     swiftSettings: .upcomingFeatures
   ) }
@@ -667,8 +708,11 @@ extension Target {
     dependencies: [
       .graphics,
       .uiKit,
+      .External.Collections.orderedCollections,
+      .External.concurrencyExtras,
       .External.customDump,
       .External.dependencies,
+      .External.issueReporting,
       .External.tagged
     ],
     path: "Sources/Photos",
@@ -686,7 +730,8 @@ extension Target {
       .Client.purchasesOffers,
       .Composable.purchases,
     ],
-    path: "Sources/Purchases"
+    path: "Sources/Purchases",
+    swiftSettings: .upcomingFeatures
   ) }
 
   static var purchasesCore: Target { target(
@@ -695,6 +740,7 @@ extension Target {
       .foundation,
       .Client.remoteSettings,
       .External.adapty,
+      .External.issueReporting,
       .External.tagged
     ],
     path: "Sources/PurchasesCore",
@@ -716,6 +762,7 @@ extension Target {
       .uiKit,
       .External.customDump,
       .External.dependencies,
+      .External.issueReporting,
       .External.tagged
     ],
     path: "Sources/PhotosUI",
@@ -732,6 +779,7 @@ extension Target {
       .graphics,
       .uiKit,
       .External.composableArchitecture,
+      .External.issueReporting,
       .External.swiftUINavigation
     ],
     path: "Sources/SwiftUI",
@@ -837,6 +885,16 @@ extension Target.Dependency {
       package: "swift-composable-architecture"
     )
 
+    static let concurrencyExtras = product(
+      name: "ConcurrencyExtras",
+      package: "swift-concurrency-extras"
+    )
+
+    static let issueReporting = product(
+      name: "IssueReporting",
+      package: "xctest-dynamic-overlay"
+    )
+
     static let connectivity = byName(name: "Connectivity")
 
     static let customDump = product(
@@ -905,18 +963,19 @@ extension Target.Dependency {
       package: "swift-tagged"
     )
 
-    // iOS-only: package declares only iOS and tvOS.
+    // iOS-only: package declares only iOS and tvOS. Gated behind the
+    // `AppMetrica` trait so the graph resolves on macOS — see `traits:` above.
     enum AppMetrica {
       static let core = Target.Dependency.product(
         name: "AppMetricaCore",
         package: "appmetrica-sdk-ios",
-        condition: .when(platforms: [.iOS])
+        condition: .when(platforms: [.iOS], traits: ["AppMetrica"])
       )
 
       static let crashes = Target.Dependency.product(
         name: "AppMetricaCrashes",
         package: "appmetrica-sdk-ios",
-        condition: .when(platforms: [.iOS])
+        condition: .when(platforms: [.iOS], traits: ["AppMetrica"])
       )
     }
   }
