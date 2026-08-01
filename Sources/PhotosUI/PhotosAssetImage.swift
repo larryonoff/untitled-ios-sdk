@@ -1,6 +1,7 @@
 #if canImport(UIKit)
 
 import DuckGraphics
+import IssueReporting
 import DuckPhotos
 import SwiftUI
 import Photos
@@ -35,7 +36,7 @@ public struct PhotosAssetImage<Content: View>: View {
       case .failure:
         return .empty
       @unknown default:
-        assertionFailure("AsyncImagePhase.(@unknown default, rawValue: \(state.phase))")
+        reportIssue("AsyncImagePhase.(@unknown default, rawValue: \(state.phase))")
         return .empty
       }
     }

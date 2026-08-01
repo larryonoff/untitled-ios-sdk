@@ -1,6 +1,7 @@
 #if canImport(UIKit)
 
 import Foundation
+import IssueReporting
 import SwiftUI
 
 @available(tvOS, unavailable)
@@ -96,7 +97,7 @@ private struct _ShareView<Data: RandomAccessCollection>: UIViewControllerReprese
       } else if !success {
         onCancellation()
       } else {
-        assertionFailure()
+        reportIssue("UIActivityViewController reported success without a result")
       }
     }
   }

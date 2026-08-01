@@ -1,3 +1,4 @@
+import IssueReporting
 import PhotosUI
 import SwiftUI
 
@@ -101,7 +102,7 @@ extension _PhotosPickerItem.EncodingDisambiguationPolicy {
     case .compatible:
       return .compatible
     default:
-      assertionFailure()
+      reportIssue("PhotosPickerItem.EncodingPolicy.(unknown, value: \(self))")
       return .automatic
     }
   }

@@ -1,3 +1,4 @@
+import IssueReporting
 import StoreKit
 
 extension Product {
@@ -65,7 +66,7 @@ extension Product.SubscriptionOffer.PaymentMode {
     case .freeTrial:
       self = .freeTrial
     @unknown default:
-      assertionFailure("SKProductDiscount.PaymentMode.(@unknown default, rawValue: \(value.rawValue))")
+      reportIssue("SKProductDiscount.PaymentMode.(@unknown default, rawValue: \(value.rawValue))")
       self = .freeTrial
     }
   }
@@ -79,7 +80,7 @@ extension Product.SubscriptionOffer.OfferType {
     case .subscription:
       self = .promotional
     @unknown default:
-      assertionFailure("SKProductDiscount.`Type`.(@unknown default, rawValue: \(value.rawValue))")
+      reportIssue("SKProductDiscount.`Type`.(@unknown default, rawValue: \(value.rawValue))")
       self = .promotional
     }
   }
@@ -104,7 +105,7 @@ extension Product.SubscriptionPeriod.Unit {
     case .year:
       self = .year
     @unknown default:
-      assertionFailure("SKProduct.PeriodUnit.(@unknown default, rawValue: \(value.rawValue))")
+      reportIssue("SKProduct.PeriodUnit.(@unknown default, rawValue: \(value.rawValue))")
       self = .year
     }
   }

@@ -2,6 +2,7 @@
 
 import Dependencies
 import Foundation
+import IssueReporting
 import OSLog
 import UIKit
 
@@ -18,7 +19,7 @@ extension InstagramSharingClient {
             .URLScheme.instagram
           )
         else {
-          assertionFailure(
+          reportIssue(
             "Main Bundle doesn't contain `\(String.URLScheme.instagram)` query scheme"
           )
           return false
@@ -39,7 +40,7 @@ extension InstagramSharingClient {
       },
       shareToReels: { request in
         guard let facebookAppID = Bundle.main.facebookAppID else {
-          assertionFailure("Facebook App ID not set")
+          reportIssue("Facebook App ID not set")
           return false
         }
 
@@ -48,7 +49,7 @@ extension InstagramSharingClient {
             .URLScheme.instagramReels
           )
         else {
-          assertionFailure(
+          reportIssue(
             "Main Bundle doesn't contain `\(String.URLScheme.instagramReels)` query scheme"
           )
           return false
@@ -78,7 +79,7 @@ extension InstagramSharingClient {
       },
       shareToStories: { request in
         guard let facebookAppID = Bundle.main.facebookAppID else {
-          assertionFailure("Facebook App ID not set")
+          reportIssue("Facebook App ID not set")
           return false
         }
 
@@ -87,7 +88,7 @@ extension InstagramSharingClient {
             .URLScheme.instagramStories
           )
         else {
-          assertionFailure(
+          reportIssue(
             "Main Bundle doesn't contain `\(String.URLScheme.instagramStories)` query scheme"
           )
           return false

@@ -69,7 +69,7 @@ extension Product.SubscriptionOffer.OfferType {
     } else if #available(iOS 18.0, *), value == .winBack {
       self = .winBack
     } else {
-      assertionFailure("Product.SubscriptionOffer.OfferType.(@unknown default, rawValue: \(value.rawValue))")
+      reportIssue("Product.SubscriptionOffer.OfferType.(@unknown default, rawValue: \(value.rawValue))")
       self = .introductory
     }
   }
@@ -85,7 +85,7 @@ extension Product.SubscriptionOffer.PaymentMode {
     case .freeTrial:
       self = .freeTrial
     default:
-      assertionFailure("Product.SubscriptionOffer.PaymentMode.(@unknown default, rawValue: \(value.rawValue))")
+      reportIssue("Product.SubscriptionOffer.PaymentMode.(@unknown default, rawValue: \(value.rawValue))")
       self = .freeTrial
     }
   }
