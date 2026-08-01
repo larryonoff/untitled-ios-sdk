@@ -144,28 +144,25 @@ final class UserTrackingImpl: Sendable {
     logger.info("send tracking data")
 
     do {
-      var intergrationIDs: [String: String] = [
-        "appmetrica_device_id": request.appMetricaDeviceID,
-        "appmetrica_profile_id": request.appMetricaProfileID,
-        "firebase_app_instance_id": request.firebaseAppInstanceID
-      ].compactMapValues { $0 }
+      var intergrationIDs: [AdaptyIntegrationIdentifier] = [
+        request.appMetricaDeviceID.map(AdaptyIntegrationIdentifier.appmetricaDeviceId),
+        request.appMetricaProfileID.map(AdaptyIntegrationIdentifier.appmetricaProfileId),
+        request.firebaseAppInstanceID.map(AdaptyIntegrationIdentifier.firebaseAppInstanceId)
+      ].compactMap { $0 }
 
 #if os(iOS)
-      intergrationIDs["facebook_anonymous_id"] = AppEvents.shared.anonymousID
+      intergrationIDs.append(.facebookAnonymousId(AppEvents.shared.anonymousID))
 #endif
 
-      for (key, value) in intergrationIDs {
+      for identifier in intergrationIDs {
         do {
-          logger.info("send tracking key-value: \(key)-\(value)", dump: [
+          logger.info("send tracking key-value: \(identifier.key)-\(identifier.value)", dump: [
             "target": "Adapty"
           ])
 
-          try await Adapty.setIntegrationIdentifier(
-            key: key,
-            value: value
-          )
+          try await Adapty.setIntegrationIdentifier(identifier)
         } catch {
-          logger.error("send tracking key-value: \(key):\(value) failed", dump: [
+          logger.error("send tracking key-value: \(identifier.key):\(identifier.value) failed", dump: [
             "target": "Adapty",
             "error": error.localizedDescription
           ])
