@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Dependencies
 import XCTestDynamicOverlay
 
@@ -16,3 +18,5 @@ extension FacebookClient {
     userID: { nil }
   )
 }
+
+#endif

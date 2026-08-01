@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import ComposableArchitecture
 import CustomDump
 import Foundation
@@ -41,3 +43,5 @@ private struct ShareSheetViewModifier<Data: RandomAccessCollection>: ViewModifie
     }
   }
 }
+
+#endif

@@ -3,6 +3,10 @@ import DuckUIKit
 import StoreKit
 import SwiftUI
 
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+import AppKit
+#endif
+
 extension DependencyValues {
   public var requestReview: RequestReviewAction {
     get { self[RequestReviewKey.self] }
@@ -12,13 +16,21 @@ extension DependencyValues {
 
 private enum RequestReviewKey: DependencyKey {
   static let liveValue = RequestReviewAction { @MainActor in
-    if let activeScene = UIApplication.shared.activeScene {
-      SKStoreReviewController.requestReview(in: activeScene)
-    } else {
-      SKStoreReviewController.requestReview()
+#if canImport(UIKit)
+    guard let activeScene = UIApplication.shared.activeScene else {
+      return false
     }
-
+    AppStore.requestReview(in: activeScene)
     return true
+#else
+    guard
+      let controller = NSApplication.shared.keyWindow?.contentViewController
+    else {
+      return false
+    }
+    AppStore.requestReview(in: controller)
+    return true
+#endif
   }
 
   static let testValue = RequestReviewAction {

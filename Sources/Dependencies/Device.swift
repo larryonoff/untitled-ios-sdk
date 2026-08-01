@@ -1,3 +1,5 @@
+#if canImport(DeviceKit)
+
 @_exported import DeviceKit
 import Dependencies
 import Sharing
@@ -22,3 +24,5 @@ extension SharedReaderKey where Self == InMemoryKey<Device>.Default {
     Self[.inMemory("device"), default: .current]
   }
 }
+
+#endif

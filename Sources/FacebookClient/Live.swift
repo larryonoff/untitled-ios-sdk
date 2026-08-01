@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Dependencies
 import FacebookCore
 import UIKit
@@ -47,3 +49,5 @@ extension FacebookClient: DependencyKey {
     }
   )
 }
+
+#endif

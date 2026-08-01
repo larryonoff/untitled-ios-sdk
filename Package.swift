@@ -371,10 +371,7 @@ extension Target {
         .External.Dependencies.macros
       ],
       path: "Sources/PasteboardClient",
-      swiftSettings: .upcomingFeatures,
-      linkerSettings: [
-        .linkedFramework("UIKit")
-      ]
+      swiftSettings: .upcomingFeatures
     ) }
 
     static var photosAuthorization: Target { target(
@@ -438,10 +435,7 @@ extension Target {
         .External.Firebase.remoteConfig
       ],
       path: "Sources/RemoteSettingsClient",
-      swiftSettings: .upcomingFeatures,
-      linkerSettings: [
-        .linkedFramework("UIKit")
-      ]
+      swiftSettings: .upcomingFeatures
     ) }
 
     static var userAttribution: Target { target(
@@ -472,6 +466,7 @@ extension Target {
       dependencies: [
         .core,
         .dependencies,
+        .foundation,
         .External.dependencies,
         .External.Dependencies.macros,
         .External.keychainAccess
@@ -861,12 +856,18 @@ extension Target.Dependency {
       )
     }
 
-    static let deviceKit = byName(name: "DeviceKit")
+    // iOS-only: package declares no macOS platform.
+    static let deviceKit = byName(
+      name: "DeviceKit",
+      condition: .when(platforms: [.iOS])
+    )
 
     enum Facebook {
+      // iOS-only: XCFrameworks ship no macOS slice.
       static let core = product(
         name: "FacebookCore",
-        package: "facebook-ios-sdk"
+        package: "facebook-ios-sdk",
+        condition: .when(platforms: [.iOS])
       )
     }
 
@@ -904,15 +905,18 @@ extension Target.Dependency {
       package: "swift-tagged"
     )
 
+    // iOS-only: package declares only iOS and tvOS.
     enum AppMetrica {
       static let core = Target.Dependency.product(
         name: "AppMetricaCore",
-        package: "appmetrica-sdk-ios"
+        package: "appmetrica-sdk-ios",
+        condition: .when(platforms: [.iOS])
       )
 
       static let crashes = Target.Dependency.product(
         name: "AppMetricaCrashes",
-        package: "appmetrica-sdk-ios"
+        package: "appmetrica-sdk-ios",
+        condition: .when(platforms: [.iOS])
       )
     }
   }

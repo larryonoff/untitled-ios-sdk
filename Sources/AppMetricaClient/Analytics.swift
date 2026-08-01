@@ -1,3 +1,5 @@
+#if canImport(AppMetricaCore)
+
 import DuckAnalyticsClient
 import DuckFoundation
 import AppMetricaCore
@@ -71,3 +73,5 @@ extension AppMetrica {
     }
   }
 }
+
+#endif

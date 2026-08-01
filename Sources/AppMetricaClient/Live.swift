@@ -1,3 +1,5 @@
+#if canImport(AppMetricaCore)
+
 import AppMetricaCore
 import AppMetricaCrashes
 import Dependencies
@@ -70,3 +72,5 @@ private let logger = Logger(
   subsystem: ".SDK.AppMetricaClient",
   category: "AppMetrica"
 )
+
+#endif

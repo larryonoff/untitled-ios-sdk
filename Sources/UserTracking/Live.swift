@@ -6,11 +6,14 @@ import Combine
 import ConcurrencyExtras
 import DuckAnalyticsClient
 import DuckLogging
-import FacebookCore
 import FirebaseAnalytics
 import Foundation
 import OSLog
+
+#if os(iOS)
+import FacebookCore
 import UIKit
+#endif
 
 extension UserTrackingClient {
   public static func live(
@@ -52,7 +55,12 @@ extension UserTrackingClient {
         return nil
       },
       identifierForVendor: {
+#if os(iOS)
         await UIDevice.current.identifierForVendor
+#else
+        // No macOS equivalent of `UIDevice.identifierForVendor`.
+        nil
+#endif
       }
     )
   }
@@ -86,10 +94,7 @@ final class UserTrackingImpl: Sendable {
   }
 
   func isAuthRequestNeeded() -> Bool {
-    if #available(iOS 14.5, *) {
-      return ATTrackingManager.trackingAuthorizationStatus == .notDetermined
-    }
-    return false
+    ATTrackingManager.trackingAuthorizationStatus == .notDetermined
   }
 
   func requestAuthorization(
@@ -97,46 +102,40 @@ final class UserTrackingImpl: Sendable {
   ) async -> AuthorizationStatus {
     logger.info("request authorization")
 
-    if #available(iOS 14.5, *) {
-      guard isAuthRequestNeeded() else {
-        let attStatus = ATTrackingManager.trackingAuthorizationStatus
-        let status = AuthorizationStatus(attStatus)
-
-        logger.info("request authorization not needed", dump: [
-          "status": status
-        ])
-
-        return status
-      }
-
-      analytics.log(.idfaRequest)
-
-      if interval > 0 {
-        try? await Task.sleep(for: .seconds(interval))
-      }
-
-      let attStatus = await ATTrackingManager.requestTrackingAuthorization()
+    guard isAuthRequestNeeded() else {
+      let attStatus = ATTrackingManager.trackingAuthorizationStatus
       let status = AuthorizationStatus(attStatus)
 
-      updateAuthStatus(attStatus)
-
-      analytics.log(
-        .idfaResponse,
-        parameters: [
-          .status: status.description
-        ]
-      )
-
-      logger.info("authorization request success", dump: [
+      logger.info("request authorization not needed", dump: [
         "status": status
       ])
 
       return status
     }
 
-    logger.info("request authorization not needed, iOS < 14.5")
+    analytics.log(.idfaRequest)
 
-    return .authorized
+    if interval > 0 {
+      try? await Task.sleep(for: .seconds(interval))
+    }
+
+    let attStatus = await ATTrackingManager.requestTrackingAuthorization()
+    let status = AuthorizationStatus(attStatus)
+
+    updateAuthStatus(attStatus)
+
+    analytics.log(
+      .idfaResponse,
+      parameters: [
+        .status: status.description
+      ]
+    )
+
+    logger.info("authorization request success", dump: [
+      "status": status
+    ])
+
+    return status
   }
 
   func sendTrackingData(
@@ -145,12 +144,15 @@ final class UserTrackingImpl: Sendable {
     logger.info("send tracking data")
 
     do {
-      let intergrationIDs: [String: String] = [
+      var intergrationIDs: [String: String] = [
         "appmetrica_device_id": request.appMetricaDeviceID,
         "appmetrica_profile_id": request.appMetricaProfileID,
-        "facebook_anonymous_id": AppEvents.shared.anonymousID,
         "firebase_app_instance_id": request.firebaseAppInstanceID
       ].compactMapValues { $0 }
+
+#if os(iOS)
+      intergrationIDs["facebook_anonymous_id"] = AppEvents.shared.anonymousID
+#endif
 
       for (key, value) in intergrationIDs {
         do {
@@ -189,10 +191,12 @@ final class UserTrackingImpl: Sendable {
   ) {
     _authStatus.value = .init(status)
 
-    let isAuthorized = status == .authorized
-    let fbSettings = FacebookCore.Settings.shared
-    fbSettings.isAdvertiserIDCollectionEnabled = isAuthorized
-    fbSettings.isAdvertiserTrackingEnabled = isAuthorized
+#if os(iOS)
+    // `isAdvertiserTrackingEnabled` is not set: deprecated in iOS 17, where the
+    // Facebook SDK reads `ATTrackingManager.trackingAuthorizationStatus` itself.
+    FacebookCore.Settings.shared.isAdvertiserIDCollectionEnabled =
+      status == .authorized
+#endif
   }
 }
 

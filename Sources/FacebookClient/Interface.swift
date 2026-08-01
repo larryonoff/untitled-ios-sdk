@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Dependencies
 import DependenciesMacros
 import Foundation
@@ -30,3 +32,5 @@ public struct FacebookClient: Sendable {
 
   public var userID: @Sendable () -> String?
 }
+
+#endif
