@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Combine
 import ConcurrencyExtras
 import Dependencies
@@ -64,3 +66,5 @@ extension UIPasteboard {
     )
   }
 }
+
+#endif

@@ -8,7 +8,6 @@ import DuckLogging
 import DuckPaywallDependencies
 import DuckPurchasesClient
 import DuckRemoteSettingsClient
-import UIKit
 
 extension PurchasesOffersClient {
   public static func live(
@@ -146,7 +145,7 @@ final class PurchasesOffersClientImpl: @unchecked Sendable {
       handles.appLifecycle?.cancel()
       handles.appLifecycle = Task.detached(priority: .low) { [weak self] in
         let notifications = NotificationCenter.default
-          .notifications(named: UIApplication.didBecomeActiveNotification)
+          .notifications(named: .applicationDidBecomeActive)
           .map { _ in }
 
         for await _ in notifications {

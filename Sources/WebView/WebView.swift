@@ -1,6 +1,9 @@
 import SwiftUI
-import UIKit
 import WebKit
+
+#if canImport(UIKit)
+import UIKit
+#endif
 
 public struct WebView: View {
   public enum ReadyState: String, Equatable, Hashable, Sendable {
@@ -46,11 +49,17 @@ public struct WebView: View {
   }
 }
 
-struct _WebView: UIViewRepresentable {
+#if canImport(UIKit)
+typealias ViewRepresentable = UIViewRepresentable
+#else
+typealias ViewRepresentable = NSViewRepresentable
+#endif
+
+struct _WebView: ViewRepresentable {
   let request: URLRequest
   let onReadyStateChange: (WebView.ReadyState) -> Void
 
-  func makeUIView(context: Context) -> WKWebView {
+  private func makeWebView(context: Context) -> WKWebView {
     let configuration = WKWebViewConfiguration()
 
     let webView = WKWebView(
@@ -58,6 +67,7 @@ struct _WebView: UIViewRepresentable {
       configuration: configuration
     )
 
+#if canImport(UIKit)
     webView.backgroundColor = .clear
     webView.isOpaque = false
 
@@ -67,6 +77,7 @@ struct _WebView: UIViewRepresentable {
     if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
       webView.scrollView.topEdgeEffect.isHidden = true
     }
+#endif
 
     webView.navigationDelegate = context.coordinator
 
@@ -92,10 +103,25 @@ struct _WebView: UIViewRepresentable {
     return webView
   }
 
+#if canImport(UIKit)
+  func makeUIView(context: Context) -> WKWebView {
+    makeWebView(context: context)
+  }
+
   func updateUIView(
     _ webView: WKWebView,
     context: Context
   ) {}
+#else
+  func makeNSView(context: Context) -> WKWebView {
+    makeWebView(context: context)
+  }
+
+  func updateNSView(
+    _ webView: WKWebView,
+    context: Context
+  ) {}
+#endif
 
   func makeCoordinator() -> Coordinator {
     Coordinator(
@@ -143,6 +169,7 @@ struct _WebView: UIViewRepresentable {
       _ webView: WKWebView,
       didFinish navigation: WKNavigation!
     ) {
+#if canImport(UIKit)
       // sometimes scrollView.contentSize doesn't fit all the frame.size available
       // so, we call setNeedsLayout to redraw the layout
       let webViewFrameSize = webView.frame.size
@@ -150,6 +177,7 @@ struct _WebView: UIViewRepresentable {
       if scrollViewSize.width < webViewFrameSize.width || scrollViewSize.height < webViewFrameSize.height {
         webView.setNeedsLayout()
       }
+#endif
 
       checkReadyState(for: webView)
     }

@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import DuckGraphics
 import DuckPhotos
 import SwiftUI
@@ -177,3 +179,5 @@ private nonisolated(unsafe) let imageRequestOptions: PHImageRequestOptions = {
   options.isNetworkAccessAllowed = true
   return options
 }()
+
+#endif

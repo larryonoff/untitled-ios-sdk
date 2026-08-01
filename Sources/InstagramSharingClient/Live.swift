@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Dependencies
 import Foundation
 import OSLog
@@ -153,3 +155,5 @@ private let logger = Logger(
   subsystem: ".SDK.InstagramExport",
   category: "Instagram"
 )
+
+#endif

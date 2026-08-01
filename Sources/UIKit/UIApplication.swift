@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 @MainActor
@@ -45,3 +47,5 @@ private extension Optional where Wrapped == UIWindow {
     self?.windowLevel ?? UIWindow.Level(-1000)
   }
 }
+
+#endif

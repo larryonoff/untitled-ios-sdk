@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import ComposableArchitecture
 import DuckUIKit
 import SwiftUI
@@ -133,3 +135,5 @@ private extension UIViewController {
     return presentingViewController.topMostViewController
   }
 }
+
+#endif

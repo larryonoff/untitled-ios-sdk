@@ -3,10 +3,16 @@ import ComposableArchitecture
 import ConcurrencyExtras
 import Dependencies
 import DuckDependencies
+import DuckFoundation
 import DuckLogging
 import Foundation
 import KeychainAccess
+
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 extension UserSessionClient: DependencyKey {
   public static let liveValue: Self = {
@@ -146,7 +152,7 @@ final class UserSessionClientImpl: @unchecked Sendable {
 
   private func subscribe() {
     let didBecomeActive = NotificationCenter.default.addObserver(
-      forName: UIApplication.didBecomeActiveNotification,
+      forName: .applicationDidBecomeActive,
       object: nil,
       queue: nil
     ) { [weak self] _ in
@@ -154,7 +160,7 @@ final class UserSessionClientImpl: @unchecked Sendable {
     }
 
     let willResignActive = NotificationCenter.default.addObserver(
-      forName: UIApplication.willResignActiveNotification,
+      forName: .applicationWillResignActive,
       object: nil,
       queue: nil
     ) { [weak self] _ in
@@ -162,7 +168,7 @@ final class UserSessionClientImpl: @unchecked Sendable {
     }
 
     let willTerminate = NotificationCenter.default.addObserver(
-      forName: UIApplication.willTerminateNotification,
+      forName: .applicationWillTerminate,
       object: nil,
       queue: nil
     ) { [weak self] _ in

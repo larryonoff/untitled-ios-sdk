@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import DuckGraphics
 import SwiftUI
 
@@ -40,3 +42,5 @@ extension View {
     }
   }
 }
+
+#endif

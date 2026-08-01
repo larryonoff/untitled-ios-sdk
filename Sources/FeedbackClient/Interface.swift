@@ -8,7 +8,12 @@ extension DependencyValues {
   }
 
   private enum FeedbackGeneratorKey: DependencyKey {
+#if canImport(UIKit)
     static let liveValue = FeedbackGenerator.liveValue
+#else
+    // No haptics outside UIKit.
+    static let liveValue = FeedbackGenerator { _ in }
+#endif
 
     static let previewValue = FeedbackGenerator { _ in }
 
