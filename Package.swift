@@ -70,7 +70,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "6.4.0"
+      from: "6.6.0"
     ),
     .package(
       url: "https://github.com/rwbutler/Connectivity",
@@ -86,7 +86,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "12.15.0"
+      from: "12.17.0"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
@@ -98,11 +98,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.26.0"
+      from: "1.26.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-concurrency-extras",
-      from: "1.4.0"
+      from: "1.4.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
@@ -114,7 +114,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-sharing",
-      from: "2.9.0"
+      from: "2.9.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -122,7 +122,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-navigation",
-      from: "2.10.2"
+      from: "2.11.0"
     )
   ],
   targets: [
