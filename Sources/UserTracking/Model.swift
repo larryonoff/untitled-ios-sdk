@@ -1,4 +1,5 @@
 import AppTrackingTransparency
+import IssueReporting
 
 public enum AuthorizationStatus: UInt {
   case notDetermined = 0
@@ -46,7 +47,7 @@ extension AuthorizationStatus {
     case .authorized:
       self = .authorized
     @unknown default:
-      assertionFailure("@unknown default")
+      reportIssue("Unknown ATTrackingManager.AuthorizationStatus: \(status)")
       self = .notDetermined
     }
   }
