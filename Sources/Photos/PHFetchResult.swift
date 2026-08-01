@@ -1,3 +1,4 @@
+import IssueReporting
 import OrderedCollections
 import Photos
 
@@ -54,11 +55,9 @@ public func PHFetchResultToOrderedDictionary<Object: PHObject>(
       forKey: object.localIdentifier
     )
 
-#if DEBUG
     if old != nil {
-      assertionFailure("Duplicate key: '\(object.localIdentifier)'")
+      reportIssue("Duplicate key: '\(object.localIdentifier)'")
     }
-#endif
   }
 
   return dictionary

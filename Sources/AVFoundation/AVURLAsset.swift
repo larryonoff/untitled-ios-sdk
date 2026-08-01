@@ -1,4 +1,5 @@
 import Foundation
+import IssueReporting
 
 extension AVURLAsset {
   public static func custom(url: URL) -> AVURLAsset {
@@ -53,7 +54,7 @@ extension AVAssetCustomURLResourceLoader: AVAssetResourceLoaderDelegate {
       }
 
       guard let fileHandle = fileHandle else {
-        assertionFailure()
+        reportIssue("No file handle available for \(url)")
         loadingRequest.finishLoading()
         return false
       }

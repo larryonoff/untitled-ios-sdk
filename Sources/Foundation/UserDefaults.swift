@@ -1,4 +1,5 @@
 import Foundation
+import IssueReporting
 
 extension UserDefaults {
   public func set<Value: Encodable>(
@@ -12,7 +13,7 @@ extension UserDefaults {
         .flatMap { String(data: $0, encoding: .utf8) }
       set(valueString, forKey: key)
     } catch {
-      assertionFailure("\(#function) \(error)")
+      reportIssue("\(#function) \(error)")
     }
   }
 
@@ -25,7 +26,7 @@ extension UserDefaults {
         .flatMap { $0.data(using: .utf8) }
         .flatMap { try decoder.decode(Value.self, from: $0) }
     } catch {
-      assertionFailure("\(#function) \(error)")
+      reportIssue("\(#function) \(error)")
       return nil
     }
   }

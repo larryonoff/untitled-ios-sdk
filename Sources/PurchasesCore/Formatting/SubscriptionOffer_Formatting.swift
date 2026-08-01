@@ -1,4 +1,5 @@
 import Foundation
+import IssueReporting
 
 extension Product.SubscriptionOffer {
   public struct FormatStyle {
@@ -19,10 +20,10 @@ extension Product.SubscriptionOffer.FormatStyle: Foundation.FormatStyle {
         )
       )
     case .payAsYouGo:
-      assertionFailure("unsupported PaymentMode.payAsYouGo")
+      reportIssue("unsupported PaymentMode.payAsYouGo")
       return ""
     case .payUpFront:
-      assertionFailure("unsupported PaymentMode.payUpFront")
+      reportIssue("unsupported PaymentMode.payUpFront")
       return ""
     }
   }

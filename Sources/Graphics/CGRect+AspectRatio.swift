@@ -1,3 +1,5 @@
+import IssueReporting
+
 extension CGRect {
   public func aspectRatio(
     in bounds: CGRect,
@@ -58,7 +60,7 @@ extension CGRect {
         y: bounds.height
       )
     default:
-      assertionFailure("Alignment.(default, value: \(alignment))")
+      reportIssue("Alignment.(default, value: \(alignment))")
 
       newOrigin = CGPoint(
         x: bounds.width - newSize.width * 0.5,

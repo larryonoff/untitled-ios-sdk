@@ -1,4 +1,5 @@
 import Foundation
+import IssueReporting
 
 extension Product {
   public enum FormatStyle {
@@ -173,7 +174,7 @@ extension Product.FormatStyle.RoundingRule {
     case .up:
       return .up
     @unknown default:
-      assertionFailure(
+      reportIssue(
         "Product.FormatStyle.RoundingRule.(@unknown default, value: \(self))"
       )
       return .up
