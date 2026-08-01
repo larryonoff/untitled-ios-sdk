@@ -49,7 +49,7 @@ final actor TransactionCache {
 
   nonisolated
   func hasRestoredPurchases() -> Bool {
-    userSettings.boolForKey(.hasRestoredPurchasesKey) ?? false
+    userSettings.boolForKey(.hasRestoredPurchasesKey)
   }
 
   func setHasRestoredPurchases(_ newValue: Bool) async {
