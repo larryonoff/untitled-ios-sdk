@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 extension UIWindow {
@@ -5,3 +7,5 @@ extension UIWindow {
     rootViewController?.topMostViewController
   }
 }
+
+#endif

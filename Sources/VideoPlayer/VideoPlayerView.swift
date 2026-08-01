@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import AVKit
 import Combine
 import DuckSwiftUI
@@ -261,3 +263,5 @@ private extension SwiftUI.ContentMode {
     }
   }
 }
+
+#endif

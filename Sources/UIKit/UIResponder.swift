@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 extension UIResponder {
@@ -5,3 +7,5 @@ extension UIResponder {
     next as? UIViewController ?? next?._parentViewController
   }
 }
+
+#endif

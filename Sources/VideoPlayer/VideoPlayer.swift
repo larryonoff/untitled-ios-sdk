@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import AVKit
 import Foundation
 import SwiftUI
@@ -28,3 +30,5 @@ extension CustomVideoPlayer<EmptyView> {
     self.videoOverlay = nil
   }
 }
+
+#endif

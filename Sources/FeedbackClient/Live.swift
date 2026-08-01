@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 extension FeedbackGenerator {
@@ -34,3 +36,5 @@ extension Feedback.NotificationType {
     UINotificationFeedbackGenerator.FeedbackType(rawValue: rawValue)!
   }
 }
+
+#endif

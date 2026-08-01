@@ -420,7 +420,8 @@ final class PurchasesClientImpl: @unchecked Sendable {
     }
 
     if let activeScene {
-      await SKStoreReviewController.requestReview(in: activeScene)
+      // `SKStoreReviewController` is deprecated as of iOS 18.
+      await AppStore.requestReview(in: activeScene)
 
       logger.info("requestReview success", dump: [
         "WARNING": "dialog may not appear, Apple doesn't provide developers any control"

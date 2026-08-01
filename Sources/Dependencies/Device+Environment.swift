@@ -1,3 +1,5 @@
+#if canImport(DeviceKit)
+
 import DeviceKit
 import SwiftUI
 
@@ -11,3 +13,5 @@ extension EnvironmentValues {
     static var defaultValue: Device { .current }
   }
 }
+
+#endif

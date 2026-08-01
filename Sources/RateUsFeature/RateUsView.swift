@@ -39,7 +39,9 @@ public struct RateUsView: View {
     .onAppear {
       store.send(.onAppear)
     }
+#if os(iOS)
     .statusBarHidden()
+#endif
   }
 }
 

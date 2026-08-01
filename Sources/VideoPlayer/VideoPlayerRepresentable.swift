@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import AVKit
 import Foundation
 import SwiftUI
@@ -81,3 +83,5 @@ extension VideoPlayerRepresentable: UIViewRepresentable {
     uiView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
   }
 }
+
+#endif

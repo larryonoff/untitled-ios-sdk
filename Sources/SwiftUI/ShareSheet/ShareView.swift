@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Foundation
 import SwiftUI
 
@@ -106,3 +108,5 @@ private struct _ShareView<Data: RandomAccessCollection>: UIViewControllerReprese
     uiViewController.completionWithItemsHandler = nil
   }
 }
+
+#endif

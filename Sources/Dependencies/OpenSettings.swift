@@ -1,5 +1,10 @@
 import Dependencies
+
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 extension DependencyValues {
   public var openSettings: OpenSettingsEffect {
@@ -9,9 +14,15 @@ extension DependencyValues {
 
   private enum OpenSettingsKey: DependencyKey {
     static let liveValue = OpenSettingsEffect {
-      #if os(iOS)
+      #if canImport(UIKit)
         await MainActor.run {
           UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        }
+      #else
+        await MainActor.run {
+          _ = NSWorkspace.shared.open(
+            URL(string: "x-apple.systempreferences:com.apple.preference.security")!
+          )
         }
       #endif
     }
