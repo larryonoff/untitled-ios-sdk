@@ -1,5 +1,6 @@
 import Combine
 import Dependencies
+import DuckFoundation
 import DuckLogging
 import Photos
 
@@ -15,13 +16,25 @@ extension PhotosAuthorizationClient: DependencyKey {
         impl.authorizationStatusUpdates(for: $0)
       },
       requestAuthorization: {
-        await impl.requestAuthorizationIfNeeded(for: $0)
+        await impl.requestAuthorization(for: $0)
       }
     )
   }()
 }
 
 private final class PhotosAuthorizationClientImpl: Sendable {
+  private struct State {
+    /// Status captured before a request began, held for its duration.
+    /// `PHPhotoLibrary.authorizationStatus` starts reporting the new value while
+    /// the system prompt is still on screen, which makes observers react before
+    /// the user has actually answered.
+    var statusBeforeRequest: [
+      PhotosAuthorization.AccessLevel: PhotosAuthorization.AuthorizationStatus
+    ] = [:]
+  }
+
+  private let state = Mutex(State())
+
   init() {}
 
   // SAFETY: `PassthroughSubject` is internally thread-safe; Combine just doesn't annotate it `Sendable`.
@@ -31,48 +44,81 @@ private final class PhotosAuthorizationClientImpl: Sendable {
       Never
     >()
 
+  /// In-flight requests, so concurrent callers share one system prompt instead
+  /// of stacking a second one.
+  @MainActor
+  private var requestTasks: [
+    PhotosAuthorization.AccessLevel: Task<PhotosAuthorization.AuthorizationStatus, Never>
+  ] = [:]
+
   func authorizationStatus(
-    for acl: PhotosAuthorization.AccessLevel
+    for accessLevel: PhotosAuthorization.AccessLevel
   ) -> PhotosAuthorization.AuthorizationStatus {
+    if let status = state.withLock({ $0.statusBeforeRequest[accessLevel] }) {
+      return status
+    }
+
     let status = PHPhotoLibrary.authorizationStatus(
-      for: acl.phAccessLevel
+      for: accessLevel.phAccessLevel
     )
     return PhotosAuthorization.AuthorizationStatus(status)
   }
 
   func authorizationStatusUpdates(
-    for acl: PhotosAuthorization.AccessLevel
+    for accessLevel: PhotosAuthorization.AccessLevel
   ) -> AsyncStream<PhotosAuthorization.AuthorizationStatus> {
     AsyncStream(
       UncheckedSendable(
         authorizationSubject.values
-          .filter { $0.0 == acl }
+          .filter { $0.0 == accessLevel }
           .map { $0.1 }
       )
     )
   }
 
-  func requestAuthorizationIfNeeded(
-    for acl: PhotosAuthorization.AccessLevel
+  @MainActor
+  func requestAuthorization(
+    for accessLevel: PhotosAuthorization.AccessLevel
+  ) async -> PhotosAuthorization.AuthorizationStatus {
+    if let existing = requestTasks[accessLevel] {
+      return await existing.value
+    }
+
+    let task = Task { @MainActor in
+      await performRequestAuthorization(for: accessLevel)
+    }
+
+    requestTasks[accessLevel] = task
+    defer { requestTasks[accessLevel] = nil }
+
+    return await task.value
+  }
+
+  @MainActor
+  private func performRequestAuthorization(
+    for accessLevel: PhotosAuthorization.AccessLevel
   ) async -> PhotosAuthorization.AuthorizationStatus {
     logger.info("request authorization", dump: [
-      "acl": acl
+      "accessLevel": accessLevel
     ])
 
-    let previousStatus = authorizationStatus(for: acl)
+    let previousStatus = authorizationStatus(for: accessLevel)
+
+    state.withLock { $0.statusBeforeRequest[accessLevel] = previousStatus }
+    defer { state.withLock { $0.statusBeforeRequest[accessLevel] = nil } }
 
     let newStatus = PhotosAuthorization.AuthorizationStatus(
       await PHPhotoLibrary.requestAuthorization(
-        for: acl.phAccessLevel
+        for: accessLevel.phAccessLevel
       )
     )
 
     if previousStatus != newStatus {
-      authorizationSubject.send((acl, newStatus))
+      authorizationSubject.send((accessLevel, newStatus))
     }
 
     logger.info("request authorization success", dump: [
-      "acl": acl,
+      "accessLevel": accessLevel,
       "status": newStatus,
       "updated": previousStatus != newStatus
     ])

@@ -1,3 +1,4 @@
+import IssueReporting
 import Photos
 
 public enum PhotosAuthorization {
@@ -48,14 +49,14 @@ extension PhotosAuthorization.AuthorizationStatus: CustomStringConvertible {
 }
 
 extension PhotosAuthorization.AccessLevel {
-  init(_ acl: PHAccessLevel) {
-    switch acl {
+  init(_ accessLevel: PHAccessLevel) {
+    switch accessLevel {
     case .addOnly:
       self = .addOnly
     case .readWrite:
       self = .readWrite
     @unknown default:
-      assertionFailure("PHAccessLevel.(@unknown default, rawValue: \(acl.rawValue))")
+      reportIssue("PHAccessLevel.(@unknown default, rawValue: \(accessLevel.rawValue))")
       self = .readWrite
     }
   }
@@ -86,7 +87,7 @@ extension PhotosAuthorization.AuthorizationStatus {
     case .limited:
       self = .limited
     @unknown default:
-      assertionFailure("PHAuthorizationStatus.(@unknown default, rawValue: \(status.rawValue))")
+      reportIssue("PHAuthorizationStatus.(@unknown default, rawValue: \(status.rawValue))")
       self = .notDetermined
     }
   }
