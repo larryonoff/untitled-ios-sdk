@@ -26,14 +26,14 @@ public struct PhotosAuthorizationClient: Sendable {
 extension PhotosAuthorizationClient {
   @Sendable
   public func requestAuthorizationIfNeeded(
-    for acl: PhotosAuthorization.AccessLevel
+    for accessLevel: PhotosAuthorization.AccessLevel
   ) async -> PhotosAuthorization.AuthorizationStatus {
-    let status = authorizationStatus(acl)
+    let status = authorizationStatus(accessLevel)
 
     guard status == .notDetermined else {
       return status
     }
 
-    return await requestAuthorization(acl)
+    return await requestAuthorization(accessLevel)
   }
 }
