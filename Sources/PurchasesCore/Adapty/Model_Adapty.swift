@@ -4,26 +4,24 @@ import StoreKit
 
 extension Paywall {
   package init(
-    _ paywall: AdaptyPaywall,
+    _ flow: AdaptyFlow,
     products: [AdaptyPaywallProduct]?
   ) {
-    self.id = .init(paywall.placementId)
+    self.id = .init(flow.placement.id)
 
-    self.abTestName = paywall.abTestName
-    self.audienceName = paywall.audienceName
+    self.abTestName = flow.placement.abTestName
+    self.audienceName = flow.placement.audienceName
 
     self.products = products?
       .compactMap { .init($0) } ?? []
 
-    self.remoteConfigString = paywall.remoteConfig?.jsonString
+    self.remoteConfigString = flow.remoteConfigs.first?.jsonString
   }
 }
 
 extension Product {
   package init?(_ product: AdaptyProduct) {
-    guard let skProduct = product.sk2Product else {
-      return nil
-    }
+    let skProduct = product.skProduct
 
     let paywallProduct = product as? AdaptyPaywallProduct
 
@@ -57,8 +55,7 @@ extension Product.SubscriptionInfo {
       return nil
     }
 
-    let skProduct = paywallProduct?.sk2Product
-    let subscription = skProduct?.subscription
+    let subscription = product.skProduct.subscription
 
     if let subscription {
       self.introductoryOffer = subscription.introductoryOffer
@@ -96,11 +93,12 @@ extension Product.SubscriptionOffer {
   ) {
     guard
       let paymentMode = Product.SubscriptionOffer.PaymentMode(offer.paymentMode),
-      let period = Product.SubscriptionPeriod(offer.subscriptionPeriod),
-      let sk2Product = product.sk2Product
+      let period = Product.SubscriptionPeriod(offer.subscriptionPeriod)
     else {
       return nil
     }
+
+    let skProduct = product.skProduct
 
     self = .init(
       id: offer.identifier.flatMap { .init($0) },
@@ -108,7 +106,7 @@ extension Product.SubscriptionOffer {
       price: offer.price,
       displayPrice: Product.displayPrice(
         offer.price,
-        formatStyle: sk2Product.priceFormatStyle
+        formatStyle: skProduct.priceFormatStyle
       ) ?? "",
       period: period,
       periodCount: offer.numberOfPeriods,

@@ -209,7 +209,7 @@ final class PurchasesClientImpl: @unchecked Sendable {
             continuation.yield(prevPaywall)
           }
 
-          guard let _paywall = try await Self.adaptyPaywall(by: id) else {
+          guard let _flow = try await Self.adaptyFlow(by: id) else {
             logger.info("get paywall success", dump: [
               "id": id,
               "paywall": "nil",
@@ -222,12 +222,12 @@ final class PurchasesClientImpl: @unchecked Sendable {
             return
           }
 
-          var paywall = Paywall(_paywall, products: nil)
+          var paywall = Paywall(_flow, products: nil)
 
-          let adaptyProducts = try await Self.adaptyProducts(for: _paywall)
+          let adaptyProducts = try await Self.adaptyProducts(for: _flow)
 
           if let adaptyProducts {
-            paywall.products = _paywall.vendorProductIds
+            paywall.products = (_flow.paywalls.first?.vendorProductIds ?? [])
               .compactMap { vendorProductId in
                 adaptyProducts
                   .first { $0.vendorProductId == vendorProductId }
@@ -271,8 +271,8 @@ final class PurchasesClientImpl: @unchecked Sendable {
       ])
 
       guard
-        let paywall = try await Self.adaptyPaywall(by: request.paywallID),
-        let products = try await Self.adaptyProducts(for: paywall),
+        let flow = try await Self.adaptyFlow(by: request.paywallID),
+        let products = try await Self.adaptyProducts(for: flow),
         let product = products
           .first(where: { $0.vendorProductId == request.product.id.rawValue })
       else {
@@ -372,12 +372,12 @@ final class PurchasesClientImpl: @unchecked Sendable {
       ])
 
       guard
-        let adaptyPaywall = try await Self.adaptyPaywall(by: paywall.id)
+        let adaptyFlow = try await Self.adaptyFlow(by: paywall.id)
       else {
         return
       }
 
-      try await Adapty.logShowPaywall(adaptyPaywall)
+      try await Adapty.logShowFlow(adaptyFlow)
 
       logger.info("log show paywall success")
     } catch {
@@ -458,17 +458,17 @@ final class PurchasesClientImpl: @unchecked Sendable {
     }
   }
 
-  private static func adaptyPaywall(
+  private static func adaptyFlow(
     by id: Paywall.ID
-  ) async throws -> AdaptyPaywall? {
-    try await Adapty.getPaywall(placementId: id.rawValue)
+  ) async throws -> AdaptyFlow? {
+    try await Adapty.getFlow(placementId: id.rawValue)
   }
 
   private static func adaptyProducts(
-    for paywall: AdaptyPaywall
+    for flow: AdaptyFlow
   ) async throws -> [AdaptyPaywallProduct]? {
     try await Adapty
-      .getPaywallProducts(paywall: paywall)
+      .getPaywallProducts(flow: flow)
   }
 
   private func cache(_ paywall: Paywall) async {
@@ -513,17 +513,6 @@ final class _AdaptyDelegate: AdaptyDelegate {
     logger.info("delegate: didLoadLatestProfile", dump: [
       "profile": profile
     ])
-  }
-
-  func shouldAddStorePayment(
-    for product: AdaptyDeferredProduct,
-    defermentCompletion makeDeferredPurchase: @escaping (AdaptyResultCompletion<AdaptyProfile>?) -> Void
-  ) -> Bool {
-    logger.info("delegate: shouldAddStorePayment", dump: [
-      "product": product
-    ])
-
-    return true
   }
 }
 
