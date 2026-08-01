@@ -466,6 +466,7 @@ extension Target {
       dependencies: [
         .core,
         .dependencies,
+        .foundation,
         .External.dependencies,
         .External.Dependencies.macros,
         .External.keychainAccess

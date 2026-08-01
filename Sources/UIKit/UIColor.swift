@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 extension UIColor {
@@ -101,3 +103,5 @@ extension UIColor {
     }
   }
 }
+
+#endif

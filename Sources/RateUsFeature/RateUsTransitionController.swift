@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 final class RateUsTransitionController: NSObject {}
@@ -91,3 +93,5 @@ extension RateUsAnimationTransitionController: UIViewControllerAnimatedTransitio
     )
   }
 }
+
+#endif

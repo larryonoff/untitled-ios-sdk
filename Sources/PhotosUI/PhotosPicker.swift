@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Foundation
 import IssueReporting
 import PhotosUI
@@ -232,3 +234,5 @@ private extension PhotosPickerSelectionBehavior {
     }
   }
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 @_spi(Presentation) import ComposableArchitecture
 import DuckSwiftUI
 import SwiftUI
@@ -104,3 +106,5 @@ extension View {
     }
   }
 }
+
+#endif

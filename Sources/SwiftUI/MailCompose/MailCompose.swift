@@ -1,3 +1,5 @@
+#if canImport(MessageUI)
+
 import SwiftUI
 
 extension View {
@@ -102,3 +104,5 @@ private struct _CannotSendDefaultView: View {
     }
   }
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Foundation
 import UIKit
 
@@ -83,3 +85,5 @@ private let presentationQueue: OperationQueue = {
   queue.name = "DuckSDK.UIViewController.PresentationQueue"
   return queue
 }()
+
+#endif

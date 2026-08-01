@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import ConcurrencyExtras
 import Dependencies
 import Photos
@@ -207,3 +209,5 @@ extension PHImageRequestResultInfo: Hashable {
 
 
 extension PHImageRequestResultInfo: Sendable {}
+
+#endif
