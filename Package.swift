@@ -500,6 +500,7 @@ extension Target {
         .core,
         .dependencies,
         .foundation,
+        .logging,
         .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros,
