@@ -500,6 +500,7 @@ extension Target {
         .core,
         .dependencies,
         .foundation,
+        .logging,
         .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros,
@@ -921,11 +922,11 @@ extension Target.Dependency {
     )
 
     enum Facebook {
-      // iOS-only: XCFrameworks ship no macOS slice.
+      // The XCFramework ships iOS and Mac Catalyst slices, but no native macOS slice.
       static let core = product(
         name: "FacebookCore",
         package: "facebook-ios-sdk",
-        condition: .when(platforms: [.iOS])
+        condition: .when(platforms: [.iOS, .macCatalyst])
       )
     }
 
