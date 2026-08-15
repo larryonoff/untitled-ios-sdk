@@ -79,7 +79,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/adaptyteam/AdaptySDK-iOS",
-      from: "4.0.2"
+      from: "4.1.0"
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
@@ -119,11 +119,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "1.6.1"
+      from: "1.7.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "1.14.1"
+      from: "1.15.0"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-sharing",
@@ -139,7 +139,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/xctest-dynamic-overlay",
-      from: "1.9.0"
+      from: "1.11.0"
     )
   ],
   targets: [

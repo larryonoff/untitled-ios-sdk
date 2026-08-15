@@ -16,12 +16,18 @@ public struct Product {
   public struct SubscriptionOffer {
     public typealias ID = Tagged<Self, String>
 
-    public enum OfferType: String {
-      case introductory
-      case promotional
-      case winBack
 
-      case code
+    public struct OfferType: RawRepresentable {
+      public let rawValue: String
+
+      @inlinable
+      public init(rawValue: String) {
+        self.rawValue = rawValue
+      }
+
+      public static let introductory = OfferType(rawValue: "introductory")
+      public static let promotional = OfferType(rawValue: "promotional")
+      public static let winBack = OfferType(rawValue: "win_back")
     }
 
     public enum PaymentMode: String {
