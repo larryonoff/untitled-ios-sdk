@@ -124,8 +124,8 @@ extension Product.SubscriptionOffer.OfferType {
       self = .promotional
     case .winBack:
       self = .winBack
-    case .code:
-      self = .code
+    default:
+      self = .init(rawValue: offerType.rawValue)
     }
   }
 }
