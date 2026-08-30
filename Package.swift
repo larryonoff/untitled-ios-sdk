@@ -697,9 +697,6 @@ extension Target {
 
   static var logging: Target { target(
     name: .logging,
-    dependencies: [
-      .External.customDump
-    ],
     path: "Sources/Logging",
     swiftSettings: .upcomingFeatures,
     linkerSettings: [
