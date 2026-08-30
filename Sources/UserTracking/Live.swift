@@ -168,13 +168,16 @@ final class UserTrackingImpl: Sendable {
 
       for identifier in intergrationIDs {
         do {
-          logger.info("send tracking key-value: \(identifier.key)-\(identifier.value)", dump: [
+          // Only the key is logged: the value is the advertising, vendor or
+          // profile identifier itself, and the system log is not a place to
+          // put one.
+          logger.info("send tracking key: \(identifier.key)", dump: [
             "target": "Adapty"
           ])
 
           try await Adapty.setIntegrationIdentifier(identifier)
         } catch {
-          logger.error("send tracking key-value: \(identifier.key):\(identifier.value) failed", dump: [
+          logger.error("send tracking key: \(identifier.key) failed", dump: [
             "target": "Adapty",
             "error": error.localizedDescription
           ])
