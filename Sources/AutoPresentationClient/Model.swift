@@ -9,9 +9,9 @@ public enum AutoPresentation {
   public typealias Feature = Tagged<FeatureTag, String>
 
   public enum UserInfoKeyTag: Sendable {}
-  public typealias UserInfoKey = Tagged<FeatureTag, String>
+  public typealias UserInfoKey = Tagged<UserInfoKeyTag, String>
 
-  public typealias UserInfo = [UserInfoKey: Any]
+  public typealias UserInfo = [UserInfoKey: any Sendable]
 
   public struct FeatureCondition: Sendable {
     public var isEligibleForPresentation: @Sendable (
