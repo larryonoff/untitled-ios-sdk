@@ -1,7 +1,6 @@
 #if canImport(UIKit)
 
 import Foundation
-import IssueReporting
 import SwiftUI
 
 @available(tvOS, unavailable)
@@ -86,18 +85,16 @@ private struct _ShareView<Data: RandomAccessCollection>: UIViewControllerReprese
     context: Context
   ) {
     uiViewController.completionWithItemsHandler = { activity, success, items, error in
-      if let error = error {
+      if let error {
         onCompletion(.failure(error))
       } else if success {
-        if let data = items as? Data {
-          onCompletion(.success(data))
-        } else {
-          onCompletion(.success(Array<Data.Element>() as! Data))
-        }
-      } else if !success {
-        onCancellation()
+        // `Data` is the collection of items handed to the sheet, not
+        // `Foundation.Data`, and `items` is whatever the chosen activity
+        // returned — of no fixed type and unrelated to it. What succeeded is
+        // the share of `data`, so that is what the completion carries.
+        onCompletion(.success(data))
       } else {
-        reportIssue("UIActivityViewController reported success without a result")
+        onCancellation()
       }
     }
   }
