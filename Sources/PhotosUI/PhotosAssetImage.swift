@@ -167,8 +167,13 @@ extension ContentMode {
 }
 
 extension Image {
+  /// A placeholder that draws nothing.
+  ///
+  /// Built from an empty `UIImage`, not `UIImage(data: Data())` — decoding zero
+  /// bytes returns nil, so force-unwrapping it crashed every time an asset was
+  /// still loading or had failed.
   static var empty: Self {
-    Image(uiImage: UIImage(data: Data())!)
+    Image(uiImage: UIImage())
   }
 }
 
