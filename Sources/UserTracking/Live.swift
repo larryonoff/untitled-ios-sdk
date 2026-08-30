@@ -5,10 +5,12 @@ import AppTrackingTransparency
 import Combine
 import ConcurrencyExtras
 import DuckAnalyticsClient
+import DuckDependencies
 import DuckLogging
 import FirebaseAnalytics
 import Foundation
 import OSLog
+import Sharing
 
 #if os(iOS)
 import FacebookCore
@@ -36,8 +38,10 @@ extension UserTrackingClient {
       isAuthorizationRequestNeeded: {
         impl.isAuthRequestNeeded()
       },
-      requestAuthorization: { dueTime in
-        await impl.requestAuthorization(delayFor: dueTime)
+      requestAuthorization: { timeout in
+        try await impl.requestAuthorization(
+          timeoutWaitingForApplicationActive: timeout
+        )
       },
       sendTrackingData: {
         await impl.sendTrackingData($0)
@@ -98,8 +102,8 @@ final class UserTrackingImpl: Sendable {
   }
 
   func requestAuthorization(
-    delayFor interval: Double
-  ) async -> AuthorizationStatus {
+    timeoutWaitingForApplicationActive timeout: Duration
+  ) async throws -> AuthorizationStatus {
     logger.info("request authorization")
 
     guard isAuthRequestNeeded() else {
@@ -113,11 +117,19 @@ final class UserTrackingImpl: Sendable {
       return status
     }
 
-    analytics.log(.idfaRequest)
+    // The system only presents the ATT prompt while the app is active, and
+    // requesting while it is not is worse than a no-op: no prompt is shown and
+    // the completion is not always called back, which would leave this call —
+    // and whatever awaits it — suspended for good. So the phase is a
+    // precondition: wait for it, and report not getting there rather than
+    // asking anyway. Authorization stays `.notDetermined`, so a later request
+    // still gets to present the prompt.
+    @SharedReader(.applicationPhase) var phase
+    try await $phase.wait(for: .active, timeout: timeout)
 
-    if interval > 0 {
-      try? await Task.sleep(for: .seconds(interval))
-    }
+    // Logged only once the prompt can actually be presented, so the event
+    // counts requests made rather than requests attempted.
+    analytics.log(.idfaRequest)
 
     let attStatus = await ATTrackingManager.requestTrackingAuthorization()
     let status = AuthorizationStatus(attStatus)
