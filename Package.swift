@@ -526,13 +526,15 @@ extension Target {
       name: .Client.userTracking,
       dependencies: [
         .Client.analytics,
+        .dependencies,
         .External.adapty,
         .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros,
         .External.Firebase.analytics,
         .External.Facebook.core,
-        .External.issueReporting
+        .External.issueReporting,
+        .External.sharing
       ],
       path: "Sources/UserTracking",
       swiftSettings: .upcomingFeatures,

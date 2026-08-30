@@ -22,9 +22,19 @@ public struct UserTrackingClient: Sendable {
   public var isAuthorizationRequestNeeded: @Sendable (
   ) -> Bool = { true }
 
+  /// Requests ATT authorization, waiting up to the given timeout for the app to
+  /// become foreground-active before presenting the system prompt.
+  ///
+  /// The prompt is only shown while the app is active, and requesting while it
+  /// is not is worse than a no-op: no prompt appears and the system does not
+  /// always call back, which would leave the call suspended for good. Pass
+  /// `.zero` only when the app is already known to be active.
+  ///
+  /// - Throws: ``ApplicationPhase/TimeoutError`` if the app is not active by
+  ///   the time the timeout elapses.
   public var requestAuthorization: @Sendable (
-    Double
-  ) async -> AuthorizationStatus = { _ in .notDetermined }
+    _ timeoutWaitingForApplicationActive: Duration
+  ) async throws -> AuthorizationStatus
 
   public var sendTrackingData: @Sendable (
     _ request: SendTrackingDataRequest
