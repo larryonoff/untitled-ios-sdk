@@ -131,6 +131,12 @@ public struct PostDeclineIntroOffer: Sendable {
   private func purchase(
     state: inout State
   ) -> Effect<Action> {
+    // `purchase` and `restorePurchases` share a cancel ID, so a second request
+    // arriving mid-flight would cancel the first rather than queue behind it.
+    guard !state.isPurchasing else {
+      return .none
+    }
+
     state.isPurchasing = true
 
     return .run { [
@@ -150,6 +156,10 @@ public struct PostDeclineIntroOffer: Sendable {
   private func purchaseCancel(
     state: inout State
   ) -> Effect<Action> {
+    guard state.isPurchasing else {
+      return .none
+    }
+
     state.isPurchasing = false
     return .cancel(id: CancelID.purchase)
   }
@@ -157,6 +167,10 @@ public struct PostDeclineIntroOffer: Sendable {
   private func restorePurchases(
     state: inout State
   ) -> Effect<Action> {
+    guard !state.isPurchasing else {
+      return .none
+    }
+
     state.isPurchasing = true
 
     return .run { send in
