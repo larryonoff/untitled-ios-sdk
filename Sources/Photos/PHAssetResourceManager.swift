@@ -18,8 +18,12 @@ extension PHAssetResourceManager {
         let data = LockIsolated<Data?>(nil)
 
         requestID.setValue(
+          // PhotoKit streams the resource: the handler is called once per chunk
+          // and the caller is the one that joins them. Assigning would keep only
+          // the last chunk, which still completes without an error — a silently
+          // truncated resource rather than a failed request.
           self.requestData(for: resource, options: options) { chunk in
-            data.setValue(chunk)
+            data.withValue { $0 = ($0 ?? Data()) + chunk }
           } completionHandler: { error in
             if let error {
               continuation.resume(throwing: error)
