@@ -7,9 +7,15 @@ extension AVURLAsset {
 
     asset.resourceLoaderDelegate =
       AVAssetCustomURLResourceLoader(url: url)
+    // Serial, not `.global()`: the delegate answers each request by seeking the
+    // shared file handle and then reading from it, which is only correct if one
+    // request is served at a time. AVFoundation issues loading requests
+    // concurrently — that is the point of `isByteRangeAccessSupported` — so on a
+    // concurrent queue two seeks can interleave and a request gets bytes from
+    // another's offset.
     asset.resourceLoader.setDelegate(
       asset.resourceLoaderDelegate!,
-      queue: .global()
+      queue: DispatchQueue(label: "AVAssetCustomURLResourceLoader")
     )
 
     return asset
@@ -29,6 +35,8 @@ private final class AVAssetCustomURLResourceLoader: NSObject, @unchecked Sendabl
     self.url = url
   }
 
+  // SAFETY: only touched from the serial queue the delegate is registered on,
+  // which serializes every callback that opens, seeks or reads it.
   private var fileHandle: FileHandle?
 
   deinit {
