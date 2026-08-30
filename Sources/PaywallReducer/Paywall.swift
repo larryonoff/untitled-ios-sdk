@@ -123,7 +123,10 @@ public struct PaywallReducer: Sendable {
     case postDeclineIntroOffer(PostDeclineIntroOffer)
 
     public enum Alert: Equatable {
-      case rejectIntroductoryOffer
+      case dismissPaywall
+      case retryFetchPaywall
+      case retryPurchase
+      case retryRestorePurchases
     }
   }
 
@@ -192,7 +195,16 @@ public struct PaywallReducer: Sendable {
         } catch {
           state.paywall = nil
           state.productSelectedID = nil
-          state.destination = .alert(.failure(error))
+          // Onboarding gets no dismiss action: without a paywall there is
+          // nothing to show, and letting OK close it would be a way out of the
+          // funnel. Everywhere else the paywall is escapable, so it stays so.
+          state.destination = .alert(
+            .failure(
+              error,
+              retryAction: .retryFetchPaywall,
+              dismissAction: state.paywallType.isOnboarding ? nil : .dismissPaywall
+            )
+          )
         }
 
         return .none
@@ -210,7 +222,9 @@ public struct PaywallReducer: Sendable {
             return .none
           }
         } catch {
-          state.destination = .alert(.failure(error))
+          state.destination = .alert(
+            .failure(error, retryAction: .retryPurchase)
+          )
 
           return analytics.logPurchase(product, result: result, state: state)
         }
@@ -225,7 +239,9 @@ public struct PaywallReducer: Sendable {
             return .none
           }
         } catch {
-          state.destination = .alert(.failure(error))
+          state.destination = .alert(
+            .failure(error, retryAction: .retryRestorePurchases)
+          )
         }
 
         return .none
@@ -242,6 +258,14 @@ public struct PaywallReducer: Sendable {
         return .none
       case .destination(.presented(.postDeclineIntroOffer(.delegate(.dismiss)))):
         return dismiss(state: &state)
+      case .destination(.presented(.alert(.dismissPaywall))):
+        return dismiss(state: &state)
+      case .destination(.presented(.alert(.retryFetchPaywall))):
+        return fetchPaywall(state: &state)
+      case .destination(.presented(.alert(.retryPurchase))):
+        return purchase(state: &state)
+      case .destination(.presented(.alert(.retryRestorePurchases))):
+        return restorePurchases(state: &state)
       case .destination:
         return .none
 

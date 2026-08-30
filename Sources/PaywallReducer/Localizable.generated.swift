@@ -22,6 +22,14 @@ internal enum L10n {
       internal static let reject = L10n.tr("Localizable", "cancelIntroductoryOffer.action.reject", fallback: "Reject my free trial")
     }
   }
+  internal enum Failure {
+    internal enum Action {
+      /// OK
+      internal static let ok = L10n.tr("Localizable", "failure.action.ok", fallback: "OK")
+      /// Try Again
+      internal static let retry = L10n.tr("Localizable", "failure.action.retry", fallback: "Try Again")
+    }
+  }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces
