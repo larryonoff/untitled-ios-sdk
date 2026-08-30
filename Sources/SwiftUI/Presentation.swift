@@ -39,7 +39,14 @@ extension View {
 /// 3. Use `UIViewRepresentable` as background modifier of a View
 @MainActor
 private struct _PresentationModifier<State, Action, Content: View>: UIViewRepresentable {
-  let item: Binding<Store<State, Action>?>
+  // `@Binding`, not a plain `let`: as a `DynamicProperty` its `wrappedValue` is
+  // read when SwiftUI evaluates the representable, which subscribes the graph to
+  // `item`. Callers scope it as `$store.scope(state: \.destination?…)` and never
+  // read the destination as a value, so without that subscription a dismiss
+  // driven by writing `item = nil` from a captured closure does not invalidate
+  // the graph in release builds and `updateUIView` never runs — the presented
+  // controller stays on screen. Debug builds re-evaluate often enough to hide it.
+  @Binding var item: Store<State, Action>?
   let transitionController: any UIViewControllerTransitioningDelegate
   @ViewBuilder let content: (Store<State, Action>) -> Content
 
@@ -52,10 +59,10 @@ private struct _PresentationModifier<State, Action, Content: View>: UIViewRepres
   }
 
   func updateUIView(_ uiView: UIView, context: Context) {
-    context.coordinator.presentOrDismiss(isPresented: Binding(item)) {
+    context.coordinator.presentOrDismiss(isPresented: Binding($item)) {
       _HostingController(
         rootView: ZStack {
-          if let store = item.wrappedValue {
+          if let store = item {
             content(store)
           }
         }
