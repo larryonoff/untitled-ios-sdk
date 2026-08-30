@@ -1,0 +1,7 @@
+"cancelIntroductoryOffer.title" = "Bist du sicher?";
+"cancelIntroductoryOffer.message" = "Kostenlose Testversion ist ein zeitlich begrenztes Angebot. Aktiviere sie jetzt!";
+"cancelIntroductoryOffer.action.reject" = "Testversion ablehnen";
+"cancelIntroductoryOffer.action.cancel" = "Abbrechen";
+
+"failure.action.retry" = "Wiederholen";
+"failure.action.ok" = "OK";
