@@ -79,9 +79,11 @@ extension Product.SubscriptionInfo {
     self.subscriptionGroupID = subscriptionGroupID
     self.subscriptionPeriod = subscriptionPeriod
 
+    // Eligibility is what kind of offer the paywall carries, not whether its
+    // identifier matches StoreKit's. Adapty and StoreKit name the same offer
+    // differently, so requiring the identifiers to agree reported eligible
+    // products as ineligible.
     self.isEligibleForIntroOffer =
-      subscription?.introductoryOffer?.id != nil &&
-      paywallProduct?.subscriptionOffer?.identifier == subscription?.introductoryOffer?.id &&
       paywallProduct?.subscriptionOffer?.offerType == .introductory
   }
 }
