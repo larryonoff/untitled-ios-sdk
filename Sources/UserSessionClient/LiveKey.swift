@@ -118,7 +118,7 @@ final class UserSessionClientImpl: Sendable {
   }
 
   func activate() {
-    log.info("\(#function)")
+    log.info("user-session.activate")
 
     let shouldActivate = state.withLock { state -> Bool in
       guard !state.isActive else { return false }
@@ -143,7 +143,7 @@ final class UserSessionClientImpl: Sendable {
   }
 
   func reset() {
-    log.info("\(#function)")
+    log.info("user-session.reset")
 
     let date = date()
     let version = bundle.version
@@ -154,7 +154,7 @@ final class UserSessionClientImpl: Sendable {
   }
 
   private func restore() {
-    log.info("\(#function)")
+    log.info("user-session.restore")
 
     let wasSuspended = state.withLock { state -> Bool in
       guard state.isSuspended else { return false }
@@ -163,9 +163,12 @@ final class UserSessionClientImpl: Sendable {
     }
 
     guard wasSuspended else {
-      log.info("\(#function) skipped", dump: [
-        "reason": "suspended is false"
-      ])
+      log.info(
+        """
+        user-session.restore skipped | \
+        reason: not_suspended
+        """
+      )
       return
     }
 
@@ -180,7 +183,7 @@ final class UserSessionClientImpl: Sendable {
   }
 
   private func suspend() {
-    log.info("\(#function)")
+    log.info("user-session.suspend")
 
     state.withLock { $0.isSuspended = true }
 
@@ -189,7 +192,7 @@ final class UserSessionClientImpl: Sendable {
   }
 
   private func terminate() {
-    log.info("\(#function)")
+    log.info("user-session.terminate")
 
     let date = date()
     withMetrics { $0.suspend(at: date) }
@@ -253,10 +256,13 @@ struct KeychainStorage: @unchecked Sendable {
 
       return try decoder.decode(Value.self, from: data)
     } catch {
-      log.error("loadValue failure", dump: [
-        "error": error,
-        "key": key
-      ])
+      log.error(
+        """
+        user-session.load failed | \
+        key: \(key, privacy: .public)
+        error: \(error, privacy: .public)
+        """
+      )
       return nil
     }
   }
@@ -270,11 +276,13 @@ struct KeychainStorage: @unchecked Sendable {
         try keychain.remove(key)
       }
     } catch {
-      log.error("saveValue failure", dump: [
-        "error": error,
-        "key": key,
-        "value": newValue as Any
-      ])
+      log.error(
+        """
+        user-session.save failed | \
+        key: \(key, privacy: .public)
+        error: \(error, privacy: .public)
+        """
+      )
     }
   }
 

@@ -33,18 +33,18 @@ final class TransactionObserver: Sendable {
 
       task = Task {
         do {
-          logger.info("handle profile")
+          logger.info("transaction.handle-profile")
 
           // HACK
           // Adapty sends the profile update before finishing transaction.
           // Adding a delay ensures we process transactions in the correct order.
           try await Task.sleep(for: .seconds(2))
 
-          logger.info("handle profile. continue after timeout")
+          logger.info("transaction.handle-profile resumed")
 
           if store.newCandidatesDate() == nil {
             await store.setNewCandidatesDate(Date())
-            logger.info("handle profile. update newCandidatesDate")
+            logger.info("transaction.new-candidates-date updated")
           }
 
           try Task.checkCancellation()
@@ -53,13 +53,16 @@ final class TransactionObserver: Sendable {
           try Task.checkCancellation()
           await observeNewTransactions(for: profile)
 
-          logger.info("handle profile success")
+          logger.info("transaction.handle-profile success")
         } catch is CancellationError {
-          logger.warning("handle profile cancelled")
+          logger.warning("transaction.handle-profile cancelled")
         } catch {
-          logger.error("handle profile failure", dump: [
-            "error": error
-          ])
+          logger.error(
+            """
+            transaction.handle-profile failed
+            error: \(error, privacy: .public)
+            """
+          )
         }
       }
     }
@@ -75,10 +78,13 @@ final class TransactionObserver: Sendable {
       .filter { $0.transaction.purchaseDate > sk2ReleaseDate }
       .sorted { $0.transaction.purchaseDate < $1.transaction.purchaseDate }
 
-    logger.debug("restored transactions", dump: [
-      "restoredTransactions.count": restoredTransactions.count,
-      "restoredTransactions": restoredTransactions
-    ])
+    logger.debug(
+      """
+      transaction.restored received | \
+      count: \(restoredTransactions.count)
+      transactions: \(String(describing: restoredTransactions), privacy: .public)
+      """
+    )
 
     for transactionResult in restoredTransactions {
       // we don't need to notify, just handle, e.g. store ids
@@ -95,10 +101,13 @@ final class TransactionObserver: Sendable {
       .newCandidateTransactions(store: store, profile: profile)
       .sorted { $0.transaction.purchaseDate < $1.transaction.purchaseDate }
 
-    logger.info("new transactions", dump: [
-      "newTransactions.count": newTransactions.count,
-      "newTransactions": newTransactions
-    ])
+    logger.info(
+      """
+      transaction.new received | \
+      count: \(newTransactions.count)
+      transactions: \(String(describing: newTransactions), privacy: .public)
+      """
+    )
 
     guard !newTransactions.isEmpty else {
       return
@@ -120,14 +129,20 @@ private func handleTransaction(
   _ verificationResult: VerificationResult<StoreKit.Transaction>,
   cache: TransactionCache
 ) async -> DuckTransaction? {
-  logger.info("handle transaction", dump: [
-    "verificationResult": verificationResult
-  ])
+  logger.info(
+    """
+    transaction.handle
+    verification_result: \(String(describing: verificationResult), privacy: .public)
+    """
+  )
 
   guard case let .verified(transaction) = verificationResult else {
-    logger.warning("transaction is not verified", dump: [
-      "verificationResult": verificationResult
-    ])
+    logger.warning(
+      """
+      transaction.handle skipped | reason: unverified
+      verification_result: \(String(describing: verificationResult), privacy: .public)
+      """
+    )
     // ignore unverified transactions
     return nil
   }
@@ -141,9 +156,13 @@ private func handleTransaction(
 
     await cache.append(transactionID: transaction.id)
 
-    logger.info("handle transaction (non-consumable) success", dump: [
-      "transaction.id": transaction.id
-    ])
+    logger.info(
+      """
+      transaction.handle success | \
+      product_type: non-consumable \
+      transaction_id: \(transaction.id)
+      """
+    )
 
     return .init(
       product: product,
@@ -162,10 +181,14 @@ private func handleTransaction(
     // subscription start free trial
 
     if transaction.isStartFreeTrial {
-      logger.info("handle transaction (subscripion) success", dump: [
-        "event": "start free trial",
-        "transaction.id": transaction.id
-      ])
+      logger.info(
+        """
+        transaction.handle success | \
+        product_type: auto-renewable \
+        event: trial-started \
+        transaction_id: \(transaction.id)
+        """
+      )
 
       await cache.remove(transactionID: transaction.originalID)
 
@@ -181,10 +204,14 @@ private func handleTransaction(
     if !cache.transactionIDs().contains(transaction.originalID) {
       let isSubscriptionStarted = transaction.id == transaction.originalID
 
-      logger.info("handle transaction (subscripion) success", dump: [
-        "event": "\(isSubscriptionStarted ? "subscription started" : "trial converted")",
-        "transaction.id": transaction.id
-      ])
+      logger.info(
+        """
+        transaction.handle success | \
+        product_type: auto-renewable \
+        event: \(isSubscriptionStarted ? "subscription-started" : "trial-converted", privacy: .public) \
+        transaction_id: \(transaction.id)
+        """
+      )
 
       await cache.append(transactionIDs: [transaction.originalID, transaction.id])
 
@@ -197,10 +224,14 @@ private func handleTransaction(
 
     // subscription renewal
 
-    logger.info("handle transaction (subscripion) success", dump: [
-      "event": "subscription renewed",
-      "transaction.id": transaction.id
-    ])
+    logger.info(
+      """
+      transaction.handle success | \
+      product_type: auto-renewable \
+      event: subscription-renewed \
+      transaction_id: \(transaction.id)
+      """
+    )
 
     await cache.append(transactionID: transaction.id)
 
@@ -211,10 +242,14 @@ private func handleTransaction(
     )
   }
 
-  logger.warning("handle transaction completed. No eligible transactions found", dump: [
-    "transaction.id": transaction.id,
-    "transaction.productType": transaction.productType
-  ])
+  logger.warning(
+    """
+    transaction.handle skipped | \
+    reason: not-eligible \
+    transaction_id: \(transaction.id) \
+    product_type: \(String(describing: transaction.productType), privacy: .public)
+    """
+  )
 
   return nil
 }

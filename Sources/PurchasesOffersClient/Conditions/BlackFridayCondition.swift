@@ -18,27 +18,25 @@ extension PurchasesOfferCondition {
 
     return Self(
       calculateOffer: { date, paywallType -> PurchasesOffer? in
-        logger.info("calculate black friday")
+        logger.info("offers.evaluate-black-friday")
 
         guard remoteSettings.paywallSpecialOfferType == .blackFriday else {
-          logger.info("calculate black friday complete", dump: [
-            "result": "black friday remotely disabled"
-          ])
+          logger.info("offers.evaluate-black-friday skipped | reason: remotely-disabled")
           return nil
         }
 
         guard appStorage.wasMainPaywallDismissed else {
-          logger.info("calculate black friday complete", dump: [
-            "result": "main paywall never dismissed"
-          ])
+          logger.info("offers.evaluate-black-friday skipped | reason: main-paywall-never-dismissed")
           return nil
         }
 
         if case let .blackFriday(offer) = appStorage.purchasesOffer {
-          logger.info("calculate black friday complete", dump: [
-            "isNew": false,
-            "result": offer
-          ])
+          logger.info(
+            """
+            offers.evaluate-black-friday success | is_new: false
+            offer: \(String(describing: offer), privacy: .public)
+            """
+          )
 
           return .blackFriday(offer)
         }
@@ -68,23 +66,21 @@ extension PurchasesOfferCondition {
           )
 
           guard offer.isValid(for: date) else {
-            logger.info("calculate black friday complete", dump: [
-              "result": "offer date is invalid"
-            ])
+            logger.info("offers.evaluate-black-friday skipped | reason: offer-date-invalid")
             return nil
           }
 
-          logger.info("calculate black friday complete", dump: [
-            "isNew": false,
-            "result": offer
-          ])
+          logger.info(
+            """
+            offers.evaluate-black-friday success | is_new: false
+            offer: \(String(describing: offer), privacy: .public)
+            """
+          )
 
           return .blackFriday(offer)
         }
 
-        logger.info("calculate black friday complete", dump: [
-          "result": "black friday offer not available"
-        ])
+        logger.info("offers.evaluate-black-friday skipped | reason: offer-unavailable")
 
         return nil
       }

@@ -106,9 +106,12 @@ private final class PhotosAuthorizationClientImpl: Sendable {
   private func performRequestAuthorization(
     for accessLevel: PhotosAuthorization.AccessLevel
   ) async -> PhotosAuthorization.AuthorizationStatus {
-    logger.info("request authorization", dump: [
-      "accessLevel": accessLevel
-    ])
+    logger.info(
+      """
+      photos.authorize | \
+      access_level: \(accessLevel.description, privacy: .public)
+      """
+    )
 
     let previousStatus = authorizationStatus(for: accessLevel)
 
@@ -125,11 +128,14 @@ private final class PhotosAuthorizationClientImpl: Sendable {
       authorizationSubject.send((accessLevel, newStatus))
     }
 
-    logger.info("request authorization success", dump: [
-      "accessLevel": accessLevel,
-      "status": newStatus,
-      "updated": previousStatus != newStatus
-    ])
+    logger.info(
+      """
+      photos.authorize success | \
+      access_level: \(accessLevel.description, privacy: .public) \
+      status: \(newStatus.description, privacy: .public) \
+      is_updated: \(previousStatus != newStatus, privacy: .public)
+      """
+    )
 
     return newStatus
   }

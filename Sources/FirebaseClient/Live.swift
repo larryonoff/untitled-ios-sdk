@@ -50,7 +50,7 @@ final class FirebaseClientImpl: Sendable {
 
   func initialize(
   ) {
-    logger.info("initialize")
+    logger.info("firebase.initialize")
 
     FirebaseApp.configure()
 
@@ -61,7 +61,7 @@ final class FirebaseClientImpl: Sendable {
 
     updateUserID()
 
-    logger.info("initialize success")
+    logger.info("firebase.initialize success")
   }
 
   func record(_ error: any Error, userInfo: [String: Any]?) {

@@ -17,7 +17,12 @@ extension AppMetricaClient: DependencyKey {
       let apiKey = Bundle.main.appMetricaAPIKey,
       let config = AppMetricaConfiguration(apiKey: apiKey)
     else {
-      logger.warning("Cannot find valid AppMetrica settings")
+      logger.warning(
+        """
+        app-metrica.initialize skipped | \
+        reason: no-valid-settings
+        """
+      )
       return Self.noop
     }
 

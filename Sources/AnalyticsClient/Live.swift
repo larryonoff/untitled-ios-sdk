@@ -11,20 +11,26 @@ extension AnalyticsClient {
           client.logEvent(eventName, parameters)
         }
 
-        logger.info("logEvent", dump: [
-          "eventName": eventName,
-          "parameters": parameters as Any
-        ])
+        logger.info(
+          """
+          analytics.log-event | \
+          event_name: \(eventName.rawValue, privacy: .public)
+          parameters: \(String(describing: parameters))
+          """
+        )
       },
       setUserProperty: { value, propertyName in
         for client in clients {
           client.setUserProperty(value, propertyName)
         }
 
-        logger.info("setUserProperty", dump: [
-          "propertyName": propertyName,
-          "value": value as Any
-        ])
+        logger.info(
+          """
+          analytics.set-user-property | \
+          property_name: \(propertyName.rawValue, privacy: .public)
+          value: \(String(describing: value))
+          """
+        )
       }
     )
   }

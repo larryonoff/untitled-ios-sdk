@@ -84,36 +84,50 @@ private actor RemoteSettingsImpl {
       defer { fetchTask = nil }
 
       do {
-        logger.info("fetch request", dump: [
-          "request": request
-        ])
+        logger.info(
+          """
+          remote-settings.fetch | \
+          is_activated: \(request.activate, privacy: .public) \
+          duration: \(request.expirationDuration, privacy: .public)
+          """
+        )
 
         let remoteConfig = RemoteConfig.remoteConfig()
 
         let status = try await remoteConfig
           .fetch(withExpirationDuration: request.expirationDuration)
 
-        logger.info("fetch response", dump: [
-          "request": request,
-          "status": status
-        ])
+        logger.info(
+          """
+          remote-settings.fetch received | \
+          is_activated: \(request.activate, privacy: .public) \
+          duration: \(request.expirationDuration, privacy: .public) \
+          status: \(status.rawValue, privacy: .public)
+          """
+        )
 
         if request.activate {
-          logger.info("activate request")
+          logger.info("remote-settings.activate")
 
           let wasActivated = try await remoteConfig.activate()
 
-          logger.info("activate response", dump: [
-            "request": request,
-            "status": status,
-            "success": wasActivated
-          ])
+          logger.info(
+            """
+            remote-settings.activate success | \
+            is_activated: \(wasActivated, privacy: .public) \
+            status: \(status.rawValue, privacy: .public)
+            """
+          )
         }
       } catch {
-        logger.error("fetch and activate", dump: [
-          "request": request,
-          "error": error
-        ])
+        logger.error(
+          """
+          remote-settings.fetch failed | \
+          is_activated: \(request.activate, privacy: .public) \
+          duration: \(request.expirationDuration, privacy: .public)
+          error: \(error, privacy: .public)
+          """
+        )
 
         throw error
       }

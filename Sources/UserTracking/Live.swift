@@ -102,7 +102,7 @@ final class UserTrackingImpl: Sendable {
       ATTrackingManager.trackingAuthorizationStatus
     )
 
-    logger.info("initialize success")
+    logger.info("user-tracking.initialize success")
   }
 
   func isAuthRequestNeeded() -> Bool {
@@ -112,15 +112,18 @@ final class UserTrackingImpl: Sendable {
   func requestAuthorization(
     timeoutWaitingForApplicationActive timeout: Duration
   ) async throws -> AuthorizationStatus {
-    logger.info("request authorization")
+    logger.info("user-tracking.authorize")
 
     guard isAuthRequestNeeded() else {
       let attStatus = ATTrackingManager.trackingAuthorizationStatus
       let status = AuthorizationStatus(attStatus)
 
-      logger.info("request authorization not needed", dump: [
-        "status": status
-      ])
+      logger.info(
+        """
+        user-tracking.authorize skipped | \
+        status: \(status, privacy: .public) reason: not_needed
+        """
+      )
 
       return status
     }
@@ -151,9 +154,12 @@ final class UserTrackingImpl: Sendable {
       ]
     )
 
-    logger.info("authorization request success", dump: [
-      "status": status
-    ])
+    logger.info(
+      """
+      user-tracking.authorize success | \
+      status: \(status, privacy: .public)
+      """
+    )
 
     return status
   }
@@ -161,7 +167,7 @@ final class UserTrackingImpl: Sendable {
   func sendTrackingData(
     _ request: SendTrackingDataRequest
   ) async {
-    logger.info("send tracking data")
+    logger.info("user-tracking.send")
 
     do {
       var intergrationIDs: [AdaptyIntegrationIdentifier] = [
@@ -179,16 +185,22 @@ final class UserTrackingImpl: Sendable {
           // Only the key is logged: the value is the advertising, vendor or
           // profile identifier itself, and the system log is not a place to
           // put one.
-          logger.info("send tracking key: \(identifier.key)", dump: [
-            "target": "Adapty"
-          ])
+          logger.info(
+            """
+            user-tracking.send-identifier | \
+            key: \(identifier.key, privacy: .public) target: Adapty
+            """
+          )
 
           try await Adapty.setIntegrationIdentifier(identifier)
         } catch {
-          logger.error("send tracking key: \(identifier.key) failed", dump: [
-            "target": "Adapty",
-            "error": error.localizedDescription
-          ])
+          logger.error(
+            """
+            user-tracking.send-identifier failed | \
+            key: \(identifier.key, privacy: .public) target: Adapty
+            error: \(error, privacy: .public)
+            """
+          )
         }
       }
 
@@ -198,11 +210,14 @@ final class UserTrackingImpl: Sendable {
 
       try await Adapty.updateProfile(params: params)
 
-      logger.info("send tracking data success")
+      logger.info("user-tracking.send success")
     } catch {
-      logger.error("send tracking data failure", dump: [
-        "error": error.localizedDescription
-      ])
+      logger.error(
+        """
+        user-tracking.send failed
+        error: \(error, privacy: .public)
+        """
+      )
     }
   }
 

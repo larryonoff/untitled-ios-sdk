@@ -96,17 +96,23 @@ private final class RateUsConditionImpl: Sendable {
           saveOrShareCount + 1
         )
 
-        logger.info("logEvent", dump: [
-          "event": event,
-          "saveOrShareCount": saveOrShareCount
-        ])
+        logger.info(
+          """
+          auto-presentation.rate-us.log-event | \
+          event: \(String(describing: event), privacy: .public) \
+          count: \(saveOrShareCount, privacy: .public)
+          """
+        )
       } else {
         await userSettings.setRateUsImpressionCount(nil)
 
-        logger.info("logEvent", dump: [
-          "event": event,
-          "saveOrShareCount": "nil"
-        ])
+        logger.info(
+          """
+          auto-presentation.rate-us.log-event | \
+          event: \(String(describing: event), privacy: .public) \
+          count: nil
+          """
+        )
       }
     default:
       break
@@ -121,13 +127,15 @@ private final class RateUsConditionImpl: Sendable {
   // MARK: - Conditions
 
   private var isEligibleAfterImpression: Bool {
-    logger.info("validate after save or share")
+    logger.info("auto-presentation.rate-us.validate-impression")
 
     guard let impressionCount, impressionCount > 0 else {
-      logger.info("validate after save or share", dump: [
-        "eligible": false,
-        "reason": "save or share delay less than or equal to 0"
-      ])
+      logger.info(
+        """
+        auto-presentation.rate-us.validate-impression skipped | \
+        reason: impression_count_not_positive
+        """
+      )
 
       return false
     }
@@ -135,10 +143,12 @@ private final class RateUsConditionImpl: Sendable {
     guard
       let loggedImpressionCount = userSettings.rateUsImpressionCount
     else {
-      logger.info("validate after save or share", dump: [
-        "eligible": false,
-        "reason": "user did not share"
-      ])
+      logger.info(
+        """
+        auto-presentation.rate-us.validate-impression skipped | \
+        reason: no_logged_impression
+        """
+      )
 
       return false
     }
@@ -151,22 +161,27 @@ private final class RateUsConditionImpl: Sendable {
       isCountEligible && self.isPresentationDelayExpired
     }
 
-    logger.info("validate after save or share", dump: [
-      "eligible": isEligible
-    ])
+    logger.info(
+      """
+      auto-presentation.rate-us.validate-impression success | \
+      is_eligible: \(isEligible, privacy: .public)
+      """
+    )
 
     return isEligible
   }
 
   private var isEligibleNewSessionWhenNeverPresented: Bool {
-    logger.info("validate when never presented")
+    logger.info("auto-presentation.rate-us.validate-new-session")
 
     let rateUsStartSession = remoteSettings.rateUsStartSession
     guard rateUsStartSession > 0 else {
-      logger.info("validate when never presented", dump: [
-        "eligible": false,
-        "reason": "start session is nil or less than 0"
-      ])
+      logger.info(
+        """
+        auto-presentation.rate-us.validate-new-session skipped | \
+        reason: start_session_not_positive
+        """
+      )
 
       return false
     }
@@ -174,11 +189,13 @@ private final class RateUsConditionImpl: Sendable {
     let presentationSession = userSettings.rateUsPresentationSession
 
     guard presentationSession == nil else {
-      logger.info("validate when never presented", dump: [
-        "eligible": false,
-        "presentationSession": presentationSession!,
-        "reason": "already presented"
-      ])
+      logger.info(
+        """
+        auto-presentation.rate-us.validate-new-session skipped | \
+        presentation_session: \(presentationSession ?? 0, privacy: .public) \
+        reason: already_presented
+        """
+      )
 
       return false
     }
@@ -187,11 +204,14 @@ private final class RateUsConditionImpl: Sendable {
 
     let isEligible = session >= rateUsStartSession
 
-    logger.info("validate when never presented", dump: [
-      "eligible": isEligible,
-      "session": session,
-      "startSession": rateUsStartSession
-    ])
+    logger.info(
+      """
+      auto-presentation.rate-us.validate-new-session success | \
+      is_eligible: \(isEligible, privacy: .public) \
+      session: \(session, privacy: .public) \
+      start_session: \(rateUsStartSession, privacy: .public)
+      """
+    )
 
     return isEligible
   }

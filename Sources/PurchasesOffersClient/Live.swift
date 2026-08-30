@@ -223,15 +223,13 @@ final class PurchasesOffersClientImpl: Sendable {
     for purchases: Purchases,
     paywallType: Paywall.PaywallType? = nil
   ) async {
-    logger.info("update offer")
+    logger.info("offers.update")
 
     guard !purchases.isPremium else {
       activeOffer.value = nil
       cancelTimer()
 
-      logger.warning("update offer complete", dump: [
-        "info": "user has premium. Offer is nil"
-      ])
+      logger.warning("offers.update skipped | reason: user-has-premium")
 
       return
     }
@@ -260,17 +258,22 @@ final class PurchasesOffersClientImpl: Sendable {
     }
 
     if isOfferValid {
-      logger.info("update offer complete", dump: [
-        "offer": suggestedOffer as Any
-      ])
+      logger.info(
+        """
+        offers.update success
+        offer: \(String(describing: suggestedOffer), privacy: .public)
+        """
+      )
 
       appStorage.purchasesOffer = suggestedOffer
       activeOffer.value = suggestedOffer
     } else {
-      logger.warning("update offer complete", dump: [
-        "offer": suggestedOffer as Any,
-        "info": "offer is not valid"
-      ])
+      logger.warning(
+        """
+        offers.update skipped | reason: offer-invalid
+        offer: \(String(describing: suggestedOffer), privacy: .public)
+        """
+      )
 
       appStorage.purchasesOffer = nil
       activeOffer.value = nil

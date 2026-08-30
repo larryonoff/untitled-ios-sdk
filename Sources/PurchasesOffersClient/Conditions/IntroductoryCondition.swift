@@ -14,18 +14,14 @@ extension PurchasesOfferCondition {
   ) -> Self {
     Self(
       calculateOffer: { _, _ -> PurchasesOffer? in
-        logger.info("calculate intoductory offer")
+        logger.info("offers.evaluate-introductory")
 
         guard purchases.purchases().isEligibleForIntroductoryOffer else {
-          logger.info("calculate intoductory offer complete", dump: [
-            "result": "not eligible fot intro offer"
-          ])
+          logger.info("offers.evaluate-introductory skipped | reason: not-eligible")
           return nil
         }
 
-        logger.info("calculate intoductory offer complete", dump: [
-          "result": "eligible"
-        ])
+        logger.info("offers.evaluate-introductory success | is_eligible: true")
 
         return .introductory
       }
