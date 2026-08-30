@@ -67,11 +67,19 @@ private final class PhotosAuthorizationClientImpl: Sendable {
   func authorizationStatusUpdates(
     for accessLevel: PhotosAuthorization.AccessLevel
   ) -> AsyncStream<PhotosAuthorization.AuthorizationStatus> {
+    // `.values` bridges via an unfolding `AsyncStream` that holds no buffer
+    // between `next()` calls, so demand is zero while a consumer works.
+    // `PassthroughSubject` is synchronous and ignores backpressure, so a status
+    // sent in that window traps Combine with "Received an output without
+    // requesting demand". `buffer` absorbs it, as in the client's other
+    // subject-to-stream bridges.
     AsyncStream(
       UncheckedSendable(
-        authorizationSubject.values
+        authorizationSubject
+          .buffer(size: 5, prefetch: .byRequest, whenFull: .dropOldest)
           .filter { $0.0 == accessLevel }
           .map { $0.1 }
+          .values
       )
     )
   }
