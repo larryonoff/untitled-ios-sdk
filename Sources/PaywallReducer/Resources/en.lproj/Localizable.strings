@@ -2,3 +2,6 @@
 "cancelIntroductoryOffer.message" = "Free trial is a limited-time offer. Activate it now!";
 "cancelIntroductoryOffer.action.reject" = "Reject my free trial";
 "cancelIntroductoryOffer.action.cancel" = "Cancel";
+
+"failure.action.retry" = "Try Again";
+"failure.action.ok" = "OK";
