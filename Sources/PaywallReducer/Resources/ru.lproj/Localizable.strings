@@ -1,0 +1,7 @@
+"cancelIntroductoryOffer.title" = "Вы уверены?";
+"cancelIntroductoryOffer.message" = "Пробная версия - это ограниченное предложение. Активируй её сейчас!";
+"cancelIntroductoryOffer.action.reject" = "Отказаться от пробной версии";
+"cancelIntroductoryOffer.action.cancel" = "Отменить";
+
+"failure.action.retry" = "Повторить";
+"failure.action.ok" = "ОК";

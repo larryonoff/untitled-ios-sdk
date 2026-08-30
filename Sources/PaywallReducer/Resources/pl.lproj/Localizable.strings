@@ -1,0 +1,7 @@
+"cancelIntroductoryOffer.title" = "Czy jesteś pewny(a)?";
+"cancelIntroductoryOffer.message" = "Bezpłatny okres próbny to oferta ograniczona czasowo. Aktywuj go teraz!";
+"cancelIntroductoryOffer.action.reject" = "Odrzucić okres próbny";
+"cancelIntroductoryOffer.action.cancel" = "Anuluj";
+
+"failure.action.retry" = "Ponów próbę";
+"failure.action.ok" = "OK";

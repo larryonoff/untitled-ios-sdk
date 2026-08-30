@@ -1,0 +1,7 @@
+"cancelIntroductoryOffer.title" = "Tem certeza?";
+"cancelIntroductoryOffer.message" = "O teste gratuito é uma oferta por tempo limitado. Ative-o agora!";
+"cancelIntroductoryOffer.action.reject" = "Rejeitar o teste gratuito";
+"cancelIntroductoryOffer.action.cancel" = "Cancelar";
+
+"failure.action.retry" = "Repetir";
+"failure.action.ok" = "OK";

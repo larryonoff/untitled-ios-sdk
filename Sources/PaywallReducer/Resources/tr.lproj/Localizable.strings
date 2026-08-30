@@ -1,0 +1,7 @@
+"cancelIntroductoryOffer.title" = "Emin misin?";
+"cancelIntroductoryOffer.message" = "Ücretsiz deneme sınırlı bir süre için geçerlidir. Şimdi etkinleştirin!";
+"cancelIntroductoryOffer.action.reject" = "Ücretsiz denemeyi reddetmek";
+"cancelIntroductoryOffer.action.cancel" = "İptal";
+
+"failure.action.retry" = "Tekrar dene";
+"failure.action.ok" = "OK";

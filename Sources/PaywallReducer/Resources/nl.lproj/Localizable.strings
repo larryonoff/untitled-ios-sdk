@@ -1,0 +1,7 @@
+"cancelIntroductoryOffer.title" = "Weet je het zeker?";
+"cancelIntroductoryOffer.message" = "Gratis proefperiode is een tijdelijk aanbod. Activeer het nu!";
+"cancelIntroductoryOffer.action.reject" = "Proefperiode weigeren";
+"cancelIntroductoryOffer.action.cancel" = "Annuleren";
+
+"failure.action.retry" = "Opnieuw proberen";
+"failure.action.ok" = "OK";

@@ -1,0 +1,7 @@
+"cancelIntroductoryOffer.title" = "คุณแน่ใจหรือไม่?";
+"cancelIntroductoryOffer.message" = "ทดลองใช้ฟรีเป็นข้อเสนอเวลาจำกัด. เปิดใช้งานเดี๋ยวนี้!";
+"cancelIntroductoryOffer.action.reject" = "ปฏิเสธทดลองใช้ฟรี";
+"cancelIntroductoryOffer.action.cancel" = "ยกเลิก";
+
+"failure.action.retry" = "ลองอีกครั้ง";
+"failure.action.ok" = "ตกลง";

@@ -1,0 +1,7 @@
+"cancelIntroductoryOffer.title" = "Êtes-vous sûr(e) ?";
+"cancelIntroductoryOffer.message" = "L'essai gratuit est une offre à durée limitée. Activez-le maintenant !";
+"cancelIntroductoryOffer.action.reject" = "Rejeter l'essai gratuit";
+"cancelIntroductoryOffer.action.cancel" = "Annuler";
+
+"failure.action.retry" = "Réessayer";
+"failure.action.ok" = "OK";
