@@ -69,7 +69,9 @@ playground.xcworkspace
 Carthage/Build/
 
 # Accio dependency management
-Dependencies/
+# Anchored to the repo root: unanchored, this also matched `Sources/Dependencies`,
+# so new files in that target were silently ignored.
+/Dependencies/
 .accio/
 
 # fastlane
