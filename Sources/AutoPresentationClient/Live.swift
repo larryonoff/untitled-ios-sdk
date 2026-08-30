@@ -67,17 +67,23 @@ private final class AutoPresentationClientImpl: Sendable {
     placement: Placement?,
     userInfo: [AutoPresentation.UserInfoKey: Any]?
   ) -> Bool {
-    logger.info("canPresentFeature", dump: [
-      "feature": feature,
-      "placement": placement?.rawValue as Any
-    ])
+    logger.info(
+      """
+      auto-presentation.evaluate | \
+      feature: \(feature.rawValue, privacy: .public) \
+      placement: \(placement?.rawValue ?? "nil", privacy: .public)
+      """
+    )
 
     guard userSettings.isOnboardingCompleted else {
-      logger.error("canPresentFeature failure", dump: [
-        "feature": feature,
-        "placement": placement?.rawValue as Any,
-        "error": "onboarding not completed"
-      ])
+      logger.error(
+        """
+        auto-presentation.evaluate failed | \
+        feature: \(feature.rawValue, privacy: .public) \
+        placement: \(placement?.rawValue ?? "nil", privacy: .public) \
+        reason: onboarding_not_completed
+        """
+      )
 
       return false
     }
@@ -85,21 +91,27 @@ private final class AutoPresentationClientImpl: Sendable {
     let totalSessionCount = Int(userSession.metrics().totalSessionCount)
 
     guard userSettings.autoPresentationSessionID != totalSessionCount else {
-      logger.error("canPresentFeature failure", dump: [
-        "feature": feature,
-        "placement": placement?.rawValue as Any,
-        "error": "same session"
-      ])
+      logger.error(
+        """
+        auto-presentation.evaluate failed | \
+        feature: \(feature.rawValue, privacy: .public) \
+        placement: \(placement?.rawValue ?? "nil", privacy: .public) \
+        reason: same_session
+        """
+      )
 
       return false
     }
 
     guard let condition = conditions[feature] else {
-      logger.error("canPresentFeature failure", dump: [
-        "feature": feature,
-        "placement": placement?.rawValue as Any,
-        "error": "condition not presented"
-      ])
+      logger.error(
+        """
+        auto-presentation.evaluate failed | \
+        feature: \(feature.rawValue, privacy: .public) \
+        placement: \(placement?.rawValue ?? "nil", privacy: .public) \
+        reason: condition_missing
+        """
+      )
 
       return false
     }
@@ -109,11 +121,14 @@ private final class AutoPresentationClientImpl: Sendable {
       userInfo
     )
 
-    logger.info("canPresentFeature response", dump: [
-      "feature": feature,
-      "placement": placement?.rawValue as Any,
-      "isEligibleForPresentation": isEligibleForPresentation
-    ])
+    logger.info(
+      """
+      auto-presentation.evaluate success | \
+      feature: \(feature.rawValue, privacy: .public) \
+      placement: \(placement?.rawValue ?? "nil", privacy: .public) \
+      is_eligible: \(isEligibleForPresentation, privacy: .public)
+      """
+    )
 
     return isEligibleForPresentation
   }
@@ -124,9 +139,12 @@ private final class AutoPresentationClientImpl: Sendable {
 
     await conditions[feature]?.increment()
 
-    logger.info("increment", dump: [
-      "feature": feature
-    ])
+    logger.info(
+      """
+      auto-presentation.increment success | \
+      feature: \(feature.rawValue, privacy: .public)
+      """
+    )
   }
 
   func logEvent(_ event: AutoPresentation.Event) async {
@@ -136,7 +154,7 @@ private final class AutoPresentationClientImpl: Sendable {
   }
 
   func reset() async {
-    logger.info("reset")
+    logger.info("auto-presentation.reset")
 
     await userSettings.setAutoPresentationSession(nil)
 

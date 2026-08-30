@@ -24,7 +24,7 @@ extension PurchasesClient {
       let apiKey = Bundle.main.adaptyAPIKey,
       !apiKey.isEmpty
     else {
-      logger.warning("Cannot find a valid Adapty settings")
+      logger.warning("purchases.configure skipped | reason: missing-adapty-settings")
 
       return Self.noop
     }
@@ -125,15 +125,13 @@ final class PurchasesClientImpl: Sendable {
   }
 
   func initialize() {
-    logger.info("initialize")
+    logger.info("purchases.initialize")
 
     let bundle = Bundle.main
     guard let apiKey = bundle.adaptyAPIKey, !apiKey.isEmpty else {
       reportIssue("Cannot find a valid Adapty settings")
 
-      logger.error("initialize", dump: [
-        "error": "Cannot find a valid Adapty settings"
-      ])
+      logger.error("purchases.initialize failed | reason: missing-adapty-settings")
 
       return
     }
@@ -146,7 +144,7 @@ final class PurchasesClientImpl: Sendable {
     }
 
     guard let adaptyDelegate else {
-      logger.info("Adapty already configured")
+      logger.info("purchases.initialize skipped | reason: already-configured")
       return
     }
 
@@ -160,9 +158,12 @@ final class PurchasesClientImpl: Sendable {
 
           let purchases = self.updatePurchases(profile)
 
-          logger.info("purchases updated", dump: [
-            "purchases": purchases
-          ])
+          logger.info(
+            """
+            purchases.update success
+            purchases: \(String(describing: purchases), privacy: .public)
+            """
+          )
 
           transactionObserver.handle(profile)
         }
@@ -179,9 +180,12 @@ final class PurchasesClientImpl: Sendable {
 
     Adapty.activate(with: config) { error in
       if let error {
-        logger.info("initialize failure", dump: [
-          "error": error
-        ])
+        logger.error(
+          """
+          purchases.initialize failed
+          error: \(error, privacy: .public)
+          """
+        )
       }
     }
 
@@ -196,7 +200,7 @@ final class PurchasesClientImpl: Sendable {
       }
     }
 
-    logger.info("initialize success")
+    logger.info("purchases.initialize success")
   }
 
   func paywall(
@@ -210,18 +214,24 @@ final class PurchasesClientImpl: Sendable {
         }
 
         do {
-          logger.info("get paywall", dump: [
-            "id": id
-          ])
+          logger.info(
+            """
+            purchases.paywall-fetch | \
+            paywall_id: \(id, privacy: .public)
+            """
+          )
 
           let cached = state.withLock { $0.paywalls[id] }
 
           if let cached {
-            logger.info("get paywall success", dump: [
-              "id": id,
-              "paywall": cached,
-              "isFromCache": true
-            ])
+            logger.info(
+              """
+              purchases.paywall-fetch success | \
+              paywall_id: \(id, privacy: .public) \
+              is_from_cache: true
+              paywall: \(String(describing: cached), privacy: .public)
+              """
+            )
 
             continuation.yield(cached)
           }
@@ -234,16 +244,22 @@ final class PurchasesClientImpl: Sendable {
 
           continuation.finish()
 
-          logger.info("get paywall success", dump: [
-            "id": id,
-            "paywall": paywall as Any,
-            "isFromCache": false
-          ])
+          logger.info(
+            """
+            purchases.paywall-fetch success | \
+            paywall_id: \(id, privacy: .public) \
+            is_from_cache: false
+            paywall: \(String(describing: paywall), privacy: .public)
+            """
+          )
         } catch {
-          logger.error("get paywall failed", dump: [
-            "id": id,
-            "failure": error
-          ])
+          logger.error(
+            """
+            purchases.paywall-fetch failed | \
+            paywall_id: \(id, privacy: .public)
+            error: \(error, privacy: .public)
+            """
+          )
 
           continuation.finish(throwing: error)
         }
@@ -258,9 +274,12 @@ final class PurchasesClientImpl: Sendable {
   private func fetchPaywall(by id: Paywall.ID) async throws -> Paywall? {
     let task = state.withLock { state -> Task<Paywall?, any Error> in
       if let existing = state.paywallFetchTasks[id] {
-        logger.info("get paywall deduplicated", dump: [
-          "id": id
-        ])
+        logger.info(
+          """
+          purchases.paywall-fetch deduplicated | \
+          paywall_id: \(id, privacy: .public)
+          """
+        )
         return existing
       }
 
@@ -303,9 +322,13 @@ final class PurchasesClientImpl: Sendable {
     _ request: PurchaseRequest
   ) async throws -> PurchaseResult {
     do {
-      logger.info("purchase", dump: [
-        "request": request
-      ])
+      logger.info(
+        """
+        purchases.purchase | \
+        paywall_id: \(request.paywallID, privacy: .public) \
+        product_id: \(request.product.id, privacy: .public)
+        """
+      )
 
       guard
         let flow = try await Self.adaptyFlow(by: request.paywallID),
@@ -322,30 +345,46 @@ final class PurchasesClientImpl: Sendable {
 
       switch purchaseResult {
       case .pending:
-        logger.info("purchase pending", dump: [
-          "request": request
-        ])
+        logger.info(
+          """
+          purchases.purchase pending | \
+          paywall_id: \(request.paywallID, privacy: .public) \
+          product_id: \(request.product.id, privacy: .public)
+          """
+        )
         return .pending
       case let .success(profile: profile, transaction: _):
         let purchases = updatePurchases(profile)
 
-        logger.info("purchase success", dump: [
-          "request": request,
-          "purchases": purchases
-        ])
+        logger.info(
+          """
+          purchases.purchase success | \
+          paywall_id: \(request.paywallID, privacy: .public) \
+          product_id: \(request.product.id, privacy: .public)
+          purchases: \(String(describing: purchases), privacy: .public)
+          """
+        )
 
         return .success(purchases)
       case .userCancelled:
-        logger.info("purchase userCancelled", dump: [
-          "request": request
-        ])
+        logger.info(
+          """
+          purchases.purchase cancelled | \
+          paywall_id: \(request.paywallID, privacy: .public) \
+          product_id: \(request.product.id, privacy: .public)
+          """
+        )
         return .userCancelled
       }
     } catch {
-      logger.error("purchase failure", dump: [
-        "error": error.localizedDescription,
-        "request": request
-      ])
+      logger.error(
+        """
+        purchases.purchase failed | \
+        paywall_id: \(request.paywallID, privacy: .public) \
+        product_id: \(request.product.id, privacy: .public)
+        error: \(error, privacy: .public)
+        """
+      )
 
       let newError = error._map()
 
@@ -359,7 +398,7 @@ final class PurchasesClientImpl: Sendable {
 
   func restorePurchases() async throws -> RestorePurchasesResult {
     do {
-      logger.info("restore purchases")
+      logger.info("purchases.restore")
 
       let profile = try await Adapty.restorePurchases()
       let purchases = updatePurchases(profile)
@@ -368,15 +407,21 @@ final class PurchasesClientImpl: Sendable {
         throw PurchasesError.premiumExpired
       }
 
-      logger.info("restore purchases success", dump: [
-        "purchases": purchases
-      ])
+      logger.info(
+        """
+        purchases.restore success
+        purchases: \(String(describing: purchases), privacy: .public)
+        """
+      )
 
       return .success(purchases)
     } catch {
-      logger.error("restore purchases failure", dump: [
-        "error": error.localizedDescription
-      ])
+      logger.error(
+        """
+        purchases.restore failed
+        error: \(error, privacy: .public)
+        """
+      )
 
       let newError = error._map()
 
@@ -390,24 +435,30 @@ final class PurchasesClientImpl: Sendable {
 
   func setFallback(fileURL: URL) async throws {
     do {
-      logger.info("set fallback paywalls")
+      logger.info("purchases.set-fallback")
 
       try await Adapty.setFallback(fileURL: fileURL)
 
-      logger.info("set fallback paywalls success")
+      logger.info("purchases.set-fallback success")
     } catch {
-      logger.error("set fallback paywalls failure", dump: [
-        "error": error.localizedDescription
-      ])
+      logger.error(
+        """
+        purchases.set-fallback failed
+        error: \(error, privacy: .public)
+        """
+      )
       throw error
     }
   }
 
   func log(_ paywall: Paywall) async throws {
     do {
-      logger.info("log show paywall", dump: [
-        "paywall": paywall
-      ])
+      logger.info(
+        """
+        purchases.log-paywall | \
+        paywall_id: \(paywall.id, privacy: .public)
+        """
+      )
 
       guard
         let adaptyFlow = try await Self.adaptyFlow(by: paywall.id)
@@ -417,12 +468,15 @@ final class PurchasesClientImpl: Sendable {
 
       try await Adapty.logShowFlow(adaptyFlow)
 
-      logger.info("log show paywall success")
+      logger.info("purchases.log-paywall success")
     } catch {
-      logger.error("log show paywall failure", dump: [
-        "paywall": paywall,
-        "error": error.localizedDescription
-      ])
+      logger.error(
+        """
+        purchases.log-paywall failed | \
+        paywall_id: \(paywall.id, privacy: .public)
+        error: \(error, privacy: .public)
+        """
+      )
 
       throw error
     }
@@ -461,20 +515,17 @@ final class PurchasesClientImpl: Sendable {
       // `SKStoreReviewController` is deprecated as of iOS 18.
       await AppStore.requestReview(in: activeScene)
 
-      logger.info("requestReview success", dump: [
-        "WARNING": "dialog may not appear, Apple doesn't provide developers any control"
-      ])
+      // Dialog may not appear; Apple doesn't provide developers any control.
+      logger.info("purchases.request-review success")
     } else {
-      logger.error("requestReview failure", dump: [
-        "error": "Active `UIWindowScene` not available"
-      ])
+      logger.error("purchases.request-review failed | reason: no-active-window-scene")
     }
 #endif
   }
 
   func reset() async throws {
     do {
-      logger.info("reset")
+      logger.info("purchases.reset")
 
       try await Adapty.logout()
 
@@ -486,11 +537,14 @@ final class PurchasesClientImpl: Sendable {
 
       _purchases.value = Purchases()
 
-      logger.info("reset success")
+      logger.info("purchases.reset success")
     } catch {
-      logger.error("reset failure", dump: [
-        "error": error.localizedDescription
-      ])
+      logger.error(
+        """
+        purchases.reset failed
+        error: \(error, privacy: .public)
+        """
+      )
 
       throw error
     }
@@ -544,9 +598,12 @@ final class _AdaptyDelegate: AdaptyDelegate {
       .didLoadLatestProfile(profile)
     )
 
-    logger.info("delegate: didLoadLatestProfile", dump: [
-      "profile": profile
-    ])
+    logger.info(
+      """
+      purchases.profile received
+      profile: \(profile, privacy: .public)
+      """
+    )
   }
 }
 
