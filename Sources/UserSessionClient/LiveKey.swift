@@ -67,7 +67,19 @@ final class UserSessionClientImpl: Sendable {
   }
 
   var metricsChanges: AsyncStream<UserSessionMetrics> {
-    AsyncStream(UncheckedSendable(metricsSubject.values))
+    // `.values` bridges via an unfolding `AsyncStream` that holds no buffer
+    // between `next()` calls, so demand is zero while a consumer works.
+    // `PassthroughSubject` is synchronous and ignores backpressure, so metrics
+    // sent in that window trap Combine with "Received an output without
+    // requesting demand" — reachable when two lifecycle notifications land
+    // close together while the shared-key subscriber is mid-yield.
+    AsyncStream(
+      UncheckedSendable(
+        metricsSubject
+          .buffer(size: 5, prefetch: .byRequest, whenFull: .dropOldest)
+          .values
+      )
+    )
   }
 
   init(
