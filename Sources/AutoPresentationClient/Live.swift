@@ -65,7 +65,7 @@ private final class AutoPresentationClientImpl: Sendable {
   func isEligibleForPresentation(
     _ feature: AutoPresentation.Feature,
     placement: Placement?,
-    userInfo: [AutoPresentation.UserInfoKey: Any]?
+    userInfo: AutoPresentation.UserInfo?
   ) -> Bool {
     logger.info(
       """
