@@ -1,4 +1,5 @@
 import Dependencies
+import IssueReporting
 import DuckUIKit
 import StoreKit
 import SwiftUI
@@ -33,10 +34,9 @@ private enum RequestReviewKey: DependencyKey {
 #endif
   }
 
-  static let testValue = RequestReviewAction {
-    XCTFail(#"Unimplemented: @Dependency(\.requestReview)"#)
-    return false
-  }
+  static let testValue = RequestReviewAction(
+    handler: unimplemented(#"@Dependency(\.requestReview)"#, placeholder: false)
+  )
 }
 
 public struct RequestReviewAction: Sendable {
