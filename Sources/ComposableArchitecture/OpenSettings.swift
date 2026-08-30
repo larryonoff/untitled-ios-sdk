@@ -1,4 +1,5 @@
 import Dependencies
+import IssueReporting
 
 #if canImport(UIKit)
 import UIKit
@@ -27,9 +28,8 @@ extension DependencyValues {
       }
     }
 
-    static let testValue: Value = {
-      XCTFail(#"Unimplemented: @Dependency(\.openSettings)"#)
-      return
-    }
+    static let testValue: Value = unimplemented(
+      #"@Dependency(\.openSettings)"#
+    )
   }
 }
