@@ -1,15 +1,10 @@
 import Dependencies
 import Foundation
-import XCTestDynamicOverlay
 
-extension UserIdentifierClient {
+extension UserIdentifierClient: TestDependencyKey {
   public static let previewValue = Self.noop
 
-  public static let testValue = Self(
-    identifier: unimplemented("\(Self.self).identifier", placeholder: .zero),
-    identifierAtLaunch: unimplemented("\(Self.self).identifierAtLaunch", placeholder: nil),
-    reset: unimplemented("\(Self.self).reset")
-  )
+  public static let testValue = Self()
 }
 
 extension UserIdentifierClient {

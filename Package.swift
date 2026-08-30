@@ -292,7 +292,8 @@ extension Target {
       name: .Client.application,
       dependencies: [
         .logging,
-        .External.dependencies
+        .External.dependencies,
+        .External.Dependencies.macros
       ],
       path: "Sources/ApplicationClient",
       swiftSettings: .upcomingFeatures
@@ -359,7 +360,8 @@ extension Target {
     static var feedback: Target { target(
       name: .Client.feedback,
       dependencies: [
-        .External.dependencies
+        .External.dependencies,
+        .External.issueReporting
       ],
       path: "Sources/FeedbackClient",
       swiftSettings: .upcomingFeatures
@@ -385,6 +387,7 @@ extension Target {
       dependencies: [
         .External.customDump,
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.issueReporting
       ],
       path: "Sources/InstagramSharingClient",
@@ -465,6 +468,7 @@ extension Target {
       dependencies: [
         .logging,
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.Firebase.remoteConfig
       ],
       path: "Sources/RemoteSettingsClient",
@@ -487,6 +491,7 @@ extension Target {
         .foundation,
         .logging,
         .External.dependencies,
+        .External.Dependencies.macros,
         .External.keychainAccess,
         .External.tagged
       ],

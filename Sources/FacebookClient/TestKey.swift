@@ -1,7 +1,6 @@
 #if canImport(UIKit)
 
 import Dependencies
-import XCTestDynamicOverlay
 
 extension FacebookClient: TestDependencyKey {
   public static let previewValue = Self.noop
