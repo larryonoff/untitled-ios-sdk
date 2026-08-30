@@ -211,7 +211,7 @@ extension SharedReader<ApplicationPhase> {
 extension ApplicationPhase {
   /// The phase right now.
   @MainActor
-  static var current: ApplicationPhase {
+  public static var current: ApplicationPhase {
     #if os(macOS)
     NSApplication.shared.isActive ? .active : .inactive
     #elseif os(watchOS)

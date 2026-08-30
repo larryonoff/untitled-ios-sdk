@@ -118,28 +118,70 @@ final class UserSessionClientImpl: Sendable {
   }
 
   func activate() {
-    log.info("user-session.activate")
-
     let shouldActivate = state.withLock { state -> Bool in
       guard !state.isActive else { return false }
       state.isActive = true
       return true
     }
 
-    guard shouldActivate else { return }
+    guard shouldActivate else {
+      log.info(
+        """
+        user-session.activate skipped | \
+        reason: already_active
+        """
+      )
+      return
+    }
 
+    // Subscribe first: a launch that is not on screen yet counts its session
+    // when the app appears, and missing that notification would lose it.
     subscribe()
 
     let date = date()
     let version = bundle.version
+    let isOnScreen = Self.isApplicationOnScreen
 
-    withMetrics {
-      $0.activate(
+    // A launch the user never saw — a prewarm, a silent push, a background
+    // fetch — is not a session. Counting it would both invent one and consume
+    // the number the real session was going to get, because the arrival that
+    // opens that session is a phase change this process has already passed.
+    // So the session is left closed and the first `didBecomeActive` opens it.
+    state.withLock { $0.isSuspended = !isOnScreen }
+
+    withMetrics { metrics in
+      // Version bookkeeping happens on every launch, on screen or not: it
+      // records which build is running, not that anyone is using it.
+      metrics.trackVersion(version)
+
+      guard isOnScreen else { return }
+
+      metrics.open(
         at: date,
-        minSessionDuration: minSessionDuration,
-        version: version
+        minSessionDuration: minSessionDuration
       )
     }
+
+    log.info(
+      """
+      user-session.activate success | \
+      is_on_screen: \(isOnScreen, privacy: .public)
+      """
+    )
+  }
+
+  /// Whether the app is in front of the user right now.
+  ///
+  /// Read synchronously so a session is counted by the time `activate()`
+  /// returns: callers report the session number during launch, and one settled
+  /// a notification later would be reported stale.
+  ///
+  /// Off the main thread the phase cannot be read at all — `assumeIsolated`
+  /// would trap rather than answer — so such a caller is treated as not on
+  /// screen and the first `didBecomeActive` settles it.
+  private static var isApplicationOnScreen: Bool {
+    guard Thread.isMainThread else { return false }
+    return MainActor.assumeIsolated { ApplicationPhase.current } == .active
   }
 
   func reset() {
@@ -154,14 +196,15 @@ final class UserSessionClientImpl: Sendable {
   }
 
   private func restore() {
-    log.info("user-session.restore")
-
     let wasSuspended = state.withLock { state -> Bool in
       guard state.isSuspended else { return false }
       state.isSuspended = false
       return true
     }
 
+    // Not suspended means the app was already on screen — `activate()` opened
+    // the session, and `didBecomeActive` also arrives after interruptions that
+    // never took it away, such as a dismissed alert or control centre.
     guard wasSuspended else {
       log.info(
         """
@@ -175,11 +218,13 @@ final class UserSessionClientImpl: Sendable {
     let date = date()
 
     withMetrics {
-      $0.restore(
+      $0.open(
         at: date,
         minSessionDuration: minSessionDuration
       )
     }
+
+    log.info("user-session.restore success")
   }
 
   private func suspend() {

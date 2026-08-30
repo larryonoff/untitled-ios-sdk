@@ -58,31 +58,32 @@ public struct UserSessionMetrics {
     sessionCountSinceLastUpdate = 0
   }
 
+  /// Records which build is running.
+  ///
+  /// Separate from opening a session because it is true of every launch,
+  /// including one the user never saw: the counters "since last update" are
+  /// scoped to a build, so they reset when the build changes and not when
+  /// someone opens the app.
+  ///
+  /// - Returns: whether this is the first launch of a new build.
+  @discardableResult
   mutating
-  func activate(
-    at date: Date,
-    minSessionDuration: TimeInterval,
-    version: Version?
-  ) {
-    let versionHasChanged = lastTrackedVersion != version
+  func trackVersion(_ version: Version?) -> Bool {
+    guard lastTrackedVersion != version else { return false }
 
-    if versionHasChanged {
-      lastTrackedVersion = version
-      sessionCountSinceLastUpdate = 0
-      foregroundTimeSinceLastUpdate = 0
-    }
+    lastTrackedVersion = version
+    sessionCountSinceLastUpdate = 0
+    foregroundTimeSinceLastUpdate = 0
 
-    if date.timeIntervalSince(updateDate) > minSessionDuration {
-      totalSessionCount += 1
-      if !versionHasChanged {
-        sessionCountSinceLastUpdate += 1
-      }
-      updateDate = date
-    }
+    return true
   }
 
+  /// Opens a session — the app has appeared in front of the user.
+  ///
+  /// A return that comes too soon after the last one is the same session
+  /// resuming, not a new one, so only the foreground clock restarts.
   mutating
-  func restore(
+  func open(
     at date: Date,
     minSessionDuration: TimeInterval
   ) {
@@ -92,6 +93,9 @@ public struct UserSessionMetrics {
       updateDate = date
     }
 
+    // Always, even when no new session was counted: `suspend` measures
+    // foreground time from here, and leaving it where the last process
+    // stopped would charge this session for the time in between.
     restoreDate = date
   }
 
