@@ -1,6 +1,7 @@
 #if os(iOS)
 
 import Dependencies
+import DependenciesMacros
 
 extension DependencyValues {
   public var application: ApplicationClient {
@@ -9,9 +10,10 @@ extension DependencyValues {
   }
 }
 
+@DependencyClient
 public struct ApplicationClient: Sendable {
-  public var isIdleTimerDisabled: @Sendable () async -> Bool
-  public var setIdleTimerDisabled: @Sendable (Bool) async -> Void
+  public var isIdleTimerDisabled: @Sendable () async -> Bool = { false }
+  public var setIdleTimerDisabled: @Sendable (_ _: Bool) async -> Void
 }
 
 #endif

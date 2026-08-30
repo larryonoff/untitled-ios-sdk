@@ -1,25 +1,9 @@
 import Dependencies
-import XCTestDynamicOverlay
 
 extension DependencyValues {
   public var feedback: FeedbackGenerator {
-    get { self[FeedbackGeneratorKey.self] }
-    set { self[FeedbackGeneratorKey.self] = newValue }
-  }
-
-  private enum FeedbackGeneratorKey: DependencyKey {
-#if canImport(UIKit)
-    static let liveValue = FeedbackGenerator.liveValue
-#else
-    // No haptics outside UIKit.
-    static let liveValue = FeedbackGenerator { _ in }
-#endif
-
-    static let previewValue = FeedbackGenerator { _ in }
-
-    static let testValue = FeedbackGenerator(
-      unimplemented("\(Self.self).generate")
-    )
+    get { self[FeedbackGenerator.self] }
+    set { self[FeedbackGenerator.self] = newValue }
   }
 }
 

@@ -5,7 +5,7 @@ import Foundation
 import KeychainAccess
 import Tagged
 
-extension UserIdentifierClient {
+extension UserIdentifierClient: DependencyKey {
   public static let liveValue: Self = {
     let impl = UserIdentifierImpl()
 
@@ -130,8 +130,4 @@ private final class UserIdentifierImpl: Sendable {
       state.cachedIdentifier = newIdentifier
     }
   }
-}
-
-extension UserIdentifier {
-  static let zero = Self(UUID(uuidString: "00000000-0000-0000-0000-000000000000")!)
 }

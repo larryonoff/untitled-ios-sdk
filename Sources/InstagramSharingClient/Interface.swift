@@ -1,4 +1,5 @@
 import Dependencies
+import DependenciesMacros
 import Foundation
 
 extension DependencyValues {
@@ -8,10 +9,11 @@ extension DependencyValues {
   }
 }
 
+@DependencyClient
 public struct InstagramSharingClient: Sendable {
-  public var shareToFeed: @Sendable (ShareToFeedRequest) async -> Bool
-  public var shareToReels: @Sendable (ShareToReelsRequest) async -> Bool
-  public var shareToStories: @Sendable (ShareToStoriesRequest) async -> Bool
+  public var shareToFeed: @Sendable (_ _: ShareToFeedRequest) async -> Bool = { _ in false }
+  public var shareToReels: @Sendable (_ _: ShareToReelsRequest) async -> Bool = { _ in false }
+  public var shareToStories: @Sendable (_ _: ShareToStoriesRequest) async -> Bool = { _ in false }
 }
 
 public struct ShareToFeedRequest {
