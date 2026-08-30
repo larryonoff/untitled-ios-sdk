@@ -677,7 +677,8 @@ extension Target {
       .uiKit,
       .External.composableArchitecture,
       .External.dependencies,
-      .External.deviceKit
+      .External.deviceKit,
+      .External.sharing
     ],
     path: "Sources/Dependencies",
     swiftSettings: .upcomingFeatures
