@@ -73,7 +73,11 @@ extension UserTrackingClient {
 final class UserTrackingImpl: Sendable {
   private let analytics: AnalyticsClient
   // SAFETY: `CurrentValueSubject` is internally thread-safe; Combine just doesn't annotate it `Sendable`.
-  private nonisolated(unsafe) let _authStatus = CurrentValueSubject<AuthorizationStatus, Never>(.authorized)
+  // Seeded from the system rather than a literal: a guessed `.authorized` is
+  // the one wrong answer that reads as permission the user never gave.
+  private nonisolated(unsafe) let _authStatus = CurrentValueSubject<AuthorizationStatus, Never>(
+    AuthorizationStatus(ATTrackingManager.trackingAuthorizationStatus)
+  )
 
   init(
     analytics: AnalyticsClient
@@ -86,7 +90,11 @@ final class UserTrackingImpl: Sendable {
   }
 
   var authStatusUpdates: AsyncStream<AuthorizationStatus> {
-    AsyncStream(UncheckedSendable(_authStatus.removeDuplicates().values))
+    // `CurrentValueSubject` replays its current value on subscribe, which is
+    // the status as it already stands — not a change to it. Dropping it makes
+    // this a stream of updates, as the name says; callers that want the
+    // standing value read `authorizationStatus`.
+    AsyncStream(UncheckedSendable(_authStatus.dropFirst().removeDuplicates().values))
   }
 
   func initialize() {
