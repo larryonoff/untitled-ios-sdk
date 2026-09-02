@@ -12,11 +12,11 @@ extension Product.SubscriptionOffer.PaymentMode.FormatStyle: Foundation.FormatSt
   ) -> String {
     switch value {
     case .freeTrial:
-      return L10n.Product.SubscriptionOffer.PaymentMode.freeTrial
+      return String(localized: .Product.SubscriptionOffer.PaymentMode.freeTrial)
     case .payAsYouGo:
-      return L10n.Product.SubscriptionOffer.PaymentMode.payAsYouGo
+      return String(localized: .Product.SubscriptionOffer.PaymentMode.payAsYouGo)
     case .payUpFront:
-      return L10n.Product.SubscriptionOffer.PaymentMode.payUpFront
+      return String(localized: .Product.SubscriptionOffer.PaymentMode.payUpFront)
     }
   }
 }
