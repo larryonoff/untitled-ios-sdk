@@ -1,100 +1,94 @@
 import Combine
-import Connectivity
+import Dependencies
+import DuckFoundation
 import Foundation
+import Network
 
-extension ConnectivityClient {
-  public static func live(
-    connectivityURLs: [URL] = []
-  ) -> Self {
-    Self(
-      connectivityInfo: {
-        // SAFETY: `Connectivity` is confined to this call — created here and
-        // only touched by its own completion/cancel callbacks, never shared.
-        nonisolated(unsafe) let connectivity = Connectivity(
-          connectivityURLs: connectivityURLs
-        )
+extension ConnectivityClient: DependencyKey {
+  public static let liveValue: Self = {
+    let client = ConnectivityClientImpl()
 
-        return await withTaskCancellationHandler {
-          await withCheckedContinuation { continuation in
-            connectivity.checkConnectivity {
-              continuation.resume(returning: .init($0))
-            }
-          }
-        } onCancel: {
-          connectivity.stopNotifier()
-        }
-      },
-      updates: {
-        AsyncStream { continuation in
-          // SAFETY: `Connectivity` is confined to this stream — created here
-          // and only touched by its own notifier callbacks, never shared.
-          nonisolated(unsafe) let connectivity = Connectivity(
-            connectivityURLs: connectivityURLs
-          )
-
-          connectivity.whenConnected = {
-            continuation.yield(.init($0))
-          }
-
-          connectivity.whenDisconnected = {
-            continuation.yield(.init($0))
-          }
-
-          continuation.onTermination = { _ in
-            connectivity.stopNotifier()
-          }
-
-          connectivity.startNotifier()
-        }
-      }
+    return Self(
+      value: { client.value },
+      values: { client.values() }
     )
+  }()
+}
+
+/// Owns the single `NWPathMonitor` for the process and multiplexes its updates.
+///
+/// One system subscription feeds a `CurrentValueSubject`, so every consumer sees the
+/// current connectivity immediately and shares one monitor — the subject handles
+/// latest-value replay, fan-out, and teardown, and `value` reads synchronously.
+private final class ConnectivityClientImpl: Sendable {
+  private let monitor = NWPathMonitor()
+  private let queue = DispatchQueue(label: "io.onelightapps.connectivity.monitor")
+
+  // SAFETY: `CurrentValueSubject` is internally synchronized, so reads and sends are
+  // safe from any thread; only this immutable reference crosses isolation boundaries.
+  private nonisolated(unsafe) let subject: CurrentValueSubject<Connectivity, Never>
+  private let didStart = Mutex(false)
+
+  init() {
+    subject = CurrentValueSubject(Connectivity(monitor.currentPath))
+  }
+
+  var value: Connectivity {
+    startIfNeeded()
+    return subject.value
+  }
+
+  func values() -> AsyncStream<Connectivity> {
+    startIfNeeded()
+    // `pathUpdateHandler` fires on any path change (interface, expensiveness, routes),
+    // but we map only `status` — collapse the resulting duplicate values.
+    return UncheckedSendable(
+      subject
+        .removeDuplicates()
+        .values
+    )
+    .eraseToStream()
+  }
+
+  private func startIfNeeded() {
+    didStart.withLock { started in
+      guard !started else { return }
+      started = true
+
+      // SAFETY: `CurrentValueSubject` is internally synchronized; the wrapper only carries
+      // the reference across the path-update closure, where we read `path.status` (a value
+      // type) and `send` a `Sendable` `Connectivity`.
+      let subject = UncheckedSendable(subject)
+      monitor.pathUpdateHandler = { path in
+        subject.wrappedValue.send(Connectivity(path))
+      }
+      monitor.start(queue: queue)
+    }
+  }
+
+  deinit {
+    monitor.cancel()
+    subject.send(completion: .finished)
   }
 }
 
 private extension Connectivity {
-  convenience init(connectivityURLs: [URL]) {
-    self.init()
-
-    self.framework = .network
-
-    self.pollingInterval = 30.0
-    self.isPollingEnabled = true
-
-    self.successThreshold = Connectivity.Percentage(50.0)
-
-    self.connectivityURLRequests
-      .append(contentsOf: connectivityURLs.map { URLRequest(url: $0) })
+  init(_ path: NWPath) {
+    self.init(status: .init(path.status))
   }
 }
 
-extension ConnectivityInfo {
-  init(_ connectivity: Connectivity) {
-    self.isConnected = connectivity.isConnected
-    self.state = .init(connectivity.status)
-  }
-}
-
-extension ConnectivityState {
-  init(_ status: Connectivity.Status) {
+private extension Connectivity.Status {
+  init(_ status: NWPath.Status) {
     switch status {
-    case .connected:
-      self = .loopback
-    case .connectedViaCellular:
-      self = .cellularWithInternet
-    case .connectedViaCellularWithoutInternet:
-      self = .cellularWithoutInternet
-    case .connectedViaEthernet:
-      self = .ethernetWithInternet
-    case .connectedViaEthernetWithoutInternet:
-      self = .ethernetWithoutInternet
-    case .connectedViaWiFi:
-      self = .wifiWithInternet
-    case .connectedViaWiFiWithoutInternet:
-      self = .wifiWithoutInternet
-    case .determining:
-      self = .loopback
-    case .notConnected:
-      self = .disconnected
+    case .satisfied:
+      self = .satisfied
+    case .unsatisfied:
+      self = .unsatisfied
+    case .requiresConnection:
+      self = .requiresConnection
+    @unknown default:
+      self = .unsatisfied
     }
   }
 }
