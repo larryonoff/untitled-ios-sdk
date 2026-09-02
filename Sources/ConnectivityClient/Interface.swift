@@ -11,6 +11,11 @@ extension DependencyValues {
 @DependencyClient
 public struct ConnectivityClient: Sendable {
   /// The current connectivity, returned immediately from the most recent network path.
+  ///
+  /// - Note: `NWPathMonitor` does not populate its current path until it has started, so
+  ///   the first read right after launch reports `.unsatisfied` and settles once the
+  ///   system delivers the first path. Observe ``values`` when the very first value
+  ///   has to be accurate.
   public var value: @Sendable () -> Connectivity = { Connectivity() }
 
   /// A stream of connectivity values, beginning with the current one and then every change.
@@ -23,6 +28,9 @@ extension ConnectivityClient {
   ///
   /// Mirrors `Task.checkCancellation()`: call it at a point where the work
   /// should not proceed offline, and let the thrown error abort the operation.
+  ///
+  /// - Note: Reads ``value``, so calling this in the first moments after launch can
+  ///   throw before the monitor has reported its first path.
   public func checkConnectivity() throws {
     guard value().status == .satisfied else {
       throw ConnectivityError.notConnected

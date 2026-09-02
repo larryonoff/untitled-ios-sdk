@@ -335,7 +335,8 @@ extension Target {
       dependencies: [
         .foundation,
         .External.dependencies,
-        .External.Dependencies.macros
+        .External.Dependencies.macros,
+        .External.sharing
       ],
       path: "Sources/ConnectivityClient",
       exclude: ["swiftgen.yml"],
