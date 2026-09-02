@@ -62,11 +62,11 @@ extension Product.SubscriptionInfo {
         .flatMap { .init($0) }
 
       self.promotionalOffers = subscription.promotionalOffers
-        .compactMap { .init($0) } ?? []
+        .compactMap { .init($0) }
 
       if #available(iOS 18.0, *) {
         self.winBackOffers = subscription.winBackOffers
-          .compactMap { .init($0) } ?? []
+          .compactMap { .init($0) }
       } else {
         self.winBackOffers = []
       }

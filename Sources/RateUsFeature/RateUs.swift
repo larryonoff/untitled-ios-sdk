@@ -77,7 +77,7 @@ public struct RateUs {
         return .none
       case .loveTapped:
         return .run { [requestReview, dismiss] _ in
-          await requestReview()
+          _ = await requestReview()
           await dismiss()
         }
       }

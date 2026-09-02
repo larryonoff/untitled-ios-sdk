@@ -63,7 +63,7 @@ extension RemoteSettingsClient: DependencyKey {
 
         let keys = remoteConfig
           .keys(withPrefix: nil)
-          .map { ($0, remoteConfig[$0].stringValue ?? "nil") }
+          .map { ($0, remoteConfig[$0].stringValue) }
         return Dictionary(uniqueKeysWithValues: keys)
       }
     )

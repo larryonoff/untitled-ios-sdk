@@ -133,7 +133,7 @@ extension Version: Codable {
   }
 
   public func encode(to encoder: any Encoder) throws {
-    var container = try encoder.unkeyedContainer()
+    var container = encoder.unkeyedContainer()
     try container.encode(description)
   }
 }

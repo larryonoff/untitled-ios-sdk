@@ -285,7 +285,7 @@ final class PurchasesClientImpl: Sendable {
 
       let task = Task<Paywall?, any Error> { [weak self] in
         defer {
-          self?.state.withLock { $0.paywallFetchTasks.removeValue(forKey: id) }
+          self?.state.withLock { _ = $0.paywallFetchTasks.removeValue(forKey: id) }
         }
 
         guard let flow = try await Self.adaptyFlow(by: id) else {
