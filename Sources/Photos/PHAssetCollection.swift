@@ -28,7 +28,7 @@ extension PHAssetCollection {
   }
 }
 
-extension PHAssetCollection: Identifiable {
+extension PHAssetCollection: @retroactive Identifiable {
   public typealias ID = Tagged<PHAssetCollection, String>
 
   public var id: ID {
