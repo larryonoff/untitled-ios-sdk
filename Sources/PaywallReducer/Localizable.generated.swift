@@ -1,44 +1,73 @@
 // swiftlint:disable all
 // Generated using SwiftGen — https://github.com/SwiftGen/SwiftGen
+// Do not edit. Change the localization source or the SwiftGen template instead.
 
 import Foundation
 
-// swiftlint:disable superfluous_disable_command file_length implicit_return prefer_self_in_static_references
+// MARK: - Localized Strings
 
-// MARK: - Strings
 
-// swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
-// swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
-internal enum L10n {
+extension LocalizedStringResource {
   internal enum CancelIntroductoryOffer {
     /// Free trial is a limited-time offer. Activate it now!
-    internal static let message = L10n.tr("Localizable", "cancelIntroductoryOffer.message", fallback: "Free trial is a limited-time offer. Activate it now!")
+    internal static var message: LocalizedStringResource {
+      LocalizedStringResource(
+        "cancelIntroductoryOffer.message",
+        defaultValue: "Free trial is a limited-time offer. Activate it now!",
+        table: "Localizable",
+        bundle: #bundle
+      )
+    }
     /// Are you sure?
-    internal static let title = L10n.tr("Localizable", "cancelIntroductoryOffer.title", fallback: "Are you sure?")
+    internal static var title: LocalizedStringResource {
+      LocalizedStringResource(
+        "cancelIntroductoryOffer.title",
+        defaultValue: "Are you sure?",
+        table: "Localizable",
+        bundle: #bundle
+      )
+    }
     internal enum Action {
       /// Cancel
-      internal static let cancel = L10n.tr("Localizable", "cancelIntroductoryOffer.action.cancel", fallback: "Cancel")
+      internal static var cancel: LocalizedStringResource {
+        LocalizedStringResource(
+          "cancelIntroductoryOffer.action.cancel",
+          defaultValue: "Cancel",
+          table: "Localizable",
+          bundle: #bundle
+        )
+      }
       /// Reject my free trial
-      internal static let reject = L10n.tr("Localizable", "cancelIntroductoryOffer.action.reject", fallback: "Reject my free trial")
+      internal static var reject: LocalizedStringResource {
+        LocalizedStringResource(
+          "cancelIntroductoryOffer.action.reject",
+          defaultValue: "Reject my free trial",
+          table: "Localizable",
+          bundle: #bundle
+        )
+      }
     }
   }
   internal enum Failure {
     internal enum Action {
       /// OK
-      internal static let ok = L10n.tr("Localizable", "failure.action.ok", fallback: "OK")
+      internal static var ok: LocalizedStringResource {
+        LocalizedStringResource(
+          "failure.action.ok",
+          defaultValue: "OK",
+          table: "Localizable",
+          bundle: #bundle
+        )
+      }
       /// Try Again
-      internal static let retry = L10n.tr("Localizable", "failure.action.retry", fallback: "Try Again")
+      internal static var retry: LocalizedStringResource {
+        LocalizedStringResource(
+          "failure.action.retry",
+          defaultValue: "Try Again",
+          table: "Localizable",
+          bundle: #bundle
+        )
+      }
     }
-  }
-}
-// swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
-// swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces
-
-// MARK: - Implementation Details
-
-extension L10n {
-  private static func tr(_ table: String, _ key: String, _ args: CVarArg..., fallback value: String) -> String {
-    let format = Bundle.module.localizedString(forKey: key, value: value, table: table)
-    return String(format: format, locale: Locale.current, arguments: args)
   }
 }

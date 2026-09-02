@@ -39,45 +39,45 @@ extension Product.SubscriptionPeriod.Unit.FormatStyle: Foundation.FormatStyle {
   ) -> String {
     switch (number, value, style) {
     case (.singular, .day, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.day
+      return String(localized: .Product.SubscriptionPeriod.Unit.day)
     case (.plural, .day, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.Day.plural
+      return String(localized: .Product.SubscriptionPeriod.Unit.Day.plural)
     case (_, .day, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.Day.plural2
+      return String(localized: .Product.SubscriptionPeriod.Unit.Day.plural2)
     case (_, .day, .shortened):
-      return L10n.Product.SubscriptionPeriod.Unit.Day.compactName
+      return String(localized: .Product.SubscriptionPeriod.Unit.Day.compactName)
     case (_, .day, .recurrent):
-      return L10n.Product.SubscriptionPeriod.Unit.Day.recurrent
+      return String(localized: .Product.SubscriptionPeriod.Unit.Day.recurrent)
     case (.singular, .week, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.week
+      return String(localized: .Product.SubscriptionPeriod.Unit.week)
     case (.plural, .week, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.Week.plural
+      return String(localized: .Product.SubscriptionPeriod.Unit.Week.plural)
     case (_, .week, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.Week.plural2
+      return String(localized: .Product.SubscriptionPeriod.Unit.Week.plural2)
     case (_, .week, .shortened):
-      return L10n.Product.SubscriptionPeriod.Unit.Week.compactName
+      return String(localized: .Product.SubscriptionPeriod.Unit.Week.compactName)
     case (_, .week, .recurrent):
-      return L10n.Product.SubscriptionPeriod.Unit.Week.recurrent
+      return String(localized: .Product.SubscriptionPeriod.Unit.Week.recurrent)
     case (.singular, .month, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.month
+      return String(localized: .Product.SubscriptionPeriod.Unit.month)
     case (.plural, .month, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.Month.plural
+      return String(localized: .Product.SubscriptionPeriod.Unit.Month.plural)
     case (_, .month, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.Month.plural2
+      return String(localized: .Product.SubscriptionPeriod.Unit.Month.plural2)
     case (_, .month, .shortened):
-      return L10n.Product.SubscriptionPeriod.Unit.Month.compactName
+      return String(localized: .Product.SubscriptionPeriod.Unit.Month.compactName)
     case (_, .month, .recurrent):
-      return L10n.Product.SubscriptionPeriod.Unit.Month.recurrent
+      return String(localized: .Product.SubscriptionPeriod.Unit.Month.recurrent)
     case (.singular, .year, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.year
+      return String(localized: .Product.SubscriptionPeriod.Unit.year)
     case (.plural, .year, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.Year.plural
+      return String(localized: .Product.SubscriptionPeriod.Unit.Year.plural)
     case (_, .year, .complete):
-      return L10n.Product.SubscriptionPeriod.Unit.Year.plural2
+      return String(localized: .Product.SubscriptionPeriod.Unit.Year.plural2)
     case (_, .year, .shortened):
-      return L10n.Product.SubscriptionPeriod.Unit.Year.compactName
+      return String(localized: .Product.SubscriptionPeriod.Unit.Year.compactName)
     case (_, .year, .recurrent):
-      return L10n.Product.SubscriptionPeriod.Unit.Year.recurrent
+      return String(localized: .Product.SubscriptionPeriod.Unit.Year.recurrent)
     }
   }
 }

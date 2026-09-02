@@ -13,10 +13,12 @@ extension Product.SubscriptionOffer.FormatStyle: Foundation.FormatStyle {
   ) -> String {
     switch value.paymentMode {
     case .freeTrial:
-      return L10n.Product.SubscriptionOffer.freeTrial(
-        value.period.value,
-        value.period.unit.formatted(
-          number: value.period.value.grammaticalNumber
+      return String(
+        localized: .Product.SubscriptionOffer.freeTrial(
+          value.period.value,
+          value.period.unit.formatted(
+            number: value.period.value.grammaticalNumber
+          )
         )
       )
     case .payAsYouGo:

@@ -17,11 +17,11 @@ extension AlertState<PaywallReducer.Destination.Alert> {
       TextState(error.localizedDescription)
     } actions: {
       ButtonState(action: retryAction) {
-        TextState(L10n.Failure.Action.retry)
+        TextState(.Failure.Action.retry)
       }
 
       ButtonState(role: .cancel, action: .send(dismissAction)) {
-        TextState(L10n.Failure.Action.ok)
+        TextState(.Failure.Action.ok)
       }
     }
   }

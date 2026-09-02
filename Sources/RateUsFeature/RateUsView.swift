@@ -50,7 +50,7 @@ private struct DefaultRateUsView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      Text(L10n.RateUs.title)
+      Text(.RateUs.title)
         .font(.system(size: 22, weight: .semibold))
         .foregroundStyle(.primary)
         .multilineTextAlignment(.center)
@@ -58,7 +58,7 @@ private struct DefaultRateUsView: View {
       Button {
         store.send(.loveTapped)
       } label: {
-        Text(L10n.RateUs.loveAction)
+        Text(.RateUs.loveAction)
       }
       .buttonStyle(.rateUsPrimary)
       .padding(.top, 37)
@@ -66,7 +66,7 @@ private struct DefaultRateUsView: View {
       Button {
         store.send(.doNotLoveTapped)
       } label: {
-        Text(L10n.RateUs.doNotLoveAction)
+        Text(.RateUs.doNotLoveAction)
       }
       .buttonStyle(.rateUsSecondary)
       .padding(.top, 17)
@@ -80,12 +80,12 @@ private struct DoNotLoveRateUsView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      Text(L10n.RateUs.DoNotLove.title)
+      Text(.RateUs.DoNotLove.title)
         .font(.system(size: 22, weight: .semibold))
         .foregroundStyle(.primary)
         .multilineTextAlignment(.center)
 
-      Text(L10n.RateUs.DoNotLove.subtitle)
+      Text(.RateUs.DoNotLove.subtitle)
         .font(.system(size: 16, weight: .regular))
         .foregroundStyle(.secondary)
         .multilineTextAlignment(.center)
@@ -94,7 +94,7 @@ private struct DoNotLoveRateUsView: View {
       Button {
         store.send(.contactUsTapped)
       } label: {
-        Text(L10n.RateUs.shareAction)
+        Text(.RateUs.shareAction)
       }
       .buttonStyle(.rateUsPrimary)
       .padding(.top, 27)
@@ -102,7 +102,7 @@ private struct DoNotLoveRateUsView: View {
       Button {
         store.send(.dismissTapped)
       } label: {
-        Text(L10n.RateUs.dismissAction)
+        Text(.RateUs.dismissAction)
       }
       .buttonStyle(.rateUsSecondary)
       .padding(.top, 17)

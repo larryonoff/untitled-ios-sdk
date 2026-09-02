@@ -1,87 +1,267 @@
 // swiftlint:disable all
 // Generated using SwiftGen — https://github.com/SwiftGen/SwiftGen
+// Do not edit. Change the localization source or the SwiftGen template instead.
 
 import Foundation
 
-// swiftlint:disable superfluous_disable_command file_length implicit_return prefer_self_in_static_references
+// MARK: - Localized Strings
 
-// MARK: - Strings
 
-// swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
-// swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
-internal enum L10n {
+extension LocalizedStringResource {
   internal enum Error {
     internal enum Unknown {
       /// Oops, something went wrong 😔
-      internal static let description = L10n.tr("Localizable", "error.unknown.description", fallback: "Oops, something went wrong 😔")
+      internal static var description: LocalizedStringResource {
+        LocalizedStringResource(
+          "error.unknown.description",
+          defaultValue: "Oops, something went wrong 😔",
+          table: "Localizable",
+          bundle: #bundle
+        )
+      }
     }
   }
   internal enum Product {
     /// Lifetime
-    internal static let lifetime = L10n.tr("Localizable", "product.lifetime", fallback: "Lifetime")
+    internal static var lifetime: LocalizedStringResource {
+      LocalizedStringResource(
+        "product.lifetime",
+        defaultValue: "Lifetime",
+        table: "Localizable",
+        bundle: #bundle
+      )
+    }
     internal enum SubscriptionOffer {
       /// %d-%@ free trial
-      internal static func freeTrial(_ p1: Int, _ p2: Any) -> String {
-        return L10n.tr("Localizable", "product.subscriptionOffer.freeTrial", p1, String(describing: p2), fallback: "%d-%@ free trial")
+      internal static func freeTrial(_ value1: Int
+          , _ value2: String
+          ) -> LocalizedStringResource {
+        LocalizedStringResource(
+          "product.subscriptionOffer.freeTrial",
+          defaultValue: "\(value1, specifier: "%lld")-\(value2) free trial",
+          table: "Localizable",
+          bundle: #bundle
+        )
       }
       internal enum PaymentMode {
         /// Free Trial
-        internal static let freeTrial = L10n.tr("Localizable", "product.subscriptionOffer.paymentMode.freeTrial", fallback: "Free Trial")
+        internal static var freeTrial: LocalizedStringResource {
+          LocalizedStringResource(
+            "product.subscriptionOffer.paymentMode.freeTrial",
+            defaultValue: "Free Trial",
+            table: "Localizable",
+            bundle: #bundle
+          )
+        }
         /// Pay as You Go
-        internal static let payAsYouGo = L10n.tr("Localizable", "product.subscriptionOffer.paymentMode.payAsYouGo", fallback: "Pay as You Go")
+        internal static var payAsYouGo: LocalizedStringResource {
+          LocalizedStringResource(
+            "product.subscriptionOffer.paymentMode.payAsYouGo",
+            defaultValue: "Pay as You Go",
+            table: "Localizable",
+            bundle: #bundle
+          )
+        }
         /// Pay up Front
-        internal static let payUpFront = L10n.tr("Localizable", "product.subscriptionOffer.paymentMode.payUpFront", fallback: "Pay up Front")
+        internal static var payUpFront: LocalizedStringResource {
+          LocalizedStringResource(
+            "product.subscriptionOffer.paymentMode.payUpFront",
+            defaultValue: "Pay up Front",
+            table: "Localizable",
+            bundle: #bundle
+          )
+        }
       }
     }
     internal enum SubscriptionPeriod {
       internal enum Unit {
         /// day
-        internal static let day = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day", fallback: "day")
+        internal static var day: LocalizedStringResource {
+          LocalizedStringResource(
+            "product.subscriptionPeriod.unit.day",
+            defaultValue: "day",
+            table: "Localizable",
+            bundle: #bundle
+          )
+        }
         /// month
-        internal static let month = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month", fallback: "month")
+        internal static var month: LocalizedStringResource {
+          LocalizedStringResource(
+            "product.subscriptionPeriod.unit.month",
+            defaultValue: "month",
+            table: "Localizable",
+            bundle: #bundle
+          )
+        }
         /// week
-        internal static let week = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week", fallback: "week")
+        internal static var week: LocalizedStringResource {
+          LocalizedStringResource(
+            "product.subscriptionPeriod.unit.week",
+            defaultValue: "week",
+            table: "Localizable",
+            bundle: #bundle
+          )
+        }
         /// year
-        internal static let year = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year", fallback: "year")
+        internal static var year: LocalizedStringResource {
+          LocalizedStringResource(
+            "product.subscriptionPeriod.unit.year",
+            defaultValue: "year",
+            table: "Localizable",
+            bundle: #bundle
+          )
+        }
         internal enum Day {
           /// d
-          internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.compactName", fallback: "d")
+          internal static var compactName: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.day.compactName",
+              defaultValue: "d",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// days
-          internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.plural", fallback: "days")
+          internal static var plural: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.day.plural",
+              defaultValue: "days",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// days
-          internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.plural2", fallback: "days")
+          internal static var plural2: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.day.plural2",
+              defaultValue: "days",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// daily
-          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.day.recurrent", fallback: "daily")
+          internal static var recurrent: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.day.recurrent",
+              defaultValue: "daily",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
         }
         internal enum Month {
           /// mo
-          internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.compactName", fallback: "mo")
+          internal static var compactName: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.month.compactName",
+              defaultValue: "mo",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// months
-          internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.plural", fallback: "months")
+          internal static var plural: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.month.plural",
+              defaultValue: "months",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// months
-          internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.plural2", fallback: "months")
+          internal static var plural2: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.month.plural2",
+              defaultValue: "months",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// monthly
-          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.month.recurrent", fallback: "monthly")
+          internal static var recurrent: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.month.recurrent",
+              defaultValue: "monthly",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
         }
         internal enum Week {
           /// w
-          internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.compactName", fallback: "w")
+          internal static var compactName: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.week.compactName",
+              defaultValue: "w",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// weeks
-          internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.plural", fallback: "weeks")
+          internal static var plural: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.week.plural",
+              defaultValue: "weeks",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// weeks
-          internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.plural2", fallback: "weeks")
+          internal static var plural2: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.week.plural2",
+              defaultValue: "weeks",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// weekly
-          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.week.recurrent", fallback: "weekly")
+          internal static var recurrent: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.week.recurrent",
+              defaultValue: "weekly",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
         }
         internal enum Year {
           /// y
-          internal static let compactName = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.compactName", fallback: "y")
+          internal static var compactName: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.year.compactName",
+              defaultValue: "y",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// years
-          internal static let plural = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.plural", fallback: "years")
+          internal static var plural: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.year.plural",
+              defaultValue: "years",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// years
-          internal static let plural2 = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.plural2", fallback: "years")
+          internal static var plural2: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.year.plural2",
+              defaultValue: "years",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
           /// yearly
-          internal static let recurrent = L10n.tr("Localizable", "product.subscriptionPeriod.unit.year.recurrent", fallback: "yearly")
+          internal static var recurrent: LocalizedStringResource {
+            LocalizedStringResource(
+              "product.subscriptionPeriod.unit.year.recurrent",
+              defaultValue: "yearly",
+              table: "Localizable",
+              bundle: #bundle
+            )
+          }
         }
       }
     }
@@ -90,19 +270,15 @@ internal enum L10n {
     internal enum Error {
       internal enum PremiumExpired {
         /// You don't have active subscriptions. Please check your account details
-        internal static let description = L10n.tr("Localizable", "purchases.error.premiumExpired.description", fallback: "You don't have active subscriptions. Please check your account details")
+        internal static var description: LocalizedStringResource {
+          LocalizedStringResource(
+            "purchases.error.premiumExpired.description",
+            defaultValue: "You don't have active subscriptions. Please check your account details",
+            table: "Localizable",
+            bundle: #bundle
+          )
+        }
       }
     }
-  }
-}
-// swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
-// swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces
-
-// MARK: - Implementation Details
-
-extension L10n {
-  private static func tr(_ table: String, _ key: String, _ args: CVarArg..., fallback value: String) -> String {
-    let format = Bundle.module.localizedString(forKey: key, value: value, table: table)
-    return String(format: format, locale: Locale.current, arguments: args)
   }
 }

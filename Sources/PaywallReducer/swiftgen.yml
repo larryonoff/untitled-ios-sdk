@@ -5,7 +5,5 @@ strings:
   inputs: 
     - en.lproj/Localizable.strings
   outputs:
-    templateName: structured-swift5
+    templatePath: ../../swiftgen-templates/strings/swift6.stencil
     output: Localizable.generated.swift
-    params:
-      bundle: Bundle.module

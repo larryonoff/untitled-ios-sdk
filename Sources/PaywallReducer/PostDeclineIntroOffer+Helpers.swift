@@ -10,17 +10,17 @@ extension PostDeclineIntroOffer.State {
 extension AlertState<PostDeclineIntroOffer.Destination.Alert> {
   static var cancelOffer: Self {
     AlertState {
-      TextState(L10n.CancelIntroductoryOffer.title)
+      TextState(.CancelIntroductoryOffer.title)
     } actions: {
       ButtonState(role: .destructive, action: .cancelIntroductoryOffer) {
-        TextState(L10n.CancelIntroductoryOffer.Action.reject)
+        TextState(.CancelIntroductoryOffer.Action.reject)
       }
 
       ButtonState(role: .cancel) {
-        TextState(L10n.CancelIntroductoryOffer.Action.cancel)
+        TextState(.CancelIntroductoryOffer.Action.cancel)
       }
     } message: {
-      TextState(L10n.CancelIntroductoryOffer.message)
+      TextState(.CancelIntroductoryOffer.message)
     }
   }
 }

@@ -13,9 +13,9 @@ extension PurchasesError: LocalizedError {
   public var errorDescription: String? {
     switch self {
     case .unknown:
-      L10n.Error.Unknown.description
+      String(localized: .Error.Unknown.description)
     case .premiumExpired:
-      L10n.Purchases.Error.PremiumExpired.description
+      String(localized: .Purchases.Error.PremiumExpired.description)
     case .productUnavailable:
       "Product not available"
     }
