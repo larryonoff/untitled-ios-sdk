@@ -117,7 +117,7 @@ public struct PaywallReducer: Sendable {
     public typealias State = Product
   }
 
-  @Reducer(state: .equatable)
+  @Reducer
   public enum Destination {
     case alert(AlertState<Alert>)
     case postDeclineIntroOffer(PostDeclineIntroOffer)
@@ -394,3 +394,5 @@ public struct PaywallReducer: Sendable {
     return .none
   }
 }
+
+extension PaywallReducer.Destination.State: Equatable {}
