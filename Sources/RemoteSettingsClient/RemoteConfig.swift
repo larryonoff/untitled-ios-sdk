@@ -1,6 +1,6 @@
 import FirebaseRemoteConfig
 
-extension RemoteConfigFetchStatus: CustomStringConvertible {
+extension RemoteConfigFetchStatus: @retroactive CustomStringConvertible {
   public var description: String {
     switch self {
     case .noFetchYet:
@@ -18,7 +18,7 @@ extension RemoteConfigFetchStatus: CustomStringConvertible {
   }
 }
 
-extension RemoteConfigFetchAndActivateStatus: CustomStringConvertible {
+extension RemoteConfigFetchAndActivateStatus: @retroactive CustomStringConvertible {
   public var description: String {
     switch self {
     case .successFetchedFromRemote:
