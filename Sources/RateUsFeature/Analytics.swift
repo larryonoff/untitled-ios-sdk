@@ -47,8 +47,6 @@ extension RateUs {
             ].compactMapValues { $0 }
           )
         }
-      default:
-        return .none
       }
     }
   }

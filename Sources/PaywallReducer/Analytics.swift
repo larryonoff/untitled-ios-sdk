@@ -30,8 +30,6 @@ extension AnalyticsClient {
 
     params.insertOrUpdate(product)
 
-    let paywallID = state.paywallID
-
     return .run { [params] _ in
       log(.productAction, parameters: params)
     }
@@ -59,8 +57,6 @@ extension AnalyticsClient {
       params[.errorDomain] = nsError.domain
       params[.errorDescription] = nsError.localizedDescription
     }
-
-    let paywallID = state.paywallID
 
     return .run { [params] _ in
       log(.productAction, parameters: params)
