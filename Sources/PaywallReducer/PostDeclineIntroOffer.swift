@@ -38,7 +38,7 @@ public struct PostDeclineIntroOffer: Sendable {
     public var destination: Destination.State?
   }
 
-  @Reducer(state: .equatable)
+  @Reducer
   public enum Destination {
     case alert(AlertState<Alert>)
 
@@ -185,3 +185,5 @@ public struct PostDeclineIntroOffer: Sendable {
     .cancellable(id: CancelID.purchase, cancelInFlight: true)
   }
 }
+
+extension PostDeclineIntroOffer.Destination.State: Equatable {}

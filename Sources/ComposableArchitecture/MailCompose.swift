@@ -1,6 +1,6 @@
 #if canImport(MessageUI)
 
-@_spi(Presentation) import ComposableArchitecture
+import ComposableArchitecture
 import DuckSwiftUI
 import SwiftUI
 
@@ -35,12 +35,14 @@ extension View {
   public func mailCompose(
     _ item: Binding<StoreOf<MailCompose>?>
   ) -> some View {
+    // The store is captured while the state is still non-`nil`. It must not be
+    // re-read inside the callbacks: `isPresented` nils the state out before they
+    // run, so reading it there would drop the delegate action entirely.
     let store = item.wrappedValue
-    let state = store?.withState { $0 }
 
     return self.mailCompose(
       isPresented: Binding(item),
-      emailData: state?.data,
+      emailData: store?.data,
       onDismiss: {
         store?.send(.delegate(.dismissed))
       },
