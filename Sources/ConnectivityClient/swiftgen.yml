@@ -1,0 +1,9 @@
+input_dir: ./Resources
+output_dir: ./
+
+strings:
+  inputs: 
+    - en.lproj/Localizable.strings
+  outputs:
+    templatePath: ../../swiftgen-templates/strings/swift6.stencil
+    output: Localizable.generated.swift
