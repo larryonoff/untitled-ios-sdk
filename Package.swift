@@ -338,6 +338,10 @@ extension Target {
         .External.Dependencies.macros
       ],
       path: "Sources/ConnectivityClient",
+      exclude: ["swiftgen.yml"],
+      resources: [
+        .process("Resources")
+      ],
       swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("Network")
