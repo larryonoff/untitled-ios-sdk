@@ -71,7 +71,7 @@ extension RemoteSettingsClient: DependencyKey {
 }
 
 private actor RemoteSettingsImpl {
-  private var fetchTask: Task<Void, Error>?
+  private var fetchTask: Task<Void, any Error>?
 
   init() {}
 
