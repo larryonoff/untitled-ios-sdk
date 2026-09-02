@@ -106,13 +106,3 @@ extension CGSize {
     size = size / CGFloat(scale)
   }
 }
-
-// MARK: - Hashable
-
-extension CGSize: Hashable {
-  @inlinable
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(width)
-    hasher.combine(height)
-  }
-}
