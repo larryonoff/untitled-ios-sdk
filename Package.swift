@@ -86,10 +86,6 @@ let package = Package(
       from: "6.6.0"
     ),
     .package(
-      url: "https://github.com/rwbutler/Connectivity",
-      from: "8.0.0"
-    ),
-    .package(
       url: "https://github.com/devicekit/DeviceKit",
       from: "5.8.0"
     ),
@@ -337,13 +333,15 @@ extension Target {
     static var connectivity: Target { target(
       name: .Client.connectivity,
       dependencies: [
-        .logging,
-        .External.connectivity,
+        .foundation,
         .External.dependencies,
         .External.Dependencies.macros
       ],
       path: "Sources/ConnectivityClient",
-      swiftSettings: .upcomingFeatures
+      swiftSettings: .upcomingFeatures,
+      linkerSettings: [
+        .linkedFramework("Network")
+      ]
     ) }
 
     static var facebook: Target { target(
@@ -555,8 +553,7 @@ extension Target {
     static var connectivity: Target { target(
       name: .Composable.connectivity,
       dependencies: [
-        .Client.connectivity,
-        .External.sharing,
+        .Client.connectivity
       ],
       path: "Sources/ConnectivityComposable",
       swiftSettings: .upcomingFeatures
@@ -900,8 +897,6 @@ extension Target.Dependency {
       name: "IssueReporting",
       package: "xctest-dynamic-overlay"
     )
-
-    static let connectivity = byName(name: "Connectivity")
 
     static let customDump = product(
       name: "CustomDump",
