@@ -117,11 +117,13 @@ final class PurchasesClientImpl: Sendable {
   }
 
   var purchasesUpdates: AsyncStream<Purchases> {
-    _purchases
-      .dropFirst()
-      .removeDuplicates()
-      .values
-      .eraseToStream()
+    UncheckedSendable(
+      _purchases
+        .dropFirst()
+        .removeDuplicates()
+        .values
+    )
+    .eraseToStream()
   }
 
   func initialize() {
@@ -586,7 +588,7 @@ final class _AdaptyDelegate: AdaptyDelegate {
   init() {}
 
   var stream: AsyncStream<AdaptyDelegateEvent> {
-    pipe.stream.eraseToStream()
+    pipe.stream
   }
 
   // AdaptyDelegate

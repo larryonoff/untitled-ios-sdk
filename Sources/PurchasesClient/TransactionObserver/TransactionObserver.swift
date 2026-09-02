@@ -19,10 +19,12 @@ final class TransactionObserver: Sendable {
   }
 
   var updates: AsyncStream<DuckTransaction> {
-    subject
-      .buffer(size: 5, prefetch: .byRequest, whenFull: .dropOldest)
-      .values
-      .eraseToStream()
+    UncheckedSendable(
+      subject
+        .buffer(size: 5, prefetch: .byRequest, whenFull: .dropOldest)
+        .values
+    )
+    .eraseToStream()
   }
 
   private let handleProfileTask = LockIsolated<Task<Void, Never>?>(nil)
