@@ -80,7 +80,7 @@ public struct _PhotosPickerItem {
       return try await item.loadTransferable(type: type)
     case let .pickerResult(item):
       return try await withCheckedThrowingContinuation { continuation in
-        item.itemProvider.loadTransferable(type: type) { result in
+        _ = item.itemProvider.loadTransferable(type: type) { result in
           continuation.resume(with: result.map(Optional.some))
         }
       }
