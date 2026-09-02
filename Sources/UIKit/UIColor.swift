@@ -83,9 +83,11 @@ extension UIColor {
     }
 
     let hexString = String(rgba[String.Index(utf16Offset: 1, in: rgba)...])
-    var hexValue: UInt32 = 0
 
-    guard Scanner(string: hexString).scanHexInt32(&hexValue) else {
+    guard
+      let scanned = Scanner(string: hexString).scanInt64(representation: .hexadecimal),
+      let hexValue = UInt32(exactly: scanned)
+    else {
       return nil
     }
 

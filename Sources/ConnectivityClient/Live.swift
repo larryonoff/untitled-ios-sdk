@@ -62,8 +62,8 @@ private extension Connectivity {
 
     self.successThreshold = Connectivity.Percentage(50.0)
 
-    self.connectivityURLs
-      .append(contentsOf: connectivityURLs)
+    self.connectivityURLRequests
+      .append(contentsOf: connectivityURLs.map { URLRequest(url: $0) })
   }
 }
 
