@@ -20,7 +20,7 @@ extension Paywall {
 }
 
 extension Product {
-  package init?(_ product: AdaptyProduct) {
+  package init?(_ product: any AdaptyProduct) {
     let skProduct = product.skProduct
 
     let paywallProduct = product as? AdaptyPaywallProduct
@@ -44,7 +44,7 @@ extension Product {
 
 extension Product.SubscriptionInfo {
   @_optimize(none)
-  package init?(_ product: AdaptyProduct) {
+  package init?(_ product: any AdaptyProduct) {
     let paywallProduct = product as? AdaptyPaywallProduct
 
     guard
@@ -91,7 +91,7 @@ extension Product.SubscriptionInfo {
 extension Product.SubscriptionOffer {
   package init?(
     _ offer: AdaptySubscriptionOffer,
-    product: AdaptyProduct
+    product: any AdaptyProduct
   ) {
     guard
       let paymentMode = Product.SubscriptionOffer.PaymentMode(offer.paymentMode),

@@ -19,7 +19,7 @@ public struct AppMetricaClient: Sendable {
 
   @DependencyEndpoint(method: "report")
   public var reportError: @Sendable (
-    _ _: Error
+    _ _: any Error
   ) -> Void
 
   @DependencyEndpoint()
