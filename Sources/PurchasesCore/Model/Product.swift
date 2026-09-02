@@ -80,7 +80,7 @@ public struct Product {
   public var priceLocale: Locale
 
   public var priceFormatStyle: Decimal.FormatStyle.Currency {
-    .init(code: priceLocale.currencyCode ?? "USD", locale: priceLocale)
+    .init(code: priceLocale.currency?.identifier ?? "USD", locale: priceLocale)
     .rounded(rule: .down)
   }
 

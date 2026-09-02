@@ -58,14 +58,14 @@ final class PriceFormatter: Sendable {
       formatter.locale = key.locale
       formatter.roundingMode = key.roundingMode
 
-      switch key.locale.regionCode {
+      switch key.locale.region?.identifier {
       case "RU", "IN", "JP":
         formatter.minimumFractionDigits = 0
       default:
         formatter.minimumFractionDigits = 2
       }
 
-      switch key.locale.currencyCode {
+      switch key.locale.currency?.identifier {
       case "USD":
         formatter.currencySymbol = "$"
         formatter.positiveFormat = "¤0.00"
