@@ -1,5 +1,6 @@
 "rateUs" = "रेटिंग देँ";
 "rateUs.title" = "अॅप पसंद आया?";
+"rateUs.subtitle" = "आपकी 5-स्टार रेटिंग दूसरों को हमें ढूंढने में मदद करती है";
 "rateUs.doNotLove.title" = "हमे खेद है 😔";
 "rateUs.doNotLove.subtitle" = "अपना फीडबैक देकर ऐप को और शानदार बनाओ";
 "rateUs.contactUsAction" = "शेअर";

@@ -1,5 +1,6 @@
 "rateUs" = "Оцени приложение";
 "rateUs.title" = "Нравится приложение?";
+"rateUs.subtitle" = "Твои 5 звёзд помогают другим нас найти";
 "rateUs.doNotLove.title" = "Нам очень жаль 😔";
 "rateUs.doNotLove.subtitle" = "Поделись с нами своими пожеланиями, чтобы мы могли сделать приложение лучше";
 "rateUs.contactUsAction" = "Поделиться";

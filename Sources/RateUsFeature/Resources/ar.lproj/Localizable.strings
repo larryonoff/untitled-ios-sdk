@@ -1,5 +1,6 @@
 "rateUs" = "قيمنا";
 "rateUs.title" = "هل أعجبك التطبيق؟";
+"rateUs.subtitle" = "تقييمك بخمسة نجوم يساعد الآخرين على اكتشافنا";
 "rateUs.doNotLove.title" = "إننا في غاية الأسف 😔";
 "rateUs.doNotLove.subtitle" = "يرجى مشاركة ملاحظاتك لمساعدتنا في تحسين التطبيق";
 "rateUs.contactUsAction" = "مشاركة";

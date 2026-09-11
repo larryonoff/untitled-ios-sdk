@@ -1,15 +1,26 @@
 import ComposableArchitecture
-@_spi(Presentation) import DuckSwiftUI
+import DuckAnalyticsClient
+import DuckSwiftUI
 import SwiftUI
 
 extension View {
+  /// Presents the rate-us ask as a content-sized sheet: no grabber, no swipe
+  /// or tap-outside exit — the two buttons are the only way out, exactly as in
+  /// BEAT's `RateUsSheetController`.
   public func rateUs(
-    _ item: Binding<StoreOf<RateUs>?>
+    _ item: Binding<StoreOf<RateUs>?>,
+    mascotReview: Image? = nil,
+    mascotSupport: Image? = nil
   ) -> some View {
-    self.sheet(item: item) { store in
-      RateUsView(store: store)
-        .presentationDetents([.height(272)])
-        .presentationCornerRadius(24)
+    sheet(item: item) { store in
+      RateUsView(
+        store: store,
+        mascotReview: mascotReview,
+        mascotSupport: mascotSupport
+      )
+      .presentationSizingFitted()
+      .sheetCardBackground()
+      .interactiveDismissDisabled()
     }
   }
 }
@@ -17,138 +28,194 @@ extension View {
 public struct RateUsView: View {
   public let store: StoreOf<RateUs>
 
-  public init(store: StoreOf<RateUs>) {
+  private let mascotReview: Image?
+  private let mascotSupport: Image?
+
+  public init(
+    store: StoreOf<RateUs>,
+    mascotReview: Image? = nil,
+    mascotSupport: Image? = nil
+  ) {
     self.store = store
+    self.mascotReview = mascotReview
+    self.mascotSupport = mascotSupport
   }
 
   public var body: some View {
-    ZStack {
-      Rectangle().fill(.background)
-        .ignoresSafeArea()
+    VStack(spacing: 24) {
+      RateUsMascot(
+        intent: store.intent,
+        review: mascotReview,
+        support: mascotSupport
+      )
 
-      switch store.mode {
-      case .default:
-        DefaultRateUsView(store: store)
-          .transition(.rateUsMode)
-      case .doNotLove:
-        DoNotLoveRateUsView(store: store)
-          .transition(.rateUsMode)
+      switch store.intent {
+      case .review:
+        ReviewContent(store: store)
+          .transition(.rateUsIntent)
+      case .support:
+        SupportContent(store: store)
+          .transition(.rateUsIntent)
       }
     }
-    .animation(.default, value: store.mode)
+    .padding(.top, 40)
+    .padding(.horizontal, 16)
+    .frame(maxWidth: .infinity)
+    .animation(.rateUsIntent, value: store.intent)
     .onAppear {
       store.send(.onAppear)
     }
-#if os(iOS)
-    .statusBarHidden()
-#endif
   }
 }
 
-private struct DefaultRateUsView: View {
+// MARK: - Content
+
+private struct ReviewContent: View {
   let store: StoreOf<RateUs>
 
   var body: some View {
     VStack(spacing: 0) {
-      Text(.RateUs.title)
-        .font(.system(size: 22, weight: .semibold))
-        .foregroundStyle(.primary)
-        .multilineTextAlignment(.center)
+      RateUsHeader(
+        title: .RateUs.title,
+        subtitle: .RateUs.subtitle
+      )
 
       Button {
         store.send(.loveTapped)
       } label: {
         Text(.RateUs.loveAction)
       }
-      .buttonStyle(.rateUsPrimary)
-      .padding(.top, 37)
+      .buttonStyle(.sheetActionPrimary)
+      .padding(.top, 40)
 
       Button {
         store.send(.doNotLoveTapped)
       } label: {
         Text(.RateUs.doNotLoveAction)
       }
-      .buttonStyle(.rateUsSecondary)
-      .padding(.top, 17)
+      .buttonStyle(.sheetActionSecondary)
+      .padding(.top, 0)
     }
-    .padding()
   }
 }
 
-private struct DoNotLoveRateUsView: View {
+private struct SupportContent: View {
   let store: StoreOf<RateUs>
 
   var body: some View {
     VStack(spacing: 0) {
-      Text(.RateUs.DoNotLove.title)
-        .font(.system(size: 22, weight: .semibold))
-        .foregroundStyle(.primary)
-        .multilineTextAlignment(.center)
+      RateUsHeader(
+        title: .RateUs.DoNotLove.title,
+        subtitle: .RateUs.DoNotLove.subtitle
+      )
 
-      Text(.RateUs.DoNotLove.subtitle)
-        .font(.system(size: 16, weight: .regular))
-        .foregroundStyle(.secondary)
-        .multilineTextAlignment(.center)
-        .padding(.top, 6)
-
-      Button {
-        store.send(.contactUsTapped)
-      } label: {
-        Text(.RateUs.shareAction)
+      if store.contactURL != nil {
+        Button {
+          store.send(.contactSupportTapped)
+        } label: {
+          Text(.RateUs.shareAction)
+        }
+        .buttonStyle(.sheetActionPrimary)
+        .padding(.top, 40)
       }
-      .buttonStyle(.rateUsPrimary)
-      .padding(.top, 27)
 
       Button {
-        store.send(.dismissTapped)
+        store.send(.cancelTapped)
       } label: {
         Text(.RateUs.dismissAction)
       }
-      .buttonStyle(.rateUsSecondary)
-      .padding(.top, 17)
+      .buttonStyle(.sheetActionSecondary)
+      .padding(.top, 0)
     }
-    .padding()
   }
 }
+
+// MARK: - Mascot
+
+/// The illustration above the copy, keyed by the step on screen.
+///
+/// The frame is intentionally fixed: the sheet sizes itself to its content, so
+/// the mascot must report a resolvable height. Hosts without art pass nothing
+/// and the slot collapses instead of leaving a blank square.
+private struct RateUsMascot: View {
+  let intent: RateUs.State.Intent
+  let review: Image?
+  let support: Image?
+
+  var body: some View {
+    if let image {
+      image
+        .resizable()
+        .scaledToFit()
+        .frame(width: 180, height: 180)
+        .transition(.rateUsIntent)
+        .id(intent)
+        .accessibilityHidden(true)
+    }
+  }
+
+  private var image: Image? {
+    switch intent {
+    case .review: review
+    case .support: support
+    }
+  }
+}
+
+// MARK: - Header
+
+private struct RateUsHeader: View {
+  let title: LocalizedStringResource
+  let subtitle: LocalizedStringResource
+
+  private static let maxWidth: CGFloat = 300
+
+  var body: some View {
+    VStack(spacing: 16) {
+      Text(title)
+        .font(.system(size: 23, weight: .semibold))
+        .foregroundStyle(.primary)
+        .minimumScaleFactor(0.7)
+
+      Text(subtitle)
+        .font(.system(size: 16, weight: .regular))
+        .foregroundStyle(.secondary)
+        .minimumScaleFactor(0.8)
+    }
+    .multilineTextAlignment(.center)
+    .lineLimit(2)
+    .fixedSize(horizontal: false, vertical: true)
+    .frame(maxWidth: Self.maxWidth)
+  }
+}
+
+// MARK: - Transition
 
 private extension AnyTransition {
-  static var rateUsMode: AnyTransition {
+  static var rateUsIntent: AnyTransition {
     .scale(scale: 0.95)
-    .combined(with: .opacity)
+      .combined(with: .opacity)
   }
 }
 
-extension ButtonStyle where Self == PrimaryButtonStyle {
-  static var rateUsPrimary: PrimaryButtonStyle {
-    PrimaryButtonStyle()
+private extension Animation {
+  static var rateUsIntent: Animation {
+    .smooth
   }
 }
 
-extension ButtonStyle where Self == SecondaryButtonStyle {
-  static var rateUsSecondary: SecondaryButtonStyle {
-    SecondaryButtonStyle()
-  }
-}
+// MARK: - Preview
 
-private struct PrimaryButtonStyle: ButtonStyle {
-  func makeBody(configuration: Configuration) -> some View {
-    let shape = Capsule()
-
-    configuration.label
-      .font(.system(size: 17, weight: .bold))
-      .foregroundStyle(.black)
-      .padding(.vertical, 14)
-      .padding(.horizontal, 20)
-      .frame(minWidth: 174, minHeight: 50)
-      .background(.tint, in: shape)
-      .clipShape(shape)
-  }
-}
-
-private struct SecondaryButtonStyle: ButtonStyle {
-  func makeBody(configuration: Configuration) -> some View {
-    configuration.label
-      .font(.system(size: 17, weight: .medium))
-      .foregroundStyle(.primary)
+#Preview("Rate Us", traits: .fixedLayout(width: 393, height: 480)) {
+  withDependencies {
+    $0.analytics = .noop
+  } operation: {
+    RateUsView(
+      store: Store(
+        initialState: RateUs.State(contactURL: nil, placement: nil)
+      ) {
+        RateUs()
+      }
+    )
   }
 }

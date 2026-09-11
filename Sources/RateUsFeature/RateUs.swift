@@ -2,38 +2,51 @@ import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckDependencies
 import DuckFoundation
-import DuckPurchases
 import Foundation
 
+/// The two-step App Store ask: "do you love it?" hands a happy user to the
+/// system review prompt, "no" hands an unhappy one to support instead of to a
+/// one-star rating.
+///
+/// Mirrors BEAT's `OnelightRateUsFeature` without its mascot art, UIKit sheet
+/// controller and auto-presentation coupling — the host owns *when* the sheet
+/// appears and presents it with ``SwiftUI/View/rateUs(_:)``.
 @Reducer
 public struct RateUs {
   public enum Action {
     case onAppear
 
-    case contactUsTapped
-    case dismissTapped
+    case cancelTapped
+    case contactSupportTapped
     case doNotLoveTapped
     case loveTapped
   }
 
   @ObservableState
-  public struct State: Equatable {
-    public enum Mode: Equatable {
-      case `default`
-      case doNotLove
+  public struct State: Equatable, Sendable {
+    /// Which of the two steps is on screen.
+    public enum Intent: Equatable, Sendable {
+      case review
+      case support
     }
 
-    public var mode: Mode = .default
+    public var intent: Intent = .review
 
+    /// Where the support step hands the user off. Without it that step keeps a
+    /// single "Cancel" action rather than showing a button that does nothing.
     public var contactURL: URL?
+
+    /// Tags the analytics only; the reducer never branches on it.
     public var placement: Placement?
 
     public init(
       contactMail: String?,
       placement: Placement?
     ) {
-      self.contactURL = contactMail.flatMap(URL.mail(to:))
-      self.placement = placement
+      self.init(
+        contactURL: contactMail.flatMap(URL.mail(to:)),
+        placement: placement
+      )
     }
 
     public init(
@@ -45,39 +58,51 @@ public struct RateUs {
     }
   }
 
-  @Dependency(\.analytics) var analytics
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.openURL) var openURL
-  @Dependency(\.purchases) var purchases
   @Dependency(\.requestReview) var requestReview
 
   public init() {}
 
   public var body: some ReducerOf<Self> {
-    analyticsBody
+    CombineReducers {
+      core
 
+      RateUsAnalytics()
+    }
+  }
+
+  @ReducerBuilder<State, Action>
+  private var core: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:
         return .none
 
-      case .contactUsTapped:
-        return .run { [openURL, dismiss, contactURL = state.contactURL] send in
+      case .cancelTapped:
+        return .run { [dismiss] _ in await dismiss() }
+
+      case .contactSupportTapped:
+        return .run { [dismiss, openURL, contactURL = state.contactURL] _ in
           if let contactURL {
             await openURL(contactURL)
           }
 
           await dismiss()
         }
-      case .dismissTapped:
-        return .run { [dismiss] _ in await dismiss() }
+
       case .doNotLoveTapped:
-        state.mode = .doNotLove
+        state.intent = .support
 
         return .none
+
       case .loveTapped:
-        return .run { [requestReview, dismiss] _ in
+        // Asked before the dismissal: the prompt belongs to the scene, and
+        // dismissing first would cancel this effect — the reducer is torn down
+        // the moment the host clears the presentation.
+        return .run { [dismiss, requestReview] _ in
           _ = await requestReview()
+
           await dismiss()
         }
       }

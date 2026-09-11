@@ -697,12 +697,15 @@ extension Target {
       dependencies: [
         .dependencies,
         .foundation,
-        .purchases,
         .swiftUI,
         .External.composableArchitecture,
         .Client.analytics,
       ],
       path: "Sources/RateUsFeature",
+      exclude: ["swiftgen.yml"],
+      resources: [
+        .process("Resources")
+      ],
       swiftSettings: .upcomingFeatures
     ) }
   }
