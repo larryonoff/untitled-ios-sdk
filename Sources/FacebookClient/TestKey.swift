@@ -12,7 +12,7 @@ extension FacebookClient {
   public static let noop = Self(
     continueUserActivity: { _ in false },
     didFinishLaunching: { _ in false },
-    openURL: { _, _ in false },
+    openURL: { _, _, _ in false },
     anonymousID: { "" },
     userID: { nil }
   )
