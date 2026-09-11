@@ -1,5 +1,6 @@
 "rateUs" = "דרגו אותנו";
 "rateUs.title" = "אוהבים את האפליקציה?";
+"rateUs.subtitle" = "דירוג 5 הכוכבים שלך עוזר לאחרים למצוא אותנו";
 "rateUs.doNotLove.title" = "אנחנו מצטערים 😔";
 "rateUs.doNotLove.subtitle" = "בבקשה שתף את הביקורת שלך כדי לעזור לנו לשפר את האפליקציה";
 "rateUs.contactUsAction" = "לשתף";

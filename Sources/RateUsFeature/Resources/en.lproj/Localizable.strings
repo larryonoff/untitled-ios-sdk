@@ -1,5 +1,6 @@
 "rateUs" = "Rate Us";
 "rateUs.title" = "Love the App?";
+"rateUs.subtitle" = "Your 5 stars help others find us";
 "rateUs.doNotLove.title" = "We are so sorry 😔";
 "rateUs.doNotLove.subtitle" = "Please share your feedback to help us improve the app";
 "rateUs.contactUsAction" = "Share";

@@ -1,5 +1,6 @@
 "rateUs" = "Betygsätt oss";
 "rateUs.title" = "Älskar du appen?";
+"rateUs.subtitle" = "Ditt 5-stjärniga betyg hjälper andra att hitta oss";
 "rateUs.doNotLove.title" = "Vi beklagar 😔";
 "rateUs.doNotLove.subtitle" = "Dela din feedback för att hjälpa oss att förbättra appen";
 "rateUs.contactUsAction" = "Dela";

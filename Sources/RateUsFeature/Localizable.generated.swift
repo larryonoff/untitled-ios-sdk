@@ -63,6 +63,15 @@ extension LocalizedStringResource {
         bundle: #bundle
       )
     }
+    /// Your 5 stars help others find us
+    internal static var subtitle: LocalizedStringResource {
+      LocalizedStringResource(
+        "rateUs.subtitle",
+        defaultValue: "Your 5 stars help others find us",
+        table: "Localizable",
+        bundle: #bundle
+      )
+    }
     /// Love the App?
     internal static var title: LocalizedStringResource {
       LocalizedStringResource(

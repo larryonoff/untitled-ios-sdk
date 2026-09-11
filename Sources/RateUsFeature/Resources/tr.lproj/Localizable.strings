@@ -1,5 +1,6 @@
 "rateUs" = "Bizi Değerlendirin";
 "rateUs.title" = "Uygulamayı sevdiniz mi?";
+"rateUs.subtitle" = "5 yıldızın başkalarının bizi bulmasına yardımcı olur";
 "rateUs.doNotLove.title" = "Çok üzgünüz 😔";
 "rateUs.doNotLove.subtitle" = "Uygulamayı iyileştirebilmemiz için geri bildiriminizi paylaşın";
 "rateUs.contactUsAction" = "Paylaş";

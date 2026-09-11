@@ -1,5 +1,6 @@
 "rateUs" = "ให้คะแนนเรา";
 "rateUs.title" = "ชอบแอปนี้ไหม?";
+"rateUs.subtitle" = "คะแนน 5 ดาวของคุณช่วยให้คนอื่นค้นหาเราเจอ";
 "rateUs.doNotLove.title" = "เราต้องขออภัยด้วย 😔";
 "rateUs.doNotLove.subtitle" = "โปรดแบ่งปันความคิดเห็นของคุณเ พื่อช่วยเราในการพัฒนาแอป";
 "rateUs.contactUsAction" = "แชร์ไปย";
