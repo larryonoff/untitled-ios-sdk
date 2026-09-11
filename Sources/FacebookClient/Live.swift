@@ -28,15 +28,13 @@ extension FacebookClient: DependencyKey {
         )
       }
     },
-    openURL: { url, options in
-      // SAFETY: app lifecycle callbacks are always delivered on the main thread;
-      // `options` is used only within the main-actor body and not shared.
-      nonisolated(unsafe) let options = options
-      return MainActor.assumeIsolated {
+    openURL: { url, sourceApplication, annotation in
+      MainActor.assumeIsolated {
         ApplicationDelegate.shared.application(
           UIApplication.shared,
           open: url,
-          options: options
+          sourceApplication: sourceApplication,
+          annotation: annotation
         )
       }
     },
