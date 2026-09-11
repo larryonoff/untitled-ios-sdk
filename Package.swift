@@ -21,6 +21,7 @@ let package = Package(
     .library(name: .Client.feedback, targets: [.Client.feedback]),
     .library(name: .Client.firebase, targets: [.Client.firebase]),
     .library(name: .Client.instagramSharing, targets: [.Client.instagramSharing]),
+    .library(name: .Client.notificationsAuthorization, targets: [.Client.notificationsAuthorization]),
     .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
@@ -42,6 +43,7 @@ let package = Package(
 
     .library(name: .Dependencies.paywall, targets: [.Dependencies.paywall]),
 
+    .library(name: .Feature.notificationsAccess, targets: [.Feature.notificationsAccess]),
     .library(name: .Feature.rateUs, targets: [.Feature.rateUs]),
 
     .library(name: .avFoundation, targets: [.avFoundation]),
@@ -218,6 +220,7 @@ let package = Package(
     .Client.feedback,
     .Client.firebase,
     .Client.instagramSharing,
+    .Client.notificationsAuthorization,
     .Client.pasteboard,
     .Client.photosAuthorization,
     .Client.purchases,
@@ -239,6 +242,7 @@ let package = Package(
 
     .Dependencies.paywall,
 
+    .Feature.notificationsAccess,
     .Feature.rateUs,
   ]
 )
@@ -395,6 +399,23 @@ extension Target {
       ],
       path: "Sources/InstagramSharingClient",
       swiftSettings: .upcomingFeatures
+    ) }
+
+    static var notificationsAuthorization: Target { target(
+      name: .Client.notificationsAuthorization,
+      dependencies: [
+        .foundation,
+        .logging,
+        .External.dependencies,
+        .External.Dependencies.macros,
+        .External.issueReporting,
+        .External.sharing
+      ],
+      path: "Sources/NotificationsAuthorizationClient",
+      swiftSettings: .upcomingFeatures,
+      linkerSettings: [
+        .linkedFramework("UserNotifications")
+      ]
     ) }
 
     static var pasteboard: Target { target(
@@ -654,6 +675,23 @@ extension Target {
   }
 
   enum Feature {
+    static var notificationsAccess: Target { target(
+      name: .Feature.notificationsAccess,
+      dependencies: [
+        .dependencies,
+        .swiftUI,
+        .External.composableArchitecture,
+        .Client.analytics,
+        .Client.notificationsAuthorization,
+      ],
+      path: "Sources/NotificationsAccessFeature",
+      exclude: ["swiftgen.yml"],
+      resources: [
+        .process("Resources")
+      ],
+      swiftSettings: .upcomingFeatures
+    ) }
+
     static var rateUs: Target { target(
       name: .Feature.rateUs,
       dependencies: [
@@ -845,6 +883,7 @@ extension Target.Dependency {
     static let feedbackGenerator = byName(name: .Client.feedback)
     static let firebase = byName(name: .Client.firebase)
     static let instagramSharing = byName(name: .Client.instagramSharing)
+    static let notificationsAuthorization = byName(name: .Client.notificationsAuthorization)
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
@@ -872,6 +911,7 @@ extension Target.Dependency {
   }
 
   enum Feature {
+    static let notificationsAccess = byName(name: .Feature.notificationsAccess)
     static let rateUs = byName(name: .Feature.rateUs)
   }
 
@@ -1022,6 +1062,7 @@ extension String {
     static let feedback = "DuckFeedbackClient"
     static let firebase = "DuckFirebaseClient"
     static let instagramSharing = "DuckInstagramSharingClient"
+    static let notificationsAuthorization = "DuckNotificationsAuthorizationClient"
     static let pasteboard = "DuckPasteboardClient"
     static let photosAuthorization = "DuckPhotosAuthorizationClient"
     static let purchases = "DuckPurchasesClient"
@@ -1049,6 +1090,7 @@ extension String {
   }
 
   enum Feature {
+    static let notificationsAccess = "DuckNotificationsAccessFeature"
     static let rateUs = "DuckRateUsFeature"
   }
 }
