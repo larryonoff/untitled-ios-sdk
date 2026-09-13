@@ -1,5 +1,6 @@
 lane :swiftgen do
   sh "cd ../Sources/PaywallReducer ; swiftgen config run --config swiftgen.yml"
   sh "cd ../Sources/PurchasesCore ; swiftgen config run --config swiftgen.yml"
+  sh "cd ../Sources/NotificationsAccessFeature ; swiftgen config run --config swiftgen.yml"
   sh "cd ../Sources/RateUsFeature ; swiftgen config run --config swiftgen.yml"
 end
