@@ -8,7 +8,7 @@ extension UIViewController {
     _ viewControllerToPresent: UIViewController,
     presentingViewController: @autoclosure @escaping @Sendable () -> UIViewController?,
     animated: Bool = true,
-    completion: (@Sendable (Bool) -> Void)? = nil
+    completion: (@MainActor @Sendable (Bool) -> Void)? = nil
   ) {
     let presentOperation = BlockOperation {
       let semaphore = DispatchSemaphore(value: 0)
@@ -25,10 +25,8 @@ extension UIViewController {
           parent.present(
             viewControllerToPresent,
             animated: animated,
-            completion: {
-              semaphore.signal()
-              completion?(true)
-            }
+            after: semaphore,
+            completion: completion
           )
         }
       }
@@ -49,7 +47,7 @@ extension UIViewController {
 
   public func dismissInQueue(
     animated: Bool = true,
-    completion: (@Sendable () -> Void)? = nil
+    completion: (@MainActor @Sendable () -> Void)? = nil
   ) {
     let dismissOperation = BlockOperation {
       let semaphore = DispatchSemaphore(value: 0)
@@ -76,6 +74,50 @@ extension UIViewController {
     }
 
     presentationQueue.addOperation(dismissOperation)
+  }
+}
+
+private extension UIViewController {
+  /// Presents once `self` is actually able to present.
+  ///
+  /// A controller that is mid-dismissal silently swallows `present(_:animated:)`: nothing
+  /// appears, yet the completion reports success, so the caller's state says a screen is up
+  /// that never arrived. Waiting for the dismissal to finish — via the transition
+  /// coordinator, no swizzling needed — presents for real instead.
+  ///
+  /// The retry runs once. A presenter still unable to present after its own transition has
+  /// ended is reported as a failure rather than retried again, so a controller that never
+  /// settles cannot keep the queue's semaphore waiting forever.
+  @MainActor
+  func present(
+    _ viewControllerToPresent: UIViewController,
+    animated: Bool,
+    after semaphore: DispatchSemaphore,
+    completion: (@MainActor @Sendable (Bool) -> Void)?
+  ) {
+    guard isBeingDismissed, let coordinator = transitionCoordinator else {
+      present(viewControllerToPresent, animated: animated) {
+        semaphore.signal()
+        completion?(true)
+      }
+      return
+    }
+
+    coordinator.animate(alongsideTransition: nil) { _ in
+      // SAFETY: the transition coordinator calls its completion on the main thread.
+      MainActor.assumeIsolated {
+        guard !self.isBeingDismissed else {
+          semaphore.signal()
+          completion?(false)
+          return
+        }
+
+        self.present(viewControllerToPresent, animated: animated) {
+          semaphore.signal()
+          completion?(true)
+        }
+      }
+    }
   }
 }
 
