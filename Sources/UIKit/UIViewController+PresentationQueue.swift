@@ -6,7 +6,7 @@ import UIKit
 extension UIViewController {
   public static func presentInQueue(
     _ viewControllerToPresent: UIViewController,
-    presentingViewController: @autoclosure @escaping @Sendable () -> UIViewController?,
+    presentingViewController: @autoclosure @escaping @MainActor @Sendable () -> UIViewController?,
     animated: Bool = true,
     completion: (@MainActor @Sendable (Bool) -> Void)? = nil
   ) {

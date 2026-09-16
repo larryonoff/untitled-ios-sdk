@@ -69,7 +69,7 @@ extension View {
   @_spi(Presentation)
   public func presentation<State, Content: View>(
     _ item: Binding<State?>,
-    transitionController: UIViewControllerTransitioningDelegate,
+    transitionController: any UIViewControllerTransitioningDelegate,
     @ViewBuilder content: @escaping (State) -> Content
   ) -> some View {
     modifier(
@@ -190,7 +190,7 @@ private struct _UIPresentationModifier<State, Controller: UIViewController>: UIV
 // colliding with `ViewModifier.Content` (the wrapped view, `base` below).
 private struct _TransitionPresentationModifier<State, Presented: View>: ViewModifier {
   @Binding var item: State?
-  let transitionController: UIViewControllerTransitioningDelegate
+  let transitionController: any UIViewControllerTransitioningDelegate
   @ViewBuilder let content: (State) -> Presented
 
   func body(content base: Content) -> some View {
