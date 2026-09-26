@@ -170,6 +170,9 @@ let package = Package(
     ),
     .target(
       name: .concurrency,
+      dependencies: [
+        .foundation
+      ],
       path: "Sources/Concurrency",
       swiftSettings: .upcomingFeatures,
       linkerSettings: [
