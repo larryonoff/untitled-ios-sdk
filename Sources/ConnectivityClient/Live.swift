@@ -27,43 +27,40 @@ private final class ConnectivityClientImpl: Sendable {
   // SAFETY: `CurrentValueSubject` is internally synchronized, so reads and sends are
   // safe from any thread; only this immutable reference crosses isolation boundaries.
   private nonisolated(unsafe) let subject: CurrentValueSubject<Connectivity, Never>
-  private let didStart = Mutex(false)
 
   init() {
-    subject = CurrentValueSubject(Connectivity(monitor.currentPath))
+    // Seeded optimistically, not from `monitor.currentPath`: the path is not meaningful
+    // until the first `pathUpdateHandler` fires, and reading it before `start` reports
+    // "offline" on a perfectly online device — a false offline banner that every observer
+    // then sees. A wrong `.satisfied` for the milliseconds until the first update is
+    // invisible by comparison, and self-corrects.
+    subject = CurrentValueSubject(Connectivity(status: .satisfied))
+
+    // SAFETY: `CurrentValueSubject` is internally synchronized; the wrapper only carries
+    // the reference across the path-update closure, where we read `path.status` (a value
+    // type) and `send` a `Sendable` `Connectivity`.
+    let subject = UncheckedSendable(subject)
+    monitor.pathUpdateHandler = { path in
+      subject.wrappedValue.send(Connectivity(path))
+    }
+    // Started here rather than lazily on first use, so the real path is usually known
+    // before anyone reads it.
+    monitor.start(queue: queue)
   }
 
   var value: Connectivity {
-    startIfNeeded()
-    return subject.value
+    subject.value
   }
 
   func values() -> AsyncStream<Connectivity> {
-    startIfNeeded()
     // `pathUpdateHandler` fires on any path change (interface, expensiveness, routes),
     // but we map only `status` — collapse the resulting duplicate values.
-    return UncheckedSendable(
+    UncheckedSendable(
       subject
         .removeDuplicates()
         .values
     )
     .eraseToStream()
-  }
-
-  private func startIfNeeded() {
-    didStart.withLock { started in
-      guard !started else { return }
-      started = true
-
-      // SAFETY: `CurrentValueSubject` is internally synchronized; the wrapper only carries
-      // the reference across the path-update closure, where we read `path.status` (a value
-      // type) and `send` a `Sendable` `Connectivity`.
-      let subject = UncheckedSendable(subject)
-      monitor.pathUpdateHandler = { path in
-        subject.wrappedValue.send(Connectivity(path))
-      }
-      monitor.start(queue: queue)
-    }
   }
 
   deinit {
