@@ -32,8 +32,13 @@ public struct ConnectivityKey: SharedReaderKey, Sendable {
     context: LoadContext<Value>,
     subscriber: SharedSubscriber<Value>
   ) -> SharedSubscription {
+    // Subscribed synchronously, before the task runs: waiting for the task to be
+    // scheduled would let a change land in between, and the subscriber has no other
+    // source for it.
+    let values = connectivity.values()
+
     let task = Task {
-      for await value in self.connectivity.values() {
+      for await value in values {
         subscriber.yield(value)
       }
     }
