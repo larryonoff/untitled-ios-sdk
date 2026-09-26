@@ -19,7 +19,6 @@ extension View {
       )
       .presentationSizingFitted()
       .sheetCardBackground()
-      .interactiveDismissDisabled()
     }
   }
 }
