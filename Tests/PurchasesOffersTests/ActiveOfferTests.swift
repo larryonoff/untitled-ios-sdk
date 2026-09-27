@@ -44,6 +44,17 @@ struct ActiveOfferTests {
     )
   }
 
+  @Test func expiredLimitedTimeGivesWayToIntroductory() {
+    var history = OfferHistory.started(at: now.addingTimeInterval(-60), duration: 600)
+    history.expireCountdown(for: .Offer.limitedTime, at: now)
+    let availability = OfferAvailability(introductory: .available(.mock), special: .available(limitedTime))
+
+    expectNoDifference(
+      history.activeOffer(availability: availability, isPremium: false, at: now),
+      .introductory(.mock)
+    )
+  }
+
   @Test func runningLimitedTimeKeepsItsCapturedEnd() {
     let history = OfferHistory.started(at: now.addingTimeInterval(-60), duration: 600)
     // Remote config has since changed the duration; the running offer keeps its own.

@@ -32,6 +32,15 @@ public struct OfferHistory: Equatable, Sendable {
     guard countdowns[kind] == nil, duration > 0 else { return }
     countdowns[kind] = DateInterval(start: date, duration: duration)
   }
+
+  /// Ends a running countdown at `date`, as if it had run out, so the
+  /// introductory offer can follow. Does nothing when the countdown hasn't
+  /// started or has already ended.
+  public mutating func expireCountdown(for kind: Paywall.Kind, at date: Date) {
+    guard let countdown = countdowns[kind], date < countdown.end else { return }
+    // `min`: a clock set back before the start would make an invalid interval.
+    countdowns[kind] = DateInterval(start: min(countdown.start, date), end: date)
+  }
 }
 
 extension OfferHistory: Codable {
