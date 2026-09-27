@@ -1,6 +1,5 @@
-import Combine
-import ConcurrencyExtras
 import Dependencies
+import DuckConcurrency
 import DuckDependencies
 import DuckFoundation
 import DuckLogging
@@ -44,14 +43,18 @@ final class UserSessionClientImpl: Sendable {
   let storage: KeychainStorage
   let minSessionDuration: TimeInterval
 
-  // SAFETY: PassthroughSubject is internally thread-safe for send/subscribe;
-  // it is never reassigned, only used to publish values.
-  private nonisolated(unsafe) let metricsSubject = PassthroughSubject<UserSessionMetrics, Never>()
+  /// Current-value broadcast: a subscriber arriving after `metrics` was read
+  /// still opens with the latest value, so no change can fall in between.
+  private let updates: AsyncBroadcast<UserSessionMetrics>
 
   private struct State {
     var metrics: UserSessionMetrics
     var isActive = false
     var isSuspended = false
+    /// Whether storage has been read, so `metrics` reflects it. A keychain read
+    /// fails before first unlock (silent push, background fetch); saving the
+    /// fresh stand-in then would overwrite the real record once it unlocks.
+    var hasReadStorage: Bool
   }
 
   // SAFETY: written once from `subscribe()`, which the `isActive` check in
@@ -66,19 +69,8 @@ final class UserSessionClientImpl: Sendable {
   }
 
   var metricsChanges: AsyncStream<UserSessionMetrics> {
-    // `.values` bridges via an unfolding `AsyncStream` that holds no buffer
-    // between `next()` calls, so demand is zero while a consumer works.
-    // `PassthroughSubject` is synchronous and ignores backpressure, so metrics
-    // sent in that window trap Combine with "Received an output without
-    // requesting demand" — reachable when two lifecycle notifications land
-    // close together while the shared-key subscriber is mid-yield.
-    AsyncStream(
-      UncheckedSendable(
-        metricsSubject
-          .buffer(size: 5, prefetch: .byRequest, whenFull: .dropOldest)
-          .values
-      )
-    )
+    // State, not events: a consumer that falls behind needs only the latest.
+    updates.stream(bufferingPolicy: .bufferingNewest(1))
   }
 
   init(
@@ -93,27 +85,45 @@ final class UserSessionClientImpl: Sendable {
     self.minSessionDuration = minSessionDuration
     self.storage = storage
 
-    self.state = Mutex(
-      State(
-        metrics: storage.loadMetrics() ?? .init(
-          date: date(),
-          version: bundle.version
-        )
-      )
-    )
+    let stored: UserSessionMetrics?
+    let hasReadStorage: Bool
+    do {
+      stored = try storage.loadMetrics()
+      hasReadStorage = true
+    } catch {
+      stored = nil
+      hasReadStorage = false
+    }
+
+    let metrics = stored ?? .init(date: date(), version: bundle.version)
+
+    self.state = Mutex(State(metrics: metrics, hasReadStorage: hasReadStorage))
+    self.updates = AsyncBroadcast(metrics)
   }
 
   /// Applies a mutation to the stored metrics, then persists and publishes the
   /// result. The mutation runs inside the lock; the side effects run outside it,
   /// so `storage.save` and subscriber callbacks never re-enter the lock.
+  ///
+  /// While storage was unreadable, each call retries the read first and, once
+  /// it succeeds, applies the mutation to the real record in place of the
+  /// stand-in. Until then nothing is saved.
   private func withMetrics(_ body: (inout UserSessionMetrics) -> Void) {
-    let newValue = state.withLock { state -> UserSessionMetrics in
+    let (newValue, hasReadStorage) = state.withLock { state -> (UserSessionMetrics, Bool) in
+      if !state.hasReadStorage {
+        do {
+          if let stored = try storage.loadMetrics() { state.metrics = stored }
+          state.hasReadStorage = true
+        } catch {}
+      }
       body(&state.metrics)
-      return state.metrics
+      return (state.metrics, state.hasReadStorage)
     }
 
-    storage.save(newValue)
-    metricsSubject.send(newValue)
+    // ponytail: never persists while the keychain stays unreadable; add a
+    // UserDefaults fallback if that turns out to happen past first unlock.
+    if hasReadStorage { storage.save(newValue) }
+    updates.yield(newValue)
   }
 
   func activate() {
@@ -236,6 +246,23 @@ final class UserSessionClientImpl: Sendable {
   }
 
   private func terminate() {
+    let wasSuspended = state.withLock { state -> Bool in
+      defer { state.isSuspended = true }
+      return state.isSuspended
+    }
+
+    // Terminating from the background: `willResignActive` already charged the
+    // foreground time, and suspending again would charge it twice.
+    guard !wasSuspended else {
+      log.info(
+        """
+        user-session.terminate skipped | \
+        reason: already_suspended
+        """
+      )
+      return
+    }
+
     log.info("user-session.terminate")
 
     let date = date()
@@ -289,20 +316,32 @@ struct KeychainStorage: @unchecked Sendable {
   let decoder = JSONDecoder()
   let encoder = JSONEncoder()
 
-  func loadValue<Value: Decodable>(
-    at key: String,
-    default defaultValue: Value?
-  ) -> Value? {
+  /// Throws when the keychain cannot be read (before first unlock), so the
+  /// caller can tell that apart from a missing record. An undecodable record
+  /// is treated as missing: it would never become readable.
+  func loadValue<Value: Decodable>(at key: String) throws -> Value? {
+    let data: Data?
     do {
-      guard let data = try keychain.getData(key) else {
-        return nil
-      }
-
-      return try decoder.decode(Value.self, from: data)
+      data = try keychain.getData(key)
     } catch {
       log.error(
         """
         user-session.load failed | \
+        key: \(key, privacy: .public)
+        error: \(error, privacy: .public)
+        """
+      )
+      throw error
+    }
+
+    guard let data else { return nil }
+
+    do {
+      return try decoder.decode(Value.self, from: data)
+    } catch {
+      log.error(
+        """
+        user-session.decode failed | \
         key: \(key, privacy: .public)
         error: \(error, privacy: .public)
         """
@@ -330,8 +369,8 @@ struct KeychainStorage: @unchecked Sendable {
     }
   }
 
-  func loadMetrics() -> UserSessionMetrics? {
-    loadValue(at: .metrics, default: nil)
+  func loadMetrics() throws -> UserSessionMetrics? {
+    try loadValue(at: .metrics)
   }
 
   func save(_ newValue: UserSessionMetrics?) {
