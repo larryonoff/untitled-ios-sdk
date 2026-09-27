@@ -75,6 +75,7 @@ struct OfferAvailabilityKeyTests {
       remoteConfigString: #"{"offer_end_date": "20261130"}"#
     )
     let availability = await fetch {
+      $0.date.now = paywall.offerEndDate!.addingTimeInterval(-1)
       $0.paywallTargeting.paywallForKind = { .init(kind: $0, id: "offer") }
       $0.purchases.paywallByID = { _ in .paywall(paywall) }
       $0.remoteSettings.boolForKey = { _ in nil }
@@ -91,6 +92,40 @@ struct OfferAvailabilityKeyTests {
           kind: .Offer.blackFriday,
           discount: Product.EligibleSubscriptionOffer.mock.discount,
           expiration: .at(paywall.offerEndDate!)
+        )
+      )
+    )
+  }
+
+  @Test func endedSeasonalOfferFallsBackToTheLimitedTimeOne() async {
+    let seasonal = Paywall(
+      id: "seasonal",
+      products: [.mockYear],
+      remoteConfigString: #"{"offer_end_date": "20241209"}"#
+    )
+    let limitedTime = Paywall(
+      id: "lto",
+      products: [.mockYear],
+      remoteConfigString: #"{"offer_duration": 3600}"#
+    )
+    let availability = await fetch {
+      $0.date.now = seasonal.offerEndDate!.addingTimeInterval(1)
+      $0.paywallTargeting.paywallForKind = { .init(kind: $0, id: $0 == .Offer.limitedTime ? "lto" : "seasonal") }
+      $0.purchases.paywallByID = { .paywall($0 == "lto" ? limitedTime : seasonal) }
+      $0.remoteSettings.boolForKey = { _ in nil }
+      $0.remoteSettings.fetch = { _ in }
+      $0.remoteSettings.stringForKey = { key in
+        key == RemoteSettingsClient.paywallSpecialOfferKey ? "black_friday" : nil
+      }
+    }
+
+    expectNoDifference(
+      availability.special,
+      .available(
+        SpecialOffer(
+          kind: .Offer.limitedTime,
+          discount: Product.EligibleSubscriptionOffer.mock.discount,
+          expiration: .afterFirstShown(3_600)
         )
       )
     )

@@ -1,3 +1,4 @@
+import Dependencies
 import DuckPaywallTargeting
 import DuckPurchasesClient
 import DuckPurchasesCore
@@ -53,15 +54,27 @@ extension OfferAvailabilityKey {
   }
 
   private func specialStatus() async -> OfferAvailability.Status<SpecialOffer> {
-    // A seasonal offer when remote config picks one, otherwise the
-    // limited-time offer unless it's switched off.
-    guard
-      let kind = remoteSettings.paywallSpecialOffer
-        ?? (remoteSettings.isLimitedTimeOfferEnabled ? .Offer.limitedTime : nil)
-    else {
-      return .unavailable
+    // A seasonal offer when remote config picks one and its campaign hasn't
+    // ended, otherwise the limited-time offer unless it's switched off. A
+    // campaign left in remote config after its end date would otherwise hold
+    // the limited-time offer back for good.
+    if let seasonal = remoteSettings.paywallSpecialOffer {
+      let status = await specialStatus(of: seasonal)
+      guard
+        case let .available(offer) = status,
+        case let .at(endDate) = offer.expiration,
+        endDate <= date.now
+      else {
+        return status
+      }
+      logger.info("offers.availability seasonal-offer-ended | kind: \(seasonal.rawValue, privacy: .public)")
     }
 
+    guard remoteSettings.isLimitedTimeOfferEnabled else { return .unavailable }
+    return await specialStatus(of: .Offer.limitedTime)
+  }
+
+  private func specialStatus(of kind: Paywall.Kind) async -> OfferAvailability.Status<SpecialOffer> {
     let paywall: Paywall?
     do {
       paywall = try await purchases.latestPaywall(
