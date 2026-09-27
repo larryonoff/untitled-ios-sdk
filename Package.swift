@@ -218,6 +218,14 @@ let package = Package(
     .purchases,
     .purchasesCore,
     .testTarget(
+      name: "PurchasesCoreTests",
+      dependencies: [
+        .purchasesCore
+      ],
+      path: "Tests/PurchasesCoreTests",
+      swiftSettings: .upcomingFeatures
+    ),
+    .testTarget(
       name: "NotificationsAuthorizationClientTests",
       dependencies: [
         .Client.notificationsAuthorization,

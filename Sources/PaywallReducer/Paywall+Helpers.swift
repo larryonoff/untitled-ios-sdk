@@ -29,23 +29,19 @@ extension PaywallReducer.State {
   }
 
   public var isSelectedEligibleForTrial: Bool {
-    isEligibleForIntroOffer &&
-    productSelected?.isEligibleForTrial == true
+    productSelected?.isEligibleForIntroFreeTrial == true
   }
 }
 
 extension PaywallReducer {
   func presentPostDeclineIntroOfferIfNeeded(_ state: inout State) -> Bool {
     guard state.isOnboardingIntroOfferEnabled else { return false }
-    guard state.isEligibleForIntroOffer else { return false }
-
-    if let product = state.paywall?.introductoryOfferProduct {
+    if
+      let product = state.paywall?.introductoryOfferProduct,
+      product.subscription?.isEligibleForIntroOffer == true
+    {
       state.destination = .postDeclineIntroOffer(
-        .init(
-          paywallID: state.paywallID,
-          product: product,
-          isEligibleForIntroductoryOffer: state.isEligibleForIntroOffer
-        )
+        .init(paywallID: state.paywallID, product: product)
       )
 
       return true

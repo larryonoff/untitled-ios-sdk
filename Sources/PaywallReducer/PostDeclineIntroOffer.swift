@@ -27,11 +27,10 @@ public struct PostDeclineIntroOffer: Sendable {
     public var paywallID: Paywall.ID
     public var product: Product
 
-    public var isEligibleForIntroductoryOffer: Bool
     public var isPurchasing: Bool = false
 
     public var isSelectedEligibleForTrial: Bool {
-      product.isEligibleForTrial && isEligibleForIntroductoryOffer
+      product.isEligibleForIntroFreeTrial
     }
 
     @Presents

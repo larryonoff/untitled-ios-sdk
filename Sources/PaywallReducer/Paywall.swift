@@ -52,10 +52,6 @@ public struct PaywallReducer: Sendable {
 
     // MARK: - Calculated Props
 
-    public var isEligibleForIntroOffer: Bool {
-      purchases.isEligibleForIntroductoryOffer
-    }
-
     public var productSelected: Product? {
       productSelectedID.flatMap { productID in
         paywall?.products.first { $0.id == productID }
