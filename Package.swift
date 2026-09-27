@@ -775,7 +775,7 @@ extension Target {
   static var core: Target { target(
     name: .core,
     dependencies: [
-      .External.composableArchitecture,
+      .External.sharing,
       .External.tagged
     ],
     path: "Sources/Core",
@@ -787,7 +787,6 @@ extension Target {
     dependencies: [
       .core,
       .uiKit,
-      .External.composableArchitecture,
       .External.dependencies,
       .External.deviceKit,
       .External.sharing
@@ -889,7 +888,6 @@ extension Target {
     dependencies: [
       .graphics,
       .uiKit,
-      .External.composableArchitecture,
       .External.issueReporting,
       .External.swiftUINavigation
     ],
