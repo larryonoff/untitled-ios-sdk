@@ -1,6 +1,7 @@
 #if canImport(UIKit)
 
 import DuckUIKit
+import ObjectiveC
 import SwiftUI
 
 /// Context handed to a ``SwiftUI/View/presentation(_:controller:)-8h9k2`` factory,
@@ -142,6 +143,10 @@ private struct _UIPresentationModifier<State, Controller: UIViewController>: UIV
     context.coordinator.presentOrDismiss(item: $item)
   }
 
+  static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
+    coordinator.dismantle()
+  }
+
   @MainActor
   final class Coordinator {
     let view = UIView()
@@ -166,6 +171,12 @@ private struct _UIPresentationModifier<State, Controller: UIViewController>: UIV
         }
 
         let viewController = controller(state)
+        // A dismiss the system drives (tap outside, swipe) bypasses this coordinator, so
+        // without this `item` stays non-nil and the caller believes it is still on screen.
+        // `presentedViewController` is weak and already `nil` by the time this runs.
+        viewController.deallocationHandler = {
+          item.wrappedValue = nil
+        }
 
         UIViewController.presentInQueue(
           viewController,
@@ -175,9 +186,78 @@ private struct _UIPresentationModifier<State, Controller: UIViewController>: UIV
 
         presentedViewController = viewController
       case (true, .none):
-        presentedViewController?.dismissInQueue(animated: true)
-        presentedViewController = nil
+        // Dismissed by state, which is already `nil`: nothing to write back.
+        dismiss(writingBack: false)
       }
+    }
+
+    /// Takes the presentation down with its declaration, the way SwiftUI tears down a
+    /// `.sheet` whose view left the hierarchy. Without this, a presenter removed while
+    /// its controller is on screen leaves nothing to dismiss it when `item` turns `nil`.
+    func dismantle() {
+      dismiss(writingBack: true)
+    }
+
+    /// `writingBack` keeps `deallocationHandler` wired, so `item` is cleared once the
+    /// dismissal lands — outside the view update that asked for it — for a state that
+    /// still believes the controller is on screen.
+    private func dismiss(writingBack: Bool) {
+      if !writingBack {
+        presentedViewController?.deallocationHandler = nil
+      }
+      presentedViewController?.dismissInQueue(animated: true)
+      presentedViewController = nil
+    }
+  }
+}
+
+/// Calls `handler` when the controller it is attached to is deallocated.
+///
+/// Deallocation is where every dismissal ends, whoever drives it — a swipe, a tap
+/// outside, the controller dismissing itself, or an ancestor taking it down — so it
+/// catches them all without swizzling `viewDidDisappear`. `presentationControllerDidDismiss`
+/// would cover only interactive sheet and popover dismissals, and a factory may claim
+/// that delegate for itself.
+///
+/// - Isolation: `handler` is set on the main actor; `deinit` runs wherever the last
+///   release lands. UIKit releases a system-dismissed controller on the main thread,
+///   while `dismissInQueue` may drop the last reference on its operation queue — that
+///   path is disarmed or has no presenter left, so the hop there is harmless.
+///
+/// ponytail: a controller kept alive past its dismissal (a retain cycle, a cache) never
+/// fires, leaving `item` set; switch to an appearance hook if that shows up.
+private final class DeallocationNotifier {
+  var handler: (@MainActor @Sendable () -> Void)?
+
+  deinit {
+    guard let handler else { return }
+    // Inline on the main thread, where UIKit releases a dismissed controller: a hop
+    // would leave a window in which `item` is still set but nothing is presented, and
+    // an update landing there would present it again.
+    if Thread.isMainThread {
+      MainActor.assumeIsolated(handler)
+    } else {
+      Task { @MainActor in handler() }
+    }
+  }
+}
+
+// SAFETY: never dereferenced or written; its address only identifies the
+// associated object, so sharing it across isolation domains cannot race.
+private nonisolated(unsafe) let deallocationNotifierKey = UnsafeRawPointer(
+  UnsafeMutableRawPointer.allocate(byteCount: 1, alignment: 1)
+)
+
+private extension UIViewController {
+  var deallocationHandler: (@MainActor @Sendable () -> Void)? {
+    get {
+      (objc_getAssociatedObject(self, deallocationNotifierKey) as? DeallocationNotifier)?.handler
+    }
+    set {
+      let notifier = objc_getAssociatedObject(self, deallocationNotifierKey) as? DeallocationNotifier
+        ?? DeallocationNotifier()
+      notifier.handler = newValue
+      objc_setAssociatedObject(self, deallocationNotifierKey, notifier, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
 }
