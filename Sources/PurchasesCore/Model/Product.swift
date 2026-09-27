@@ -110,10 +110,28 @@ public struct Product {
 
   // MARK: - Helper Properties
 
-  public var isEligibleForTrial: Bool {
+  /// Whether the product *has* a free trial in App Store Connect — not whether
+  /// this user can get it. For user-facing trial copy use
+  /// ``isEligibleForIntroFreeTrial``.
+  public var hasIntroFreeTrial: Bool {
     subscription?
       .introductoryOffer?
       .paymentMode == .freeTrial
+  }
+
+  /// Whether this user gets a free trial when buying the product.
+  ///
+  /// `subscriptionOffer` is the offer the purchases provider (Adapty) attached
+  /// after checking the user's eligibility, so a trial the user has already
+  /// used never shows up here.
+  public var isEligibleForIntroFreeTrial: Bool {
+    subscriptionOffer?.isIntroductoryFreeTrial == true
+  }
+}
+
+extension Product.SubscriptionOffer {
+  public var isIntroductoryFreeTrial: Bool {
+    type == .introductory && paymentMode == .freeTrial
   }
 }
 
