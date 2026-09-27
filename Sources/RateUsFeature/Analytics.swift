@@ -17,6 +17,8 @@ struct RateUsAnalytics {
       case .onAppear:
         return .run { [analytics] _ in analytics.log(.rateUsView) }
 
+      case .backTapped:
+        return log(.rateUsDoNotLoveAction, RateUsAction.back, placement: placement)
       case .cancelTapped:
         return log(.rateUsDoNotLoveAction, RateUsAction.dismiss, placement: placement)
       case .contactSupportTapped:
@@ -55,6 +57,7 @@ extension AnalyticsClient.EventName {
 
 extension AnalyticsClient {
   enum RateUsAction {
+    static var back: String { "back" }
     static var dismiss: String { "close" }
     static var contact: String { "contact_us" }
     static var doNotLove: String { "dont_love" }

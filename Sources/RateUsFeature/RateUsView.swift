@@ -48,18 +48,36 @@ public struct RateUsView<Header: View>: View {
       header(store.intent)
         .accessibilityHidden(true)
 
-      switch store.intent {
-      case .review:
-        ReviewContent(store: store)
-          .transition(.rateUsIntent)
-      case .support:
-        SupportContent(store: store)
-          .transition(.rateUsIntent)
-      }
+      // One view whose copy changes, not a view per step: an outgoing step
+      // stays in the layout until its removal transition ends, so swapping
+      // views resizes the content-sized sheet twice — once at the start of the
+      // transition and again, as a visible jump, at its end.
+      StepContent(store: store)
     }
     .padding(.top, 40)
     .padding(.horizontal, 16)
     .frame(maxWidth: .infinity)
+    // An overlay, not a row: the sheet is content-sized, so the button must not
+    // change its height between the two steps.
+    .overlay(alignment: .topLeading) {
+      if store.intent == .support {
+        Button {
+          store.send(.backTapped)
+        } label: {
+          Label {
+            Text(.RateUs.backAction)
+          } icon: {
+            Image(systemName: "chevron.backward")
+              .font(.system(size: 17, weight: .semibold))
+              .frame(width: 20, height: 20)
+          }
+          .labelStyle(.iconOnly)
+        }
+        .rateUsBackButton()
+        .padding(16)
+        .transition(.opacity)
+      }
+    }
     .animation(.rateUsIntent, value: store.intent)
     .onAppear {
       store.send(.onAppear)
@@ -75,63 +93,37 @@ extension RateUsView where Header == EmptyView {
 
 // MARK: - Content
 
-private struct ReviewContent: View {
+private struct StepContent: View {
   let store: StoreOf<RateUs>
 
   var body: some View {
+    let intent = store.intent
+
     VStack(spacing: 0) {
-      RateUsMessage(
-        title: .RateUs.title,
-        subtitle: .RateUs.subtitle
-      )
+      RateUsMessage(title: intent.title, subtitle: intent.subtitle)
 
-      Button {
-        store.send(.loveTapped)
-      } label: {
-        Text(.RateUs.loveAction)
-      }
-      .buttonStyle(.sheetActionPrimary)
-      .padding(.top, 40)
-
-      Button {
-        store.send(.doNotLoveTapped)
-      } label: {
-        Text(.RateUs.doNotLoveAction)
-      }
-      .buttonStyle(.sheetActionSecondary)
-      .padding(.top, 0)
-    }
-  }
-}
-
-private struct SupportContent: View {
-  let store: StoreOf<RateUs>
-
-  var body: some View {
-    VStack(spacing: 0) {
-      RateUsMessage(
-        title: .RateUs.DoNotLove.title,
-        subtitle: .RateUs.DoNotLove.subtitle
-      )
-
-      if store.contactURL != nil {
+      // The support step has nothing to offer without a contact address. The
+      // button leaves at once so the sheet shrinks with the crossfade rather
+      // than after it.
+      if intent == .review || store.contactURL != nil {
         Button {
-          store.send(.contactSupportTapped)
+          store.send(intent.primaryAction)
         } label: {
-          Text(.RateUs.shareAction)
+          Text(intent.primaryActionTitle)
         }
         .buttonStyle(.sheetActionPrimary)
         .padding(.top, 40)
+        .transition(.asymmetric(insertion: .opacity, removal: .identity))
       }
 
       Button {
-        store.send(.cancelTapped)
+        store.send(intent.secondaryAction)
       } label: {
-        Text(.RateUs.dismissAction)
+        Text(intent.secondaryActionTitle)
       }
       .buttonStyle(.sheetActionSecondary)
-      .padding(.top, 0)
     }
+    .contentTransition(.opacity)
   }
 }
 
@@ -162,18 +154,84 @@ private struct RateUsMessage: View {
   }
 }
 
-// MARK: - Transition
+// MARK: - Back Button
 
-private extension AnyTransition {
-  static var rateUsIntent: AnyTransition {
-    .scale(scale: 0.95)
-      .combined(with: .opacity)
+private extension View {
+  /// A circular glass button on iOS 26+, matching the system's own sheet
+  /// toolbar buttons on the glass sheet; a quiet chevron below.
+  @ViewBuilder
+  func rateUsBackButton() -> some View {
+    if #available(iOS 26, macOS 26, *) {
+      buttonStyle(.glass)
+        .buttonBorderShape(.circle)
+        .controlSize(.large)
+    } else {
+      buttonStyle(RateUsBackButtonStyle())
+    }
   }
 }
+
+private struct RateUsBackButtonStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .foregroundStyle(.secondary)
+      .frame(width: 44, height: 44)
+      .contentShape(.circle)
+      .opacity(configuration.isPressed ? 0.5 : 1)
+  }
+}
+
+// MARK: - Transition
 
 private extension Animation {
   static var rateUsIntent: Animation {
     .smooth
+  }
+}
+
+// MARK: - Mappings
+
+private extension RateUs.State.Intent {
+  var title: LocalizedStringResource {
+    switch self {
+    case .review: .RateUs.title
+    case .support: .RateUs.DoNotLove.title
+    }
+  }
+
+  var subtitle: LocalizedStringResource {
+    switch self {
+    case .review: .RateUs.subtitle
+    case .support: .RateUs.DoNotLove.subtitle
+    }
+  }
+
+  var primaryAction: RateUs.Action {
+    switch self {
+    case .review: .loveTapped
+    case .support: .contactSupportTapped
+    }
+  }
+
+  var primaryActionTitle: LocalizedStringResource {
+    switch self {
+    case .review: .RateUs.loveAction
+    case .support: .RateUs.shareAction
+    }
+  }
+
+  var secondaryAction: RateUs.Action {
+    switch self {
+    case .review: .doNotLoveTapped
+    case .support: .cancelTapped
+    }
+  }
+
+  var secondaryActionTitle: LocalizedStringResource {
+    switch self {
+    case .review: .RateUs.doNotLoveAction
+    case .support: .RateUs.dismissAction
+    }
   }
 }
 
@@ -190,5 +248,16 @@ private extension Animation {
         RateUs()
       }
     )
+  }
+}
+
+#Preview("Rate Us – Support", traits: .fixedLayout(width: 393, height: 480)) {
+  var state = RateUs.State(contactURL: URL(string: "mailto:support@example.com"), placement: nil)
+  state.intent = .support
+
+  return withDependencies {
+    $0.analytics = .noop
+  } operation: {
+    RateUsView(store: Store(initialState: state) { RateUs() })
   }
 }
