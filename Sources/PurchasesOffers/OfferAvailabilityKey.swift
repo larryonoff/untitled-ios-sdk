@@ -25,6 +25,7 @@ extension SharedKey where Self == OfferAvailabilityKey.Default {
 
 public struct OfferAvailabilityKey: SharedKey {
   @Dependency(\.context) private var dependencyContext
+  @Dependency(\.date) var date
   @Dependency(\.paywallTargeting) var paywallTargeting
   @Dependency(\.purchases) var purchases
   @Dependency(\.remoteSettings) var remoteSettings
