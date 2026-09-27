@@ -1,14 +1,12 @@
 import Foundation
 
 extension Paywall {
+  /// Offers the user is eligible for, introductory first, otherwise in
+  /// product order.
   public var eligibleOffers: [Product.EligibleSubscriptionOffer] {
-    products
-      .compactMap { $0.eligibleOffer }
-      .sorted { lhs, rhs in
-        if lhs.offer.type == .introductory { return true }
-        if rhs.offer.type == .introductory { return false }
-        return false
-      }
+    let offers = products.compactMap(\.eligibleOffer)
+    return offers.filter { $0.offer.type == .introductory }
+      + offers.filter { $0.offer.type != .introductory }
   }
 }
 
@@ -28,3 +26,7 @@ extension Product {
     }
   }
 }
+
+extension Product.EligibleSubscriptionOffer: Equatable {}
+extension Product.EligibleSubscriptionOffer: Hashable {}
+extension Product.EligibleSubscriptionOffer: Sendable {}

@@ -1,2 +1,2 @@
-@_exported import DuckPaywallDependencies
+@_exported import DuckPaywallTargeting
 @_exported import DuckPurchasesCore

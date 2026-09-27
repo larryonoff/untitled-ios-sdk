@@ -8,10 +8,10 @@ extension AnalyticsClient {
     state: PaywallReducer.State
   ) -> Effect<PaywallReducer.Action> {
     var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
-    params[.contentID] = state.paywallID
+    params[.contentID] = state.target.id
     params[.placement] = state.placement
 
-    let paywallID = state.paywallID
+    let paywallID = state.target.id
 
     return .run { [params] _ in
       log("paywall_\(paywallID)_view", parameters: params)
@@ -24,8 +24,8 @@ extension AnalyticsClient {
   ) -> Effect<PaywallReducer.Action> {
     var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
     params[.action] = "attempt"
-    params[.contentID] = state.paywallID
-    params["paywall_id"] = state.paywallID
+    params[.contentID] = state.target.id
+    params["paywall_id"] = state.target.id
     params[.placement] = state.placement
 
     params.insertOrUpdate(product)
@@ -41,7 +41,7 @@ extension AnalyticsClient {
     state: PaywallReducer.State
   ) -> Effect<PaywallReducer.Action> {
     var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
-    params["paywall_id"] = state.paywallID
+    params["paywall_id"] = state.target.id
     params[.placement] = state.placement
 
     params.insertOrUpdate(product)

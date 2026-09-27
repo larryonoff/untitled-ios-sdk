@@ -1,7 +1,8 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckComposableArchitecture
-import DuckPaywallDependencies
+import DuckFeedbackClient
+import DuckPaywallTargeting
 import DuckPurchases
 import IdentifiedCollections
 
@@ -15,6 +16,7 @@ public struct PaywallReducer: Sendable {
     case delegate(Delegate)
 
     case onAppear
+    case onDisappear
 
     case cancelPurchaseTapped
     case dismissTapped
@@ -40,8 +42,7 @@ public struct PaywallReducer: Sendable {
     public var isFetchingPaywall: Bool = false
     public var isPurchasing: Bool = false
 
-    public var paywallType: Paywall.PaywallType
-    public var paywallID: Paywall.ID
+    public var target: Paywall.Target
     public var paywall: Paywall?
 
     public var products: IdentifiedArrayOf<Product> = []
@@ -67,39 +68,15 @@ public struct PaywallReducer: Sendable {
     @SharedReader(.isPaywallProductHiddenPricesEnabled) public var isHiddenPricesEnabled
     @SharedReader(.isPaywallOnboardingIntroOfferEnabled) public var isOnboardingIntroOfferEnabled
     @SharedReader(.purchases) public var purchases
-    @SharedReader(.purchasesOffer) public var purchasesOffer
+    @Shared(.offerHistory) public var offerHistory
 
     // MARK: Init
 
-    public init(
-      paywallID: Paywall.ID,
-      paywallType: Paywall.PaywallType,
-      placement: Placement?
-    ) {
-      self.paywallType = paywallType
-      self.paywallID = paywallID
-      self.placement = placement
-    }
-
-    public init(
-      paywallType: Paywall.PaywallType,
-      placement: Placement?
-    ) {
-      @Dependency(\.paywallID) var paywallID
-
-      self.paywallType = paywallType
-      self.paywallID = paywallID(paywallType)
-      self.placement = placement
-    }
-
-    public init(placement: Placement?) {
-      @Dependency(\.paywallID) var paywallID
-      @Dependency(\.paywallType) var paywallType
-
-      let paywallType_ = paywallType(placement)
-
-      self.paywallType = paywallType_
-      self.paywallID = paywallID(paywallType_)
+    /// Creates the state for a paywall chosen by
+    /// `@Dependency(\.paywallTargeting)`, e.g.
+    /// `.init(target: paywallTargeting.paywall(for: placement), placement: placement)`.
+    public init(target: Paywall.Target, placement: Placement?) {
+      self.target = target
       self.placement = placement
     }
   }
@@ -131,6 +108,7 @@ public struct PaywallReducer: Sendable {
   }
 
   @Dependency(\.analytics) var analytics
+  @Dependency(\.feedback) var feedback
   @Dependency(\.purchases) var purchases
 
   public init() {}
@@ -156,6 +134,8 @@ public struct PaywallReducer: Sendable {
           fetchPaywall(state: &state),
           analytics.logView(state: state)
         )
+      case .onDisappear:
+        return .none
 
       case .cancelPurchaseTapped:
         return purchaseCancel(state: &state)
@@ -198,7 +178,7 @@ public struct PaywallReducer: Sendable {
             .failure(
               error,
               retryAction: .retryFetchPaywall,
-              dismissAction: state.paywallType.isOnboarding ? nil : .dismissPaywall
+              dismissAction: state.target.kind.isOnboarding ? nil : .dismissPaywall
             )
           )
         }
@@ -222,7 +202,12 @@ public struct PaywallReducer: Sendable {
             .failure(error, retryAction: .retryPurchase)
           )
 
-          return analytics.logPurchase(product, result: result, state: state)
+          // No haptic on success: the system purchase sheet confirms it with
+          // its own. A failure is ours to report, alongside the alert.
+          return .merge(
+            playError(),
+            analytics.logPurchase(product, result: result, state: state)
+          )
         }
       case let .restorePurchasesResponse(result):
         state.isPurchasing = false
@@ -230,7 +215,12 @@ public struct PaywallReducer: Sendable {
         do {
           switch try result.get() {
           case .success:
-            return .send(.delegate(.dismiss))
+            // The paywall just closes on a restore, so without this nothing
+            // says it worked.
+            return .merge(
+              .run { [feedback] _ in await feedback(.notification(.success)) },
+              .send(.delegate(.dismiss))
+            )
           case .userCancelled:
             return .none
           }
@@ -238,9 +228,9 @@ public struct PaywallReducer: Sendable {
           state.destination = .alert(
             .failure(error, retryAction: .retryRestorePurchases)
           )
-        }
 
-        return .none
+          return playError()
+        }
 
       case .destination(.dismiss):
         let isPostDeclinePresented = state.destination?.is(\.postDeclineIntroOffer) == true
@@ -266,12 +256,27 @@ public struct PaywallReducer: Sendable {
         return .none
 
       case let .products(.element(id: productID, action: .tapped)):
-        return selectProduct(withID: productID, state: &state)
+        // Only a tap that moves the selection clicks. Tapping the selected plan
+        // buys it, and the purchase answers for itself; the default selection
+        // is the paywall's choice, not the user's.
+        let isSelectionChange = productID != state.productSelectedID
+        let effect = selectProduct(withID: productID, state: &state)
+        guard isSelectionChange else { return effect }
+
+        return .merge(
+          effect,
+          .run { [feedback] _ in await feedback(.selection) }
+        )
       }
     }
   }
 
   // MARK: - Effects
+
+  /// A purchase or restore the user started has failed.
+  private func playError() -> Effect<Action> {
+    .run { [feedback] _ in await feedback(.notification(.error)) }
+  }
 
   private func dismiss(
     state: inout State
@@ -293,7 +298,7 @@ public struct PaywallReducer: Sendable {
   ) -> Effect<Action> {
     state.isFetchingPaywall = true
 
-    return .run(priority: .high) { [paywallID = state.paywallID] send in
+    return .run(priority: .high) { [paywallID = state.target.id] send in
       // HACK
       // sometimes product cannot be selected or purchased
       try? await Task.sleep(for: .nanoseconds(1_000_000_00))
@@ -320,7 +325,7 @@ public struct PaywallReducer: Sendable {
 
     return .merge(
       analytics.logPurchase(product, state: state),
-      .run { [paywallID = state.paywallID] send in
+      .run { [paywallID = state.target.id] send in
         let result = await Result {
           try await purchases.purchase(
             .request(product: product, paywallID: paywallID)

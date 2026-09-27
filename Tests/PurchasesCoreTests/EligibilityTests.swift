@@ -1,3 +1,4 @@
+import CustomDump
 @testable import DuckPurchasesCore
 import Foundation
 import Testing
@@ -28,6 +29,33 @@ struct EligibilityTests {
     var product = Product.mockYear
     product.subscriptionOffer = .mock(type: .promotional, paymentMode: .freeTrial)
     #expect(!product.isEligibleForIntroFreeTrial)
+  }
+
+  @Test func eligibleOffersListIntroductoryFirstKeepingOrder() {
+    let promo = Product.mock(id: "promo", offer: .mock(type: .promotional, paymentMode: .payAsYouGo))
+    let introA = Product.mock(id: "intro-a", offer: .mock(type: .introductory, paymentMode: .freeTrial))
+    let none = Product.mock(id: "none", offer: nil)
+    let introB = Product.mock(id: "intro-b", offer: .mock(type: .introductory, paymentMode: .payUpFront))
+    let paywall = Paywall(
+      id: "test",
+      abTestName: nil,
+      audienceName: nil,
+      products: [promo, introA, none, introB]
+    )
+
+    expectNoDifference(
+      paywall.eligibleOffers.map(\.product.id),
+      ["intro-a", "intro-b", "promo"]
+    )
+  }
+}
+
+private extension Product {
+  static func mock(id: Product.ID, offer: Product.SubscriptionOffer?) -> Self {
+    var product = Product.mockMonth
+    product.id = id
+    product.subscriptionOffer = offer
+    return product
   }
 }
 
