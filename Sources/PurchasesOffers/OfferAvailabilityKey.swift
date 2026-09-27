@@ -15,9 +15,9 @@ extension SharedKey where Self == OfferAvailabilityKey.Default {
   /// What remote config and the purchases provider make available in this
   /// session.
   ///
-  /// Refreshes itself for as long as anyone holds it — once on subscribing,
-  /// then each time the app becomes active — so nothing has to be sent to keep
-  /// it fresh.
+  /// Refreshes itself for as long as anyone holds it — each time the app
+  /// becomes active, and on subscribing if it already is — so nothing has to
+  /// be sent to keep it fresh.
   public static var offerAvailability: Self {
     Self[OfferAvailabilityKey(), default: OfferAvailability()]
   }
@@ -64,16 +64,26 @@ public struct OfferAvailabilityKey: SharedKey {
     }
 
     let task = Task {
-      let activations = NotificationCenter.default.notifications(
+      // Iterating before the check below: the observer is registered with the
+      // iterator, and an activation between the two would otherwise be missed.
+      var activations = NotificationCenter.default.notifications(
         named: Self.didBecomeActive
       )
+      .makeAsyncIterator()
 
       var availability = OfferAvailability()
-      availability.merge(await fetch())
-      subscriber.yield(availability)
+
+      // Not before the app is active. The state holding this key is created
+      // while the app launches, before the host configures the clients
+      // `fetch()` reads: Firebase raises on a Remote Config read ahead of
+      // `FirebaseApp.configure()`. Launch ends in the activation below.
+      if await Self.isAppActive {
+        availability.merge(await fetch())
+        subscriber.yield(availability)
+      }
 
       // One refresh at a time, so a slow one can't land after a newer one.
-      for await _ in activations {
+      while await activations.next() != nil {
         availability.merge(await fetch())
         subscriber.yield(availability)
       }
@@ -82,6 +92,17 @@ public struct OfferAvailabilityKey: SharedKey {
     return SharedSubscription {
       task.cancel()
     }
+  }
+
+  @MainActor
+  private static var isAppActive: Bool {
+    #if os(macOS)
+    NSApplication.shared.isActive
+    #elseif canImport(UIKit) && !os(watchOS)
+    UIApplication.shared.applicationState == .active
+    #else
+    true
+    #endif
   }
 
   private static var didBecomeActive: Notification.Name {

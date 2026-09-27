@@ -36,6 +36,11 @@ extension PaywallReducer.State {
 extension PaywallReducer {
   func presentPostDeclineIntroOfferIfNeeded(_ state: inout State) -> Bool {
     guard state.isOnboardingIntroOfferEnabled else { return false }
+    // Only a declined regular paywall earns the trial pitch. An offer paywall
+    // was the pitch already: the introductory one would show itself twice.
+    guard state.target.kind == .main || state.target.kind.isOnboarding else {
+      return false
+    }
     if
       let product = state.paywall?.introductoryOfferProduct,
       product.subscription?.isEligibleForIntroOffer == true
