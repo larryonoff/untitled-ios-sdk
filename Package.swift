@@ -26,7 +26,6 @@ let package = Package(
     .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
-    .library(name: .Client.purchasesOffers, targets: [.Client.purchasesOffers]),
     .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
     .library(name: .Client.userAttribution, targets: [.Client.userAttribution]),
     .library(name: .Client.userIdentifier, targets: [.Client.userIdentifier]),
@@ -42,7 +41,7 @@ let package = Package(
     .library(name: .Composable.remoteSettings, targets: [.Composable.remoteSettings]),
     .library(name: .Composable.userSession, targets: [.Composable.userSession]),
 
-    .library(name: .Dependencies.paywall, targets: [.Dependencies.paywall]),
+    .library(name: .Dependencies.paywallTargeting, targets: [.Dependencies.paywallTargeting]),
 
     .library(name: .Feature.notificationsAccess, targets: [.Feature.notificationsAccess]),
     .library(name: .Feature.rateUs, targets: [.Feature.rateUs]),
@@ -60,6 +59,7 @@ let package = Package(
     .library(name: .photosUI, targets: [.photosUI]),
     .library(name: .purchases, targets: [.purchases]),
     .library(name: .purchasesCore, targets: [.purchasesCore]),
+    .library(name: .purchasesOffers, targets: [.purchasesOffers]),
     .library(name: .sfSymbol, targets: [.sfSymbol]),
     .library(name: .swiftUI, targets: [.swiftUI]),
     .library(name: .uiKit, targets: [.uiKit]),
@@ -220,9 +220,28 @@ let package = Package(
     .testTarget(
       name: "PurchasesCoreTests",
       dependencies: [
-        .purchasesCore
+        .purchasesCore,
+        .External.customDump
       ],
       path: "Tests/PurchasesCoreTests",
+      swiftSettings: .upcomingFeatures
+    ),
+    .purchasesOffers,
+    .testTarget(
+      name: "PurchasesOffersTests",
+      dependencies: [
+        .purchasesOffers
+      ],
+      path: "Tests/PurchasesOffersTests",
+      swiftSettings: .upcomingFeatures
+    ),
+    .testTarget(
+      name: "PaywallReducerTests",
+      dependencies: [
+        .Client.remoteSettings,
+        .Composable.paywall
+      ],
+      path: "Tests/PaywallReducerTests",
       swiftSettings: .upcomingFeatures
     ),
     .testTarget(
@@ -267,7 +286,6 @@ let package = Package(
     .Client.pasteboard,
     .Client.photosAuthorization,
     .Client.purchases,
-    .Client.purchasesOffers,
     .Client.remoteSettings,
     .Client.userAttribution,
     .Client.userIdentifier,
@@ -283,7 +301,7 @@ let package = Package(
     .Composable.remoteSettings,
     .Composable.userSession,
 
-    .Dependencies.paywall,
+    .Dependencies.paywallTargeting,
 
     .Feature.notificationsAccess,
     .Feature.rateUs,
@@ -534,21 +552,6 @@ extension Target {
       ]
     ) }
 
-    static var purchasesOffers: Target { target(
-      name: .Client.purchasesOffers,
-      dependencies: [
-        .External.dependencies,
-        .External.Dependencies.macros,
-        .dependencies,
-        .logging,
-        .Client.purchases,
-        .Client.remoteSettings,
-        .Dependencies.paywall
-      ],
-      path: "Sources/PurchasesOffersClient",
-      swiftSettings: .upcomingFeatures
-    ) }
-
     static var remoteSettings: Target { target(
       name: .Client.remoteSettings,
       dependencies: [
@@ -653,9 +656,10 @@ extension Target {
         .composableArchitecture,
         .purchases,
         .Client.analytics,
-        .Client.purchasesOffers,
+        .Client.feedbackGenerator,
+        .purchasesOffers,
         .Composable.remoteSettings,
-        .Dependencies.paywall,
+        .Dependencies.paywallTargeting,
         .External.composableArchitecture
       ],
       path: "Sources/PaywallReducer",
@@ -693,7 +697,6 @@ extension Target {
       name: .Composable.purchases,
       dependencies: [
         .Client.purchases,
-        .Client.purchasesOffers,
         .Composable.remoteSettings,
         .External.sharing,
       ],
@@ -723,15 +726,17 @@ extension Target {
   }
 
   enum Dependencies {
-    static var paywall: Target { target(
-      name: .Dependencies.paywall,
+    static var paywallTargeting: Target { target(
+      name: .Dependencies.paywallTargeting,
       dependencies: [
         .core,
         .purchasesCore,
         .External.dependencies,
-        .External.issueReporting
+        .External.Dependencies.macros,
+        .External.issueReporting,
+        .External.tagged
       ],
-      path: "Sources/PaywallDependencies",
+      path: "Sources/PaywallTargeting",
       swiftSettings: .upcomingFeatures
     ) }
   }
@@ -837,8 +842,8 @@ extension Target {
     dependencies: [
       .purchasesCore,
       .Client.purchases,
-      .Client.purchasesOffers,
       .Composable.purchases,
+      .purchasesOffers,
     ],
     path: "Sources/Purchases",
     swiftSettings: .upcomingFeatures
@@ -862,6 +867,21 @@ extension Target {
     linkerSettings: [
       .linkedFramework("StoreKit")
     ]
+  ) }
+
+  static var purchasesOffers: Target { target(
+    name: .purchasesOffers,
+    dependencies: [
+      .purchasesCore,
+      .Client.purchases,
+      .Client.remoteSettings,
+      .Dependencies.paywallTargeting,
+      .External.composableArchitecture,
+      .External.issueReporting,
+      .External.sharing
+    ],
+    path: "Sources/PurchasesOffers",
+    swiftSettings: .upcomingFeatures
   ) }
 
   static var photosUI: Target { target(
@@ -926,6 +946,7 @@ extension Target.Dependency {
   static let photosUI = byName(name: .photosUI)
   static let purchases = byName(name: .purchases)
   static let purchasesCore = byName(name: .purchasesCore)
+  static let purchasesOffers = byName(name: .purchasesOffers)
   static let sfSymbol = byName(name: .sfSymbol)
   static let swiftUI = byName(name: .swiftUI)
   static let uiKit = byName(name: .uiKit)
@@ -951,7 +972,6 @@ extension Target.Dependency {
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
-    static let purchasesOffers = byName(name: .Client.purchasesOffers)
     static let remoteSettings = byName(name: .Client.remoteSettings)
     static let userAttribution = byName(name: .Client.userAttribution)
     static let userIdentifier = byName(name: .Client.userIdentifier)
@@ -971,7 +991,7 @@ extension Target.Dependency {
   }
 
   enum Dependencies {
-    static let paywall = byName(name: .Dependencies.paywall)
+    static let paywallTargeting = byName(name: .Dependencies.paywallTargeting)
   }
 
   enum Feature {
@@ -1106,6 +1126,7 @@ extension String {
   static let photosUI = "DuckPhotosUI"
   static let purchases = "DuckPurchases"
   static let purchasesCore = "DuckPurchasesCore"
+  static let purchasesOffers = "DuckPurchasesOffers"
   static let sfSymbol = "SFSymbol"
   static let swiftUI = "DuckSwiftUI"
   static let uiKit = "DuckUIKit"
@@ -1131,7 +1152,6 @@ extension String {
     static let pasteboard = "DuckPasteboardClient"
     static let photosAuthorization = "DuckPhotosAuthorizationClient"
     static let purchases = "DuckPurchasesClient"
-    static let purchasesOffers = "DuckPurchasesOffersClient"
     static let remoteSettings = "DuckRemoteSettingsClient"
     static let userAttribution = "DuckUserAttributionClient"
     static let userIdentifier = "DuckUserIdentifierClient"
@@ -1151,7 +1171,7 @@ extension String {
   }
 
   enum Dependencies {
-    static let paywall = "DuckPaywallDependencies"
+    static let paywallTargeting = "DuckPaywallTargeting"
   }
 
   enum Feature {

@@ -41,7 +41,7 @@ extension PaywallReducer {
       product.subscription?.isEligibleForIntroOffer == true
     {
       state.destination = .postDeclineIntroOffer(
-        .init(paywallID: state.paywallID, product: product)
+        .init(paywallID: state.target.id, product: product)
       )
 
       return true

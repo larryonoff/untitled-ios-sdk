@@ -53,15 +53,24 @@ extension PurchasesClient {
   public func prefetch(
     paywallByID id: Paywall.ID
   ) async -> Paywall? {
+    try? await latestPaywall(byID: id)
+  }
+
+  /// The freshest paywall the stream delivers. If the refresh fails after a
+  /// cached paywall has arrived, returns the cached one. Throws only when
+  /// nothing arrived, so callers can tell "offline" from "no paywall".
+  public func latestPaywall(
+    byID id: Paywall.ID
+  ) async throws -> Paywall? {
+    var latest: Paywall?
     do {
-      var paywall: Paywall?
-      for try await _paywall in paywallByID(id) {
-        paywall = _paywall
+      for try await paywall in paywallByID(id) {
+        latest = paywall
       }
-      return paywall
     } catch {
-      return nil
+      guard latest != nil else { throw error }
     }
+    return latest
   }
 }
 
