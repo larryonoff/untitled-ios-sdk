@@ -17,6 +17,7 @@ public struct RateUs {
   public enum Action {
     case onAppear
 
+    case backTapped
     case cancelTapped
     case contactSupportTapped
     case doNotLoveTapped
@@ -78,6 +79,11 @@ public struct RateUs {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        return .none
+
+      case .backTapped:
+        state.intent = .review
+
         return .none
 
       case .cancelTapped:

@@ -18,6 +18,15 @@ extension LocalizedStringResource {
     )
   }
   internal enum RateUs {
+    /// Back
+    internal static var backAction: LocalizedStringResource {
+      LocalizedStringResource(
+        "rateUs.backAction",
+        defaultValue: "Back",
+        table: "Localizable",
+        bundle: #bundle
+      )
+    }
     /// Share
     internal static var contactUsAction: LocalizedStringResource {
       LocalizedStringResource(
