@@ -21,6 +21,7 @@ let package = Package(
     .library(name: .Client.feedback, targets: [.Client.feedback]),
     .library(name: .Client.firebase, targets: [.Client.firebase]),
     .library(name: .Client.instagramSharing, targets: [.Client.instagramSharing]),
+    .library(name: .Client.notifications, targets: [.Client.notifications]),
     .library(name: .Client.notificationsAuthorization, targets: [.Client.notificationsAuthorization]),
     .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
@@ -201,6 +202,14 @@ let package = Package(
     ),
 
     .core,
+    .testTarget(
+      name: "ConcurrencyTests",
+      dependencies: [
+        .concurrency
+      ],
+      path: "Tests/ConcurrencyTests",
+      swiftSettings: .upcomingFeatures
+    ),
     .dependencies,
     .foundation,
     .logging,
@@ -208,6 +217,28 @@ let package = Package(
     .photosUI,
     .purchases,
     .purchasesCore,
+    .testTarget(
+      name: "NotificationsAuthorizationClientTests",
+      dependencies: [
+        .Client.notificationsAuthorization,
+        .External.tagged
+      ],
+      path: "Tests/NotificationsAuthorizationClientTests",
+      swiftSettings: .upcomingFeatures
+    ),
+    .testTarget(
+      name: "NotificationsAccessFeatureTests",
+      dependencies: [
+        .dependencies,
+        .External.composableArchitecture,
+        .Client.analytics,
+        .Client.notificationsAuthorization,
+        .Feature.notificationsAccess,
+        .External.tagged
+      ],
+      path: "Tests/NotificationsAccessFeatureTests",
+      swiftSettings: .upcomingFeatures
+    ),
     .swiftUI,
     .uiKit,
     .webView,
@@ -223,6 +254,7 @@ let package = Package(
     .Client.feedback,
     .Client.firebase,
     .Client.instagramSharing,
+    .Client.notifications,
     .Client.notificationsAuthorization,
     .Client.pasteboard,
     .Client.photosAuthorization,
@@ -404,11 +436,30 @@ extension Target {
       swiftSettings: .upcomingFeatures
     ) }
 
+    static var notifications: Target { target(
+      name: .Client.notifications,
+      dependencies: [
+        .concurrency,
+        .foundation,
+        .logging,
+        .External.dependencies,
+        .External.Dependencies.macros
+      ],
+      path: "Sources/NotificationsClient",
+      swiftSettings: .upcomingFeatures,
+      linkerSettings: [
+        .linkedFramework("UserNotifications")
+      ]
+    ) }
+
     static var notificationsAuthorization: Target { target(
       name: .Client.notificationsAuthorization,
       dependencies: [
+        .concurrency,
+        .core,
         .foundation,
         .logging,
+        .Client.analytics,
         .External.dependencies,
         .External.Dependencies.macros,
         .External.issueReporting,
@@ -889,6 +940,7 @@ extension Target.Dependency {
     static let feedbackGenerator = byName(name: .Client.feedback)
     static let firebase = byName(name: .Client.firebase)
     static let instagramSharing = byName(name: .Client.instagramSharing)
+    static let notifications = byName(name: .Client.notifications)
     static let notificationsAuthorization = byName(name: .Client.notificationsAuthorization)
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
@@ -1068,6 +1120,7 @@ extension String {
     static let feedback = "DuckFeedbackClient"
     static let firebase = "DuckFirebaseClient"
     static let instagramSharing = "DuckInstagramSharingClient"
+    static let notifications = "DuckNotificationsClient"
     static let notificationsAuthorization = "DuckNotificationsAuthorizationClient"
     static let pasteboard = "DuckPasteboardClient"
     static let photosAuthorization = "DuckPhotosAuthorizationClient"

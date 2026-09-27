@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
+import DuckNotificationsAuthorizationClient
 
 private typealias NotificationsAccessAction = AnalyticsClient.NotificationsAccessAction
 
@@ -11,7 +12,7 @@ struct NotificationsAccessRequestAnalytics {
 
   var body: some ReducerOf<NotificationsAccessRequest> {
     Reduce { state, action in
-      let placement = state.placement?.rawValue
+      let placement = state.request.placement?.rawValue
 
       switch action {
       case .onAppear:
@@ -42,13 +43,13 @@ struct NotificationsAccessRequestAnalytics {
 }
 
 extension AnalyticsClient.EventName {
-  static var notificationsAccessView: Self { "screen_notifications_view" }
-  static var notificationsAccessAction: Self { "screen_notifications_action" }
+  static let notificationsAccessView: Self = "screen_notifications_view"
+  static let notificationsAccessAction: Self = "screen_notifications_action"
 }
 
 extension AnalyticsClient {
   enum NotificationsAccessAction {
-    static var later: String { "later" }
-    static var notify: String { "notify" }
+    static let later: String = "later"
+    static let notify: String = "notify"
   }
 }

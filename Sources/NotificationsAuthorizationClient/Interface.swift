@@ -9,16 +9,26 @@ extension DependencyValues {
 }
 
 /// The permission half of notifications: what the system allows and asking it
-/// for more. Scheduling and delivery belong to the app, which already owns the
-/// content and the triggers.
+/// for more. Delivery lives in `DuckNotificationsClient`; what to notify about
+/// and when belongs to the app.
 @DependencyClient
 public struct NotificationsAuthorizationClient: Sendable {
   public var status: @Sendable (
   ) async -> NotificationsAuthorization.Status = { .notDetermined }
 
-  /// Returns whether the user granted. Only a ``NotificationsAuthorization/Status/notDetermined``
-  /// status surfaces the system prompt; any other status replays the recorded
-  /// answer without showing anything.
+  /// Every status read after a change could have happened: after each
+  /// ``requestAuthorization`` and on each return to the foreground — the only
+  /// moment a switch flipped in system Settings becomes visible.
+  public var statusUpdates: @Sendable (
+  ) -> AsyncStream<NotificationsAuthorization.Status> = { .finished }
+
+  /// Asks the system and returns the status afterwards.
+  ///
+  /// A prompt request surfaces the system prompt only while the status
+  /// ``NotificationsAuthorization/Status/allowsPrompt``; otherwise the recorded
+  /// answer stands and nothing is shown. A provisional request never shows
+  /// anything.
   public var requestAuthorization: @Sendable (
-  ) async throws -> Bool = { false }
+    _ _: NotificationsAuthorization.Request
+  ) async throws -> NotificationsAuthorization.Status = { _ in .notDetermined }
 }

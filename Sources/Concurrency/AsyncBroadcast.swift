@@ -11,7 +11,9 @@ import DuckFoundation
 /// value settled learns nothing until the next change — which, for state like
 /// connectivity, may never come.
 ///
-/// Values are dropped when there is no live stream, and each stream buffers
+/// Values are dropped when there is no live stream — unless the broadcast was
+/// created with `holdsUntilSubscribed`, which keeps them for the next stream, as a
+/// delegate callback arriving before anyone listens needs. Each stream buffers
 /// independently — a slow consumer cannot stall the producer or its peers. Pick a
 /// `bufferingPolicy` per stream to bound that buffer.
 ///
@@ -35,6 +37,9 @@ public final class AsyncBroadcast<Element: Sendable>: Sendable {
     /// no current value to hand anyone, and holding the last event would both leak
     /// it and deliver it to a subscriber that did not live through it.
     var latest: Element?
+    /// Values broadcast while no stream was live, kept only when
+    /// ``holdsUntilSubscribed`` and handed to the next stream that opens.
+    var held: [Element] = []
   }
 
   private let state = Mutex(State())
@@ -42,9 +47,18 @@ public final class AsyncBroadcast<Element: Sendable>: Sendable {
   /// Whether a new stream opens with the most recently broadcast value.
   private let replaysLatest: Bool
 
+  /// Whether values broadcast while no stream is live wait for the next one.
+  private let holdsUntilSubscribed: Bool
+
   /// An event bus: a stream receives only what is broadcast after it opens.
-  public init() {
+  ///
+  /// - Parameter holdsUntilSubscribed: Keeps what is broadcast while no stream
+  ///   is live and opens the next stream with all of it, in order — for events
+  ///   that must not be lost to a subscriber that arrives late, such as the
+  ///   notification tap that launched the app.
+  public init(holdsUntilSubscribed: Bool = false) {
     replaysLatest = false
+    self.holdsUntilSubscribed = holdsUntilSubscribed
   }
 
   /// A current-value broadcast: every stream opens with the latest value, so a
@@ -55,6 +69,7 @@ public final class AsyncBroadcast<Element: Sendable>: Sendable {
   /// for events, where replaying the last one to a latecomer would be wrong.
   public init(_ initialValue: Element) {
     replaysLatest = true
+    holdsUntilSubscribed = false
     state.withLock { $0.latest = initialValue }
   }
 
@@ -90,6 +105,10 @@ public final class AsyncBroadcast<Element: Sendable>: Sendable {
       if let latest = state.latest {
         continuation.yield(latest)
       }
+      for value in state.held {
+        continuation.yield(value)
+      }
+      state.held.removeAll()
       return state.generation
     }
 
@@ -135,6 +154,9 @@ public final class AsyncBroadcast<Element: Sendable>: Sendable {
         return []
       }
       if replaysLatest { state.latest = value }
+      if holdsUntilSubscribed, state.continuations.isEmpty {
+        state.held.append(value)
+      }
       return Array(state.continuations.values)
     }
     for continuation in continuations {

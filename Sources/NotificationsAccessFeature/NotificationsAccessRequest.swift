@@ -11,7 +11,7 @@ import DuckNotificationsAuthorizationClient
 ///
 /// Mirrors BEAT's `UserNotificationsAccessRequest` without its auto-presentation
 /// and remote-push coupling — the host owns *when* the sheet appears and
-/// presents it with ``SwiftUI/View/notificationsAccessRequest(_:)``.
+/// presents it with ``SwiftUI/View/notificationsAccessRequest(_:title:message:)``.
 ///
 /// The grant itself is not reported back: the system status is the single
 /// source of truth, and a host that observes it also catches a flip made in
@@ -27,11 +27,12 @@ public struct NotificationsAccessRequest {
 
   @ObservableState
   public struct State: Equatable, Sendable {
-    /// Tags the analytics only; the reducer never branches on it.
-    public var placement: Placement?
+    /// What `NOTIFY ME` asks for. Its placement also tags this sheet's
+    /// analytics; the reducer never branches on it.
+    public var request: NotificationsAuthorization.Request
 
-    public init(placement: Placement? = nil) {
-      self.placement = placement
+    public init(request: NotificationsAuthorization.Request = .prompt()) {
+      self.request = request
     }
   }
 
@@ -51,7 +52,7 @@ public struct NotificationsAccessRequest {
 
   @ReducerBuilder<State, Action>
   private var core: some ReducerOf<Self> {
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
       case .onAppear:
         return .none
@@ -60,11 +61,17 @@ public struct NotificationsAccessRequest {
         return .run { [dismiss] _ in await dismiss() }
 
       case .notifyButtonTapped:
-        return .run { [dismiss, notificationsAuthorization, openNotificationSettings] _ in
+        return .run { [
+          dismiss,
+          notificationsAuthorization,
+          openNotificationSettings,
+          request = state.request
+        ] _ in
           // A decided user gets no system prompt — re-asking silently replays
           // the recorded answer and reads as a broken button, so the button
-          // routes them to Settings instead.
-          guard await notificationsAuthorization.status() == .notDetermined else {
+          // routes them to Settings instead. A provisional user still has the
+          // prompt: asking upgrades quiet delivery to full.
+          guard await notificationsAuthorization.status().allowsPrompt else {
             // Dismissed first: Settings replaces the app, and coming back to a
             // sheet asking to enable what was just enabled reads as a failure.
             await dismiss()
@@ -76,7 +83,7 @@ public struct NotificationsAccessRequest {
           // The sheet stays up behind the system prompt and closes once it is
           // answered, so the request is never left with the prompt on screen
           // and nothing behind it.
-          _ = try? await notificationsAuthorization.requestAuthorization()
+          _ = try? await notificationsAuthorization.requestAuthorization(request)
 
           await dismiss()
         }
