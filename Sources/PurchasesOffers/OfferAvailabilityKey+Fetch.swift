@@ -6,8 +6,8 @@ import Foundation
 import IssueReporting
 import OSLog
 
-extension PurchasesOffers {
-  func availability() async -> OfferAvailability {
+extension OfferAvailabilityKey {
+  func fetch() async -> OfferAvailability {
     do {
       try await remoteSettings.fetch(.request())
     } catch {

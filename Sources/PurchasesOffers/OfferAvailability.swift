@@ -1,9 +1,8 @@
 import DuckPurchasesCore
 import Foundation
-import Sharing
 
 /// What remote config and the purchases provider make available in this
-/// session. Written only by ``PurchasesOffers``.
+/// session. Kept fresh by ``OfferAvailabilityKey``.
 public struct OfferAvailability: Equatable, Sendable {
   public enum Status<Value: Equatable & Sendable>: Equatable, Sendable {
     /// Not fetched yet, or the fetch failed (e.g. offline).
@@ -29,11 +28,5 @@ public struct OfferAvailability: Equatable, Sendable {
   mutating func merge(_ newer: Self) {
     if newer.introductory != .unknown { introductory = newer.introductory }
     if newer.special != .unknown { special = newer.special }
-  }
-}
-
-extension SharedKey where Self == InMemoryKey<OfferAvailability>.Default {
-  public static var offerAvailability: Self {
-    Self[.inMemory("PurchasesOffers_Availability"), default: OfferAvailability()]
   }
 }
