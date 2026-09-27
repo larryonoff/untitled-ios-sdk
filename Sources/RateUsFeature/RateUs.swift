@@ -8,9 +8,10 @@ import Foundation
 /// system review prompt, "no" hands an unhappy one to support instead of to a
 /// one-star rating.
 ///
-/// Mirrors BEAT's `OnelightRateUsFeature` without its mascot art, UIKit sheet
-/// controller and auto-presentation coupling — the host owns *when* the sheet
-/// appears and presents it with ``SwiftUI/View/rateUs(_:)``.
+/// Mirrors BEAT's `OnelightRateUsFeature` without its UIKit sheet controller
+/// and auto-presentation coupling — the host owns *when* the sheet appears and
+/// *what* art sits above the copy, and presents it with
+/// ``SwiftUI/View/rateUs(_:header:)``.
 @Reducer
 public struct RateUs {
   public enum Action {

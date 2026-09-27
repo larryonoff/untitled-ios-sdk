@@ -4,49 +4,49 @@ import DuckSwiftUI
 import SwiftUI
 
 extension View {
-  /// Presents the rate-us ask as a content-sized sheet: no grabber, no swipe
-  /// or tap-outside exit — the two buttons are the only way out, exactly as in
-  /// BEAT's `RateUsSheetController`.
+  /// Presents the rate-us ask as a content-sized sheet with no header art.
   public func rateUs(
+    _ item: Binding<StoreOf<RateUs>?>
+  ) -> some View {
+    rateUs(item) { _ in EmptyView() }
+  }
+
+  /// Presents the rate-us ask as a content-sized sheet, with `header` drawn
+  /// above the copy.
+  ///
+  /// The header receives the step on screen, so it can react when the user
+  /// moves from the review ask to the support one. It is treated as decoration
+  /// and hidden from VoiceOver. The sheet sizes itself to its content, so the
+  /// header must report a resolvable height.
+  public func rateUs<Header: View>(
     _ item: Binding<StoreOf<RateUs>?>,
-    mascotReview: Image? = nil,
-    mascotSupport: Image? = nil
+    @ViewBuilder header: @escaping (RateUs.State.Intent) -> Header
   ) -> some View {
     sheet(item: item) { store in
-      RateUsView(
-        store: store,
-        mascotReview: mascotReview,
-        mascotSupport: mascotSupport
-      )
-      .presentationSizingFitted()
-      .sheetCardBackground()
+      RateUsView(store: store, header: header)
+        .presentationSizingFitted()
+        .sheetCardBackground()
     }
   }
 }
 
-public struct RateUsView: View {
+public struct RateUsView<Header: View>: View {
   public let store: StoreOf<RateUs>
 
-  private let mascotReview: Image?
-  private let mascotSupport: Image?
+  private let header: (RateUs.State.Intent) -> Header
 
   public init(
     store: StoreOf<RateUs>,
-    mascotReview: Image? = nil,
-    mascotSupport: Image? = nil
+    @ViewBuilder header: @escaping (RateUs.State.Intent) -> Header
   ) {
     self.store = store
-    self.mascotReview = mascotReview
-    self.mascotSupport = mascotSupport
+    self.header = header
   }
 
   public var body: some View {
     VStack(spacing: 24) {
-      RateUsMascot(
-        intent: store.intent,
-        review: mascotReview,
-        support: mascotSupport
-      )
+      header(store.intent)
+        .accessibilityHidden(true)
 
       switch store.intent {
       case .review:
@@ -67,6 +67,12 @@ public struct RateUsView: View {
   }
 }
 
+extension RateUsView where Header == EmptyView {
+  public init(store: StoreOf<RateUs>) {
+    self.init(store: store) { _ in EmptyView() }
+  }
+}
+
 // MARK: - Content
 
 private struct ReviewContent: View {
@@ -74,7 +80,7 @@ private struct ReviewContent: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      RateUsHeader(
+      RateUsMessage(
         title: .RateUs.title,
         subtitle: .RateUs.subtitle
       )
@@ -103,7 +109,7 @@ private struct SupportContent: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      RateUsHeader(
+      RateUsMessage(
         title: .RateUs.DoNotLove.title,
         subtitle: .RateUs.DoNotLove.subtitle
       )
@@ -129,41 +135,9 @@ private struct SupportContent: View {
   }
 }
 
-// MARK: - Mascot
+// MARK: - Message
 
-/// The illustration above the copy, keyed by the step on screen.
-///
-/// The frame is intentionally fixed: the sheet sizes itself to its content, so
-/// the mascot must report a resolvable height. Hosts without art pass nothing
-/// and the slot collapses instead of leaving a blank square.
-private struct RateUsMascot: View {
-  let intent: RateUs.State.Intent
-  let review: Image?
-  let support: Image?
-
-  var body: some View {
-    if let image {
-      image
-        .resizable()
-        .scaledToFit()
-        .frame(width: 180, height: 180)
-        .transition(.rateUsIntent)
-        .id(intent)
-        .accessibilityHidden(true)
-    }
-  }
-
-  private var image: Image? {
-    switch intent {
-    case .review: review
-    case .support: support
-    }
-  }
-}
-
-// MARK: - Header
-
-private struct RateUsHeader: View {
+private struct RateUsMessage: View {
   let title: LocalizedStringResource
   let subtitle: LocalizedStringResource
 
