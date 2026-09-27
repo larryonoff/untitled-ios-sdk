@@ -30,8 +30,13 @@ public struct UserSessionKey: SharedReaderKey, Sendable {
     context: LoadContext<Value>,
     subscriber: SharedSubscriber<Value>
   ) -> SharedSubscription {
+    // Subscribed synchronously, before the task runs: waiting for the task to be
+    // scheduled would let a change land in between, and the subscriber has no other
+    // source for it.
+    let values = userSession.metricsChanges()
+
     let task = Task {
-      for await value in userSession.metricsChanges() {
+      for await value in values {
         subscriber.yield(with: .success(value))
       }
     }

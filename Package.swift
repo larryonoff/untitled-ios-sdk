@@ -592,11 +592,11 @@ extension Target {
     static var userSession: Target { target(
       name: .Client.userSession,
       dependencies: [
+        .concurrency,
         .core,
         .dependencies,
         .foundation,
         .logging,
-        .External.concurrencyExtras,
         .External.dependencies,
         .External.Dependencies.macros,
         .External.keychainAccess
