@@ -1,24 +1,21 @@
 import CustomDump
-import ComposableArchitecture
+import Dependencies
 import DuckPaywallTargeting
 import DuckPurchasesClient
 @testable import DuckPurchasesCore
-import DuckPurchasesOffers
+@testable import DuckPurchasesOffers
 import DuckRemoteSettingsClient
 import Foundation
 import Testing
 
-@MainActor
-struct PurchasesOffersTests {
-  @Test func refreshPublishesAvailability() async {
+struct OfferAvailabilityKeyTests {
+  @Test func fetchPublishesAvailability() async {
     let paywall = Paywall(
       id: "offer",
       products: [.mockYear],
       remoteConfigString: #"{"offer_duration": 3600}"#
     )
-    let store = TestStore(initialState: PurchasesOffers.State()) {
-      PurchasesOffers()
-    } withDependencies: {
+    let availability = await fetch {
       $0.paywallTargeting.paywallForKind = { .init(kind: $0, id: "offer") }
       $0.purchases.paywallByID = { _ in .paywall(paywall) }
       $0.remoteSettings.boolForKey = { _ in nil }
@@ -26,27 +23,23 @@ struct PurchasesOffersTests {
       $0.remoteSettings.stringForKey = { _ in nil }
     }
 
-    await store.send(.refresh)
-    await store.receive(\.refreshResponse) {
-      $0.$availability.withLock {
-        $0 = OfferAvailability(
-          introductory: .available(.mock),
-          special: .available(
-            SpecialOffer(
-              kind: .Offer.limitedTime,
-              discount: Product.EligibleSubscriptionOffer.mock.discount,
-              expiration: .afterFirstShown(3_600)
-            )
+    expectNoDifference(
+      availability,
+      OfferAvailability(
+        introductory: .available(.mock),
+        special: .available(
+          SpecialOffer(
+            kind: .Offer.limitedTime,
+            discount: Product.EligibleSubscriptionOffer.mock.discount,
+            expiration: .afterFirstShown(3_600)
           )
         )
-      }
-    }
+      )
+    )
   }
 
   @Test func remotelyDisabledOffersAreUnavailable() async {
-    let store = TestStore(initialState: PurchasesOffers.State()) {
-      PurchasesOffers()
-    } withDependencies: {
+    let availability = await fetch {
       $0.remoteSettings.boolForKey = { key in
         switch key {
         case RemoteSettingsClient.isIntroductoryOfferEnabledKey,
@@ -60,18 +53,11 @@ struct PurchasesOffersTests {
       $0.remoteSettings.stringForKey = { _ in nil }
     }
 
-    await store.send(.refresh)
-    await store.receive(\.refreshResponse) {
-      $0.$availability.withLock {
-        $0 = OfferAvailability(introductory: .unavailable, special: .unavailable)
-      }
-    }
+    #expect(availability == OfferAvailability(introductory: .unavailable, special: .unavailable))
   }
 
   @Test func offlineLeavesAvailabilityUnknown() async {
-    let store = TestStore(initialState: PurchasesOffers.State()) {
-      PurchasesOffers()
-    } withDependencies: {
+    let availability = await fetch {
       $0.paywallTargeting.paywallForKind = { .init(kind: $0, id: "offer") }
       $0.purchases.paywallByID = { _ in .failure(URLError(.notConnectedToInternet)) }
       $0.remoteSettings.boolForKey = { _ in nil }
@@ -79,9 +65,7 @@ struct PurchasesOffersTests {
       $0.remoteSettings.stringForKey = { _ in nil }
     }
 
-    await store.send(.refresh)
-    // `.unknown` for both is the initial value, so nothing changes.
-    await store.receive(\.refreshResponse)
+    #expect(availability == OfferAvailability())
   }
 
   @Test func remoteSeasonalOfferReplacesTheLimitedTimeOne() async {
@@ -90,9 +74,7 @@ struct PurchasesOffersTests {
       products: [.mockYear],
       remoteConfigString: #"{"offer_end_date": "20261130"}"#
     )
-    let store = TestStore(initialState: PurchasesOffers.State()) {
-      PurchasesOffers()
-    } withDependencies: {
+    let availability = await fetch {
       $0.paywallTargeting.paywallForKind = { .init(kind: $0, id: "offer") }
       $0.purchases.paywallByID = { _ in .paywall(paywall) }
       $0.remoteSettings.boolForKey = { _ in nil }
@@ -101,13 +83,9 @@ struct PurchasesOffersTests {
         key == RemoteSettingsClient.paywallSpecialOfferKey ? "black_friday" : nil
       }
     }
-    store.exhaustivity = .off(showSkippedAssertions: false)
-
-    await store.send(.refresh)
-    await store.receive(\.refreshResponse)
 
     expectNoDifference(
-      store.state.availability.special,
+      availability.special,
       .available(
         SpecialOffer(
           kind: .Offer.blackFriday,
@@ -118,15 +96,19 @@ struct PurchasesOffersTests {
     )
   }
 
-  @Test func offlineRefreshKeepsKnownAvailability() async {
+  @Test func offlineRefreshKeepsKnownAvailability() {
     let known = OfferAvailability(introductory: .available(.mock), special: .unavailable)
-    let store = TestStore(initialState: PurchasesOffers.State()) {
-      PurchasesOffers()
-    }
-    store.state.$availability.withLock { $0 = known }
+    var availability = known
+    availability.merge(OfferAvailability())
+    #expect(availability == known)
+  }
 
-    await store.send(.refreshResponse(OfferAvailability()))
-    #expect(store.state.availability == known)
+  private func fetch(
+    _ updateValues: (inout DependencyValues) -> Void
+  ) async -> OfferAvailability {
+    // The key reads its clients when it's created, so it's created here.
+    let key = withDependencies(updateValues) { OfferAvailabilityKey() }
+    return await key.fetch()
   }
 }
 

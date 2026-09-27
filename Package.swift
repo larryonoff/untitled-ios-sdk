@@ -230,7 +230,8 @@ let package = Package(
     .testTarget(
       name: "PurchasesOffersTests",
       dependencies: [
-        .purchasesOffers
+        .purchasesOffers,
+        .External.customDump
       ],
       path: "Tests/PurchasesOffersTests",
       swiftSettings: .upcomingFeatures
@@ -876,7 +877,7 @@ extension Target {
       .Client.purchases,
       .Client.remoteSettings,
       .Dependencies.paywallTargeting,
-      .External.composableArchitecture,
+      .External.dependencies,
       .External.issueReporting,
       .External.sharing
     ],
