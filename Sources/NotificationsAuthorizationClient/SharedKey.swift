@@ -1,6 +1,4 @@
 import Dependencies
-import DuckFoundation
-import Foundation
 import Sharing
 
 extension SharedReaderKey where Self == NotificationsAuthorizationKey.Default {
@@ -43,15 +41,9 @@ public struct NotificationsAuthorizationKey: SharedReaderKey, Sendable {
     context: LoadContext<Value>,
     subscriber: SharedSubscriber<Value>
   ) -> SharedSubscription {
-    // `UNUserNotificationCenter` announces nothing when the status changes — a
-    // switch flipped in system Settings posts no notification — so returning to
-    // the foreground is the only moment a decision made outside the app becomes
-    // visible. One sequential loop also keeps re-reads ordered: a task per
-    // notification lets a stale status land last.
     let task = Task {
-      let didBecomeActive = Notification.Name.applicationDidBecomeActive
-      for await _ in NotificationCenter.default.notifications(named: didBecomeActive) {
-        subscriber.yield(await notificationsAuthorization.status())
+      for await status in notificationsAuthorization.statusUpdates() {
+        subscriber.yield(status)
       }
     }
 

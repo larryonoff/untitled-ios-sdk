@@ -3,12 +3,47 @@ import DuckSwiftUI
 import SwiftUI
 
 extension View {
-  /// Presents the notifications soft ask as a sheet sized to its content.
+  /// Presents the notifications soft ask as a sheet sized to its content, with
+  /// the SDK's bell above the copy.
+  ///
+  /// - Parameters:
+  ///   - title: The app's own headline. `nil` shows the SDK's generic copy.
+  ///   - message: The app's own pitch — what the user will get, and how often.
+  ///     `nil` shows the SDK's generic copy.
   public func notificationsAccessRequest(
-    _ item: Binding<StoreOf<NotificationsAccessRequest>?>
+    _ item: Binding<StoreOf<NotificationsAccessRequest>?>,
+    title: Text? = nil,
+    message: Text? = nil
+  ) -> some View {
+    notificationsAccessRequest(item, title: title, message: message) {
+      DefaultNotificationsAccessHeader()
+    }
+  }
+
+  /// Presents the notifications soft ask as a sheet sized to its content, with
+  /// `header` drawn above the copy.
+  ///
+  /// The header is treated as decoration and hidden from VoiceOver. The sheet
+  /// sizes itself to its content, so the header must report a resolvable
+  /// height.
+  ///
+  /// - Parameters:
+  ///   - title: The app's own headline. `nil` shows the SDK's generic copy.
+  ///   - message: The app's own pitch — what the user will get, and how often.
+  ///     `nil` shows the SDK's generic copy.
+  public func notificationsAccessRequest<Header: View>(
+    _ item: Binding<StoreOf<NotificationsAccessRequest>?>,
+    title: Text? = nil,
+    message: Text? = nil,
+    @ViewBuilder header: @escaping () -> Header
   ) -> some View {
     sheet(item: item) { store in
-      NotificationsAccessRequestView(store: store)
+      NotificationsAccessRequestView(
+        store: store,
+        title: title,
+        message: message,
+        header: header
+      )
         .presentationSizingFitted()
         .sheetCardBackground()
         .interactiveDismissDisabled()
@@ -16,26 +51,39 @@ extension View {
   }
 }
 
-public struct NotificationsAccessRequestView: View {
+public struct NotificationsAccessRequestView<Header: View>: View {
   public let store: StoreOf<NotificationsAccessRequest>
 
-  public init(store: StoreOf<NotificationsAccessRequest>) {
+  private let header: () -> Header
+  private let message: Text?
+  private let title: Text?
+
+  public init(
+    store: StoreOf<NotificationsAccessRequest>,
+    title: Text? = nil,
+    message: Text? = nil,
+    @ViewBuilder header: @escaping () -> Header
+  ) {
     self.store = store
+    self.header = header
+    self.message = message
+    self.title = title
   }
 
   public var body: some View {
     VStack(spacing: 24) {
-      Header()
+      header()
+        .accessibilityHidden(true)
 
       VStack(spacing: 8) {
-        Text(.NotificationsAccess.title)
+        (title ?? Text(.NotificationsAccess.title))
           .font(.system(size: 22, weight: .semibold))
           .foregroundStyle(.primary)
           .multilineTextAlignment(.center)
           .minimumScaleFactor(0.7)
           .lineLimit(2)
 
-        Text(.NotificationsAccess.description)
+        (message ?? Text(.NotificationsAccess.description))
           .font(.system(size: 16))
           .foregroundStyle(.secondary)
           .multilineTextAlignment(.center)
@@ -73,21 +121,33 @@ public struct NotificationsAccessRequestView: View {
   }
 }
 
+extension NotificationsAccessRequestView where Header == DefaultNotificationsAccessHeader {
+  public init(
+    store: StoreOf<NotificationsAccessRequest>,
+    title: Text? = nil,
+    message: Text? = nil
+  ) {
+    self.init(store: store, title: title, message: message) {
+      DefaultNotificationsAccessHeader()
+    }
+  }
+}
+
 // MARK: - Header
 
-/// The illustration standing in for the app's own artwork.
+/// The SDK's stand-in for the app's own artwork: a bell in the current tint.
 ///
-/// Deliberately a symbol rather than a bundled image: every app that ships this
-/// sheet has its own mascot or screenshot, and a neutral bell keeps the SDK from
-/// dictating it. A fixed frame so the sheet — which sizes itself to its content
-/// — always has a resolvable height.
-private struct Header: View {
-  var body: some View {
+/// A symbol rather than a bundled image, so the SDK doesn't dictate a mascot.
+/// A fixed frame so the content-sized sheet always has a resolvable height.
+/// Public so hosts can reuse it inside their own header.
+public struct DefaultNotificationsAccessHeader: View {
+  public init() {}
+
+  public var body: some View {
     Image(systemName: "bell.badge.fill")
       .font(.system(size: 40, weight: .semibold))
       .foregroundStyle(.tint)
       .frame(width: 96, height: 96)
       .background(Circle().fill(.tint.opacity(0.15)))
-      .accessibilityHidden(true)
   }
 }
