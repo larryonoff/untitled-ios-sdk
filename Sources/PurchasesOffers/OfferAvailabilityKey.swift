@@ -29,6 +29,7 @@ public struct OfferAvailabilityKey: SharedKey {
   @Dependency(\.paywallTargeting) var paywallTargeting
   @Dependency(\.purchases) var purchases
   @Dependency(\.remoteSettings) var remoteSettings
+  @Dependency(\.supportedOffers) var supportedOffers
 
   public typealias Value = OfferAvailability
 
