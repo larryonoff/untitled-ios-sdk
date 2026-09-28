@@ -165,12 +165,30 @@ private struct _UIPresentationModifier<State, Controller: UIViewController>: UIV
       case (false, .none), (true, .some):
         break
       case let (false, .some(state)):
-        guard let parent = view.parentViewController else {
+        guard let presenter else {
           item.wrappedValue = nil
           return
         }
 
         let viewController = controller(state)
+        // A popover without an anchor raises on iPad (a share sheet, an action sheet);
+        // point it at the presenting view unless the factory chose an anchor itself.
+        if let popover = viewController.popoverPresentationController,
+           popover.sourceView == nil, popover.sourceItem == nil {
+          if view.window != nil {
+            popover.sourceItem = view
+          } else {
+            // Nothing on screen to point at: centre it, without an arrow.
+            popover.sourceView = presenter.view
+            popover.sourceRect = CGRect(
+              x: presenter.view.bounds.midX,
+              y: presenter.view.bounds.midY,
+              width: 0,
+              height: 0
+            )
+            popover.permittedArrowDirections = []
+          }
+        }
         // A dismiss the system drives (tap outside, swipe) bypasses this coordinator, so
         // without this `item` stays non-nil and the caller believes it is still on screen.
         // `presentedViewController` is weak and already `nil` by the time this runs.
@@ -180,7 +198,7 @@ private struct _UIPresentationModifier<State, Controller: UIViewController>: UIV
 
         UIViewController.presentInQueue(
           viewController,
-          presentingViewController: parent.presenter,
+          presentingViewController: self.presenter,
           animated: true
         )
 
@@ -189,6 +207,13 @@ private struct _UIPresentationModifier<State, Controller: UIViewController>: UIV
         // Dismissed by state, which is already `nil`: nothing to write back.
         dismiss(writingBack: false)
       }
+    }
+
+    /// The controller to present from. A view in a toolbar item never joins a window —
+    /// SwiftUI hosts the item's content apart from it — so it falls back to the app's
+    /// front-most controller.
+    private var presenter: UIViewController? {
+      view.parentViewController?.presenter ?? UIApplication.shared.topMostViewController
     }
 
     /// Takes the presentation down with its declaration, the way SwiftUI tears down a

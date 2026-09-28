@@ -918,6 +918,9 @@ extension Target {
 
   static var uiKit: Target { target(
     name: .uiKit,
+    dependencies: [
+      .External.issueReporting
+    ],
     path: "Sources/UIKit",
     swiftSettings: .upcomingFeatures
   ) }

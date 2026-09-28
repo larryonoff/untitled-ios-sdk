@@ -1,6 +1,7 @@
 #if canImport(UIKit)
 
 import Foundation
+import IssueReporting
 import UIKit
 
 extension UIViewController {
@@ -31,7 +32,7 @@ extension UIViewController {
         }
       }
 
-      _ = semaphore.wait(timeout: .distantFuture)
+      semaphore.waitForTransition("presenting \(type(of: viewControllerToPresent))")
     }
 
     let viewPointer = Unmanaged.passUnretained(viewControllerToPresent).toOpaque()
@@ -55,14 +56,44 @@ extension UIViewController {
       OperationQueue.main.addOperation {
         // SAFETY: OperationQueue.main runs this block on the main thread.
         MainActor.assumeIsolated {
-          self.dismiss(animated: animated) {
+          let finish = {
             semaphore.signal()
             completion?()
           }
+
+          // Already gone — the person closed it, or UIKit took it down — so
+          // `dismiss`'s completion may never run and the queue would wait forever.
+          guard self.presentingViewController != nil || self.presentedViewController != nil else {
+            finish()
+            return
+          }
+
+          // On its way out already: a second `dismiss` may be dropped without its
+          // completion, so wait for the running one to end instead.
+          if self.isBeingDismissed {
+            let isQueued = self.transitionCoordinator?.animate(alongsideTransition: nil) { context in
+              // SAFETY: the transition coordinator calls its completion on the main thread.
+              MainActor.assumeIsolated {
+                // A swipe the person let go of leaves it on screen: dismiss it for real.
+                if context.isCancelled {
+                  self.dismiss(animated: animated, completion: finish)
+                } else {
+                  finish()
+                }
+              }
+            }
+            // Not queued, the completion never runs.
+            if isQueued != true {
+              finish()
+            }
+            return
+          }
+
+          self.dismiss(animated: animated, completion: finish)
         }
       }
 
-      _ = semaphore.wait(timeout: .distantFuture)
+      semaphore.waitForTransition("dismissing \(type(of: self))")
     }
 
     let viewPointer = Unmanaged.passUnretained(self).toOpaque()
@@ -95,15 +126,19 @@ private extension UIViewController {
     after semaphore: DispatchSemaphore,
     completion: (@MainActor @Sendable (Bool) -> Void)?
   ) {
-    guard isBeingDismissed, let coordinator = transitionCoordinator else {
-      present(viewControllerToPresent, animated: animated) {
+    let presentNow = {
+      self.present(viewControllerToPresent, animated: animated) {
         semaphore.signal()
         completion?(true)
       }
+    }
+
+    guard isBeingDismissed, let coordinator = transitionCoordinator else {
+      presentNow()
       return
     }
 
-    coordinator.animate(alongsideTransition: nil) { _ in
+    let isQueued = coordinator.animate(alongsideTransition: nil) { _ in
       // SAFETY: the transition coordinator calls its completion on the main thread.
       MainActor.assumeIsolated {
         guard !self.isBeingDismissed else {
@@ -112,11 +147,27 @@ private extension UIViewController {
           return
         }
 
-        self.present(viewControllerToPresent, animated: animated) {
-          semaphore.signal()
-          completion?(true)
-        }
+        presentNow()
       }
+    }
+    // Not queued, the completion never runs: try now rather than wait for it.
+    if !isQueued {
+      presentNow()
+    }
+  }
+}
+
+private extension DispatchSemaphore {
+  /// Waits for a transition's completion, on the presentation queue — never the main
+  /// thread — and never for good: UIKit drops the completion of a `present` or
+  /// `dismiss` it refuses (a presenter out of the window, one already presenting), and
+  /// one lost signal would hold back every presentation after it.
+  ///
+  /// ponytail: a fixed bound, far past any transition; a presentation still running
+  /// when it lapses only lets the next one start early, which then waits on its own.
+  func waitForTransition(_ transition: String) {
+    if wait(timeout: .now() + .seconds(5)) == .timedOut {
+      reportIssue("Presentation queue stopped waiting on \(transition) after 5 seconds")
     }
   }
 }
