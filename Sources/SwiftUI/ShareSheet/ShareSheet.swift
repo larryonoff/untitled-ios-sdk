@@ -15,8 +15,8 @@ extension View {
   /// - Parameters:
   ///   - state: The sheet to present. Set to `nil` once it goes away, whoever
   ///     closes it.
-  ///   - handler: Called with the action of the ``ShareActionState`` chosen, once
-  ///     the sheet has closed.
+  ///   - handler: Called with the action of the ``ShareActionState`` chosen, as
+  ///     the sheet starts to close.
   public func shareSheet<Action>(
     _ state: Binding<ShareSheetState<Action>?>,
     action handler: @escaping (Action) -> Void
@@ -54,7 +54,7 @@ private extension UIActivityViewController {
     handler: @escaping (Action) -> Void,
     onClose: @escaping () -> Void
   ) {
-    let activities = state.actions.map(ActionActivity.init)
+    let activities = state.actions.map { ActionActivity($0, handler: handler) }
 
     self.init(activityItems: state.items, applicationActivities: activities)
     excludedActivityTypes = state.excludedActivities.map { UIActivity.ActivityType($0.rawValue) }
@@ -67,27 +67,30 @@ private extension UIActivityViewController {
         reportIssue(error, "Share activity \(activityType?.rawValue ?? "unknown") failed")
       }
 
-      if isCompleted, let index = activities.firstIndex(where: { $0.activityType == activityType }) {
-        // The receiver clears the state: TCA's `ifLet` does, unless the action
-        // presented a follow-up that clearing it here would wipe.
-        handler(state.actions[index].action)
-      } else if isCompleted || activityType == nil {
+      // An action of the app's own was sent when chosen; its receiver clears the
+      // state — TCA's `ifLet` does — unless it presented a follow-up that clearing
+      // it here would wipe.
+      let isOwnAction = activities.contains { $0.activityType == activityType }
+      if !isOwnAction, isCompleted || activityType == nil {
         // A system activity or a cancellation. Cleared here rather than left to
-        // deallocation, which a controller UIKit keeps alive would never reach.
+        // the controller going away, which UIKit may put off.
         onClose()
       }
     }
   }
 }
 
-/// Lists a ``ShareActionState`` in the sheet. Performing it only finishes; the
-/// completion handler sends its action once the sheet has closed.
+/// Lists a ``ShareActionState`` in the sheet. Performing it sends the action while
+/// the sheet is still up, so the state it belongs to is still there to receive it,
+/// then finishes, which closes the sheet.
 private final class ActionActivity: UIActivity {
+  private let action: () -> Void
   private let image: UIImage?
   private let title: String
   private let type: UIActivity.ActivityType
 
-  init<Action>(_ state: ShareActionState<Action>) {
+  init<Action>(_ state: ShareActionState<Action>, handler: @escaping (Action) -> Void) {
+    self.action = { handler(state.action) }
     self.image = switch state.image {
     case let .resource(resource): UIImage(resource: resource)
     case let .system(name): UIImage(systemName: name)
@@ -114,6 +117,7 @@ private final class ActionActivity: UIActivity {
   }
 
   override func perform() {
+    action()
     activityDidFinish(true)
   }
 }
