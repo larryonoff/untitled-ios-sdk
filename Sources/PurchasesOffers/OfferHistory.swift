@@ -16,6 +16,13 @@ public struct OfferHistory: Equatable, Sendable {
 
   public init() {}
 
+  /// Whether any offer's paywall has been shown: a countdown has started, or a
+  /// paywall other than the main and onboarding ones has been dismissed.
+  public var hasShownAnOffer: Bool {
+    !countdowns.isEmpty
+      || dismissalDates.keys.contains { $0 != .main && $0 != .onboarding }
+  }
+
   /// Records the first dismissal of a paywall kind; later ones are ignored.
   public mutating func recordDismissal(of kind: Paywall.Kind, at date: Date) {
     guard dismissalDates[kind] == nil else { return }
