@@ -17,9 +17,8 @@ import SwiftUINavigation
 /// }
 /// ```
 ///
-/// Choosing an action closes the sheet, then sends it — once the sheet is gone,
-/// which is also when handing off to another app (Instagram Stories) succeeds.
-/// A system activity or a cancellation only closes it.
+/// Choosing an action sends it and closes the sheet; a system activity or a
+/// cancellation only closes it.
 ///
 /// As a case of a `@Reducer enum`, mark it `@ReducerCaseEphemeral`: the macro
 /// adds that to `AlertState` by its name, and cannot recognise this type.
