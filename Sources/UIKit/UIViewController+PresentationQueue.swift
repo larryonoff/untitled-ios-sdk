@@ -17,18 +17,33 @@ extension UIViewController {
       OperationQueue.main.addOperation {
         // SAFETY: OperationQueue.main runs this block on the main thread.
         MainActor.assumeIsolated {
-          guard let parent = presentingViewController() else {
-            semaphore.signal()
-            completion?(false)
-            return
+          @MainActor
+          func present(isRetry: Bool) {
+            guard let parent = presentingViewController(), !(isRetry && parent.isBeingDismissed) else {
+              semaphore.signal()
+              completion?(false)
+              return
+            }
+
+            // A presenter on its way out swallows `present`: nothing appears, yet the
+            // completion reports success. Wait for it to go, then ask again — the one
+            // to present from is likely the controller it uncovers. Once only, so a
+            // presenter that never settles cannot hold the queue.
+            if !isRetry, parent.isBeingDismissed,
+               parent.transitionCoordinator?.animate(alongsideTransition: nil, completion: { _ in
+                 // SAFETY: the transition coordinator calls its completion on the main thread.
+                 MainActor.assumeIsolated { present(isRetry: true) }
+               }) == true {
+              return
+            }
+
+            parent.present(viewControllerToPresent, animated: animated) {
+              semaphore.signal()
+              completion?(true)
+            }
           }
 
-          parent.present(
-            viewControllerToPresent,
-            animated: animated,
-            after: semaphore,
-            completion: completion
-          )
+          present(isRetry: false)
         }
       }
 
@@ -105,55 +120,6 @@ extension UIViewController {
     }
 
     presentationQueue.addOperation(dismissOperation)
-  }
-}
-
-private extension UIViewController {
-  /// Presents once `self` is actually able to present.
-  ///
-  /// A controller that is mid-dismissal silently swallows `present(_:animated:)`: nothing
-  /// appears, yet the completion reports success, so the caller's state says a screen is up
-  /// that never arrived. Waiting for the dismissal to finish — via the transition
-  /// coordinator, no swizzling needed — presents for real instead.
-  ///
-  /// The retry runs once. A presenter still unable to present after its own transition has
-  /// ended is reported as a failure rather than retried again, so a controller that never
-  /// settles cannot keep the queue's semaphore waiting forever.
-  @MainActor
-  func present(
-    _ viewControllerToPresent: UIViewController,
-    animated: Bool,
-    after semaphore: DispatchSemaphore,
-    completion: (@MainActor @Sendable (Bool) -> Void)?
-  ) {
-    let presentNow = {
-      self.present(viewControllerToPresent, animated: animated) {
-        semaphore.signal()
-        completion?(true)
-      }
-    }
-
-    guard isBeingDismissed, let coordinator = transitionCoordinator else {
-      presentNow()
-      return
-    }
-
-    let isQueued = coordinator.animate(alongsideTransition: nil) { _ in
-      // SAFETY: the transition coordinator calls its completion on the main thread.
-      MainActor.assumeIsolated {
-        guard !self.isBeingDismissed else {
-          semaphore.signal()
-          completion?(false)
-          return
-        }
-
-        presentNow()
-      }
-    }
-    // Not queued, the completion never runs: try now rather than wait for it.
-    if !isQueued {
-      presentNow()
-    }
   }
 }
 
