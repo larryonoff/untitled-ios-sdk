@@ -1,6 +1,5 @@
 #if canImport(UIKit)
 
-import ComposableArchitecture
 import Foundation
 import PhotosUI
 import SwiftUI
