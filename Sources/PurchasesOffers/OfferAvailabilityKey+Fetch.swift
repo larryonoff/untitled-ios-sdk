@@ -33,7 +33,7 @@ extension OfferAvailabilityKey {
   }
 
   private func introductoryStatus() async -> OfferAvailability.Status<Product.EligibleSubscriptionOffer> {
-    guard remoteSettings.isIntroductoryOfferEnabled else { return .unavailable }
+    guard isIntroductoryOfferEnabled else { return .unavailable }
 
     let paywall: Paywall?
     do {
@@ -60,7 +60,7 @@ extension OfferAvailabilityKey {
     // countdown ends. Only a paywall that can't make the offer at all (no
     // eligible offer) lets the seasonal one through.
     let isLimitedTimeRunning = history.countdowns[.Offer.limitedTime].map { date.now < $0.end } ?? false
-    if !history.hasShownAnOffer || isLimitedTimeRunning, remoteSettings.isLimitedTimeOfferEnabled {
+    if !history.hasShownAnOffer || isLimitedTimeRunning, isLimitedTimeOfferEnabled {
       let status = await specialStatus(of: .Offer.limitedTime)
       guard status == .unavailable else { return status }
     }
@@ -70,19 +70,31 @@ extension OfferAvailabilityKey {
     // switched off. A campaign left in remote config after its end date would
     // otherwise hold the limited-time offer back for good.
     if let seasonal = remoteSettings.paywallSpecialOffer {
-      let status = await specialStatus(of: seasonal)
-      guard
-        case let .available(offer) = status,
-        case let .at(endDate) = offer.expiration,
-        endDate <= date.now
-      else {
-        return status
+      if supportedOffers.contains(seasonal) {
+        let status = await specialStatus(of: seasonal)
+        guard
+          case let .available(offer) = status,
+          case let .at(endDate) = offer.expiration,
+          endDate <= date.now
+        else {
+          return status
+        }
+        logger.info("offers.availability seasonal-offer-ended | kind: \(seasonal.rawValue, privacy: .public)")
+      } else {
+        logger.info("offers.availability seasonal-offer-unsupported | kind: \(seasonal.rawValue, privacy: .public)")
       }
-      logger.info("offers.availability seasonal-offer-ended | kind: \(seasonal.rawValue, privacy: .public)")
     }
 
-    guard remoteSettings.isLimitedTimeOfferEnabled else { return .unavailable }
+    guard isLimitedTimeOfferEnabled else { return .unavailable }
     return await specialStatus(of: .Offer.limitedTime)
+  }
+
+  private var isIntroductoryOfferEnabled: Bool {
+    supportedOffers.contains(.Offer.introductory) && remoteSettings.isIntroductoryOfferEnabled
+  }
+
+  private var isLimitedTimeOfferEnabled: Bool {
+    supportedOffers.contains(.Offer.limitedTime) && remoteSettings.isLimitedTimeOfferEnabled
   }
 
   private func specialStatus(of kind: Paywall.Kind) async -> OfferAvailability.Status<SpecialOffer> {

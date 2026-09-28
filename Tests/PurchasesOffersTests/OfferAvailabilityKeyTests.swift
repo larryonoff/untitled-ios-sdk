@@ -56,6 +56,42 @@ struct OfferAvailabilityKeyTests {
     #expect(availability == OfferAvailability(introductory: .unavailable, special: .unavailable))
   }
 
+  @Test func unsupportedOffersAreUnavailable() async {
+    // No paywall is fetched: the unimplemented clients would fail the test.
+    let availability = await fetch {
+      $0.supportedOffers = []
+      $0.remoteSettings.boolForKey = { _ in true }
+      $0.remoteSettings.fetch = { _ in }
+      $0.remoteSettings.stringForKey = { key in
+        key == RemoteSettingsClient.paywallSpecialOfferKey ? Paywall.Kind.Offer.blackFriday.rawValue : nil
+      }
+    }
+
+    #expect(availability == OfferAvailability(introductory: .unavailable, special: .unavailable))
+  }
+
+  @Test func supportedSeasonalOfferIsTheOnlyOneOffered() async {
+    let seasonal = Paywall(
+      id: "seasonal",
+      products: [.mockYear],
+      remoteConfigString: #"{"offer_end_date": "20261130"}"#
+    )
+    let availability = await fetch {
+      $0.date.now = seasonal.offerEndDate!.addingTimeInterval(-1)
+      $0.paywallTargeting.paywallForKind = { .init(kind: $0, id: "seasonal") }
+      $0.purchases.paywallByID = { _ in .paywall(seasonal) }
+      $0.remoteSettings.boolForKey = { _ in true }
+      $0.remoteSettings.fetch = { _ in }
+      $0.remoteSettings.stringForKey = { key in
+        key == RemoteSettingsClient.paywallSpecialOfferKey ? "black_friday" : nil
+      }
+      $0.supportedOffers = [.Offer.blackFriday]
+    }
+
+    #expect(availability.introductory == .unavailable)
+    #expect(availability.special.kind == .Offer.blackFriday)
+  }
+
   @Test func offlineLeavesAvailabilityUnknown() async {
     let availability = await fetch {
       $0.paywallTargeting.paywallForKind = { .init(kind: $0, id: "offer") }
@@ -220,7 +256,21 @@ struct OfferAvailabilityKeyTests {
     _ updateValues: (inout DependencyValues) -> Void
   ) async -> OfferAvailability {
     // The key reads its clients when it's created, so it's created here.
-    let key = withDependencies(updateValues) { OfferAvailabilityKey() }
+    let key = withDependencies {
+      // Every offer the SDK names, so tests reach the remote-config rules.
+      $0.supportedOffers = [
+        .Offer.introductory,
+        .Offer.limitedTime,
+        .Offer.blackFriday,
+        .Offer.christmas,
+        .Offer.cyberMonday,
+        .Offer.newYear,
+        .Offer.winterSale
+      ]
+      updateValues(&$0)
+    } operation: {
+      OfferAvailabilityKey()
+    }
     return await key.fetch(history: history)
   }
 }
