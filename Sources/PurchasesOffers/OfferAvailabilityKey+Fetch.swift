@@ -8,7 +8,8 @@ import IssueReporting
 import OSLog
 
 extension OfferAvailabilityKey {
-  func fetch() async -> OfferAvailability {
+  /// `history` decides whether the limited-time offer comes first.
+  func fetch(history: OfferHistory) async -> OfferAvailability {
     do {
       try await remoteSettings.fetch(.request())
     } catch {
@@ -17,7 +18,7 @@ extension OfferAvailabilityKey {
     }
 
     async let introductory = introductoryStatus()
-    async let special = specialStatus()
+    async let special = specialStatus(history: history)
 
     let availability = await OfferAvailability(
       introductory: introductory,
@@ -53,11 +54,21 @@ extension OfferAvailabilityKey {
     return .available(offer)
   }
 
-  private func specialStatus() async -> OfferAvailability.Status<SpecialOffer> {
-    // A seasonal offer when remote config picks one and its campaign hasn't
-    // ended, otherwise the limited-time offer unless it's switched off. A
-    // campaign left in remote config after its end date would otherwise hold
-    // the limited-time offer back for good.
+  private func specialStatus(history: OfferHistory) async -> OfferAvailability.Status<SpecialOffer> {
+    // The first offer a user sees is the limited-time one unless it's switched
+    // off, even while a seasonal offer runs, and it keeps its place until its
+    // countdown ends. Only a paywall that can't make the offer at all (no
+    // eligible offer) lets the seasonal one through.
+    let isLimitedTimeRunning = history.countdowns[.Offer.limitedTime].map { date.now < $0.end } ?? false
+    if !history.hasShownAnOffer || isLimitedTimeRunning, remoteSettings.isLimitedTimeOfferEnabled {
+      let status = await specialStatus(of: .Offer.limitedTime)
+      guard status == .unavailable else { return status }
+    }
+
+    // After that, a seasonal offer when remote config picks one and its
+    // campaign hasn't ended, otherwise the limited-time offer unless it's
+    // switched off. A campaign left in remote config after its end date would
+    // otherwise hold the limited-time offer back for good.
     if let seasonal = remoteSettings.paywallSpecialOffer {
       let status = await specialStatus(of: seasonal)
       guard

@@ -72,6 +72,8 @@ public struct OfferAvailabilityKey: SharedKey {
       )
       .makeAsyncIterator()
 
+      // Read at each fetch: the first offer depends on what's been shown.
+      @SharedReader(.offerHistory) var history
       var availability = OfferAvailability()
 
       // Not before the app is active. The state holding this key is created
@@ -79,13 +81,13 @@ public struct OfferAvailabilityKey: SharedKey {
       // `fetch()` reads: Firebase raises on a Remote Config read ahead of
       // `FirebaseApp.configure()`. Launch ends in the activation below.
       if await Self.isAppActive {
-        availability.merge(await fetch())
+        availability.merge(await fetch(history: history))
         subscriber.yield(availability)
       }
 
       // One refresh at a time, so a slow one can't land after a newer one.
       while await activations.next() != nil {
-        availability.merge(await fetch())
+        availability.merge(await fetch(history: history))
         subscriber.yield(availability)
       }
     }
