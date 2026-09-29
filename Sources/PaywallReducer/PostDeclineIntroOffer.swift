@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DuckAnalyticsClient
 import DuckComposableArchitecture
 import DuckPurchases
 
@@ -6,7 +7,9 @@ import DuckPurchases
 public struct PostDeclineIntroOffer: Sendable {
   public enum Action {
     public enum Delegate {
-      case dismiss
+      case declined
+      case purchased
+      case restored
     }
 
     case delegate(Delegate)
@@ -25,6 +28,7 @@ public struct PostDeclineIntroOffer: Sendable {
   @ObservableState
   public struct State: Equatable {
     public var paywallID: Paywall.ID
+    public var placement: Placement?
     public var product: Product
 
     public var isPurchasing: Bool = false
@@ -50,6 +54,7 @@ public struct PostDeclineIntroOffer: Sendable {
     case purchase
   }
 
+  @Dependency(\.analytics) var analytics
   @Dependency(\.purchases) var purchases
 
   public var body: some ReducerOf<Self> {
@@ -78,32 +83,63 @@ public struct PostDeclineIntroOffer: Sendable {
         do {
           switch try result.get() {
           case .pending, .success:
-            return .send(.delegate(.dismiss))
+            return .concatenate(
+              analytics.logPurchase(
+                .success,
+                product: state.product,
+                paywallID: state.paywallID,
+                placement: state.placement
+              ),
+              .send(.delegate(.purchased))
+            )
           case .userCancelled:
-            return .none
+            return analytics.logPurchase(
+              .cancelled,
+              product: state.product,
+              paywallID: state.paywallID,
+              placement: state.placement
+            )
           }
         } catch {
           state.destination = .alert(.failure(error))
-        }
 
-        return .none
+          return analytics.logPurchase(
+            .failure,
+            product: state.product,
+            paywallID: state.paywallID,
+            placement: state.placement,
+            error: error
+          )
+        }
       case let .restorePurchasesResponse(result):
         state.isPurchasing = false
 
         do {
-          switch try result.get() {
+          let restoreResult = try result.get()
+          let logRestore: Effect<Action> = analytics.logRestore(
+            RestoreAction(restoreResult),
+            paywallID: state.paywallID,
+            placement: state.placement
+          )
+
+          switch restoreResult {
           case .success:
-            return .send(.delegate(.dismiss))
+            return .concatenate(logRestore, .send(.delegate(.restored)))
           case .userCancelled:
-            return .none
+            return logRestore
           }
         } catch {
           state.destination = .alert(.failure(error))
-        }
 
-        return .none
+          return analytics.logRestore(
+            .failure,
+            paywallID: state.paywallID,
+            placement: state.placement,
+            error: error
+          )
+        }
       case .destination(.presented(.alert(.cancelIntroductoryOffer))):
-        return dismiss(state: &state)
+        return decline(state: &state)
       case .destination:
         return .none
       }
@@ -112,7 +148,7 @@ public struct PostDeclineIntroOffer: Sendable {
 
   // MARK: - Effects
 
-  private func dismiss(
+  private func decline(
     state: inout State
   ) -> Effect<Action> {
     if state.destination != nil {
@@ -120,11 +156,11 @@ public struct PostDeclineIntroOffer: Sendable {
 
       return .concatenate(
         .run { _ in try? await Task.sleep(nanoseconds: 1_000_000_00) },
-        dismiss(state: &state)
+        decline(state: &state)
       )
     }
 
-    return .send(.delegate(.dismiss))
+    return .send(.delegate(.declined))
   }
 
   private func purchase(
@@ -138,18 +174,26 @@ public struct PostDeclineIntroOffer: Sendable {
 
     state.isPurchasing = true
 
-    return .run { [
-      paywallID = state.paywallID,
-      product = state.product
-    ] send in
-      let result = await Result {
-        try await purchases.purchase(
-          .request(product: product, paywallID: paywallID)
-        )
+    return .merge(
+      analytics.logPurchase(
+        .attempt,
+        product: state.product,
+        paywallID: state.paywallID,
+        placement: state.placement
+      ),
+      .run { [
+        paywallID = state.paywallID,
+        product = state.product
+      ] send in
+        let result = await Result {
+          try await purchases.purchase(
+            .request(product: product, paywallID: paywallID)
+          )
+        }
+        await send(.purchaseResponse(result))
       }
-      await send(.purchaseResponse(result))
-    }
-    .cancellable(id: CancelID.purchase, cancelInFlight: true)
+      .cancellable(id: CancelID.purchase, cancelInFlight: true)
+    )
   }
 
   private func purchaseCancel(
@@ -172,16 +216,23 @@ public struct PostDeclineIntroOffer: Sendable {
 
     state.isPurchasing = true
 
-    return .run { send in
-      await send(
-        .restorePurchasesResponse(
-          await Result {
-            try await purchases.restorePurchases()
-          }
+    return .merge(
+      analytics.logRestore(
+        .attempt,
+        paywallID: state.paywallID,
+        placement: state.placement
+      ),
+      .run { send in
+        await send(
+          .restorePurchasesResponse(
+            await Result {
+              try await purchases.restorePurchases()
+            }
+          )
         )
-      )
-    }
-    .cancellable(id: CancelID.purchase, cancelInFlight: true)
+      }
+      .cancellable(id: CancelID.purchase, cancelInFlight: true)
+    )
   }
 }
 
