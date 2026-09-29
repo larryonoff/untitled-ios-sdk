@@ -1,13 +1,19 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
+import DuckUserSessionClient
+import Foundation
 
 private typealias RateUsAction = AnalyticsClient.RateUsAction
 
 /// One screen view per appearance and one action per tap, both tagged with the
-/// placement the host presented from.
+/// placement the host presented from and how far into its life the app was,
+/// so an ask that comes too early shows up in the data.
 @Reducer
 struct RateUsAnalytics {
   @Dependency(\.analytics) var analytics
+  @Dependency(\.calendar) var calendar
+  @Dependency(\.date) var date
+  @Dependency(\.userSession) var userSession
 
   var body: some ReducerOf<RateUs> {
     Reduce { state, action in
@@ -15,7 +21,7 @@ struct RateUsAnalytics {
 
       switch action {
       case .onAppear:
-        return .run { [analytics] _ in analytics.log(.rateUsView) }
+        return log(.rateUsView, placement: placement)
 
       case .backTapped:
         return log(.rateUsDoNotLoveAction, RateUsAction.back, placement: placement)
@@ -33,34 +39,45 @@ struct RateUsAnalytics {
 
   private func log(
     _ event: AnalyticsClient.EventName,
-    _ action: String,
+    _ action: String? = nil,
     placement: String?
   ) -> Effect<RateUs.Action> {
-    .run { [analytics] _ in
-      analytics.log(
-        event,
-        parameters: [
-          .action: action as any Sendable,
-          .placement: placement
-        ].compactMapValues { $0 }
-      )
+    let metrics = userSession.metrics()
+    let daysSinceInstall = calendar
+      .dateComponents([.day], from: metrics.installationDate, to: date.now)
+      .day
+
+    let parameters: [AnalyticsClient.EventParameterName: (any Sendable)?] = [
+      .action: action,
+      .daysSinceInstall: daysSinceInstall,
+      .placement: placement,
+      .sessionNumber: Int(metrics.totalSessionCount)
+    ]
+
+    return .run { [analytics] _ in
+      analytics.log(event, parameters: parameters.compactMapValues { $0 })
     }
   }
 }
 
 extension AnalyticsClient.EventName {
-  static var rateUsView: Self { "screen_rate_us_view" }
-  static var rateUsAction: Self { "screen_rate_us_action" }
-  static var rateUsDoNotLoveView: Self { "screen_rate_us_dont_love_view" }
-  static var rateUsDoNotLoveAction: Self { "screen_rate_us_dont_love_action" }
+  static let rateUsView: Self = "screen_rate_us_view"
+  static let rateUsAction: Self = "screen_rate_us_action"
+  static let rateUsDoNotLoveView: Self = "screen_rate_us_dont_love_view"
+  static let rateUsDoNotLoveAction: Self = "screen_rate_us_dont_love_action"
+}
+
+extension AnalyticsClient.EventParameterName {
+  static let daysSinceInstall: Self = "days_since_install"
+  static let sessionNumber: Self = "session_number"
 }
 
 extension AnalyticsClient {
   enum RateUsAction {
-    static var back: String { "back" }
-    static var dismiss: String { "close" }
-    static var contact: String { "contact_us" }
-    static var doNotLove: String { "dont_love" }
-    static var love: String { "love" }
+    static let back = "back"
+    static let dismiss = "close"
+    static let contact = "contact_us"
+    static let doNotLove = "dont_love"
+    static let love = "love"
   }
 }

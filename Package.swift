@@ -767,6 +767,7 @@ extension Target {
         .swiftUI,
         .External.composableArchitecture,
         .Client.analytics,
+        .Client.userSession,
       ],
       path: "Sources/RateUsFeature",
       exclude: ["swiftgen.yml"],
