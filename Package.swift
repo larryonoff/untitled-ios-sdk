@@ -372,8 +372,7 @@ extension Target {
         .External.dependencies,
         .External.Dependencies.macros,
         .External.issueReporting,
-        .External.AppMetrica.core,
-        .External.AppMetrica.crashes
+        .External.AppMetrica.core
       ],
       path: "Sources/AppMetricaClient",
       swiftSettings: .upcomingFeatures
@@ -1102,12 +1101,6 @@ extension Target.Dependency {
     enum AppMetrica {
       static let core = Target.Dependency.product(
         name: "AppMetricaCore",
-        package: "appmetrica-sdk-ios",
-        condition: .when(platforms: [.iOS], traits: ["AppMetrica"])
-      )
-
-      static let crashes = Target.Dependency.product(
-        name: "AppMetricaCrashes",
         package: "appmetrica-sdk-ios",
         condition: .when(platforms: [.iOS], traits: ["AppMetrica"])
       )
