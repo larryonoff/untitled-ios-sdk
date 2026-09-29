@@ -4,6 +4,7 @@ import DuckComposableArchitecture
 import DuckFeedbackClient
 import DuckPaywallTargeting
 import DuckPurchases
+import Foundation
 import IdentifiedCollections
 
 @Reducer
@@ -50,6 +51,9 @@ public struct PaywallReducer: Sendable {
     public var productSelectedID: Product.ID?
 
     public var placement: Placement?
+
+    /// When the paywall first showed its products, for `seconds_on_screen`.
+    var viewedAt: Date?
 
     // MARK: - Calculated Props
 
@@ -108,6 +112,7 @@ public struct PaywallReducer: Sendable {
   }
 
   @Dependency(\.analytics) var analytics
+  @Dependency(\.date) var date
   @Dependency(\.feedback) var feedback
   @Dependency(\.purchases) var purchases
 
@@ -130,10 +135,7 @@ public struct PaywallReducer: Sendable {
         return .none
 
       case .onAppear:
-        return .concatenate(
-          fetchPaywall(state: &state),
-          analytics.logView(state: state)
-        )
+        return fetchPaywall(state: &state)
       case .onDisappear:
         return .none
 
@@ -144,7 +146,7 @@ public struct PaywallReducer: Sendable {
           return .none
         }
 
-        return dismiss(state: &state)
+        return close(.closeButton, state: &state)
       case .restorePurchasesTapped:
         return restorePurchases(state: &state)
 
@@ -160,14 +162,26 @@ public struct PaywallReducer: Sendable {
         do {
           let paywall = try result.get()
           let paywallChanged = paywall?.id != state.paywall?.id
+          let isFirstShown = state.paywall == nil && paywall != nil
 
           state.update(paywall)
 
-          if let paywall, paywallChanged {
-            return .run { _ in
-              try await purchases.log(paywall)
-            }
+          var effects: [Effect<Action>] = []
+
+          if isFirstShown {
+            state.viewedAt = date.now
+            effects.append(analytics.logView(state: state))
           }
+
+          if let paywall, paywallChanged {
+            effects.append(
+              .run { _ in
+                try await purchases.log(paywall)
+              }
+            )
+          }
+
+          return .merge(effects)
         } catch {
           state.paywall = nil
           state.productSelectedID = nil
@@ -191,11 +205,21 @@ public struct PaywallReducer: Sendable {
           switch try result.get() {
           case .pending, .success:
             return .concatenate(
-              analytics.logPurchase(product, result: result, state: state),
+              analytics.logPurchase(
+                .success,
+                product: product,
+                paywallID: state.target.id,
+                placement: state.placement
+              ),
               .send(.delegate(.dismiss))
             )
           case .userCancelled:
-            return .none
+            return analytics.logPurchase(
+              .cancelled,
+              product: product,
+              paywallID: state.target.id,
+              placement: state.placement
+            )
           }
         } catch {
           state.destination = .alert(
@@ -206,30 +230,52 @@ public struct PaywallReducer: Sendable {
           // its own. A failure is ours to report, alongside the alert.
           return .merge(
             playError(),
-            analytics.logPurchase(product, result: result, state: state)
+            analytics.logPurchase(
+              .failure,
+              product: product,
+              paywallID: state.target.id,
+              placement: state.placement,
+              error: error
+            )
           )
         }
       case let .restorePurchasesResponse(result):
         state.isPurchasing = false
 
         do {
-          switch try result.get() {
+          let restoreResult = try result.get()
+          let logRestore: Effect<Action> = analytics.logRestore(
+            RestoreAction(restoreResult),
+            paywallID: state.target.id,
+            placement: state.placement
+          )
+
+          switch restoreResult {
           case .success:
             // The paywall just closes on a restore, so without this nothing
             // says it worked.
             return .merge(
+              logRestore,
               .run { [feedback] _ in await feedback(.notification(.success)) },
-              .send(.delegate(.dismiss))
+              close(.restore, state: &state)
             )
           case .userCancelled:
-            return .none
+            return logRestore
           }
         } catch {
           state.destination = .alert(
             .failure(error, retryAction: .retryRestorePurchases)
           )
 
-          return playError()
+          return .merge(
+            playError(),
+            analytics.logRestore(
+              .failure,
+              paywallID: state.target.id,
+              placement: state.placement,
+              error: error
+            )
+          )
         }
 
       case .destination(.dismiss):
@@ -237,13 +283,18 @@ public struct PaywallReducer: Sendable {
 
         state.destination = nil
 
+        // Swiping the offer away declines it, same as its close button.
         if isPostDeclinePresented {
-          return dismiss(state: &state)
+          return close(.introOfferDeclined, state: &state)
         }
 
         return .none
-      case .destination(.presented(.postDeclineIntroOffer(.delegate(.dismiss)))):
+      case .destination(.presented(.postDeclineIntroOffer(.delegate(.declined)))):
+        return close(.introOfferDeclined, state: &state)
+      case .destination(.presented(.postDeclineIntroOffer(.delegate(.purchased)))):
         return dismiss(state: &state)
+      case .destination(.presented(.postDeclineIntroOffer(.delegate(.restored)))):
+        return close(.restore, state: &state)
       case .destination(.presented(.alert(.dismissPaywall))):
         return dismiss(state: &state)
       case .destination(.presented(.alert(.retryFetchPaywall))):
@@ -272,6 +323,15 @@ public struct PaywallReducer: Sendable {
   }
 
   // MARK: - Effects
+
+  /// The paywall closes without a purchase.
+  private func close(
+    _ action: PaywallAction,
+    state: inout State
+  ) -> Effect<Action> {
+    let logClose: Effect<Action> = analytics.logClose(action, state: state, now: date.now)
+    return .merge(logClose, dismiss(state: &state))
+  }
 
   /// A purchase or restore the user started has failed.
   private func playError() -> Effect<Action> {
@@ -324,7 +384,12 @@ public struct PaywallReducer: Sendable {
     state.isPurchasing = true
 
     return .merge(
-      analytics.logPurchase(product, state: state),
+      analytics.logPurchase(
+        .attempt,
+        product: product,
+        paywallID: state.target.id,
+        placement: state.placement
+      ),
       .run { [paywallID = state.target.id] send in
         let result = await Result {
           try await purchases.purchase(
@@ -367,14 +432,21 @@ public struct PaywallReducer: Sendable {
 
     state.isPurchasing = true
 
-    return .run { send in
-      let result = await Result {
-        try await purchases.restorePurchases()
-      }
+    return .merge(
+      analytics.logRestore(
+        .attempt,
+        paywallID: state.target.id,
+        placement: state.placement
+      ),
+      .run { send in
+        let result = await Result {
+          try await purchases.restorePurchases()
+        }
 
-      await send(.restorePurchasesResponse(result))
-    }
-    .cancellable(id: CancelID.purchase, cancelInFlight: true)
+        await send(.restorePurchasesResponse(result))
+      }
+      .cancellable(id: CancelID.purchase, cancelInFlight: true)
+    )
   }
 
   private func selectProduct(
@@ -385,14 +457,15 @@ public struct PaywallReducer: Sendable {
 
     state.productSelectedID = productID
 
-    if
-      let product = state.productSelected,
-      !productChanged
-    {
+    guard let product = state.productSelected else {
+      return .none
+    }
+
+    guard productChanged else {
       return purchase(product, state: &state)
     }
 
-    return .none
+    return analytics.logProductSelect(product, state: state)
   }
 }
 
