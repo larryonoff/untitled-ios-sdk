@@ -162,13 +162,14 @@ public struct PaywallReducer: Sendable {
         do {
           let paywall = try result.get()
           let paywallChanged = paywall?.id != state.paywall?.id
-          let isFirstShown = state.paywall == nil && paywall != nil
 
           state.update(paywall)
 
           var effects: [Effect<Action>] = []
 
-          if isFirstShown {
+          // Once per presentation: `viewedAt` survives a failed refetch, so a
+          // retry doesn't log the view again.
+          if state.viewedAt == nil, !state.products.isEmpty {
             state.viewedAt = date.now
             effects.append(analytics.logView(state: state))
           }
