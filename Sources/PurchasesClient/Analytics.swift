@@ -10,6 +10,14 @@ extension Dictionary<AnalyticsClient.EventParameterName, any Sendable> {
   public func insertOrUpdate(_ product: Product) {
     var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
     params[.contentID] = product.id
+    params["currency"] = product.priceLocale.currency?.identifier
+    params["offer_type"] = product.subscriptionOffer.analyticsValue
+    params["price"] = product.price
+
+    // What the user pays first when an offer applies, e.g. 0 for a free trial.
+    if let offer = product.subscriptionOffer {
+      params["offer_price"] = offer.price
+    }
 
     if
       let subscription = product.subscription
@@ -27,6 +35,18 @@ extension Dictionary<AnalyticsClient.EventParameterName, any Sendable> {
   }
 }
 
+extension Optional<Product.SubscriptionOffer> {
+  /// The offer the purchase applies, as the `offer_type` parameter.
+  var analyticsValue: String {
+    guard let self else { return "none" }
+    if self.isIntroductoryFreeTrial { return "free_trial" }
+
+    return switch self.type {
+    case .promotional: "promo"
+    default: self.type.rawValue
+    }
+  }
+}
 
 extension Product.SubscriptionPeriod.Unit {
   public var analyticsValue: String {
