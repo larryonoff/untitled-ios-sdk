@@ -35,6 +35,12 @@ public struct Transaction {
     product?.price ?? transaction.price
   }
 
+  /// What the user paid: 0 for a free trial, the offer price under an offer.
+  /// `price` is the product's list price.
+  public var paidPrice: Decimal? {
+    transaction.price
+  }
+
   public var productID: String {
     transaction.productID
   }

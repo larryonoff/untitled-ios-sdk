@@ -61,7 +61,10 @@ public struct UserAttributionClient: Sendable {
       case subscriptionRenewed
     }
 
+    /// The product's list price.
     public let price: Decimal?
+    /// What the user paid, e.g. 0 for a free trial.
+    public let revenue: Decimal?
     public let currency: Locale.Currency?
 
     public let productID: String
@@ -72,12 +75,14 @@ public struct UserAttributionClient: Sendable {
 
     public init(
       price: Decimal?,
+      revenue: Decimal?,
       currency: Locale.Currency?,
       productID: String,
       purchaseType: PurchaseType,
       transactionID: String
     ) {
       self.price = price
+      self.revenue = revenue
       self.currency = currency
       self.productID = productID
       self.purchaseType = purchaseType
