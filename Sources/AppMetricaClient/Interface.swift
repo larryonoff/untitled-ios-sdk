@@ -17,11 +17,6 @@ public struct AppMetricaClient: Sendable {
   public var deviceID: @Sendable () -> String? = { nil }
   public var profileID: @Sendable () -> String? = { nil }
 
-  @DependencyEndpoint(method: "report")
-  public var reportError: @Sendable (
-    _ _: any Error
-  ) -> Void
-
   @DependencyEndpoint()
   public var reportExternalAttribution: @Sendable (
     _ _: [AnyHashable: Any],

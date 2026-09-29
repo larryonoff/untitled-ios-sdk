@@ -1,7 +1,6 @@
 #if canImport(AppMetricaCore)
 
 import AppMetricaCore
-import AppMetricaCrashes
 import Dependencies
 import DuckLogging
 import DuckUserIdentifierClient
@@ -42,9 +41,6 @@ extension AppMetricaClient: DependencyKey {
       },
       profileID: {
         AppMetrica.userProfileID
-      },
-      reportError: {
-        AppMetricaCrashes.crashes().report(nserror: $0)
       },
       reportExternalAttribution: { attribution, attributionSource in
         AppMetrica.reportExternalAttribution(
