@@ -184,9 +184,11 @@ private struct RateUsBackButtonStyle: ButtonStyle {
 // MARK: - Transition
 
 private extension Animation {
-  static var rateUsIntent: Animation {
-    .smooth
-  }
+  /// The step changing: the copy crossfading and the sheet resizing to it.
+  ///
+  /// Spelled out rather than `.smooth`, whose parameters are the system's to change: a 0.5 s
+  /// critically damped spring, so the sheet reaches its new height without overshooting it.
+  static let rateUsIntent = Animation.spring(duration: 0.5, bounce: 0)
 }
 
 // MARK: - Mappings
