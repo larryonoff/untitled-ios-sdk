@@ -22,6 +22,10 @@ public struct PhotosAssetImage<Content: View>: View {
   @State
   private var state: AsyncImageState = .init()
 
+  /// The asset `state.phase` currently shows an image of.
+  @State
+  private var imageAsset: PHAsset?
+
   private var _onStateChanged: ((AsyncImageState) -> Void)?
 
   public init(
@@ -79,7 +83,8 @@ public struct PhotosAssetImage<Content: View>: View {
 
   public var body: some View {
     content(state)
-      .task(id: asset) {
+      // The size too: a container that resizes its cell (a zoomable grid) needs a sharper image.
+      .task(id: ImageRequest(asset: asset, targetSize: imageTargetSize)) {
         guard !Task.isCancelled else { return }
         guard let asset else {
           state.phase = .empty
@@ -89,16 +94,22 @@ public struct PhotosAssetImage<Content: View>: View {
 
         var isSucceededOnce = false
 
+        // Only the size changed: the current image stays up, with no spinner and no degraded
+        // delivery swapped in over it, until the sharper one arrives.
+        let isResizing = state.phase.image != nil && imageAsset == asset
+
         do {
-          state.isLoading = true
+          state.isLoading = !isResizing
           notifyOnChange(state)
 
-          for try await (image, _) in imageManager.requestImage(
+          for try await (image, info) in imageManager.requestImage(
             for: asset,
             targetSize: imageTargetSize * displayScale,
             contentMode: imageContentMode.phImageContentMode,
             options: imageRequestOptions
           ) {
+            if isResizing, info?[PHImageResultIsDegradedKey] as? Bool == true { continue }
+
             guard !Task.isCancelled else {
               state.isLoading = false
               notifyOnChange(state)
@@ -111,6 +122,7 @@ public struct PhotosAssetImage<Content: View>: View {
                 .flatMap(AsyncImagePhase.success)
               ?? .empty
               state.isLoading = false
+              imageAsset = asset
             }
 
             isSucceededOnce = true
@@ -118,7 +130,8 @@ public struct PhotosAssetImage<Content: View>: View {
             notifyOnChange(state)
           }
         } catch {
-          guard !isSucceededOnce else { return }
+          // A failed resize keeps the image it already shows.
+          guard !isSucceededOnce, !isResizing else { return }
 
           withTransaction(transaction) {
             state.phase = .failure(error)
@@ -130,6 +143,7 @@ public struct PhotosAssetImage<Content: View>: View {
       }
       .onDisappear {
         state.phase = .empty
+        imageAsset = nil
       }
   }
 
@@ -175,6 +189,11 @@ extension Image {
   static var empty: Self {
     Image(uiImage: UIImage())
   }
+}
+
+private struct ImageRequest: Equatable {
+  let asset: PHAsset?
+  let targetSize: CGSize
 }
 
 // SAFETY: configured once at startup and only read afterwards; PHImageRequestOptions
