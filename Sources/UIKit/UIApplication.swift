@@ -23,7 +23,7 @@ extension UIApplication {
     var topWindow: UIWindow?
 
     for case let scene as UIWindowScene in connectedScenes
-    where scene.activationState == .foregroundActive {
+      where scene.activationState == .foregroundActive {
       for window in scene.windows where !window.isHidden {
         if window.isKeyWindow { return window }
 

@@ -14,15 +14,15 @@ extension DependencyValues {
 private enum OpenSubscriptionManagementKey: DependencyKey {
   static let liveValue = OpenSubscriptionManagementEffect { @MainActor in
     #if canImport(UIKit)
-      if let activeScene = UIApplication.shared.activeScene {
-        do {
-          try await AppStore.showManageSubscriptions(in: activeScene)
-          return
-        } catch {
-          // Fall through to the App Store subscriptions page.
-          reportIssue(error)
-        }
+    if let activeScene = UIApplication.shared.activeScene {
+      do {
+        try await AppStore.showManageSubscriptions(in: activeScene)
+        return
+      } catch {
+        // Fall through to the App Store subscriptions page.
+        reportIssue(error)
       }
+    }
     #endif
 
     EnvironmentValues().openURL(

@@ -59,12 +59,12 @@ extension UserTrackingClient {
         return nil
       },
       identifierForVendor: {
-#if os(iOS)
+        #if os(iOS)
         await UIDevice.current.identifierForVendor
-#else
+        #else
         // No macOS equivalent of `UIDevice.identifierForVendor`.
         nil
-#endif
+        #endif
       }
     )
   }
@@ -176,9 +176,9 @@ final class UserTrackingImpl: Sendable {
         request.firebaseAppInstanceID.map(AdaptyIntegrationIdentifier.firebaseAppInstanceId)
       ].compactMap { $0 }
 
-#if os(iOS)
+      #if os(iOS)
       intergrationIDs.append(.facebookAnonymousId(AppEvents.shared.anonymousID))
-#endif
+      #endif
 
       for identifier in intergrationIDs {
         do {
@@ -226,12 +226,12 @@ final class UserTrackingImpl: Sendable {
   ) {
     _authStatus.value = .init(status)
 
-#if os(iOS)
+    #if os(iOS)
     // `isAdvertiserTrackingEnabled` is not set: deprecated in iOS 17, where the
     // Facebook SDK reads `ATTrackingManager.trackingAuthorizationStatus` itself.
     FacebookCore.Settings.shared.isAdvertiserIDCollectionEnabled =
       status == .authorized
-#endif
+    #endif
   }
 }
 
@@ -240,12 +240,12 @@ enum Attribution {
 
   static func attributionToken(
   ) async throws -> AttributionToken? {
-#if targetEnvironment(simulator)
+    #if targetEnvironment(simulator)
     debugPrint("WARNING: simulator freezes getting attributionToken, so its skipped")
     return nil
-#else
+    #else
     return try AAAttribution.attributionToken()
-#endif
+    #endif
   }
 }
 

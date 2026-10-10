@@ -47,8 +47,8 @@ private final class AutoPresentationClientImpl: Sendable {
 
   init(
     conditions: OrderedDictionary<
-    AutoPresentation.Feature,
-    AutoPresentation.FeatureCondition
+      AutoPresentation.Feature,
+      AutoPresentation.FeatureCondition
     >,
     userSession: UserSessionClient,
     userSettings: UserSettingsClient

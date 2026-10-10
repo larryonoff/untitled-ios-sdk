@@ -12,26 +12,26 @@ import AppKit
 // there the app is a UIKit app posting `UIApplication` notifications.
 extension Notification.Name {
   public static var applicationDidBecomeActive: Notification.Name {
-#if canImport(UIKit)
+    #if canImport(UIKit)
     UIApplication.didBecomeActiveNotification
-#elseif canImport(AppKit)
+    #elseif canImport(AppKit)
     NSApplication.didBecomeActiveNotification
-#endif
+    #endif
   }
 
   public static var applicationWillResignActive: Notification.Name {
-#if canImport(UIKit)
+    #if canImport(UIKit)
     UIApplication.willResignActiveNotification
-#elseif canImport(AppKit)
+    #elseif canImport(AppKit)
     NSApplication.willResignActiveNotification
-#endif
+    #endif
   }
 
   public static var applicationWillTerminate: Notification.Name {
-#if canImport(UIKit)
+    #if canImport(UIKit)
     UIApplication.willTerminateNotification
-#elseif canImport(AppKit)
+    #elseif canImport(AppKit)
     NSApplication.willTerminateNotification
-#endif
+    #endif
   }
 }

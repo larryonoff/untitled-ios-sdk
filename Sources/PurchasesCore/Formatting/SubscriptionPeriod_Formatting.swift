@@ -73,11 +73,11 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
       valueDisplayStrategy: ValueDisplayStrategy
     ) -> String? {
       switch valueDisplayStrategy {
-       case .automatic:
-         return nil
-       case .always:
-         return "1"
-       }
+      case .automatic:
+        return nil
+      case .always:
+        return "1"
+      }
     }
 
     let valueString: String?

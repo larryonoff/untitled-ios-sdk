@@ -26,23 +26,23 @@ private struct _FittedPresentationSizingModifier: ViewModifier {
 
   func body(content: Content) -> some View {
     #if os(iOS)
-      content
-        // Measure the content's own ideal height rather than the frame the
-        // sheet grants it: reading the granted frame would feed the detent its
-        // own output.
-        .background {
-          GeometryReader { geometry in
-            Color.clear
-              .preference(key: ContentHeightKey.self, value: geometry.size.height)
-          }
+    content
+      // Measure the content's own ideal height rather than the frame the
+      // sheet grants it: reading the granted frame would feed the detent its
+      // own output.
+      .background {
+        GeometryReader { geometry in
+          Color.clear
+            .preference(key: ContentHeightKey.self, value: geometry.size.height)
         }
-        .onPreferenceChange(ContentHeightKey.self) { height in
-          guard height > 0, height != contentHeight else { return }
-          contentHeight = height
-        }
-        .presentationDetents([detent])
+      }
+      .onPreferenceChange(ContentHeightKey.self) { height in
+        guard height > 0, height != contentHeight else { return }
+        contentHeight = height
+      }
+      .presentationDetents([detent])
     #else
-      content
+    content
     #endif
   }
 

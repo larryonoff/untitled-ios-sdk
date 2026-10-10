@@ -50,7 +50,7 @@ extension Product.SubscriptionInfo {
     guard
       let subscriptionGroupID = product.subscriptionGroupIdentifier,
       let subscriptionPeriod = product.subscriptionPeriod
-        .flatMap(Product.SubscriptionPeriod.init)
+      .flatMap(Product.SubscriptionPeriod.init)
     else {
       return nil
     }

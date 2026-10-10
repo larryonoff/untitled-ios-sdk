@@ -58,7 +58,7 @@ extension AVAsset {
     )
 
     for track in try await composition.load(.tracks)
-    where track.mediaType == mediaType {
+      where track.mediaType == mediaType {
       composition.removeTrack(track)
     }
 

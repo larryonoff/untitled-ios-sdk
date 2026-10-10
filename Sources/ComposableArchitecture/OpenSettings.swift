@@ -18,13 +18,13 @@ extension DependencyValues {
 
     static let liveValue: Value = {
       await MainActor.run {
-#if canImport(UIKit)
+        #if canImport(UIKit)
         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-#elseif canImport(AppKit)
+        #elseif canImport(AppKit)
         _ = NSWorkspace.shared.open(
           URL(string: "x-apple.systempreferences:com.apple.preference.security")!
         )
-#endif
+        #endif
       }
     }
 

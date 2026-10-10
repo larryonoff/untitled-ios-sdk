@@ -17,13 +17,13 @@ extension DependencyValues {
 
 private enum RequestReviewKey: DependencyKey {
   static let liveValue = RequestReviewAction { @MainActor in
-#if canImport(UIKit)
+    #if canImport(UIKit)
     guard let activeScene = UIApplication.shared.activeScene else {
       return false
     }
     AppStore.requestReview(in: activeScene)
     return true
-#else
+    #else
     guard
       let controller = NSApplication.shared.keyWindow?.contentViewController
     else {
@@ -31,7 +31,7 @@ private enum RequestReviewKey: DependencyKey {
     }
     AppStore.requestReview(in: controller)
     return true
-#endif
+    #endif
   }
 
   static let testValue = RequestReviewAction(

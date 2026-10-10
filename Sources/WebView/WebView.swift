@@ -67,7 +67,7 @@ struct _WebView: ViewRepresentable {
       configuration: configuration
     )
 
-#if canImport(UIKit)
+    #if canImport(UIKit)
     webView.backgroundColor = .clear
     webView.isOpaque = false
 
@@ -77,7 +77,7 @@ struct _WebView: ViewRepresentable {
     if #available(iOS 26.0, tvOS 26.0, visionOS 26.0, *) {
       webView.scrollView.topEdgeEffect.isHidden = true
     }
-#endif
+    #endif
 
     webView.navigationDelegate = context.coordinator
 
@@ -103,7 +103,7 @@ struct _WebView: ViewRepresentable {
     return webView
   }
 
-#if canImport(UIKit)
+  #if canImport(UIKit)
   func makeUIView(context: Context) -> WKWebView {
     makeWebView(context: context)
   }
@@ -112,7 +112,7 @@ struct _WebView: ViewRepresentable {
     _ webView: WKWebView,
     context: Context
   ) {}
-#else
+  #else
   func makeNSView(context: Context) -> WKWebView {
     makeWebView(context: context)
   }
@@ -121,7 +121,7 @@ struct _WebView: ViewRepresentable {
     _ webView: WKWebView,
     context: Context
   ) {}
-#endif
+  #endif
 
   func makeCoordinator() -> Coordinator {
     Coordinator(
@@ -169,7 +169,7 @@ struct _WebView: ViewRepresentable {
       _ webView: WKWebView,
       didFinish navigation: WKNavigation!
     ) {
-#if canImport(UIKit)
+      #if canImport(UIKit)
       // sometimes scrollView.contentSize doesn't fit all the frame.size available
       // so, we call setNeedsLayout to redraw the layout
       let webViewFrameSize = webView.frame.size
@@ -177,7 +177,7 @@ struct _WebView: ViewRepresentable {
       if scrollViewSize.width < webViewFrameSize.width || scrollViewSize.height < webViewFrameSize.height {
         webView.setNeedsLayout()
       }
-#endif
+      #endif
 
       checkReadyState(for: webView)
     }

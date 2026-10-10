@@ -9,7 +9,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<Bool> {
+    where Self == RemoteSettingKey<Bool> {
     RemoteSettingKey(key)
   }
 
@@ -18,7 +18,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<Int> {
+    where Self == RemoteSettingKey<Int> {
     RemoteSettingKey(key)
   }
 
@@ -27,7 +27,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<Double> {
+    where Self == RemoteSettingKey<Double> {
     RemoteSettingKey(key)
   }
 
@@ -36,7 +36,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<String> {
+    where Self == RemoteSettingKey<String> {
     RemoteSettingKey(key)
   }
 
@@ -45,7 +45,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<Data> {
+    where Self == RemoteSettingKey<Data> {
     RemoteSettingKey(key)
   }
 
@@ -55,7 +55,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting<Value: RawRepresentable<Int>>(_ key: String) -> Self
-  where Self == RemoteSettingKey<Value> {
+    where Self == RemoteSettingKey<Value> {
     RemoteSettingKey(key)
   }
 
@@ -65,7 +65,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting<Value: RawRepresentable<String>>(_ key: String) -> Self
-  where Self == RemoteSettingKey<Value> {
+    where Self == RemoteSettingKey<Value> {
     RemoteSettingKey(key)
   }
 
@@ -74,7 +74,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<Bool?> {
+    where Self == RemoteSettingKey<Bool?> {
     RemoteSettingKey(key)
   }
 
@@ -83,7 +83,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<Int?> {
+    where Self == RemoteSettingKey<Int?> {
     RemoteSettingKey(key)
   }
 
@@ -92,7 +92,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<Double?> {
+    where Self == RemoteSettingKey<Double?> {
     RemoteSettingKey(key)
   }
 
@@ -101,7 +101,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<String?> {
+    where Self == RemoteSettingKey<String?> {
     RemoteSettingKey(key)
   }
 
@@ -110,7 +110,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting(_ key: String) -> Self
-  where Self == RemoteSettingKey<Data?> {
+    where Self == RemoteSettingKey<Data?> {
     RemoteSettingKey(key)
   }
 
@@ -120,7 +120,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting<Value: RawRepresentable<Int>>(_ key: String) -> Self
-  where Self == RemoteSettingKey<Value?> {
+    where Self == RemoteSettingKey<Value?> {
     RemoteSettingKey(key)
   }
 
@@ -130,7 +130,7 @@ extension SharedReaderKey {
   /// - Parameter key: The key to read the value from the remote setting.
   /// - Returns: A remote settings persistence key.
   public static func remoteSetting<Value: RawRepresentable<String>>(_ key: String) -> Self
-  where Self == RemoteSettingKey<Value?> {
+    where Self == RemoteSettingKey<Value?> {
     RemoteSettingKey(key)
   }
 }
@@ -274,7 +274,9 @@ private protocol Lookup<Value>: Sendable {
 
 private struct BoolLookup: Lookup {
   func loadValue(
-    from store: RemoteSettingsClient, at key: String, default defaultValue: Bool?
+    from store: RemoteSettingsClient,
+    at key: String,
+    default defaultValue: Bool?
   ) -> Bool? {
     store.boolForKey(key) ?? defaultValue
   }
@@ -282,7 +284,9 @@ private struct BoolLookup: Lookup {
 
 private struct DataLookup: Lookup {
   func loadValue(
-    from store: RemoteSettingsClient, at key: String, default defaultValue: Data?
+    from store: RemoteSettingsClient,
+    at key: String,
+    default defaultValue: Data?
   ) -> Data? {
     store.dataForKey(key) ?? defaultValue
   }
@@ -290,7 +294,9 @@ private struct DataLookup: Lookup {
 
 private struct DoubleLookup: Lookup {
   func loadValue(
-    from store: RemoteSettingsClient, at key: String, default defaultValue: Double?
+    from store: RemoteSettingsClient,
+    at key: String,
+    default defaultValue: Double?
   ) -> Double? {
     store.doubleForKey(key) ?? defaultValue
   }
@@ -298,7 +304,9 @@ private struct DoubleLookup: Lookup {
 
 private struct IntLookup: Lookup {
   func loadValue(
-    from store: RemoteSettingsClient, at key: String, default defaultValue: Int?
+    from store: RemoteSettingsClient,
+    at key: String,
+    default defaultValue: Int?
   ) -> Int? {
     store.integerForKey(key) ?? defaultValue
   }
@@ -306,17 +314,21 @@ private struct IntLookup: Lookup {
 
 private struct StringLookup: Lookup {
   func loadValue(
-    from store: RemoteSettingsClient, at key: String, default defaultValue: String?
+    from store: RemoteSettingsClient,
+    at key: String,
+    default defaultValue: String?
   ) -> String? {
     store.stringForKey(key) ?? defaultValue
   }
 }
 
 private struct RawRepresentableLookup<Value: RawRepresentable, Base: Lookup>: Lookup
-where Value.RawValue == Base.Value {
+  where Value.RawValue == Base.Value {
   let base: Base
   func loadValue(
-    from store: RemoteSettingsClient, at key: String, default defaultValue: Value?
+    from store: RemoteSettingsClient,
+    at key: String,
+    default defaultValue: Value?
   ) -> Value? {
     base.loadValue(from: store, at: key, default: defaultValue?.rawValue)
       .flatMap(Value.init(rawValue:))
@@ -327,7 +339,9 @@ where Value.RawValue == Base.Value {
 private struct OptionalLookup<Base: Lookup>: Lookup {
   let base: Base
   func loadValue(
-    from store: RemoteSettingsClient, at key: String, default defaultValue: Base.Value??
+    from store: RemoteSettingsClient,
+    at key: String,
+    default defaultValue: Base.Value??
   ) -> Base.Value?? {
     base.loadValue(from: store, at: key, default: defaultValue ?? nil)
   }

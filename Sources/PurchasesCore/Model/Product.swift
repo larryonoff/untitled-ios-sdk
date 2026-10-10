@@ -81,7 +81,7 @@ public struct Product {
 
   public var priceFormatStyle: Decimal.FormatStyle.Currency {
     .init(code: priceLocale.currency?.identifier ?? "USD", locale: priceLocale)
-    .rounded(rule: .down)
+      .rounded(rule: .down)
   }
 
   public var displayPrice: String

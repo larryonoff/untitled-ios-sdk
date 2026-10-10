@@ -6,6 +6,8 @@
 --wrap-parameters preserve
 --allow-partial-wrapping false
 --indent-strings false
+# The repo's style: `#if` bodies keep the indentation of the `#if` itself.
+--ifdef no-indent
 --exclude **/*.generated.swift,**/.build/**,**/.swiftpm/**
 # Swift 6 language mode; only layout rules are enabled.
 --swift-version 6

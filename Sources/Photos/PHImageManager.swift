@@ -190,10 +190,10 @@ public struct PHImageRequestResultInfo {
 extension PHImageRequestResultInfo: Equatable {
   public static func == (lhs: Self, rhs: Self) -> Bool {
     (lhs.error as? NSError) == (rhs.error as? NSError) &&
-    lhs.isCancelled == rhs.isCancelled &&
-    lhs.isDegraded == rhs.isDegraded &&
-    lhs.isInCloud == rhs.isInCloud &&
-    lhs.requestID == rhs.requestID
+      lhs.isCancelled == rhs.isCancelled &&
+      lhs.isDegraded == rhs.isDegraded &&
+      lhs.isInCloud == rhs.isInCloud &&
+      lhs.requestID == rhs.requestID
   }
 }
 

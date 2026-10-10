@@ -8,7 +8,7 @@ extension UIViewController {
 
     while
       let presented = topController.presentedViewController
-        ?? (topController as? UINavigationController)?.topViewController
+      ?? (topController as? UINavigationController)?.topViewController
     {
       topController = presented
     }

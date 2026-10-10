@@ -44,9 +44,9 @@ extension View {
         message: message,
         header: header
       )
-        .presentationSizingFitted()
-        .sheetCardBackground()
-        .interactiveDismissDisabled()
+      .presentationSizingFitted()
+      .sheetCardBackground()
+      .interactiveDismissDisabled()
     }
   }
 }

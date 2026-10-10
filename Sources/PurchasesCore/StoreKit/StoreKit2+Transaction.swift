@@ -8,7 +8,7 @@ extension StoreKit.Transaction {
         offer?.paymentMode == .freeTrial
     } else {
       let freeTrialPaymentModeString =
-      StoreKit.Product.SubscriptionOffer.PaymentMode.freeTrial.rawValue
+        StoreKit.Product.SubscriptionOffer.PaymentMode.freeTrial.rawValue
 
       return
         offerType == .introductory &&

@@ -17,13 +17,13 @@ extension DependencyValues {
 private enum OpenNotificationSettingsKey: DependencyKey {
   static let liveValue = OpenNotificationSettingsEffect { @MainActor in
     #if canImport(UIKit)
-      UIApplication.shared.open(
-        URL(string: UIApplication.openNotificationSettingsURLString)!
-      )
+    UIApplication.shared.open(
+      URL(string: UIApplication.openNotificationSettingsURLString)!
+    )
     #else
-      _ = NSWorkspace.shared.open(
-        URL(string: "x-apple.systempreferences:com.apple.preference.notifications")!
-      )
+    _ = NSWorkspace.shared.open(
+      URL(string: "x-apple.systempreferences:com.apple.preference.notifications")!
+    )
     #endif
   }
 

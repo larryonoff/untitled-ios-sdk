@@ -48,8 +48,7 @@ final class FirebaseClientImpl: Sendable {
     self.userIdentifier = userIdentifier
   }
 
-  func initialize(
-  ) {
+  func initialize() {
     logger.info("firebase.initialize")
 
     FirebaseApp.configure()

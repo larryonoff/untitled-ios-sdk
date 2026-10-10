@@ -5,7 +5,7 @@ import UIKit
 #endif
 
 extension FeedbackGenerator: DependencyKey {
-#if canImport(UIKit)
+  #if canImport(UIKit)
   public static let liveValue = Self { feedback in
     switch feedback {
     case let .impact(style):
@@ -22,10 +22,10 @@ extension FeedbackGenerator: DependencyKey {
       await generator.selectionChanged()
     }
   }
-#else
+  #else
   // No haptics outside UIKit.
   public static let liveValue = Self.noop
-#endif
+  #endif
 }
 
 #if canImport(UIKit)

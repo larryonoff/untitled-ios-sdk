@@ -20,13 +20,13 @@ import WinSDK
 #endif
 
 public struct Lock {
-#if canImport(Darwin)
+  #if canImport(Darwin)
   typealias Primitive = os_unfair_lock
-#elseif canImport(Glibc)
+  #elseif canImport(Glibc)
   typealias Primitive = pthread_mutex_t
-#elseif canImport(WinSDK)
+  #elseif canImport(WinSDK)
   typealias Primitive = SRWLOCK
-#endif
+  #endif
 
   typealias PlatformLock = UnsafeMutablePointer<Primitive>
   let platformLock: PlatformLock
@@ -36,40 +36,40 @@ public struct Lock {
   }
 
   fileprivate static func initialize(_ platformLock: PlatformLock) {
-#if canImport(Darwin)
+    #if canImport(Darwin)
     platformLock.initialize(to: os_unfair_lock())
-#elseif canImport(Glibc)
+    #elseif canImport(Glibc)
     pthread_mutex_init(platformLock, nil)
-#elseif canImport(WinSDK)
+    #elseif canImport(WinSDK)
     InitializeSRWLock(platformLock)
-#endif
+    #endif
   }
 
   fileprivate static func deinitialize(_ platformLock: PlatformLock) {
-#if canImport(Glibc)
+    #if canImport(Glibc)
     pthread_mutex_destroy(platformLock)
-#endif
+    #endif
     platformLock.deinitialize(count: 1)
   }
 
   fileprivate static func lock(_ platformLock: PlatformLock) {
-#if canImport(Darwin)
+    #if canImport(Darwin)
     os_unfair_lock_lock(platformLock)
-#elseif canImport(Glibc)
+    #elseif canImport(Glibc)
     pthread_mutex_lock(platformLock)
-#elseif canImport(WinSDK)
+    #elseif canImport(WinSDK)
     AcquireSRWLockExclusive(platformLock)
-#endif
+    #endif
   }
 
   fileprivate static func unlock(_ platformLock: PlatformLock) {
-#if canImport(Darwin)
+    #if canImport(Darwin)
     os_unfair_lock_unlock(platformLock)
-#elseif canImport(Glibc)
+    #elseif canImport(Glibc)
     pthread_mutex_unlock(platformLock)
-#elseif canImport(WinSDK)
+    #elseif canImport(WinSDK)
     ReleaseSRWLockExclusive(platformLock)
-#endif
+    #endif
   }
 
   public static func allocate() -> Lock {

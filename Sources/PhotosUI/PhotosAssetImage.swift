@@ -120,7 +120,7 @@ public struct PhotosAssetImage<Content: View>: View {
               state.phase = image
                 .flatMap(Image.init(uiImage:))
                 .flatMap(AsyncImagePhase.success)
-              ?? .empty
+                ?? .empty
               state.isLoading = false
               imageAsset = asset
             }

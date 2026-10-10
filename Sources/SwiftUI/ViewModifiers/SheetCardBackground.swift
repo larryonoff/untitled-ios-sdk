@@ -1,5 +1,5 @@
 #if canImport(UIKit)
-  import UIKit
+import UIKit
 #endif
 
 import SwiftUI
@@ -14,11 +14,11 @@ extension View {
       self
     } else {
       #if os(iOS)
-        self
-          .presentationBackground(Color(uiColor: .secondarySystemBackground))
-          .presentationCornerRadius(40)
+      self
+        .presentationBackground(Color(uiColor: .secondarySystemBackground))
+        .presentationCornerRadius(40)
       #else
-        self
+      self
       #endif
     }
   }

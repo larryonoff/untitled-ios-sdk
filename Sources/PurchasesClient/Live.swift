@@ -336,7 +336,7 @@ final class PurchasesClientImpl: Sendable {
         let flow = try await Self.adaptyFlow(by: request.paywallID),
         let products = try await Self.adaptyProducts(for: flow),
         let product = products
-          .first(where: { $0.vendorProductId == request.product.id.rawValue })
+        .first(where: { $0.vendorProductId == request.product.id.rawValue })
       else {
         // Not a programmer error: the product can legitimately be unavailable
         // (no network, not approved yet), so this must not trap in debug.
@@ -497,7 +497,7 @@ final class PurchasesClientImpl: Sendable {
   }
 
   func requestReview() async {
-#if canImport(UIKit)
+    #if canImport(UIKit)
     let application = await UIApplication.shared
     var activeScene: UIWindowScene?
 
@@ -522,7 +522,7 @@ final class PurchasesClientImpl: Sendable {
     } else {
       logger.error("purchases.request-review failed | reason: no-active-window-scene")
     }
-#endif
+    #endif
   }
 
   func reset() async throws {
