@@ -5,12 +5,10 @@ extension AVMutableComposition {
   public func mix(
     withAudioOf audio: AVAsset,
     timeRange: CMTimeRange? = nil
-  ) throws {
+  ) async throws {
     guard
-      let sourceAudioTrack = audio.tracks(
-        withMediaType: .audio
-      )
-      .first
+      let sourceAudioTrack = try await audio.loadTracks(withMediaType: .audio)
+        .first
     else {
       return
     }

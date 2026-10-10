@@ -5,13 +5,15 @@ extension AVAsset {
   public func mixed(
     withAudioOf audio: AVAsset,
     timeRange: CMTimeRange? = nil
-  ) throws -> AVMutableComposition? {
+  ) async throws -> AVMutableComposition? {
     guard
-      let audioTrack = audio.tracks(withMediaType: .audio).first,
-      let videoTrack = tracks(withMediaType: .video).first
+      let audioTrack = try await audio.loadTracks(withMediaType: .audio).first,
+      let videoTrack = try await loadTracks(withMediaType: .video).first
     else {
       return nil
     }
+
+    let duration = try await load(.duration)
 
     let composition = AVMutableComposition()
 

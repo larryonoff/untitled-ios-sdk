@@ -68,7 +68,7 @@ public struct OfferAvailabilityKey: SharedKey {
     let task = Task {
       // Iterating before the check below: the observer is registered with the
       // iterator, and an activation between the two would otherwise be missed.
-      var activations = NotificationCenter.default.notifications(
+      let activations = NotificationCenter.default.notifications(
         named: Self.didBecomeActive
       )
       .makeAsyncIterator()
