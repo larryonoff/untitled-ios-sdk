@@ -267,6 +267,14 @@ let package = Package(
       path: "Tests/NotificationsAccessFeatureTests",
       swiftSettings: .upcomingFeatures
     ),
+    .testTarget(
+      name: "VideoPlayerTests",
+      dependencies: [
+        .videoPlayer
+      ],
+      path: "Tests/VideoPlayerTests",
+      swiftSettings: .upcomingFeatures
+    ),
     .swiftUI,
     .uiKit,
     .webView,

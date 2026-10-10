@@ -7,6 +7,7 @@ import SwiftUI
 struct VideoPlayerRepresentable<VideoOverlay> where VideoOverlay: View {
   @Environment(\.videoAlignment) var videoAlignment
   @Environment(\.videoContentMode) var videoContentMode
+  @Environment(\.videoInterruptionBehavior) var videoInterruptionBehavior
 
   private let player: AVPlayer?
 
@@ -35,8 +36,9 @@ extension VideoPlayerRepresentable: UIViewRepresentable {
   func makeUIView(
     context: Context
   ) -> VideoPlayerView {
+    // The environment-driven properties are left to `updateUIView`, which
+    // SwiftUI calls right after this.
     let playerView = VideoPlayerView(player: player)
-    playerView.videoContentMode = videoContentMode
     playerView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     playerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
@@ -78,9 +80,7 @@ extension VideoPlayerRepresentable: UIViewRepresentable {
     uiView.player = player
     uiView.videoAlignment = videoAlignment
     uiView.videoContentMode = videoContentMode
-
-    uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
-    uiView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+    uiView.interruptionBehavior = videoInterruptionBehavior
   }
 }
 

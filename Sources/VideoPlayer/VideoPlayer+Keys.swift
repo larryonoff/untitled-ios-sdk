@@ -1,35 +1,16 @@
 import SwiftUI
 
 extension EnvironmentValues {
-  public var videoAlignment: Alignment {
-    get { self[Video_AlignmentKey.self] }
-    set { self[Video_AlignmentKey.self] = newValue }
-  }
+  @Entry public var videoAlignment: Alignment = .center
+  @Entry public var videoContentMode: ContentMode? = .fit
+  @Entry public var videoDisappearBehavior: VideoDisappearBehavior = .default
 
-  public var videoContentMode: ContentMode? {
-    get { self[Video_ContentModeKey.self] }
-    set { self[Video_ContentModeKey.self] = newValue }
-  }
+  /// What a video does after the audio session pauses it.
+  @Entry public var videoInterruptionBehavior: VideoInterruptionBehavior = .pauses
 
-  public var videoDisappearBehavior: VideoDisappearBehavior {
-    get { self[Video_DisappearBehaviorKey.self] }
-    set { self[Video_DisappearBehaviorKey.self] = newValue }
-  }
-
-  public var videoIsMuted: Bool {
-    get { self[Video_IsMutedKey.self] }
-    set { self[Video_IsMutedKey.self] = newValue }
-  }
-
-  public var videoLoopingEnabled: Bool {
-    get { self[Video_LoopingEnabledKey.self] }
-    set { self[Video_LoopingEnabledKey.self] = newValue }
-  }
-
-  public var videoPauseBehavior: VideoPauseBehavior {
-    get { self[Video_PauseBehaviorKey.self] }
-    set { self[Video_PauseBehaviorKey.self] = newValue }
-  }
+  @Entry public var videoIsMuted: Bool = false
+  @Entry public var videoLoopingEnabled: Bool = false
+  @Entry public var videoPauseBehavior: VideoPauseBehavior = .default
 }
 
 extension View {
@@ -50,6 +31,24 @@ extension View {
     environment(\.videoDisappearBehavior, value ?? .default)
   }
 
+  /// Sets what a video does after the audio session pauses it.
+  ///
+  /// Set it once near the root for decorative, muted videos: previews and
+  /// loops in paywalls and onboarding. Like any environment value it doesn't
+  /// cross into a `UIHostingController` or `UIHostingConfiguration`; set it
+  /// again there.
+  ///
+  /// ```swift
+  /// RootView()
+  ///   .videoInterruptionBehavior(.resumesMutedPlayback)
+  /// ```
+  @inlinable nonisolated
+  public func videoInterruptionBehavior(
+    _ behavior: VideoInterruptionBehavior
+  ) -> some View {
+    environment(\.videoInterruptionBehavior, behavior)
+  }
+
   @inlinable nonisolated
   public func videoLoopingDisabled(_ value: Bool) -> some View {
     environment(\.videoLoopingEnabled, !value)
@@ -65,31 +64,5 @@ extension View {
     _ value: VideoPauseBehavior?
   ) -> some View {
     environment(\.videoPauseBehavior, value ?? .default)
-  }
-}
-
-extension EnvironmentValues {
-  private struct Video_AlignmentKey: EnvironmentKey {
-    static var defaultValue: Alignment { .center }
-  }
-
-  private struct Video_ContentModeKey: EnvironmentKey {
-    static var defaultValue: ContentMode? { .fit }
-  }
-
-  private struct Video_DisappearBehaviorKey: EnvironmentKey {
-    static var defaultValue: VideoDisappearBehavior { .default }
-  }
-
-  private struct Video_IsMutedKey: EnvironmentKey {
-    static var defaultValue: Bool { false }
-  }
-
-  private struct Video_LoopingEnabledKey: EnvironmentKey {
-    static var defaultValue: Bool { false }
-  }
-
-  private struct Video_PauseBehaviorKey: EnvironmentKey {
-    static var defaultValue: VideoPauseBehavior { .default }
   }
 }
