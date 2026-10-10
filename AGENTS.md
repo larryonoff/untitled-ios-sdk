@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for coding agents in this repository.
+Guidance for coding agents (Claude Code, Codex CLI) in this repository.
 
 Shared Swift/SwiftUI/TCA house rules (via ai-toolkit):
 @~/.claude/rules/onelight-apple.md
@@ -11,6 +11,25 @@ Shared Swift/SwiftUI/TCA house rules (via ai-toolkit):
 Recipes, PhotoID, Drafts, …) as a local or remote SPM package. Modules are
 exported under a `Duck*` prefix (`DuckCore`, `DuckPurchasesClient`, …); a few
 keep their own name (`SFSymbol`, `Instagram`).
+
+## Working Process
+
+- **House rules before neighbours** — don't copy a pattern from this repo
+  without confirming it's current; much of it predates the house rules.
+- **Search before writing**: the stdlib, the Point-Free libraries and this
+  package's own modules likely have it already.
+- **Lint before finishing Swift changes**:
+  `python3 build-system/swift-style.py lint <changed Swift files>`, tests and
+  `Package.swift` included. The repo lints clean and has no baseline — fix what
+  your change introduces. Layout: `format-check <files…>` to see, `format
+  <files…>` to write, explicit files only. Details: `docs/linting.md`.
+- **Verify before claiming done** — build or test, and quote the output.
+
+## Debugging
+
+Root cause before fixes (`superpowers:systematic-debugging`). Follow the user's
+hint first; don't re-pitch a redirected theory. Read our code before dependency
+internals.
 
 ## Key Rules
 
@@ -29,7 +48,8 @@ keep their own name (`SFSymbol`, `Instagram`).
   (regenerates PaywallReducer, PurchasesCore, NotificationsAccessFeature,
   RateUsFeature).
 - **NEVER commit or tag a release** without explicit user instruction. Apps
-  consume this package by version; a tag is a publish.
+  consume this package by version; a tag is a publish. Commits go straight to
+  `main`; don't create branches unless asked.
 - **This is a library, not an app.** A change here lands in every app — check
   consuming call sites before changing a public signature.
 
@@ -39,7 +59,19 @@ keep their own name (`SFSymbol`, `Instagram`).
 |---|---|
 | Build | `swift build` (resolves on macOS with the default traits) |
 | Build with AppMetrica | `swift build --traits AppMetrica` (iOS destination) |
+| Run tests (iOS) | `xcodebuild test -scheme Untitled-Package -destination 'platform=iOS Simulator,name=<iPhone>' [-only-testing:<Target>]` |
+| Lint changed Swift files | `python3 build-system/swift-style.py lint <files…>` |
+| Check / apply layout | `python3 build-system/swift-style.py format-check\|format <files…>` |
 | Regenerate assets/strings | `bundle exec fastlane ios swiftgen` |
+
+## Testing
+
+Swift Testing only (`@Suite`, `@Test`, `#expect`). `Untitled-Package` is the one
+scheme and runs every test target; a new `.testTarget` needs nothing else. Code
+under `#if canImport(UIKit)` — `VideoPlayer` and its tests — compiles out of
+`swift build`/`swift test` on macOS, so verify it with `xcodebuild` on a
+simulator. A test double behaves like the real dependency on the path under
+test; otherwise green hides the bug.
 
 ## Platform & Stack
 
@@ -57,4 +89,5 @@ for re-exports, `Analytics.swift`, and `Internal/` for implementation helpers.
 ## Code Style
 
 Formatting: `.editorconfig` — 2-space indent, trim trailing whitespace, final
-newline. Everything else: the house-rules import above.
+newline — applied by SwiftFormat through `build-system/swift-style.py`.
+Everything else: the house-rules import above.
