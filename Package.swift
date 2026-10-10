@@ -86,7 +86,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/appmetrica/appmetrica-sdk-ios",
-      from: "6.6.0"
+      from: "7.0.0"
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
