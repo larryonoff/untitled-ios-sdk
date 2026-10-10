@@ -10,7 +10,7 @@ public struct Paywall {
   public typealias VariantID = Tagged<(Self, variantID: ()), String>
 
   public let id: ID
-  public let abTestName: String?  
+  public let abTestName: String?
   public let audienceName: String?
   public var products: [Product]
 

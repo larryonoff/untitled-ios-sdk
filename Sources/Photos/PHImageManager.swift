@@ -118,7 +118,7 @@ extension PHImageManager {
   public func requestAVAsset(
     forVideo asset: PHAsset,
     options: PHVideoRequestOptions?
-  ) async throws -> (AVAsset?, AVAudioMix?, [AnyHashable : Any]?) {
+  ) async throws -> (AVAsset?, AVAudioMix?, [AnyHashable: Any]?) {
     let requestID = LockIsolated<PHImageRequestID?>(nil)
     // SAFETY: PhotoKit confines the request to its own queue; the options value
     // is not annotated `Sendable` by Photos.

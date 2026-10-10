@@ -8,12 +8,12 @@ extension CGSize {
     contentMode: ContentMode
   ) -> CGSize {
     guard !isEmpty else { return bounds.size }
-    
+
     var alignedSize = bounds.size
-    
+
     let scaleX = alignedSize.width / width
     let scaleY = alignedSize.height / height
-    
+
     switch contentMode {
     case .fill:
       let scale = max(scaleX, scaleY)
@@ -28,22 +28,22 @@ extension CGSize {
         height: height * scale
       )
     }
-    
+
     return alignedSize
   }
-  
+
   public func scaledToFill(
     in bounds: CGRect
   ) -> CGSize {
     aligned(in: bounds, contentMode: .fill)
   }
-  
+
   public func scaledToFit(
     in bounds: CGRect
   ) -> CGSize {
     aligned(in: bounds, contentMode: .fit)
   }
-  
+
   @inlinable
   public var standardized: CGSize {
     CGSize(
@@ -51,7 +51,7 @@ extension CGSize {
       height: abs(height)
     )
   }
-  
+
   @inlinable
   public var isEmpty: Bool {
     height.isZero || width.isZero

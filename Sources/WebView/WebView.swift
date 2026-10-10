@@ -185,7 +185,7 @@ struct _WebView: ViewRepresentable {
     // MARK: - Internals
 
     private func checkReadyState(for webView: WKWebView) {
-      webView.evaluateJavaScript("document.readyState") { [weak self] response, error in
+      webView.evaluateJavaScript("document.readyState") { [weak self] response, _ in
         let readyState = response
           .flatMap { $0 as? String }
           .flatMap(WebView.ReadyState.init(rawValue:)) ?? .unknown

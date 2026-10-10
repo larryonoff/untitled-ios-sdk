@@ -1,0 +1,78 @@
+# Explicit allowlist: tool upgrades must not silently introduce new policy.
+only_rules:
+  - block_based_kvo
+  - class_delegate_protocol
+  - closing_brace
+  - closure_end_indentation
+  - colon
+  - comma
+  - comment_spacing
+  - compiler_protocol_init
+  - computed_accessors_order
+  - control_statement
+  - deployment_target
+  - discouraged_direct_init
+  - discarded_notification_center_observer
+  - duplicate_conditions
+  - duplicate_enum_cases
+  - duplicate_imports
+  - duplicated_key_in_dictionary_literal
+  - dynamic_inline
+  - fatal_error_message
+  - force_cast
+  - force_try
+  - identifier_name
+  - identical_operands
+  - invalid_swiftlint_command
+  - literal_expression_end_indentation
+  - multiline_arguments
+  - multiline_literal_brackets
+  - multiline_parameters_brackets
+  - notification_center_detachment
+  - overridden_super_call
+  - private_swiftui_state
+  - superfluous_disable_command
+  - trailing_comma
+  - trailing_newline
+  - trailing_whitespace
+  - type_name
+  - unhandled_throwing_task
+  - unused_closure_parameter
+  - unused_optional_binding
+
+included:
+  - Sources
+  - Tests
+  - Package.swift
+excluded:
+  - '**/*.generated.swift'
+  - .build
+  - .swiftpm
+
+deployment_target:
+  iOS_deployment_target: '17.0'
+  iOSApplicationExtension_deployment_target: '17.0'
+  macOS_deployment_target: '15.0'
+
+identifier_name:
+  allowed_symbols: ['_']
+  min_length: 1
+  max_length:
+    warning: 60
+    error: 70
+type_name:
+  min_length: 2
+  max_length:
+    warning: 50
+    error: 60
+  allowed_symbols: ['_']
+
+multiline_arguments:
+  first_argument_location: next_line
+  only_enforce_after_first_closure_on_first_line: false
+
+trailing_comma:
+  mandatory_comma: false
+
+# Formatting owns indentation. No type-size gate or analyzer self rule.
+reporter: xcode

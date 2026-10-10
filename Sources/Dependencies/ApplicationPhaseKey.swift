@@ -233,19 +233,19 @@ extension ApplicationPhase {
       (NSApplication.willResignActiveNotification, .inactive),
       // AppKit has no "background": an app the user hid is the nearest thing,
       // and it stops work the same way.
-      (NSApplication.didHideNotification, .background),
+      (NSApplication.didHideNotification, .background)
     ]
     #elseif os(watchOS)
     [
       (WKApplication.didBecomeActiveNotification, .active),
       (WKApplication.willResignActiveNotification, .inactive),
-      (WKApplication.didEnterBackgroundNotification, .background),
+      (WKApplication.didEnterBackgroundNotification, .background)
     ]
     #elseif canImport(UIKit)
     [
       (UIApplication.didBecomeActiveNotification, .active),
       (UIApplication.willResignActiveNotification, .inactive),
-      (UIApplication.didEnterBackgroundNotification, .background),
+      (UIApplication.didEnterBackgroundNotification, .background)
     ]
     #else
     []

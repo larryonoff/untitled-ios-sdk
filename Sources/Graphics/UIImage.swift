@@ -6,13 +6,14 @@ extension UIImage {
   /// This method will try to redraw an image with orientation and scale considered.
   public var normalized: UIImage {
     // prevent animated image (GIF) lose it's images
+    // `UIImage` is immutable, so `self` stands in for a copy.
     guard images == nil else {
-      return copy() as! UIImage
+      return self
     }
 
     // no need to do anything if already up
     guard imageOrientation != .up else {
-      return copy() as! UIImage
+      return self
     }
 
     let format = UIGraphicsImageRendererFormat.default()

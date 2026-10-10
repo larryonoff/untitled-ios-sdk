@@ -64,4 +64,3 @@ private extension StoreOf<PhotosPickerReducer> {
     set { send(.setSelection(newValue.map(_PhotosPickerItem.init))) }
   }
 }
-

@@ -17,7 +17,7 @@ public struct AnalyticsClient: Sendable {
 
   @DependencyEndpoint(method: "set")
   public var setUserProperty: @Sendable (
-    _ _ : (any Sendable)?,
+    _ _: (any Sendable)?,
     _ for: UserPropertyName
   ) -> Void
 

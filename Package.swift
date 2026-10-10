@@ -147,7 +147,7 @@ let package = Package(
       dependencies: [
         .dependencies,
         .swiftUI,
-        .External.composableArchitecture,
+        .External.composableArchitecture
       ],
       path: "Sources/ComposableArchitecture",
       swiftSettings: .upcomingFeatures
@@ -313,7 +313,7 @@ let package = Package(
     .Dependencies.paywallTargeting,
 
     .Feature.notificationsAccess,
-    .Feature.rateUs,
+    .Feature.rateUs
   ]
 )
 
@@ -336,7 +336,7 @@ extension Target {
         .Client.autoPresentation,
         .Client.remoteSettings,
         .Client.userSettings,
-        .Composable.remoteSettings,
+        .Composable.remoteSettings
       ],
       path: "Sources/AutoPresentationRateUs",
       swiftSettings: .upcomingFeatures
@@ -397,7 +397,7 @@ extension Target {
         .External.Collections.orderedCollections,
         .External.composableArchitecture,
         .External.dependencies,
-        .External.Dependencies.macros,
+        .External.Dependencies.macros
       ],
       path: "Sources/AutoPresentationClient",
       swiftSettings: .upcomingFeatures
@@ -683,7 +683,7 @@ extension Target {
       dependencies: [
         .photosUI,
         .External.composableArchitecture,
-        .External.sharing,
+        .External.sharing
       ],
       path: "Sources/PhotosComposable",
       swiftSettings: .upcomingFeatures
@@ -695,7 +695,7 @@ extension Target {
         .photosUI,
         .Client.photosAuthorization,
         .External.dependencies,
-        .External.sharing,
+        .External.sharing
       ],
       path: "Sources/PhotosAuthorizationComposable",
       swiftSettings: .upcomingFeatures
@@ -706,7 +706,7 @@ extension Target {
       dependencies: [
         .Client.purchases,
         .Composable.remoteSettings,
-        .External.sharing,
+        .External.sharing
       ],
       path: "Sources/PurchasesComposable",
       swiftSettings: .upcomingFeatures
@@ -716,7 +716,7 @@ extension Target {
       name: .Composable.remoteSettings,
       dependencies: [
         .Client.remoteSettings,
-        .External.sharing,
+        .External.sharing
       ],
       path: "Sources/RemoteSettingsComposable",
       swiftSettings: .upcomingFeatures
@@ -726,7 +726,7 @@ extension Target {
       name: .Composable.userSession,
       dependencies: [
         .Client.userSession,
-        .External.sharing,
+        .External.sharing
       ],
       path: "Sources/UserSessionComposable",
       swiftSettings: .upcomingFeatures
@@ -757,7 +757,7 @@ extension Target {
         .swiftUI,
         .External.composableArchitecture,
         .Client.analytics,
-        .Client.notificationsAuthorization,
+        .Client.notificationsAuthorization
       ],
       path: "Sources/NotificationsAccessFeature",
       exclude: ["swiftgen.yml"],
@@ -775,7 +775,7 @@ extension Target {
         .swiftUI,
         .External.composableArchitecture,
         .Client.analytics,
-        .Client.userSession,
+        .Client.userSession
       ],
       path: "Sources/RateUsFeature",
       exclude: ["swiftgen.yml"],
@@ -852,7 +852,7 @@ extension Target {
       .purchasesCore,
       .Client.purchases,
       .Composable.purchases,
-      .purchasesOffers,
+      .purchasesOffers
     ],
     path: "Sources/Purchases",
     swiftSettings: .upcomingFeatures

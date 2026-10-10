@@ -1,0 +1,11 @@
+# Deliberately limited to layout; preserve self, imports, declarations and control flow.
+# Whitespace options are supplied from .editorconfig by swift-style.py.
+--rules indent,linebreaks,linebreakAtEndOfFile,trailingSpace,trailingCommas,wrapArguments
+--trailing-commas never
+--wrap-arguments before-first
+--wrap-parameters preserve
+--allow-partial-wrapping false
+--indent-strings false
+--exclude **/*.generated.swift,**/.build/**,**/.swiftpm/**
+# Swift 6 language mode; only layout rules are enabled.
+--swift-version 6

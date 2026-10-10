@@ -1,3 +1,4 @@
+// swiftlint:disable comment_spacing
 //===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift Async Algorithms open source project
@@ -8,6 +9,7 @@
 // See https://swift.org/LICENSE.txt for license information
 //
 //===----------------------------------------------------------------------===//
+// swiftlint:enable comment_spacing
 
 #if canImport(Darwin)
 import Darwin
@@ -25,14 +27,14 @@ public struct Lock {
 #elseif canImport(WinSDK)
   typealias Primitive = SRWLOCK
 #endif
-  
+
   typealias PlatformLock = UnsafeMutablePointer<Primitive>
   let platformLock: PlatformLock
-  
+
   private init(_ platformLock: PlatformLock) {
     self.platformLock = platformLock
   }
-  
+
   fileprivate static func initialize(_ platformLock: PlatformLock) {
 #if canImport(Darwin)
     platformLock.initialize(to: os_unfair_lock())
@@ -42,14 +44,14 @@ public struct Lock {
     InitializeSRWLock(platformLock)
 #endif
   }
-  
+
   fileprivate static func deinitialize(_ platformLock: PlatformLock) {
 #if canImport(Glibc)
     pthread_mutex_destroy(platformLock)
 #endif
     platformLock.deinitialize(count: 1)
   }
-  
+
   fileprivate static func lock(_ platformLock: PlatformLock) {
 #if canImport(Darwin)
     os_unfair_lock_lock(platformLock)
@@ -59,7 +61,7 @@ public struct Lock {
     AcquireSRWLockExclusive(platformLock)
 #endif
   }
-  
+
   fileprivate static func unlock(_ platformLock: PlatformLock) {
 #if canImport(Darwin)
     os_unfair_lock_unlock(platformLock)
@@ -69,25 +71,25 @@ public struct Lock {
     ReleaseSRWLockExclusive(platformLock)
 #endif
   }
-  
+
   public static func allocate() -> Lock {
     let platformLock = PlatformLock.allocate(capacity: 1)
     initialize(platformLock)
     return Lock(platformLock)
   }
-  
+
   public func deinitialize() {
     Lock.deinitialize(platformLock)
   }
-  
+
   public func lock() {
     Lock.lock(platformLock)
   }
-  
+
   public func unlock() {
     Lock.unlock(platformLock)
   }
-  
+
   /// Acquire the lock for the duration of the given block.
   ///
   /// This convenience method should be preferred to `lock` and `unlock` in
@@ -103,7 +105,7 @@ public struct Lock {
     }
     return try body()
   }
-  
+
   // specialise Void return (for performance)
   public func withLockVoid(_ body: () throws -> Void) rethrows -> Void {
     try self.withLock(body)
@@ -116,16 +118,16 @@ struct ManagedCriticalState<State> {
       withUnsafeMutablePointerToElements { Lock.deinitialize($0) }
     }
   }
-  
+
   private let buffer: ManagedBuffer<State, Lock.Primitive>
-  
+
   init(_ initial: State) {
     buffer = LockedBuffer.create(minimumCapacity: 1) { buffer in
       buffer.withUnsafeMutablePointerToElements { Lock.initialize($0) }
       return initial
     }
   }
-  
+
   func withCriticalRegion<R>(_ critical: (inout State) throws -> R) rethrows -> R {
     try buffer.withUnsafeMutablePointers { header, lock in
       Lock.lock(lock)

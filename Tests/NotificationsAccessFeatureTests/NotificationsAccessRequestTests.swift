@@ -11,7 +11,7 @@ import UserNotifications
 struct NotificationsAccessRequestTests {
   @Test(arguments: [
     NotificationsAuthorization.Status.notDetermined,
-    .provisional,
+    .provisional
   ])
   func notifyAsksWithTheHostsRequestWhileThePromptCanShow(
     status: NotificationsAuthorization.Status

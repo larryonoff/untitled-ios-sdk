@@ -67,7 +67,7 @@ extension InstagramSharingClient {
         UIPasteboard.general.setItems(
           [shareItem],
           options: [
-            .expirationDate:  date().addingTimeInterval(60 * 5)
+            .expirationDate: date().addingTimeInterval(60 * 5)
           ]
         )
 
@@ -113,7 +113,7 @@ extension InstagramSharingClient {
         UIPasteboard.general.setItems(
           [shareItem],
           options: [
-            .expirationDate:  date().addingTimeInterval(60 * 5)
+            .expirationDate: date().addingTimeInterval(60 * 5)
           ]
         )
 
