@@ -68,6 +68,12 @@ public struct PaywallReducer: Sendable {
       paywall?.eligibleOffers.first
     }
 
+    /// When this paywall's offer ends: the date its remote config fixes, or the end of the
+    /// countdown its first showing started; `nil` for a paywall without a deadline.
+    public var offerEndDate: Date? {
+      paywall?.offerEndDate ?? offerHistory.countdowns[target.kind]?.end
+    }
+
     // MARK: - Shared State
 
     @SharedReader(.isPaywallProductHiddenPricesEnabled) public var isHiddenPricesEnabled
@@ -378,10 +384,6 @@ public struct PaywallReducer: Sendable {
     state.isFetchingPaywall = true
 
     return .run(priority: .high) { [paywallID = state.target.id] send in
-      // HACK
-      // sometimes product cannot be selected or purchased
-      try? await Task.sleep(for: .nanoseconds(1_000_000_00))
-
       for try await paywall in purchases.paywall(by: paywallID) {
         await send(.fetchPaywallResponse(.success(paywall)))
       }
