@@ -13,6 +13,7 @@ struct PaywallAnalyticsTests {
   /// failed refetch was retried.
   @Test func viewIsLoggedOnceTheProductsShow() async {
     let events = LockIsolated<[String]>([])
+    let viewParameters = LockIsolated<[String: String]>([:])
 
     let store = TestStore(
       initialState: PaywallReducer.State(
@@ -23,7 +24,12 @@ struct PaywallAnalyticsTests {
       PaywallReducer()
     } withDependencies: {
       $0.analytics = AnalyticsClient(
-        logEvent: { name, _ in events.withValue { $0.append(name.rawValue) } },
+        logEvent: { name, parameters in
+          events.withValue { $0.append(name.rawValue) }
+          viewParameters.setValue((parameters ?? [:]).reduce(into: [:]) {
+            $0[$1.key.rawValue] = String(describing: $1.value)
+          })
+        },
         setUserProperty: { _, _ in }
       )
       $0.date.now = Date(timeIntervalSinceReferenceDate: 1_000_000)
@@ -46,5 +52,9 @@ struct PaywallAnalyticsTests {
     await store.send(.fetchPaywallResponse(.success(full)))
 
     #expect(events.value == ["paywall_main_view"])
+    #if os(iOS)
+    #expect(viewParameters.value["hinge_status"] != nil)
+    #expect(viewParameters.value["interface_orientation"] != nil)
+    #endif
   }
 }

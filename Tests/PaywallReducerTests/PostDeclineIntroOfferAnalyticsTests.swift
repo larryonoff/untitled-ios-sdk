@@ -49,6 +49,12 @@ struct PostDeclineIntroOfferAnalyticsTests {
         && $0["paywall_id"] == "onboarding"
         && $0["placement"] == "onboarding"
     })
+    #if os(iOS)
+    // How the device was held, so conversion can be split by it.
+    #expect(events.value.allSatisfy {
+      $0["hinge_status"] != nil && $0["interface_orientation"] != nil
+    })
+    #endif
   }
 
   /// Swiping the offer away used to close the paywall without a close event.

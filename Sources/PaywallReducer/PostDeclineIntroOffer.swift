@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckComposableArchitecture
+import DuckDependencies
 import DuckPurchases
 
 @Reducer
@@ -39,6 +40,25 @@ public struct PostDeclineIntroOffer: Sendable {
 
     @Presents
     public var destination: Destination.State?
+
+    #if os(iOS)
+    @SharedReader(.hingeStatus) var hingeStatus
+    @SharedReader(.interfaceOrientation) var interfaceOrientation
+    #endif
+
+    init(paywallID: Paywall.ID, placement: Placement?, product: Product) {
+      self.paywallID = paywallID
+      self.placement = placement
+      self.product = product
+    }
+
+    var devicePosture: DevicePosture {
+      #if os(iOS)
+      DevicePosture(hingeStatus: hingeStatus, interfaceOrientation: interfaceOrientation)
+      #else
+      DevicePosture()
+      #endif
+    }
   }
 
   @Reducer
@@ -88,7 +108,8 @@ public struct PostDeclineIntroOffer: Sendable {
                 .success,
                 product: state.product,
                 paywallID: state.paywallID,
-                placement: state.placement
+                placement: state.placement,
+                devicePosture: state.devicePosture
               ),
               .send(.delegate(.purchased))
             )
@@ -97,7 +118,8 @@ public struct PostDeclineIntroOffer: Sendable {
               .cancelled,
               product: state.product,
               paywallID: state.paywallID,
-              placement: state.placement
+              placement: state.placement,
+              devicePosture: state.devicePosture
             )
           }
         } catch {
@@ -108,6 +130,7 @@ public struct PostDeclineIntroOffer: Sendable {
             product: state.product,
             paywallID: state.paywallID,
             placement: state.placement,
+            devicePosture: state.devicePosture,
             error: error
           )
         }
@@ -119,7 +142,8 @@ public struct PostDeclineIntroOffer: Sendable {
           let logRestore: Effect<Action> = analytics.logRestore(
             RestoreAction(restoreResult),
             paywallID: state.paywallID,
-            placement: state.placement
+            placement: state.placement,
+            devicePosture: state.devicePosture
           )
 
           switch restoreResult {
@@ -135,6 +159,7 @@ public struct PostDeclineIntroOffer: Sendable {
             .failure,
             paywallID: state.paywallID,
             placement: state.placement,
+            devicePosture: state.devicePosture,
             error: error
           )
         }
@@ -179,7 +204,8 @@ public struct PostDeclineIntroOffer: Sendable {
         .attempt,
         product: state.product,
         paywallID: state.paywallID,
-        placement: state.placement
+        placement: state.placement,
+        devicePosture: state.devicePosture
       ),
       .run { [
         paywallID = state.paywallID,
@@ -220,7 +246,8 @@ public struct PostDeclineIntroOffer: Sendable {
       analytics.logRestore(
         .attempt,
         paywallID: state.paywallID,
-        placement: state.placement
+        placement: state.placement,
+        devicePosture: state.devicePosture
       ),
       .run { send in
         await send(

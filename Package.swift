@@ -662,6 +662,7 @@ extension Target {
       name: .Composable.paywall,
       dependencies: [
         .composableArchitecture,
+        .dependencies,
         .purchases,
         .Client.analytics,
         .Client.feedbackGenerator,

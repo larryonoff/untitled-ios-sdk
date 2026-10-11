@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
 import DuckComposableArchitecture
+import DuckDependencies
 import DuckFeedbackClient
 import DuckPaywallTargeting
 import DuckPurchases
@@ -73,6 +74,18 @@ public struct PaywallReducer: Sendable {
     @SharedReader(.isPaywallOnboardingIntroOfferEnabled) public var isOnboardingIntroOfferEnabled
     @SharedReader(.purchases) public var purchases
     @Shared(.offerHistory) public var offerHistory
+    #if os(iOS)
+    @SharedReader(.hingeStatus) var hingeStatus
+    @SharedReader(.interfaceOrientation) var interfaceOrientation
+    #endif
+
+    var devicePosture: DevicePosture {
+      #if os(iOS)
+      DevicePosture(hingeStatus: hingeStatus, interfaceOrientation: interfaceOrientation)
+      #else
+      DevicePosture()
+      #endif
+    }
 
     // MARK: Init
 
@@ -210,7 +223,8 @@ public struct PaywallReducer: Sendable {
                 .success,
                 product: product,
                 paywallID: state.target.id,
-                placement: state.placement
+                placement: state.placement,
+                devicePosture: state.devicePosture
               ),
               .send(.delegate(.dismiss))
             )
@@ -219,7 +233,8 @@ public struct PaywallReducer: Sendable {
               .cancelled,
               product: product,
               paywallID: state.target.id,
-              placement: state.placement
+              placement: state.placement,
+              devicePosture: state.devicePosture
             )
           }
         } catch {
@@ -236,6 +251,7 @@ public struct PaywallReducer: Sendable {
               product: product,
               paywallID: state.target.id,
               placement: state.placement,
+              devicePosture: state.devicePosture,
               error: error
             )
           )
@@ -248,7 +264,8 @@ public struct PaywallReducer: Sendable {
           let logRestore: Effect<Action> = analytics.logRestore(
             RestoreAction(restoreResult),
             paywallID: state.target.id,
-            placement: state.placement
+            placement: state.placement,
+            devicePosture: state.devicePosture
           )
 
           switch restoreResult {
@@ -274,6 +291,7 @@ public struct PaywallReducer: Sendable {
               .failure,
               paywallID: state.target.id,
               placement: state.placement,
+              devicePosture: state.devicePosture,
               error: error
             )
           )
@@ -389,7 +407,8 @@ public struct PaywallReducer: Sendable {
         .attempt,
         product: product,
         paywallID: state.target.id,
-        placement: state.placement
+        placement: state.placement,
+        devicePosture: state.devicePosture
       ),
       .run { [paywallID = state.target.id] send in
         let result = await Result {
@@ -437,7 +456,8 @@ public struct PaywallReducer: Sendable {
       analytics.logRestore(
         .attempt,
         paywallID: state.target.id,
-        placement: state.placement
+        placement: state.placement,
+        devicePosture: state.devicePosture
       ),
       .run { send in
         let result = await Result {

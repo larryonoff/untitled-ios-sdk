@@ -1,7 +1,11 @@
 import ComposableArchitecture
 import DuckAnalyticsClient
+import DuckDependencies
 import DuckPurchases
 import Foundation
+#if os(iOS)
+import UIKit
+#endif
 
 extension AnalyticsClient {
   /// Logged once the paywall has products, so the event can say which it shows.
@@ -16,6 +20,7 @@ extension AnalyticsClient {
     params[.paywallID] = state.target.id
     params[.placement] = state.placement
     params[.productsShown] = state.products.map(\.id.rawValue).joined(separator: ",")
+    params.insertOrUpdate(state.devicePosture)
 
     let paywallID = state.target.id
 
@@ -37,6 +42,7 @@ extension AnalyticsClient {
     params[.secondsOnScreen] = state.viewedAt.map {
       Int(now.timeIntervalSince($0).rounded())
     }
+    params.insertOrUpdate(state.devicePosture)
 
     let paywallID = state.target.id
 
@@ -54,6 +60,7 @@ extension AnalyticsClient {
     params[.contentID] = product.id
     params[.paywallID] = state.target.id
     params[.placement] = state.placement
+    params.insertOrUpdate(state.devicePosture)
 
     let paywallID = state.target.id
 
@@ -67,6 +74,7 @@ extension AnalyticsClient {
     product: Product,
     paywallID: Paywall.ID,
     placement: Placement?,
+    devicePosture: DevicePosture,
     error: (any Error)? = nil
   ) -> Effect<Action> {
     var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
@@ -75,6 +83,7 @@ extension AnalyticsClient {
     params[.placement] = placement
     params.insertOrUpdate(product)
     params.insertOrUpdate(error)
+    params.insertOrUpdate(devicePosture)
 
     return .run { [params] _ in
       log(.productAction, parameters: params)
@@ -85,6 +94,7 @@ extension AnalyticsClient {
     _ action: RestoreAction,
     paywallID: Paywall.ID,
     placement: Placement?,
+    devicePosture: DevicePosture,
     error: (any Error)? = nil
   ) -> Effect<Action> {
     var params: [AnalyticsClient.EventParameterName: any Sendable] = [:]
@@ -92,6 +102,7 @@ extension AnalyticsClient {
     params[.paywallID] = paywallID
     params[.placement] = placement
     params.insertOrUpdate(error)
+    params.insertOrUpdate(devicePosture)
 
     return .run { [params] _ in
       log(.restoreAction, parameters: params)
@@ -141,7 +152,47 @@ private extension Dictionary<AnalyticsClient.EventParameterName, any Sendable> {
     self[.errorDomain] = nsError.domain
     self[.errorDescription] = nsError.localizedDescription
   }
+
+  mutating func insertOrUpdate(_ posture: DevicePosture) {
+    #if os(iOS)
+    self[.hingeStatus] = posture.hingeStatus?.analyticsValue ?? "none"
+    self[.interfaceOrientation] = posture.interfaceOrientation.analyticsValue
+    #endif
+  }
 }
+
+/// How the device was held when an event happened, so paywall conversion can be split by it.
+struct DevicePosture: Equatable, Sendable {
+  #if os(iOS)
+  var hingeStatus: HingeStatus?
+  var interfaceOrientation: UIInterfaceOrientation
+  #endif
+}
+
+#if os(iOS)
+private extension HingeStatus {
+  var analyticsValue: String {
+    switch self {
+    case .unknown: "unknown"
+    case .closed: "closed"
+    case .partiallyOpen: "partially_open"
+    case .fullyOpen: "fully_open"
+    }
+  }
+}
+
+private extension UIInterfaceOrientation {
+  var analyticsValue: String {
+    switch self {
+    case .portrait: "portrait"
+    case .portraitUpsideDown: "portrait_upside_down"
+    case .landscapeLeft: "landscape_left"
+    case .landscapeRight: "landscape_right"
+    default: "unknown"
+    }
+  }
+}
+#endif
 
 extension AnalyticsClient.EventName {
   static let productAction: Self = "product_action"
@@ -149,6 +200,8 @@ extension AnalyticsClient.EventName {
 }
 
 extension AnalyticsClient.EventParameterName {
+  static let hingeStatus: Self = "hinge_status"
+  static let interfaceOrientation: Self = "interface_orientation"
   static let introOfferShown: Self = "intro_offer_shown"
   static let paywallID: Self = "paywall_id"
   static let productsShown: Self = "products_shown"
