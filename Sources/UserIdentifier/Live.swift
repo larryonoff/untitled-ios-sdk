@@ -3,6 +3,7 @@ import DuckFoundation
 import DuckLogging
 import Foundation
 import KeychainAccess
+import Synchronization
 import Tagged
 
 extension UserIdentifierClient: DependencyKey {

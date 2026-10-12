@@ -5,6 +5,7 @@ import DuckFoundation
 import DuckLogging
 import Foundation
 import KeychainAccess
+import Synchronization
 
 #if canImport(UIKit)
 import UIKit

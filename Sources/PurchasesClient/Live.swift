@@ -10,6 +10,7 @@ import Foundation
 import IssueReporting
 import OSLog
 import StoreKit
+import Synchronization
 #if canImport(UIKit)
 import UIKit
 #endif

@@ -3,6 +3,7 @@ import Dependencies
 import DuckFoundation
 import DuckLogging
 import Photos
+import Synchronization
 
 extension PhotosAuthorizationClient: DependencyKey {
   public static let liveValue: Self = {

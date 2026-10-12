@@ -1,4 +1,4 @@
-import DuckFoundation
+import Synchronization
 
 /// Broadcasts values to every live `AsyncStream` it has handed out.
 ///
@@ -22,9 +22,8 @@ import DuckFoundation
 ///   PR `pr/relay`) are *rendezvous* primitives: the producer suspends until a
 ///   consumer takes the value, and one consumer takes it. Our producers are
 ///   synchronous delegate callbacks, and our consumers each need every value.
-/// - `AsyncSequence.share()` broadcasts, but needs iOS 18; this package targets
-///   iOS 17. It also shares one buffer across consumers, trimmed to the slowest;
-///   per-stream buffers suit our unrelated consumers better.
+/// - `AsyncSequence.share()` shares one buffer across consumers, trimmed to the
+///   slowest; per-stream buffers suit our unrelated consumers better.
 /// - `ConcurrencyExtras`/`swift-sharing` have no multicast type.
 public final class AsyncBroadcast<Element: Sendable>: Sendable {
   private struct State {

@@ -19,7 +19,7 @@ python3 build-system/swift-style.py format Sources/VideoPlayer/VideoPlayerView.s
 
 - `.editorconfig` is the source of whitespace settings; the script passes them to SwiftFormat.
 - `.swiftformat` enables only indentation, line endings, final newline, trailing whitespace, trailing commas and argument wrapping. It leaves `self`, imports, access control and control flow alone.
-- `.swiftlint.yml` lists its rules with `only_rules`, so a tool upgrade adds no policy. Deployment targets are iOS 17.0 and macOS 15.0, matching `Package.swift`.
+- `.swiftlint.yml` lists its rules with `only_rules`, so a tool upgrade adds no policy. Deployment targets are iOS 18.0 and macOS 15.0, matching `Package.swift`.
 
 ## No baseline
 

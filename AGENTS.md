@@ -75,7 +75,7 @@ test; otherwise green hides the bug.
 
 ## Platform & Stack
 
-- **Swift tools 6.3**, Swift 6 language mode. Library floor: iOS 17 / macOS 15.
+- **Swift tools 6.3**, Swift 6 language mode. Library floor: iOS 18 / macOS 15.
 - **Stack**: Point-Free (TCA, Dependencies, Sharing, Navigation, Tagged,
   CustomDump, ConcurrencyExtras, IssueReporting) + swift-collections. Vendor
   SDKs: Adapty, AppMetrica, Facebook, Firebase, DeviceKit, KeychainAccess.
@@ -87,6 +87,8 @@ layout — `Interface.swift`, `Live.swift`, `TestKey.swift`, plus `Exports.swift
 for re-exports, `Analytics.swift`, and `Internal/` for implementation helpers.
 
 ## Code Style
+
+- Use Apple `Synchronization.Mutex` for synchronous shared mutable state. Do not add a Mutex backport or export a same-named wrapper from DuckFoundation.
 
 Formatting: `.editorconfig` — 2-space indent, trim trailing whitespace, final
 newline — applied by SwiftFormat through `build-system/swift-style.py`.

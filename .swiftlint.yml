@@ -50,8 +50,8 @@ excluded:
   - .swiftpm
 
 deployment_target:
-  iOS_deployment_target: '17.0'
-  iOSApplicationExtension_deployment_target: '17.0'
+  iOS_deployment_target: '18.0'
+  iOSApplicationExtension_deployment_target: '18.0'
   macOS_deployment_target: '15.0'
 
 identifier_name:
