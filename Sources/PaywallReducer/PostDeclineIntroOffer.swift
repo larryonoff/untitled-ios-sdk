@@ -102,7 +102,15 @@ public struct PostDeclineIntroOffer: Sendable {
 
         do {
           switch try result.get() {
-          case .pending, .success:
+          case .pending:
+            return analytics.logPurchase(
+              .pending,
+              product: state.product,
+              paywallID: state.paywallID,
+              placement: state.placement,
+              devicePosture: state.devicePosture
+            )
+          case .success:
             return .concatenate(
               analytics.logPurchase(
                 .success,

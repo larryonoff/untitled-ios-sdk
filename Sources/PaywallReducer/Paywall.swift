@@ -223,7 +223,15 @@ public struct PaywallReducer: Sendable {
 
         do {
           switch try result.get() {
-          case .pending, .success:
+          case .pending:
+            return analytics.logPurchase(
+              .pending,
+              product: product,
+              paywallID: state.target.id,
+              placement: state.placement,
+              devicePosture: state.devicePosture
+            )
+          case .success:
             return .concatenate(
               analytics.logPurchase(
                 .success,

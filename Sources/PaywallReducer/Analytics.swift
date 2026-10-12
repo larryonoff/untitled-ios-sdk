@@ -121,6 +121,7 @@ enum ProductAction: String {
   case attempt
   case cancelled
   case failure
+  case pending
   case success
 }
 
