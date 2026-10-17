@@ -28,8 +28,6 @@ public struct PurchasesClient: Sendable {
   public var purchases: @Sendable () -> Purchases = { .init() }
   public var purchasesUpdates: @Sendable () -> AsyncStream<Purchases> = { .finished }
 
-  public var receipt: @Sendable () async throws -> Data?
-
   public var requestReview: @Sendable () async -> Void
 
   public var reset: @Sendable () async throws -> Void

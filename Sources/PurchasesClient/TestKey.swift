@@ -18,7 +18,6 @@ extension PurchasesClient {
     restorePurchases: { .success(.init(isPremium: true)) },
     purchases: { Purchases(isPremium: true) },
     purchasesUpdates: { AsyncStream { _ in } },
-    receipt: { nil },
     requestReview: {},
     reset: {},
     setFallback: { _ in },

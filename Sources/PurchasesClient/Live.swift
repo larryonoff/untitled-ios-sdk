@@ -63,9 +63,6 @@ extension PurchasesClient {
       purchasesUpdates: {
         impl.purchasesUpdates
       },
-      receipt: {
-        try impl.receipt()
-      },
       requestReview: {
         await impl.requestReview()
       },
@@ -482,18 +479,6 @@ final class PurchasesClientImpl: Sendable {
       )
 
       throw error
-    }
-  }
-
-  func receipt() throws -> Data? {
-    let bundle = Bundle.main
-
-    return try bundle.appStoreReceiptURL.flatMap { receiptURL in
-      let fileManager = FileManager.default
-      guard fileManager.fileExists(atPath: receiptURL.path) else {
-        return nil
-      }
-      return try Data(contentsOf: receiptURL)
     }
   }
 
