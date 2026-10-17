@@ -43,15 +43,15 @@ public struct InterfaceOrientationKey: SharedReaderKey {
   ) -> SharedSubscription {
     let task = Task { @MainActor in
       var observation: NSKeyValueObservation?
-      var orientation: UIInterfaceOrientation?
 
       for await scene in UIApplication.shared.windowSceneActivations {
         // UIKit changes the geometry on the main thread, and `.initial` reports synchronously here.
-        observation = scene.observe(\.effectiveGeometry, options: .initial) { scene, _ in
-          let newOrientation = scene.effectiveGeometry.interfaceOrientation
-          guard newOrientation != orientation else { return }
-          orientation = newOrientation
-          subscriber.yield(newOrientation)
+        observation = scene.observe(\.effectiveGeometry, options: [.initial, .old, .new]) { _, change in
+          guard
+            let orientation = change.newValue?.interfaceOrientation,
+            orientation != change.oldValue?.interfaceOrientation
+          else { return }
+          subscriber.yield(orientation)
         }
       }
 
