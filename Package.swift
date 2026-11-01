@@ -285,6 +285,12 @@ let package = Package(
       swiftSettings: .upcomingFeatures
     ),
     .swiftUI,
+    .testTarget(
+      name: "SwiftUITests",
+      dependencies: [.swiftUI, .testSupport],
+      path: "Tests/SwiftUITests",
+      swiftSettings: .upcomingFeatures
+    ),
     .uiKit,
     .webView,
 

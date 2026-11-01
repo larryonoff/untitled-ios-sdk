@@ -76,6 +76,7 @@ private struct ContentWidthModifier: ViewModifier {
   let placement: ContentWidthPlacement
 
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+  @Environment(\.displayScale) private var displayScale
   @State private var containerWidth: CGFloat = 0
 
   func body(content: Content) -> some View {
@@ -91,8 +92,8 @@ private struct ContentWidthModifier: ViewModifier {
       let spare = max(0, containerWidth - maximum)
       let leading = spare * alignment.leadingShare
       content
-        .contentMargins(.leading, leading, for: .scrollContent)
-        .contentMargins(.trailing, spare - leading, for: .scrollContent)
+        .contentMargins(.leading, leading.roundedDownToPixel(scale: displayScale), for: .scrollContent)
+        .contentMargins(.trailing, (spare - leading).roundedDownToPixel(scale: displayScale), for: .scrollContent)
         .onGeometryChange(for: CGFloat.self) { proxy in
           // Already inside the parent's safe area; subtracting the insets
           // again would count an uneven one twice.
@@ -180,4 +181,11 @@ private extension ContentWidth {
     672
   }
   #endif
+}
+
+private extension CGFloat {
+  func roundedDownToPixel(scale: CGFloat) -> CGFloat {
+    let scale = scale.isFinite && scale > 0 ? scale : 1
+    return (self * scale).rounded(.down) / scale
+  }
 }
