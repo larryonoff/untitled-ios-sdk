@@ -34,6 +34,7 @@ let package = Package(
     .library(name: .Client.userSession, targets: [.Client.userSession]),
     .library(name: .Client.userSettings, targets: [.Client.userSettings]),
     .library(name: .Client.userTracking, targets: [.Client.userTracking]),
+    .library(name: .Client.userTrackingLive, targets: [.Client.userTrackingLive]),
 
     .library(name: .Composable.connectivity, targets: [.Composable.connectivity]),
     .library(name: .Composable.paywall, targets: [.Composable.paywall]),
@@ -332,6 +333,13 @@ let package = Package(
     .Client.userSession,
     .Client.userSettings,
     .Client.userTracking,
+    .testTarget(
+      name: "UserTrackingLiveTests",
+      dependencies: [.Client.userTrackingLive, .Client.purchases, .Client.analytics, .Client.userTracking, .dependencies, .External.dependencies, .External.sharing],
+      path: "Tests/UserTrackingLiveTests",
+      swiftSettings: .upcomingFeatures
+    ),
+    .Client.userTrackingLive,
 
     .Composable.connectivity,
     .Composable.paywall,
@@ -585,6 +593,7 @@ extension Target {
       path: "Sources/PurchasesClient",
       swiftSettings: .upcomingFeatures
     ) }
+
     static var purchasesAdapty: Target { target(
       name: .Client.purchasesAdapty,
       dependencies: [
@@ -687,18 +696,31 @@ extension Target {
     static var userTracking: Target { target(
       name: .Client.userTracking,
       dependencies: [
-        .Client.analytics,
+        .External.dependencies,
+        .External.Dependencies.macros
+      ],
+      path: "Sources/UserTracking",
+      swiftSettings: .upcomingFeatures,
+      linkerSettings: [
+        .linkedFramework("AppTrackingTransparency")
+      ]
+    ) }
+
+    static var userTrackingLive: Target { target(
+      name: .Client.userTrackingLive,
+      dependencies: [
         .dependencies,
-        .External.adapty,
+        .logging,
+        .Client.analytics,
+        .Client.userTracking,
+        .Client.purchases,
         .External.concurrencyExtras,
         .External.dependencies,
-        .External.Dependencies.macros,
-        .External.Firebase.analytics,
         .External.Facebook.core,
         .External.issueReporting,
         .External.sharing
       ],
-      path: "Sources/UserTracking",
+      path: "Sources/UserTrackingLive",
       swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("AdServices"),
@@ -1053,6 +1075,7 @@ extension Target.Dependency {
     static let userSession = byName(name: .Client.userSession)
     static let userSettings = byName(name: .Client.userSettings)
     static let userTracking = byName(name: .Client.userTracking)
+    static let userTrackingLive = byName(name: .Client.userTrackingLive)
   }
 
   enum Composable {
@@ -1230,6 +1253,7 @@ extension String {
     static let userSession = "DuckUserSessionClient"
     static let userSettings = "DuckUserSettings"
     static let userTracking = "DuckUserTracking"
+    static let userTrackingLive = "DuckUserTrackingLive"
   }
 
   enum Composable {

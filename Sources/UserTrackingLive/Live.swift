@@ -1,4 +1,3 @@
-import Adapty
 import AdServices
 import AdSupport
 import AppTrackingTransparency
@@ -7,7 +6,8 @@ import ConcurrencyExtras
 import DuckAnalyticsClient
 import DuckDependencies
 import DuckLogging
-import FirebaseAnalytics
+import DuckPurchasesClient
+import DuckUserTracking
 import Foundation
 import OSLog
 import Sharing
@@ -19,10 +19,12 @@ import UIKit
 
 extension UserTrackingClient {
   public static func live(
-    analytics: AnalyticsClient
+    analytics: AnalyticsClient,
+    purchases: PurchasesClient
   ) -> Self {
     let impl = UserTrackingImpl(
-      analytics: analytics
+      analytics: analytics,
+      purchases: purchases
     )
 
     return UserTrackingClient(
@@ -72,17 +74,22 @@ extension UserTrackingClient {
 
 final class UserTrackingImpl: Sendable {
   private let analytics: AnalyticsClient
+  private let purchases: PurchasesClient
+  private let authorization: TrackingAuthorization
   // SAFETY: `CurrentValueSubject` is internally thread-safe; Combine just doesn't annotate it `Sendable`.
   // Seeded from the system rather than a literal: a guessed `.authorized` is
   // the one wrong answer that reads as permission the user never gave.
-  private nonisolated(unsafe) let _authStatus = CurrentValueSubject<AuthorizationStatus, Never>(
-    AuthorizationStatus(ATTrackingManager.trackingAuthorizationStatus)
-  )
+  private nonisolated(unsafe) let _authStatus: CurrentValueSubject<AuthorizationStatus, Never>
 
   init(
-    analytics: AnalyticsClient
+    analytics: AnalyticsClient,
+    purchases: PurchasesClient,
+    authorization: TrackingAuthorization = .system
   ) {
     self.analytics = analytics
+    self.purchases = purchases
+    self.authorization = authorization
+    self._authStatus = CurrentValueSubject(AuthorizationStatus(authorization.status()))
   }
 
   var authStatus: AuthorizationStatus {
@@ -98,24 +105,24 @@ final class UserTrackingImpl: Sendable {
   }
 
   func initialize() {
-    updateAuthStatus(
-      ATTrackingManager.trackingAuthorizationStatus
-    )
+    updateAuthStatus(authorization.status())
 
     logger.info("user-tracking.initialize success")
   }
 
   func isAuthRequestNeeded() -> Bool {
-    ATTrackingManager.trackingAuthorizationStatus == .notDetermined
+    authorization.status() == .notDetermined
   }
 
+  @MainActor
   func requestAuthorization(
     timeoutWaitingForApplicationActive timeout: Duration
   ) async throws -> AuthorizationStatus {
     logger.info("user-tracking.authorize")
+    try Task.checkCancellation()
 
     guard isAuthRequestNeeded() else {
-      let attStatus = ATTrackingManager.trackingAuthorizationStatus
+      let attStatus = authorization.status()
       let status = AuthorizationStatus(attStatus)
 
       logger.info(
@@ -135,14 +142,21 @@ final class UserTrackingImpl: Sendable {
     // precondition: wait for it, and report not getting there rather than
     // asking anyway. Authorization stays `.notDetermined`, so a later request
     // still gets to present the prompt.
-    @SharedReader(.applicationPhase) var phase
-    try await $phase.wait(for: .active, timeout: timeout)
+    try await authorization.phase.wait(for: .active, timeout: timeout)
+    try Task.checkCancellation()
+
+    // Another request may have resolved while this caller waited for activation.
+    let currentStatus = authorization.status()
+    guard currentStatus == .notDetermined else {
+      updateAuthStatus(currentStatus)
+      return AuthorizationStatus(currentStatus)
+    }
 
     // Logged only once the prompt can actually be presented, so the event
     // counts requests made rather than requests attempted.
     analytics.log(.idfaRequest)
 
-    let attStatus = await ATTrackingManager.requestTrackingAuthorization()
+    let attStatus = await authorization.request()
     let status = AuthorizationStatus(attStatus)
 
     updateAuthStatus(attStatus)
@@ -170,47 +184,18 @@ final class UserTrackingImpl: Sendable {
     logger.info("user-tracking.send")
 
     do {
-      var intergrationIDs: [AdaptyIntegrationIdentifier] = [
-        request.appMetricaDeviceID.map(AdaptyIntegrationIdentifier.appmetricaDeviceId),
-        request.appMetricaProfileID.map(AdaptyIntegrationIdentifier.appmetricaProfileId),
-        request.firebaseAppInstanceID.map(AdaptyIntegrationIdentifier.firebaseAppInstanceId)
-      ].compactMap { $0 }
-
+      var identifiers = PurchasesClient.IntegrationIDs(
+        appMetricaDeviceID: request.appMetricaDeviceID,
+        appMetricaProfileID: request.appMetricaProfileID,
+        firebaseAppInstanceID: request.firebaseAppInstanceID
+      )
       #if os(iOS)
-      intergrationIDs.append(.facebookAnonymousId(AppEvents.shared.anonymousID))
+      identifiers.facebookAnonymousID = AppEvents.shared.anonymousID
       #endif
+      try await purchases.setIntegrationIDs(identifiers)
+      try await purchases.setTrackingAuthorizationStatus(authStatus.atAuthorizationStatus)
 
-      for identifier in intergrationIDs {
-        do {
-          // Only the key is logged: the value is the advertising, vendor or
-          // profile identifier itself, and the system log is not a place to
-          // put one.
-          logger.info(
-            """
-            user-tracking.send-identifier | \
-            key: \(identifier.key, privacy: .public) target: Adapty
-            """
-          )
-
-          try await Adapty.setIntegrationIdentifier(identifier)
-        } catch {
-          logger.error(
-            """
-            user-tracking.send-identifier failed | \
-            key: \(identifier.key, privacy: .public) target: Adapty
-            error: \(error, privacy: .public)
-            """
-          )
-        }
-      }
-
-      let params = AdaptyProfileParameters.Builder()
-        .with(appTrackingTransparencyStatus: authStatus.atAuthorizationStatus)
-        .build()
-
-      try await Adapty.updateProfile(params: params)
-
-      logger.info("user-tracking.send success")
+      logger.info("user-tracking.send success | target: purchases")
     } catch {
       logger.error(
         """
