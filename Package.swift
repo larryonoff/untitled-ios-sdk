@@ -52,6 +52,7 @@ let package = Package(
     .library(name: .core, targets: [.core]),
     .library(name: .coreImage, targets: [.coreImage]),
     .library(name: .dependencies, targets: [.dependencies]),
+    .library(name: .testSupport, targets: [.testSupport]),
     .library(name: .foundation, targets: [.foundation]),
     .library(name: .graphics, targets: [.graphics]),
     .library(name: .logging, targets: [.logging]),
@@ -212,6 +213,13 @@ let package = Package(
       swiftSettings: .upcomingFeatures
     ),
     .dependencies,
+    .testTarget(
+      name: "TestSupportTests",
+      dependencies: [.testSupport],
+      path: "Tests/TestSupportTests",
+      swiftSettings: .upcomingFeatures
+    ),
+    .testSupport,
     .foundation,
     .logging,
     .photos,
@@ -330,6 +338,13 @@ extension [SwiftSetting] {
 }
 
 extension Target {
+  static var testSupport: Target { target(
+    name: .testSupport,
+    dependencies: [.concurrency],
+    path: "Sources/TestSupport",
+    swiftSettings: .upcomingFeatures
+  ) }
+
   enum AutoPresentation {
     static var rateUs: Target { target(
       name: .AutoPresentation.rateUs,
@@ -946,6 +961,7 @@ extension Target {
 }
 
 extension Target.Dependency {
+  static let testSupport = byName(name: .testSupport)
   static let avFoundation = byName(name: .avFoundation)
   static let composableArchitecture = byName(name: .composableArchitecture)
   static let concurrency = byName(name: .concurrency)
@@ -1120,6 +1136,7 @@ extension Target.Dependency {
 }
 
 extension String {
+  static let testSupport = "DuckTestSupport"
   static let avFoundation = "DuckAVFoundation"
   static let concurrency = "DuckConcurrency"
   static let core = "DuckCore"
