@@ -182,7 +182,7 @@ private func handleTransaction(
 
     // subscription start free trial
 
-    if transaction.isStartFreeTrial {
+    if transaction.startsFreeTrial {
       logger.info(
         """
         transaction.handle success | \

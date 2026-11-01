@@ -7,7 +7,7 @@ extension PaywallReducer.State {
     var products = (paywall?.products ?? [])
 
     if
-      let filteredProductIDs = paywall?.filteredProductIDs,
+      let filteredProductIDs = paywall?.excludedProductIDs,
       !filteredProductIDs.isEmpty
     {
       products = products.filter { !filteredProductIDs.contains($0.id) }
@@ -16,9 +16,9 @@ extension PaywallReducer.State {
     self.paywall = paywall
     self.products = IdentifiedArray(uncheckedUniqueElements: products)
 
-    self.productComparing = paywall?.productComparing
+    self.productComparing = paywall?.comparisonProduct
     self.productSelectedID =
-      paywall?.productSelected?.id ?? products.first?.id
+      paywall?.selectedProduct?.id ?? products.first?.id
   }
 }
 

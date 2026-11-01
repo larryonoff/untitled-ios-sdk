@@ -80,16 +80,16 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
       if let destinationPeriod = self.subscriptionPeriod {
         price = subscription
           .subscriptionPeriod
-          .convertPrice(
+          .convertedPrice(
             value.price,
             to: destinationPeriod
           )
         subscriptionPeriod = destinationPeriod
       }
 
-      let priceString = Product.displayPrice(
+      let priceString = Product.formattedPrice(
         price,
-        formatStyle: value.priceFormatStyle,
+        locale: value.priceFormatStyle.locale,
         roundingRule: roundingRule
       )
 
@@ -119,9 +119,9 @@ extension Product.FormatStyle.Price: Foundation.FormatStyle {
         .joined(separator: _separator)
     }
 
-    return Product.displayPrice(
+    return Product.formattedPrice(
       value.price,
-      formatStyle: value.priceFormatStyle,
+      locale: value.priceFormatStyle.locale,
       roundingRule: roundingRule
     ) ?? ""
   }
@@ -195,27 +195,19 @@ extension Product {
     )
   }
 
-  public static func displayPrice(
+  public static func formattedPrice(
     _ price: Decimal,
-    formatStyle: Decimal.FormatStyle.Currency,
-    roundingRule: Product.FormatStyle.RoundingRule = .down
+    locale: Locale = .autoupdatingCurrent,
+    roundingRule: Product.FormatStyle.RoundingRule = .down,
+    usesSeparator: Bool = true
   ) -> String? {
-    priceFormatter.locale = formatStyle.locale
-    priceFormatter.roundingMode = roundingRule.toNumberFormatterRoundingMode
-
-    return priceFormatter.string(from: price)
+    PriceFormatter(
+      locale: locale,
+      roundingMode: roundingRule.toNumberFormatterRoundingMode,
+      usesSeparator: usesSeparator
+    ).string(from: price)
   }
 
-  public static func displayPrice(
-    _ price: Decimal,
-    priceLocale: Locale,
-    roundingRule: Product.FormatStyle.RoundingRule = .down
-  ) -> String? {
-    priceFormatter.locale = priceLocale
-    priceFormatter.roundingMode = roundingRule.toNumberFormatterRoundingMode
-
-    return priceFormatter.string(from: price)
-  }
 }
 
 private let discountFormatter: NumberFormatter = {
@@ -223,5 +215,3 @@ private let discountFormatter: NumberFormatter = {
   formatter.numberStyle = .percent
   return formatter
 }()
-
-private let priceFormatter = PriceFormatter()

@@ -20,13 +20,13 @@ extension Product.SubscriptionPeriod {
 
     public init(
       unitStyle: UnitStyle = .complete,
-      unitsCollapsed: [Product.SubscriptionPeriod.Unit] = [],
-      unitsExpanded: [Product.SubscriptionPeriod.Unit] = [],
+      collapsedUnits: [Product.SubscriptionPeriod.Unit] = [],
+      expandedUnits: [Product.SubscriptionPeriod.Unit] = [],
       valueDisplayStrategy: ValueDisplayStrategy = .automatic
     ) {
       self.unitStyle = unitStyle
-      self.unitsCollapsed = unitsCollapsed
-      self.unitsExpanded = unitsExpanded
+      self.unitsCollapsed = collapsedUnits
+      self.unitsExpanded = expandedUnits
       self.valueDisplayStrategy = valueDisplayStrategy
     }
 
@@ -185,14 +185,14 @@ extension Product.SubscriptionPeriod.FormatStyle: Foundation.FormatStyle {
 extension Product.SubscriptionPeriod {
   public func formatted(
     unitStyle: FormatStyle.UnitStyle = .complete,
-    unitsCollapsed: [Product.SubscriptionPeriod.Unit] = [],
-    unitsExpanded: [Product.SubscriptionPeriod.Unit] = [],
+    collapsedUnits: [Product.SubscriptionPeriod.Unit] = [],
+    expandedUnits: [Product.SubscriptionPeriod.Unit] = [],
     valueDisplayStrategy: FormatStyle.ValueDisplayStrategy = .automatic
   ) -> String {
     Self.FormatStyle(
       unitStyle: unitStyle,
-      unitsCollapsed: unitsCollapsed,
-      unitsExpanded: unitsExpanded,
+      collapsedUnits: collapsedUnits,
+      expandedUnits: expandedUnits,
       valueDisplayStrategy: valueDisplayStrategy
     )
     .format(self)

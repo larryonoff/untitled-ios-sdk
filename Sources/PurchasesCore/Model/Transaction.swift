@@ -57,8 +57,8 @@ public struct Transaction {
     transaction.storefront
   }
 
-  public var isStartFreeTrial: Bool {
-    transaction.isStartFreeTrial
+  public var startsFreeTrial: Bool {
+    transaction.startsFreeTrial
   }
 }
 

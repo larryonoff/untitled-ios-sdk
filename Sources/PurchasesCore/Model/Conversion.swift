@@ -38,9 +38,9 @@ extension Product {
       let subscriptionComparing = product.subscription
     {
       price = subscription.subscriptionPeriod
-        .convertPrice(self.price, to: .init(unit: .year, value: 1))
+        .convertedPrice(self.price, to: .init(unit: .year, value: 1))
       priceComparing = subscriptionComparing.subscriptionPeriod
-        .convertPrice(product.price, to: .init(unit: .year, value: 1))
+        .convertedPrice(product.price, to: .init(unit: .year, value: 1))
     } else {
       price = self.price
       priceComparing = product.price
@@ -61,9 +61,9 @@ extension Product.SubscriptionOffer {
 
     if let subscription = product.subscription {
       price = self.period
-        .convertPrice(self.price, to: .init(unit: .year, value: 1))
+        .convertedPrice(self.price, to: .init(unit: .year, value: 1))
       priceComparing = subscription.subscriptionPeriod
-        .convertPrice(product.price, to: .init(unit: .year, value: 1))
+        .convertedPrice(product.price, to: .init(unit: .year, value: 1))
     } else {
       price = self.price
       priceComparing = product.price
@@ -74,7 +74,7 @@ extension Product.SubscriptionOffer {
 }
 
 extension Product.SubscriptionPeriod {
-  public func convertPrice(
+  public func convertedPrice(
     _ price: Decimal,
     to period: Product.SubscriptionPeriod
   ) -> Decimal {
@@ -86,7 +86,7 @@ extension Product.SubscriptionPeriod {
       return 0
     }
 
-    let conversionRatio = Double(period.numberOfDays) / Double(numberOfDays)
-    return price * Decimal(conversionRatio)
+    // Divide after multiplying so a binary fraction cannot lower a whole-currency result.
+    return price * Decimal(period.numberOfDays) / Decimal(numberOfDays)
   }
 }

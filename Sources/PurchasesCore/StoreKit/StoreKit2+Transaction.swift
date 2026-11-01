@@ -2,21 +2,10 @@ import StoreKit
 
 extension StoreKit.Transaction {
   public var isFreeTrial: Bool {
-    if #available(iOS 17.2, *) {
-      return
-        offer?.type == .introductory &&
-        offer?.paymentMode == .freeTrial
-    } else {
-      let freeTrialPaymentModeString =
-        StoreKit.Product.SubscriptionOffer.PaymentMode.freeTrial.rawValue
-
-      return
-        offerType == .introductory &&
-        offerPaymentModeStringRepresentation == freeTrialPaymentModeString
-    }
+    offer?.type == .introductory && offer?.paymentMode == .freeTrial
   }
 
-  public var isStartFreeTrial: Bool {
+  public var startsFreeTrial: Bool {
     // Differentiate a purchase transaction from a restore or a renewal transaction.
     // For restore and renewal transactions,
     // the original transaction identifier, originalID, and transaction identifier, id, differ.

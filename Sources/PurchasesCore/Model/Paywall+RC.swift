@@ -1,32 +1,32 @@
 import Foundation
 
 extension Paywall {
-  public var filteredProductIDs: [Product.ID] {
+  public var excludedProductIDs: [Product.ID] {
     remoteConfig?["filtered_product_ids"]
       .flatMap { $0 as? [String] }?
       .map(Product.ID.init(rawValue:)) ?? []
   }
 
-  public var productComparingID: Product.ID? {
+  public var comparisonProductID: Product.ID? {
     remoteConfig?["comparing_product_id"]
       .flatMap { $0 as? String }
       .flatMap { .init($0) }
   }
 
-  public var productComparing: Product? {
-    guard let productComparingID else { return nil }
-    return products.first { $0.id == productComparingID }
+  public var comparisonProduct: Product? {
+    guard let comparisonProductID else { return nil }
+    return products.first { $0.id == comparisonProductID }
   }
 
-  public var productSelectedID: Product.ID? {
+  public var selectedProductID: Product.ID? {
     remoteConfig?["selected_product_id"]
       .flatMap { $0 as? String }
       .flatMap { .init($0) }
   }
 
-  public var productSelected: Product? {
-    guard let productSelectedID else { return nil }
-    return products.first { $0.id == productSelectedID }
+  public var selectedProduct: Product? {
+    guard let selectedProductID else { return nil }
+    return products.first { $0.id == selectedProductID }
   }
 
   // MARK: - Intro Offer

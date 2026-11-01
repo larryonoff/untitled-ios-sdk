@@ -30,9 +30,9 @@ extension Product {
     self.description = product.localizedDescription
     self.price = product.price
     self.priceLocale = skProduct.priceFormatStyle.locale
-    self.displayPrice = Product.displayPrice(
+    self.displayPrice = Product.formattedPrice(
       product.price,
-      formatStyle: skProduct.priceFormatStyle
+      locale: skProduct.priceFormatStyle.locale
     ) ?? ""
 
     self.subscription = .init(product)
@@ -106,9 +106,9 @@ extension Product.SubscriptionOffer {
       id: offer.identifier.flatMap { .init($0) },
       type: .init(offer.offerType),
       price: offer.price,
-      displayPrice: Product.displayPrice(
+      displayPrice: Product.formattedPrice(
         offer.price,
-        formatStyle: skProduct.priceFormatStyle
+        locale: skProduct.priceFormatStyle.locale
       ) ?? "",
       period: period,
       periodCount: offer.numberOfPeriods,

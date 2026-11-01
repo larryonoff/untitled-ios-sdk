@@ -11,6 +11,22 @@ public struct Product {
     public var subscriptionGroupID: String
     public var subscriptionPeriod: Product.SubscriptionPeriod
     public var isEligibleForIntroOffer: Bool
+
+    package init(
+      introductoryOffer: Product.SubscriptionOffer?,
+      promotionalOffers: [Product.SubscriptionOffer],
+      winBackOffers: [Product.SubscriptionOffer],
+      subscriptionGroupID: String,
+      subscriptionPeriod: Product.SubscriptionPeriod,
+      isEligibleForIntroOffer: Bool
+    ) {
+      self.introductoryOffer = introductoryOffer
+      self.promotionalOffers = promotionalOffers
+      self.winBackOffers = winBackOffers
+      self.subscriptionGroupID = subscriptionGroupID
+      self.subscriptionPeriod = subscriptionPeriod
+      self.isEligibleForIntroOffer = isEligibleForIntroOffer
+    }
   }
 
   public struct SubscriptionOffer {
@@ -49,6 +65,24 @@ public struct Product {
     public var periodCount: Int
 
     public let paymentMode: Product.SubscriptionOffer.PaymentMode
+
+    package init(
+      id: ID?,
+      type: OfferType,
+      price: Decimal,
+      displayPrice: String,
+      period: Product.SubscriptionPeriod,
+      periodCount: Int,
+      paymentMode: Product.SubscriptionOffer.PaymentMode
+    ) {
+      self.id = id
+      self.type = type
+      self.price = price
+      self.displayPrice = displayPrice
+      self.period = period
+      self.periodCount = periodCount
+      self.paymentMode = paymentMode
+    }
   }
 
   public struct SubscriptionPeriod {
