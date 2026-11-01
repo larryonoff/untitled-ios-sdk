@@ -107,6 +107,7 @@ public struct NotificationsAccessRequestView<Header: View>: View {
         }
         .sheetActionSecondaryButton()
       }
+      .disabled(store.isRequesting)
     }
     .padding(.top, 32)
     .padding(.horizontal, 16)
