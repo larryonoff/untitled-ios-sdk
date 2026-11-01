@@ -43,8 +43,15 @@ public func withTaskTimeout<T: Sendable, C: Clock>(
   tolerance: C.Instant.Duration? = nil,
   clock: C,
   isolation: isolated (any Actor)? = #isolation,
-  body: @escaping @Sendable @isolated(any) () async throws -> sending T
+  body: sending @escaping @isolated(any) () async throws -> sending T
 ) async throws -> T {
+  // `body` is `sending`, so it can be handed to one task only from here: a
+  // closure the task group captures is no longer disconnected, and region
+  // isolation rejects sending it on to `addTask`. The work child owns this task
+  // instead: it awaits it and forwards its own cancellation, so the group still
+  // drains only after `body` has finished.
+  let work = Task { try await body() }
+
   // The task group is non-throwing: child tasks catch their own errors and map
   // them to `_TaskTimeoutOutcome`, and the group closure returns a `Result` that
   // we unwrap (`try result.get()`) only after the group has fully drained. This
@@ -52,10 +59,16 @@ public func withTaskTimeout<T: Sendable, C: Clock>(
   let result: Result<T, any Error> = await withTaskGroup(
     of: _TaskTimeoutOutcome<T>.self
   ) { group in
-    // Work task: runs on the body's own isolation.
+    // Work child: `body` runs on its own isolation inside `work`.
     group.addTask {
       do {
-        return .completed(try await body())
+        return try await .completed(
+          withTaskCancellationHandler {
+            try await work.value
+          } onCancel: {
+            work.cancel()
+          }
+        )
       } catch {
         return .failed(error)
       }
@@ -124,7 +137,7 @@ public func withTaskTimeout<T: Sendable>(
   for interval: SuspendingClock.Instant.Duration,
   tolerance: SuspendingClock.Instant.Duration? = nil,
   isolation: isolated (any Actor)? = #isolation,
-  body: @escaping @Sendable @isolated(any) () async throws -> sending T
+  body: sending @escaping @isolated(any) () async throws -> sending T
 ) async throws -> T {
   try await withTaskTimeout(
     for: interval,

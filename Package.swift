@@ -205,7 +205,8 @@ let package = Package(
     .testTarget(
       name: "ConcurrencyTests",
       dependencies: [
-        .concurrency
+        .concurrency,
+        .External.dependencies
       ],
       path: "Tests/ConcurrencyTests",
       swiftSettings: .upcomingFeatures
