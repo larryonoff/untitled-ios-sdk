@@ -98,7 +98,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
-      from: "13.0.0"
+      from: "13.1.1"
     ),
     .package(
       url: "https://github.com/kishikawakatsumi/KeychainAccess",
