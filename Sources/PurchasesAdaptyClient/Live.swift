@@ -4,6 +4,7 @@ import Dependencies
 import DuckAnalyticsClient
 import DuckFoundation
 import DuckLogging
+import DuckPurchasesClient
 import DuckUserIdentifierClient
 import DuckUserSettings
 import Foundation
@@ -16,7 +17,7 @@ import UIKit
 #endif
 
 extension PurchasesClient {
-  public static func live(
+  public static func adapty(
     analytics: AnalyticsClient,
     userIdentifier: UserIdentifierGenerator,
     userSettings: UserSettingsClient
@@ -77,6 +78,23 @@ extension PurchasesClient {
       },
       transactionsUpdates: {
         transactionObserver.updates
+      },
+      setExternalAttribution: { attribution in
+        let dictionary = Dictionary(uniqueKeysWithValues: attribution.dictionary.map { (AnyHashable($0.key), $0.value as Any) })
+        try await Adapty.updateExternalAttribution(dictionary, provider: AdaptyExternalAttributionProvider(rawValue: attribution.provider.rawValue))
+      },
+      setIntegrationIDs: { identifiers in
+        for identifier in identifiers.adaptyIdentifiers {
+          do {
+            try await Adapty.setIntegrationIdentifier(identifier)
+          } catch {
+            logger.error("purchases.set-integration-id failed | integration: \(identifier.key.rawValue, privacy: .public)")
+          }
+        }
+      },
+      setTrackingAuthorizationStatus: { status in
+        let parameters = AdaptyProfileParameters.Builder().with(appTrackingTransparencyStatus: status).build()
+        try await Adapty.updateProfile(params: parameters)
       }
     )
   }
@@ -334,7 +352,7 @@ final class PurchasesClientImpl: Sendable {
         let flow = try await Self.adaptyFlow(by: request.paywallID),
         let products = try await Self.adaptyProducts(for: flow),
         let product = products
-        .first(where: { $0.vendorProductId == request.product.id.rawValue })
+          .first(where: { $0.vendorProductId == request.product.id.rawValue })
       else {
         // Not a programmer error: the product can legitimately be unavailable
         // (no network, not approved yet), so this must not trap in debug.

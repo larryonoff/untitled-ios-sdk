@@ -1,4 +1,3 @@
-import Adapty
 import Foundation
 import StoreKit
 import Tagged

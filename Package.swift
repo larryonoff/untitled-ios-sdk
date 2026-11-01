@@ -26,6 +26,7 @@ let package = Package(
     .library(name: .Client.pasteboard, targets: [.Client.pasteboard]),
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
+    .library(name: .Client.purchasesAdapty, targets: [.Client.purchasesAdapty]),
     .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
     .library(name: .Client.remoteSettingsFirebase, targets: [.Client.remoteSettingsFirebase]),
     .library(name: .Client.userAttribution, targets: [.Client.userAttribution]),
@@ -311,6 +312,19 @@ let package = Package(
     .Client.pasteboard,
     .Client.photosAuthorization,
     .Client.purchases,
+    .testTarget(
+      name: "PurchasesClientTests",
+      dependencies: [.Client.purchases, .purchasesCore],
+      path: "Tests/PurchasesClientTests",
+      swiftSettings: .upcomingFeatures
+    ),
+    .Client.purchasesAdapty,
+    .testTarget(
+      name: "PurchasesAdaptyClientTests",
+      dependencies: [.Client.purchasesAdapty, .Client.purchases, .External.adapty],
+      path: "Tests/PurchasesAdaptyClientTests",
+      swiftSettings: .upcomingFeatures
+    ),
     .Client.remoteSettings,
     .Client.remoteSettingsFirebase,
     .Client.userAttribution,
@@ -561,22 +575,34 @@ extension Target {
     static var purchases: Target { target(
       name: .Client.purchases,
       dependencies: [
+        .foundation,
+        .purchasesCore,
+        .concurrency,
+        .Client.analytics,
+        .External.dependencies,
+        .External.Dependencies.macros
+      ],
+      path: "Sources/PurchasesClient",
+      swiftSettings: .upcomingFeatures
+    ) }
+    static var purchasesAdapty: Target { target(
+      name: .Client.purchasesAdapty,
+      dependencies: [
         .concurrency,
         .foundation,
         .logging,
         .purchasesCore,
         .Client.analytics,
+        .Client.purchases,
         .Client.remoteSettings,
         .Client.userIdentifier,
         .Client.userSettings,
         .External.adapty,
         .External.concurrencyExtras,
         .External.dependencies,
-        .External.Dependencies.macros,
-        .External.issueReporting,
-        .External.tagged
+        .External.issueReporting
       ],
-      path: "Sources/PurchasesClient",
+      path: "Sources/PurchasesAdaptyClient",
       swiftSettings: .upcomingFeatures,
       linkerSettings: [
         .linkedFramework("Combine"),
@@ -898,7 +924,6 @@ extension Target {
     dependencies: [
       .foundation,
       .Client.remoteSettings,
-      .External.adapty,
       .External.issueReporting,
       .External.tagged
     ],
@@ -1020,6 +1045,7 @@ extension Target.Dependency {
     static let pasteboard = byName(name: .Client.pasteboard)
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
+    static let purchasesAdapty = byName(name: .Client.purchasesAdapty)
     static let remoteSettings = byName(name: .Client.remoteSettings)
     static let remoteSettingsFirebase = byName(name: .Client.remoteSettingsFirebase)
     static let userAttribution = byName(name: .Client.userAttribution)
@@ -1196,6 +1222,7 @@ extension String {
     static let pasteboard = "DuckPasteboardClient"
     static let photosAuthorization = "DuckPhotosAuthorizationClient"
     static let purchases = "DuckPurchasesClient"
+    static let purchasesAdapty = "DuckPurchasesAdaptyClient"
     static let remoteSettings = "DuckRemoteSettingsClient"
     static let remoteSettingsFirebase = "DuckRemoteSettingsFirebaseClient"
     static let userAttribution = "DuckUserAttributionClient"

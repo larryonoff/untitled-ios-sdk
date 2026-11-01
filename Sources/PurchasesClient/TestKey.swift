@@ -7,7 +7,14 @@ extension PurchasesClient: TestDependencyKey {
 }
 
 extension PurchasesClient {
-  public static let noop = Self()
+  public static let noop: Self = {
+    var client = Self()
+    client.setExternalAttribution = { _ in }
+    client.setIntegrationIDs = { _ in }
+    client.setTrackingAuthorizationStatus = { _ in }
+    return client
+  }()
+
 }
 
 extension PurchasesClient {
@@ -22,6 +29,9 @@ extension PurchasesClient {
     reset: {},
     setFallback: { _ in },
     logPaywall: { _ in },
-    transactionsUpdates: { AsyncStream { _ in } }
+    transactionsUpdates: { AsyncStream { _ in } },
+    setExternalAttribution: { _ in },
+    setIntegrationIDs: { _ in },
+    setTrackingAuthorizationStatus: { _ in }
   )
 }

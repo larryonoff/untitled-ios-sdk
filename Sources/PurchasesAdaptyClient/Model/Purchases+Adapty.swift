@@ -1,4 +1,5 @@
 import Adapty
+import DuckPurchasesCore
 import Foundation
 
 package extension Purchases {
@@ -69,5 +70,5 @@ package extension Purchases {
 }
 
 extension String {
-  static var purchaserInfoKey: Self { "AdaptySDK_Purchaser_Info" }
+  static let purchaserInfoKey = "AdaptySDK_Purchaser_Info"
 }

@@ -12,6 +12,8 @@ public struct Paywall {
   public let id: ID
   public let abTestName: String?
   public let audienceName: String?
+  public let variationID: String?
+  public let variationName: String?
   public var products: [Product]
 
   let remoteConfigString: String?
@@ -26,12 +28,16 @@ public struct Paywall {
     id: ID,
     abTestName: String? = nil,
     audienceName: String? = nil,
+    variationID: String? = nil,
+    variationName: String? = nil,
     products: [Product],
     remoteConfigString: String? = nil
   ) {
     self.id = id
     self.abTestName = abTestName
     self.audienceName = audienceName
+    self.variationID = variationID
+    self.variationName = variationName
     self.products = products
     self.remoteConfigString = remoteConfigString
   }

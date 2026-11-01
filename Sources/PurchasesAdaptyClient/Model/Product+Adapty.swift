@@ -1,23 +1,7 @@
 import Adapty
+import struct DuckPurchasesCore.Product
 import Foundation
 import StoreKit
-
-extension Paywall {
-  package init(
-    _ flow: AdaptyFlow,
-    products: [AdaptyPaywallProduct]?
-  ) {
-    self.id = .init(flow.placement.id)
-
-    self.abTestName = flow.placement.abTestName
-    self.audienceName = flow.placement.audienceName
-
-    self.products = products?
-      .compactMap { .init($0) } ?? []
-
-    self.remoteConfigString = flow.remoteConfigs.jsonString()
-  }
-}
 
 extension Product {
   package init?(_ product: any AdaptyProduct) {
@@ -25,17 +9,18 @@ extension Product {
 
     let paywallProduct = product as? AdaptyPaywallProduct
 
-    self.id = .init(product.vendorProductId)
-    self.displayName = product.localizedTitle
-    self.description = product.localizedDescription
-    self.price = product.price
-    self.priceLocale = skProduct.priceFormatStyle.locale
-    self.displayPrice = Product.formattedPrice(
-      product.price,
-      locale: skProduct.priceFormatStyle.locale
-    ) ?? ""
-
-    self.subscription = .init(product)
+    self.init(
+      id: .init(product.vendorProductId),
+      displayName: product.localizedTitle,
+      description: product.localizedDescription,
+      price: product.price,
+      priceLocale: skProduct.priceFormatStyle.locale,
+      displayPrice: Product.formattedPrice(
+        product.price,
+        locale: skProduct.priceFormatStyle.locale
+      ) ?? "",
+      subscription: .init(product)
+    )
     self.subscriptionOffer = paywallProduct?.subscriptionOffer.flatMap {
       .init($0, product: product)
     }
@@ -50,41 +35,40 @@ extension Product.SubscriptionInfo {
     guard
       let subscriptionGroupID = product.subscriptionGroupIdentifier,
       let subscriptionPeriod = product.subscriptionPeriod
-      .flatMap(Product.SubscriptionPeriod.init)
+        .flatMap(Product.SubscriptionPeriod.init)
     else {
       return nil
     }
 
     let subscription = product.skProduct.subscription
+    let introductoryOffer: Product.SubscriptionOffer?
+    let promotionalOffers: [Product.SubscriptionOffer]
+    let winBackOffers: [Product.SubscriptionOffer]
 
     if let subscription {
-      self.introductoryOffer = subscription.introductoryOffer
+      introductoryOffer = subscription.introductoryOffer
         .flatMap { .init($0) }
 
-      self.promotionalOffers = subscription.promotionalOffers
+      promotionalOffers = subscription.promotionalOffers
         .compactMap { .init($0) }
 
-      if #available(iOS 18.0, *) {
-        self.winBackOffers = subscription.winBackOffers
-          .compactMap { .init($0) }
-      } else {
-        self.winBackOffers = []
-      }
+      winBackOffers = subscription.winBackOffers
+        .compactMap { .init($0) }
     } else {
-      self.introductoryOffer = nil
-      self.promotionalOffers = []
-      self.winBackOffers = []
+      introductoryOffer = nil
+      promotionalOffers = []
+      winBackOffers = []
     }
 
-    self.subscriptionGroupID = subscriptionGroupID
-    self.subscriptionPeriod = subscriptionPeriod
-
-    // Eligibility is what kind of offer the paywall carries, not whether its
-    // identifier matches StoreKit's. Adapty and StoreKit name the same offer
-    // differently, so requiring the identifiers to agree reported eligible
-    // products as ineligible.
-    self.isEligibleForIntroOffer =
-      paywallProduct?.subscriptionOffer?.offerType == .introductory
+    // Eligibility comes from the offer attached by Adapty, not catalog IDs.
+    self.init(
+      introductoryOffer: introductoryOffer,
+      promotionalOffers: promotionalOffers,
+      winBackOffers: winBackOffers,
+      subscriptionGroupID: subscriptionGroupID,
+      subscriptionPeriod: subscriptionPeriod,
+      isEligibleForIntroOffer: paywallProduct?.subscriptionOffer?.offerType == .introductory
+    )
   }
 }
 
@@ -174,32 +158,5 @@ extension Product.SubscriptionPeriod.Unit {
     case .unknown:
       return nil
     }
-  }
-}
-
-private extension [AdaptyRemoteConfig] {
-  /// Raw payload for `locale`, falling back to English and then to any
-  /// configured one.
-  ///
-  /// A flow carries one config per locale and `getFlow` is locale-agnostic, so
-  /// picking one is up to us. English is the fallback because that is what the
-  /// dashboard always fills in. Locales match on language code, so an `en`
-  /// config satisfies `en-US` and `en_GB` alike.
-  func jsonString(for locale: Locale = .current) -> String? {
-    let languageCode = locale.identifier.adaptyLanguageCode
-
-    let config = first { $0.locale.adaptyLanguageCode == languageCode }
-      ?? first { $0.locale.adaptyLanguageCode == "en" }
-      ?? first
-
-    return config?.jsonString
-  }
-}
-
-private extension String {
-  /// Language code of a locale identifier — everything before the first region
-  /// separator, matching how Adapty compares locales internally.
-  var adaptyLanguageCode: String {
-    prefix { !["-", "_"].contains($0) }.lowercased()
   }
 }

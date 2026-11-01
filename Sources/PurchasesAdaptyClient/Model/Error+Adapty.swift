@@ -1,4 +1,5 @@
 import Adapty
+import DuckPurchasesCore
 import StoreKit
 
 package extension Error {

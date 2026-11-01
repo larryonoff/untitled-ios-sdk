@@ -1,5 +1,7 @@
+import AppTrackingTransparency
 import Dependencies
 import DependenciesMacros
+import DuckFoundation
 import DuckPurchasesCore
 import Foundation
 
@@ -43,13 +45,17 @@ public struct PurchasesClient: Sendable {
 
   public var transactionsUpdates: @Sendable (
   ) -> AsyncStream<DuckTransaction> = { .finished }
+
+  public var setExternalAttribution: @Sendable (_ attribution: ExternalAttribution) async throws -> Void
+  public var setIntegrationIDs: @Sendable (_ identifiers: IntegrationIDs) async throws -> Void
+  public var setTrackingAuthorizationStatus: @Sendable (_ status: ATTrackingManager.AuthorizationStatus) async throws -> Void
 }
 
 extension PurchasesClient {
   @discardableResult
   @Sendable
-  public func prefetch(
-    paywallByID id: Paywall.ID
+  public func prefetchPaywall(
+    by id: Paywall.ID
   ) async -> Paywall? {
     try? await latestPaywall(byID: id)
   }

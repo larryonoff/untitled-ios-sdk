@@ -3,6 +3,7 @@ import Combine
 import ConcurrencyExtras
 import DuckConcurrency
 import DuckLogging
+import DuckPurchasesCore
 import StoreKit
 
 final class TransactionObserver: Sendable {
@@ -75,7 +76,7 @@ final class TransactionObserver: Sendable {
       return
     }
 
-    let restoredTransactions = await Transaction.currentEntitlements
+    let restoredTransactions = await StoreKit.Transaction.currentEntitlements
       .collected()
       .filter { $0.transaction.purchaseDate > sk2ReleaseDate }
       .sorted { $0.transaction.purchaseDate < $1.transaction.purchaseDate }
