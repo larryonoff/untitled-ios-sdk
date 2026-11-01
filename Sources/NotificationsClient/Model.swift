@@ -35,6 +35,29 @@ public enum Notifications {
     }
   }
 
+  public struct Request: Sendable {
+    public var identifier: String
+
+    // `UNNotificationRequest` copies its content and trigger, and both are
+    // immutable once created. Nothing can mutate them across threads.
+    public nonisolated(unsafe) var content: UNNotificationContent
+    public nonisolated(unsafe) var trigger: UNNotificationTrigger?
+
+    public init(
+      identifier: String,
+      content: UNNotificationContent,
+      trigger: UNNotificationTrigger?
+    ) {
+      self.identifier = identifier
+      self.content = content
+      self.trigger = trigger
+    }
+
+    init(_ request: UNNotificationRequest) {
+      self.init(identifier: request.identifier, content: request.content, trigger: request.trigger)
+    }
+  }
+
   public struct Response: Sendable {
     public var notification: Notification
 

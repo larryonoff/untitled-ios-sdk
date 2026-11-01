@@ -13,6 +13,8 @@ extension NotificationsClient {
     addRequest: { _ in },
     removePendingRequestsWithIdentifiers: { _ in },
     removeDeliveredNotificationsWithIdentifiers: { _ in },
+    pendingNotificationRequests: { [] },
+    deliveredNotifications: { [] },
     setCategories: { _ in }
   )
 }

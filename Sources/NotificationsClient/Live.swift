@@ -24,6 +24,12 @@ extension NotificationsClient: DependencyKey {
       removeDeliveredNotificationsWithIdentifiers: {
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: $0)
       },
+      pendingNotificationRequests: {
+        await UNUserNotificationCenter.current().pendingNotificationRequests().map(Notifications.Request.init)
+      },
+      deliveredNotifications: {
+        await UNUserNotificationCenter.current().deliveredNotifications().map(Notifications.Notification.init)
+      },
       setCategories: {
         UNUserNotificationCenter.current().setNotificationCategories($0)
       }

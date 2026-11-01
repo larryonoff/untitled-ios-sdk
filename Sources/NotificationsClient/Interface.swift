@@ -41,6 +41,12 @@ public struct NotificationsClient: Sendable {
   @DependencyEndpoint(method: "removeDeliveredNotifications")
   public var removeDeliveredNotificationsWithIdentifiers: @Sendable (_ withIdentifiers: [String]) -> Void
 
+  /// Requests scheduled and not yet delivered.
+  public var pendingNotificationRequests: @Sendable () async -> [Notifications.Request] = { [] }
+
+  /// Notifications still shown in Notification Center.
+  public var deliveredNotifications: @Sendable () async -> [Notifications.Notification] = { [] }
+
   /// Registers the actions notifications can offer, replacing earlier ones.
   public var setCategories: @Sendable (_ _: Set<UNNotificationCategory>) -> Void
 }
