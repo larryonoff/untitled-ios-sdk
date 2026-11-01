@@ -27,6 +27,7 @@ let package = Package(
     .library(name: .Client.photosAuthorization, targets: [.Client.photosAuthorization]),
     .library(name: .Client.purchases, targets: [.Client.purchases]),
     .library(name: .Client.remoteSettings, targets: [.Client.remoteSettings]),
+    .library(name: .Client.remoteSettingsFirebase, targets: [.Client.remoteSettingsFirebase]),
     .library(name: .Client.userAttribution, targets: [.Client.userAttribution]),
     .library(name: .Client.userIdentifier, targets: [.Client.userIdentifier]),
     .library(name: .Client.userSession, targets: [.Client.userSession]),
@@ -311,6 +312,7 @@ let package = Package(
     .Client.photosAuthorization,
     .Client.purchases,
     .Client.remoteSettings,
+    .Client.remoteSettingsFirebase,
     .Client.userAttribution,
     .Client.userIdentifier,
     .Client.userSession,
@@ -585,12 +587,22 @@ extension Target {
     static var remoteSettings: Target { target(
       name: .Client.remoteSettings,
       dependencies: [
-        .logging,
         .External.dependencies,
-        .External.Dependencies.macros,
-        .External.Firebase.remoteConfig
+        .External.Dependencies.macros
       ],
       path: "Sources/RemoteSettingsClient",
+      swiftSettings: .upcomingFeatures
+    ) }
+
+    static var remoteSettingsFirebase: Target { target(
+      name: .Client.remoteSettingsFirebase,
+      dependencies: [
+        .logging,
+        .Client.remoteSettings,
+        .External.dependencies,
+        .External.Firebase.remoteConfig
+      ],
+      path: "Sources/RemoteSettingsFirebaseClient",
       swiftSettings: .upcomingFeatures
     ) }
 
@@ -1009,6 +1021,7 @@ extension Target.Dependency {
     static let photosAuthorization = byName(name: .Client.photosAuthorization)
     static let purchases = byName(name: .Client.purchases)
     static let remoteSettings = byName(name: .Client.remoteSettings)
+    static let remoteSettingsFirebase = byName(name: .Client.remoteSettingsFirebase)
     static let userAttribution = byName(name: .Client.userAttribution)
     static let userIdentifier = byName(name: .Client.userIdentifier)
     static let userSession = byName(name: .Client.userSession)
@@ -1184,6 +1197,7 @@ extension String {
     static let photosAuthorization = "DuckPhotosAuthorizationClient"
     static let purchases = "DuckPurchasesClient"
     static let remoteSettings = "DuckRemoteSettingsClient"
+    static let remoteSettingsFirebase = "DuckRemoteSettingsFirebaseClient"
     static let userAttribution = "DuckUserAttributionClient"
     static let userIdentifier = "DuckUserIdentifierClient"
     static let userSession = "DuckUserSessionClient"

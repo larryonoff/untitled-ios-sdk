@@ -1,5 +1,6 @@
 import Dependencies
 import DuckLogging
+import DuckRemoteSettingsClient
 import Foundation
 import FirebaseRemoteConfig
 import OSLog
