@@ -16,9 +16,8 @@ public struct AutoPresentationClient: Sendable {
 
   public var isEligibleForPresentation: @Sendable (
     _ _: AutoPresentation.Feature,
-    _ placement: Placement?,
-    _ userInfo: AutoPresentation.UserInfo?
-  ) async -> Bool = { _, _, _ in false }
+    _ request: AutoPresentation.Request
+  ) async -> Bool = { _, _ in false }
 
   public var increment: @Sendable (
     _ _: AutoPresentation.Feature
@@ -31,13 +30,13 @@ public struct AutoPresentationClient: Sendable {
 
   public var reset: @Sendable () async -> Void
 
+  /// The first available feature eligible for `request`.
   @Sendable
   public func featureToPresent(
-    _ placement: Placement?,
-    _ userInfo: AutoPresentation.UserInfo?
+    _ request: AutoPresentation.Request
   ) async -> AutoPresentation.Feature? {
     for feature in availableFeatures() {
-      guard await isEligibleForPresentation(feature, placement, userInfo) else {
+      guard await isEligibleForPresentation(feature, request) else {
         continue
       }
       return feature

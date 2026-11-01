@@ -24,7 +24,7 @@ extension AutoPresentationClient {
         impl.availableFeatures
       },
       isEligibleForPresentation: {
-        impl.isEligibleForPresentation($0, placement: $1, userInfo: $2)
+        impl.isEligibleForPresentation($0, request: $1)
       },
       increment: {
         await impl.increment($0)
@@ -64,14 +64,16 @@ private final class AutoPresentationClientImpl: Sendable {
 
   func isEligibleForPresentation(
     _ feature: AutoPresentation.Feature,
-    placement: Placement?,
-    userInfo: AutoPresentation.UserInfo?
+    request: AutoPresentation.Request
   ) -> Bool {
+    let placement = request.placement
+
     logger.info(
       """
       auto-presentation.evaluate | \
       feature: \(feature.rawValue, privacy: .public) \
-      placement: \(placement?.rawValue ?? "nil", privacy: .public)
+      placement: \(placement?.rawValue ?? "nil", privacy: .public) \
+      forced: \(request.isForced, privacy: .public)
       """
     )
 
@@ -90,7 +92,7 @@ private final class AutoPresentationClientImpl: Sendable {
 
     let totalSessionCount = Int(userSession.metrics().totalSessionCount)
 
-    guard userSettings.autoPresentationSessionID != totalSessionCount else {
+    guard request.isForced || userSettings.autoPresentationSessionID != totalSessionCount else {
       logger.error(
         """
         auto-presentation.evaluate failed | \
@@ -118,7 +120,7 @@ private final class AutoPresentationClientImpl: Sendable {
 
     let isEligibleForPresentation = condition.isEligibleForPresentation(
       placement,
-      userInfo
+      request.userInfo
     )
 
     logger.info(

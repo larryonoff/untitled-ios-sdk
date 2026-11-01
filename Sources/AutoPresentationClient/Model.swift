@@ -39,3 +39,35 @@ public enum AutoPresentation {
     }
   }
 }
+
+extension AutoPresentation {
+  /// An occasion to present something automatically.
+  public struct Request: Sendable {
+    /// Where the presentation would be raised from, if the caller knows.
+    public var placement: Placement?
+
+    /// Additional information a feature's condition may need.
+    public var userInfo: UserInfo?
+
+    /// Whether this request may present even though something else already
+    /// presented this session.
+    ///
+    /// The once-per-session guard stops a launch from stacking automatic
+    /// presentations at the user. A request raised by the user's own action is
+    /// the moment its feature is meant to appear, so losing it to an unrelated
+    /// feature that presented earlier is a bug, not pacing. Reserve it for such
+    /// triggers: the feature's condition still decides, and presenting still
+    /// takes the session's slot.
+    public var isForced: Bool
+
+    public init(
+      placement: Placement? = nil,
+      userInfo: UserInfo? = nil,
+      isForced: Bool = false
+    ) {
+      self.placement = placement
+      self.userInfo = userInfo
+      self.isForced = isForced
+    }
+  }
+}
