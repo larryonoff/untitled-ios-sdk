@@ -71,3 +71,32 @@ extension AutoPresentation {
     }
   }
 }
+
+extension AutoPresentation {
+  /// A presentation the client decided for a request.
+  public struct Presentation: Sendable {
+    public var feature: Feature
+    public var request: Request
+
+    public init(feature: Feature, request: Request) {
+      self.feature = feature
+      self.request = request
+    }
+  }
+}
+
+extension AutoPresentation.FeatureCondition {
+  /// This condition, eligible only at `placements`.
+  ///
+  /// For a condition that accepts any placement, so that a forced request raised
+  /// for another feature cannot present this one.
+  public func limited(to placements: Set<Placement>) -> Self {
+    var condition = self
+    let isEligible = isEligibleForPresentation
+    condition.isEligibleForPresentation = { placement, userInfo in
+      guard let placement, placements.contains(placement) else { return false }
+      return isEligible(placement, userInfo)
+    }
+    return condition
+  }
+}

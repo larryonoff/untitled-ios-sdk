@@ -10,6 +10,8 @@ extension AutoPresentationClient {
   public static let noop = Self(
     availableFeatures: { [] },
     isEligibleForPresentation: { _, _ in false },
+    requestPresentation: { _ in },
+    presentations: { .finished },
     increment: { _ in },
     logEvent: { _ in },
     reset: {}

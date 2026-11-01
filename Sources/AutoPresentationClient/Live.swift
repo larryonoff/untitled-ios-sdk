@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DuckConcurrency
 import DuckCore
 import DuckLogging
 import DuckUserSessionClient
@@ -18,6 +19,7 @@ extension AutoPresentationClient {
       userSession: userSession,
       userSettings: userSettings
     )
+    let presentations = AsyncBroadcast<AutoPresentation.Presentation>()
 
     return AutoPresentationClient(
       availableFeatures: {
@@ -25,6 +27,14 @@ extension AutoPresentationClient {
       },
       isEligibleForPresentation: {
         impl.isEligibleForPresentation($0, request: $1)
+      },
+      requestPresentation: { request in
+        guard let feature = impl.featureToPresent(request) else { return }
+        presentations.yield(AutoPresentation.Presentation(feature: feature, request: request))
+      },
+      presentations: {
+        // A presentation is stale once a newer one is decided.
+        presentations.stream(bufferingPolicy: .bufferingNewest(1))
       },
       increment: {
         await impl.increment($0)
@@ -60,6 +70,10 @@ private final class AutoPresentationClientImpl: Sendable {
 
   var availableFeatures: [AutoPresentation.Feature] {
     Array(conditions.keys)
+  }
+
+  func featureToPresent(_ request: AutoPresentation.Request) -> AutoPresentation.Feature? {
+    conditions.keys.first { isEligibleForPresentation($0, request: request) }
   }
 
   func isEligibleForPresentation(

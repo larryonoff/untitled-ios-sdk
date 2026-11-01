@@ -443,6 +443,7 @@ extension Target {
     static var autoPresentation: Target { target(
       name: .Client.autoPresentation,
       dependencies: [
+        .concurrency,
         .core,
         .dependencies,
         .logging,

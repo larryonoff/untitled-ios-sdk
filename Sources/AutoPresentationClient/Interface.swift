@@ -19,6 +19,16 @@ public struct AutoPresentationClient: Sendable {
     _ request: AutoPresentation.Request
   ) async -> Bool = { _, _ in false }
 
+  /// Decides what to present for `request` and delivers it to ``presentations``.
+  public var requestPresentation: @Sendable (
+    _ request: AutoPresentation.Request
+  ) async -> Void
+
+  /// What ``requestPresentation`` decides from the moment of subscribing; only the
+  /// newest undelivered one is kept.
+  public var presentations: @Sendable (
+  ) -> AsyncStream<AutoPresentation.Presentation> = { .finished }
+
   public var increment: @Sendable (
     _ _: AutoPresentation.Feature
   ) async -> Void
