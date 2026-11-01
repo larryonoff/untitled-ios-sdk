@@ -27,7 +27,8 @@ public struct NotificationsClient: Sendable {
   /// Events that arrive while nobody iterates are held and handed to the next
   /// stream, so a cold-launch tap outlives the wait for the first subscriber.
   /// Every event carries a completion the host must call once it has handled
-  /// it — the system may suspend the app as soon as it does.
+  /// it — the system may suspend the app as soon as it does. Call it from any
+  /// executor: the system callback runs once, on the main actor.
   public var events: @Sendable () -> AsyncStream<Notifications.Event> = { .finished }
 
   /// Schedules `request`, replacing a pending or delivered one with its identifier.

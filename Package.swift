@@ -257,6 +257,7 @@ let package = Package(
       path: "Tests/PaywallReducerTests",
       swiftSettings: .upcomingFeatures
     ),
+    .notificationsClientTests,
     .testTarget(
       name: "NotificationsAuthorizationClientTests",
       dependencies: [
@@ -368,6 +369,13 @@ extension [SwiftSetting] {
 }
 
 extension Target {
+  static var notificationsClientTests: Target { testTarget(
+    name: .notificationsClientTests,
+    dependencies: [.Client.notifications],
+    path: "Tests/NotificationsClientTests",
+    swiftSettings: .upcomingFeatures
+  ) }
+
   static var testSupport: Target { target(
     name: .testSupport,
     dependencies: [.concurrency],
@@ -1204,6 +1212,8 @@ extension Target.Dependency {
 }
 
 extension String {
+  static let notificationsClientTests = "NotificationsClientTests"
+
   static let testSupport = "DuckTestSupport"
   static let avFoundation = "DuckAVFoundation"
   static let concurrency = "DuckConcurrency"

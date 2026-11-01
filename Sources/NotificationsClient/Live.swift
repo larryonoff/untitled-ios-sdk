@@ -93,7 +93,8 @@ private final class Delegate: NSObject, UNUserNotificationCenterDelegate, Sendab
     didReceive response: UNNotificationResponse,
     withCompletionHandler completionHandler: @escaping () -> Void
   ) {
-    // The system calls it once, from any thread.
+    // SAFETY: Transfer UIKit's callback only to the once-only MainActor adapter below;
+    // no other code invokes or retains the unannotated callback.
     nonisolated(unsafe) let completionHandler = completionHandler
 
     logger.info(
@@ -104,7 +105,8 @@ private final class Delegate: NSObject, UNUserNotificationCenterDelegate, Sendab
       """
     )
 
-    events.yield(.response(.init(response), completion: { completionHandler() }))
+    let completion = Notifications.Completion<Void> { _ in completionHandler() }
+    events.yield(.response(.init(response), completion: { completion(()) }))
   }
 
   func userNotificationCenter(
@@ -112,10 +114,12 @@ private final class Delegate: NSObject, UNUserNotificationCenterDelegate, Sendab
     willPresent notification: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
   ) {
-    // The system calls it once, from any thread.
+    // SAFETY: Transfer UIKit's callback only to the once-only MainActor adapter below;
+    // no other code invokes or retains the unannotated callback.
     nonisolated(unsafe) let completionHandler = completionHandler
 
-    events.yield(.willPresent(.init(notification), completion: { completionHandler($0) }))
+    let completion = Notifications.Completion<UNNotificationPresentationOptions> { completionHandler($0) }
+    events.yield(.willPresent(.init(notification), completion: { completion($0) }))
   }
 
   func userNotificationCenter(
