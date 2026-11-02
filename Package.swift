@@ -94,11 +94,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/devicekit/DeviceKit",
-      from: "5.8.0"
+      from: "5.10.0"
     ),
     .package(
       url: "https://github.com/facebook/facebook-ios-sdk",
-      from: "18.1.0"
+      from: "19.0.1"
     ),
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk",
@@ -110,27 +110,27 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/apple/swift-collections",
-      from: "1.6.0"
+      from: "1.7.5"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-composable-architecture",
-      from: "1.26.1"
+      from: "1.26.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-concurrency-extras",
-      from: "1.4.1"
+      from: "1.4.3"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-custom-dump",
-      from: "1.7.0"
+      from: "1.7.3"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
-      from: "1.15.0"
+      from: "1.17.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-sharing",
-      from: "2.9.1"
+      from: "2.10.1"
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-tagged",
@@ -138,11 +138,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/pointfreeco/swift-navigation",
-      from: "2.11.0"
+      from: "2.11.2"
     ),
     .package(
       url: "https://github.com/pointfreeco/xctest-dynamic-overlay",
-      from: "1.11.0"
+      from: "1.13.1"
     )
   ],
   targets: [
