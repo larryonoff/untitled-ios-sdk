@@ -82,6 +82,13 @@ extension VideoPlayerRepresentable: UIViewRepresentable {
     uiView.videoContentMode = videoContentMode
     uiView.interruptionBehavior = videoInterruptionBehavior
   }
+
+  static func dismantleUIView(_ uiView: VideoPlayerView, coordinator: Coordinator) {
+    // A layout swap can attach the successor before this view leaves its window.
+    // Detach only this layer; the owner keeps the player's item, position and intent.
+    // Clearing the player also releases this view's interruption recovery.
+    uiView.player = nil
+  }
 }
 
 #endif

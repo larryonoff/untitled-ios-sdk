@@ -283,9 +283,11 @@ let package = Package(
     .testTarget(
       name: "VideoPlayerTests",
       dependencies: [
-        .videoPlayer
+        .videoPlayer,
+        .testSupport
       ],
       path: "Tests/VideoPlayerTests",
+      resources: [.copy("Fixtures")],
       swiftSettings: .upcomingFeatures
     ),
     .swiftUI,
