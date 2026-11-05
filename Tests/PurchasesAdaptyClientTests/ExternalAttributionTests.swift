@@ -3,9 +3,18 @@ import DuckPurchasesClient
 import Testing
 
 struct ExternalAttributionTests {
-  @Test func `the Adjust provider is the one Adapty knows as Adjust`() {
-    let provider = PurchasesClient.ExternalAttribution.Provider.adjust
-
-    #expect(AdaptyExternalAttributionProvider(rawValue: provider.rawValue) == .adjust)
+  @Test(arguments: [
+    (PurchasesClient.ExternalAttribution.Provider.adjust, AdaptyExternalAttributionProvider.adjust),
+    (.appleAds, .appleAds),
+    (.appsFlyer, .appsflyer),
+    (.branch, .branch),
+    (.custom, .custom),
+    (.tenjin, .tenjin)
+  ])
+  func `each provider is the one Adapty knows under the same name`(
+    provider: PurchasesClient.ExternalAttribution.Provider,
+    adaptyProvider: AdaptyExternalAttributionProvider
+  ) {
+    #expect(AdaptyExternalAttributionProvider(rawValue: provider.rawValue) == adaptyProvider)
   }
 }

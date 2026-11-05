@@ -24,5 +24,10 @@ extension PurchasesClient.ExternalAttribution {
     }
 
     public static let adjust = Self(rawValue: "adjust")
+    public static let appleAds = Self(rawValue: "apple_search_ads")
+    public static let appsFlyer = Self(rawValue: "appsflyer")
+    public static let branch = Self(rawValue: "branch")
+    public static let custom = Self(rawValue: "custom")
+    public static let tenjin = Self(rawValue: "tenjin")
   }
 }
