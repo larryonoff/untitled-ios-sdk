@@ -325,7 +325,14 @@ let package = Package(
     .Client.purchasesAdapty,
     .testTarget(
       name: "PurchasesAdaptyClientTests",
-      dependencies: [.Client.purchasesAdapty, .Client.purchases, .External.adapty],
+      dependencies: [
+        .testSupport,
+        .Client.purchasesAdapty,
+        .Client.purchases,
+        .Client.userSettings,
+        .External.adapty,
+        .External.dependencies
+      ],
       path: "Tests/PurchasesAdaptyClientTests",
       swiftSettings: .upcomingFeatures
     ),

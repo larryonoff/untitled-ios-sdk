@@ -1,4 +1,5 @@
 import Adapty
+import Dependencies
 import StoreKit
 
 extension StoreKit.Transaction {
@@ -9,6 +10,7 @@ extension StoreKit.Transaction {
     let transactionsToConsider = await Transaction.all.collected()
     let transactionIDs = store.transactionIDs()
     let candidatesDate = store.newCandidatesDate()
+    @Dependency(\.date.now) var now
 
     let candidateTransactions = transactionsToConsider
       .filter { result -> Bool in
@@ -19,8 +21,6 @@ extension StoreKit.Transaction {
         if let candidatesDate {
           dateCheck = transaction.purchaseDate > candidatesDate
         }
-
-        let now = Date()
 
         return
           transaction.revocationDate == nil &&

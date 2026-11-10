@@ -1,12 +1,15 @@
 import Adapty
 import Combine
 import ConcurrencyExtras
+import Dependencies
 import DuckConcurrency
 import DuckLogging
 import DuckPurchasesCore
 import StoreKit
 
 final class TransactionObserver: Sendable {
+  private let clock: any Clock<Duration>
+  private let date: DateGenerator
   private let store: TransactionCache
 
   // SAFETY: PassthroughSubject is internally thread-safe for send/subscribe;
@@ -16,6 +19,10 @@ final class TransactionObserver: Sendable {
   init(
     store: TransactionCache
   ) {
+    @Dependency(\.continuousClock) var clock
+    @Dependency(\.date) var date
+    self.clock = clock
+    self.date = date
     self.store = store
   }
 
@@ -41,12 +48,12 @@ final class TransactionObserver: Sendable {
           // HACK
           // Adapty sends the profile update before finishing transaction.
           // Adding a delay ensures we process transactions in the correct order.
-          try await Task.sleep(for: .seconds(2))
+          try await clock.sleep(for: .seconds(2))
 
           logger.info("transaction.handle-profile resumed")
 
           if store.newCandidatesDate() == nil {
-            await store.setNewCandidatesDate(Date())
+            await store.setNewCandidatesDate(date.now)
             logger.info("transaction.new-candidates-date updated")
           }
 
