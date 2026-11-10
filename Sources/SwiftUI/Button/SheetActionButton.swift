@@ -52,24 +52,6 @@ extension ButtonStyle where Self == SheetActionSecondaryButtonStyle {
 }
 
 extension View {
-  /// The confirm action of a sheet that wants the system's glass on iOS 26+:
-  /// prominent glass there, the filled capsule below.
-  @ViewBuilder
-  public func sheetActionPrimaryButton() -> some View {
-    if #available(iOS 26, macOS 26, *) {
-      buttonStyle(.glassProminent)
-        .buttonBorderShape(.capsule)
-    } else {
-      buttonStyle(.sheetActionPrimary)
-    }
-  }
-
-  /// The decline action of a bottom sheet: quiet text, so the confirm action
-  /// stays the obvious one.
-  public func sheetActionSecondaryButton() -> some View {
-    buttonStyle(.sheetActionSecondary)
-  }
-
   /// Shared metrics of both sheet action buttons, so the filled and bare
   /// variants stay the same size when stacked.
   public func sheetActionLabel() -> some View {

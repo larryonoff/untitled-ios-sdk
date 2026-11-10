@@ -70,48 +70,51 @@ public struct NotificationsAccessRequestView<Header: View>: View {
     self.title = title
   }
 
+  /// Same measure as the Rate Us copy, so the two sheets read as one family.
+  private static var messageMaxWidth: CGFloat { 300 }
+
   public var body: some View {
     VStack(spacing: 24) {
       header()
         .accessibilityHidden(true)
 
-      VStack(spacing: 8) {
-        (title ?? Text(.NotificationsAccess.title))
-          .font(.system(size: 22, weight: .semibold))
-          .foregroundStyle(.primary)
-          .multilineTextAlignment(.center)
-          .minimumScaleFactor(0.7)
-          .lineLimit(2)
+      VStack(spacing: 0) {
+        VStack(spacing: 16) {
+          (title ?? Text(.NotificationsAccess.title))
+            .font(.system(size: 23, weight: .semibold))
+            .foregroundStyle(.primary)
+            .minimumScaleFactor(0.7)
+            .lineLimit(2)
 
-        (message ?? Text(.NotificationsAccess.description))
-          .font(.system(size: 16))
-          .foregroundStyle(.secondary)
-          .multilineTextAlignment(.center)
-          .minimumScaleFactor(0.8)
-          .lineLimit(5)
-      }
-      .fixedSize(horizontal: false, vertical: true)
+          (message ?? Text(.NotificationsAccess.description))
+            .font(.system(size: 16, weight: .regular))
+            .foregroundStyle(.secondary)
+            .minimumScaleFactor(0.8)
+            .lineLimit(4)
+        }
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: Self.messageMaxWidth)
 
-      VStack(spacing: 12) {
         Button {
           store.send(.notifyButtonTapped)
         } label: {
           Text(.NotificationsAccess.notifyAction)
         }
-        .sheetActionPrimaryButton()
+        .buttonStyle(.sheetActionPrimary)
+        .padding(.top, 40)
 
         Button {
           store.send(.laterButtonTapped)
         } label: {
           Text(.NotificationsAccess.laterAction)
         }
-        .sheetActionSecondaryButton()
+        .buttonStyle(.sheetActionSecondary)
       }
       .disabled(store.isRequesting)
     }
-    .padding(.top, 32)
+    .padding(.top, 40)
     .padding(.horizontal, 16)
-    .padding(.bottom, 24)
     .frame(maxWidth: .infinity)
     // The sheet is a question with two answers, so VoiceOver focus stays inside
     // it rather than wandering into the dimmed content behind.
